@@ -5535,6 +5535,10 @@ if(currentUser){
       'spenflix', 'vidsrccx'
     ];
     let currentServerIndex = 0; // Flix2Watch API is the default and first fallback.
+    // Do not reload an already-running provider iframe. Auth/config callbacks can
+    // call loadPlayer() more than once during startup; reassigning the same src
+    // resets VidSrcMe and can make its first-click ad gate fire again.
+    let lastLoadedEmbedUrl = '';
     function logTerminal() { /* debug console disabled */ }
 
     let watchMetadataStarted=false;
@@ -5669,6 +5673,7 @@ if(currentUser){
 
       // Playback is account-only. Browsing metadata remains public.
       if(!watchPlaybackUnlocked){
+        lastLoadedEmbedUrl = '';
         iframe.src='data:text/html,%3Cbody%20style%3D%22margin%3A0%3Bbackground%3A%23000%22%3E';
         iframe.style.display='none';
         setWatchPlaybackAccess(false);
@@ -5789,6 +5794,14 @@ if(currentUser){
       // provider opens/closes a separate tab.
       iframe.removeAttribute('sandbox');
 
+      // Several independent startup callbacks can reach loadPlayer(). Never
+      // assign the exact same provider URL twice: doing so reloads the iframe,
+      // loses its in-player state and restarts playback/ad state. A genuine
+      // source, season, episode or resume-URL change still loads normally.
+      if (lastLoadedEmbedUrl === embedUrl && iframe.getAttribute('src') === embedUrl) {
+        return;
+      }
+      lastLoadedEmbedUrl = embedUrl;
       iframe.src = embedUrl;
       const targetLabel = mediaType === 'tv' ? `S${seasonNum}E${episodeNum}` : 'Movie';
       logTerminal(`Stream routed via ${currentServer.toUpperCase()} [${targetLabel}].`, 'success');
