@@ -1727,24 +1727,20 @@ async function inspectUser(){
 }
 function renderUserSnapshot(){
   const s=currentSnapshot,p=s.profile;
-  const banned=Boolean(s.ban),muted=Boolean(s.mute);
   document.getElementById('user-snapshot').innerHTML=`
-    <div class="notice"><strong>@${esc(p.username)}</strong> · ${esc(s.role)} · joined ${esc(fmt(p.created_at))}
-      ${(s.username_history||[]).length?`<div class="alias-history"><span style="color:var(--muted)">Username history:</span>${s.username_history.map(name=>`<span class="status">@${esc(name)}</span>`).join('')}</div>`:''}
+    <div class="card">
+      <div class="card-head"><strong><i class="fa-solid fa-clock-rotate-left"></i> Account records</strong><span>History & staff notes only</span></div>
+      <div class="notice"><strong>@${esc(p.username)}</strong> · ${esc(s.role)} · joined ${esc(fmt(p.created_at))}
+        ${(s.username_history||[]).length?`<div class="alias-history"><span style="color:var(--muted)">Username history:</span>${s.username_history.map(name=>`<span class="status">@${esc(name)}</span>`).join('')}</div>`:''}
+      </div>
+      <div class="row" style="margin-top:10px">
+        ${['owner','staff','moderator'].includes(staffContext.role)?`<button class="btn" onclick="warnUser()"><i class="fa-solid fa-triangle-exclamation"></i> Warn user</button>`:''}
+        ${['owner','staff','moderator','support'].includes(staffContext.role)?`<button class="btn" onclick="addNote()"><i class="fa-solid fa-note-sticky"></i> Add internal note</button>`:''}
+        ${staffContext.role==='owner'?`<button class="btn purple" onclick="setStaff(true)">Make Staff</button><button class="btn" onclick="setStaff(false)">Remove Staff</button>`:''}
+      </div>
     </div>
-    <div class="row">
-      ${['owner','staff','moderator'].includes(staffContext.role)?`<button class="btn" onclick="warnUser()"><i class="fa-solid fa-triangle-exclamation"></i> Warn</button><button class="btn" onclick="muteUser(60)"><i class="fa-solid fa-volume-xmark"></i> Mute 1h</button><button class="btn" onclick="unmuteUser()">Unmute</button>`:''}
-      ${['owner','staff','moderator','support'].includes(staffContext.role)?`<button class="btn" onclick="addNote()"><i class="fa-solid fa-note-sticky"></i> Internal note</button>`:''}
-      ${staffContext.role==='owner'?`<button class="btn purple" onclick="setStaff(true)">Make Staff</button><button class="btn" onclick="setStaff(false)">Remove Staff</button>`:''}
-    </div>
-    <div class="grid" style="margin-top:12px">
-      <div class="stat"><strong>${banned?'YES':'NO'}</strong><span>BANNED</span></div>
-      <div class="stat"><strong>${muted?'YES':'NO'}</strong><span>MUTED</span></div>
-      <div class="stat"><strong>${(s.warnings||[]).length}</strong><span>WARNINGS</span></div>
-      <div class="stat"><strong>${(s.notes||[]).length}</strong><span>STAFF NOTES</span></div>
-    </div>
-    <div class="card"><div class="card-head"><strong>Warnings</strong></div>${(s.warnings||[]).map(w=>`<div class="ticket-msg"><small>${esc(fmt(w.created_at))}</small><div>${esc(w.reason)}</div>${w.active?`<button class="btn" style="margin-top:7px" onclick="resolveWarning('${w.id}')">Resolve warning</button>`:'<span class="status resolved" style="display:inline-flex;margin-top:7px">Resolved</span>'}</div>`).join('')||'<div class="empty">No warnings.</div>'}</div>
-    <div class="card"><div class="card-head"><strong>Internal notes</strong></div>${(s.notes||[]).map(n=>`<div class="ticket-msg staff"><small>${esc(fmt(n.created_at))}</small><div>${esc(n.note)}</div></div>`).join('')||'<div class="empty">No notes.</div>'}</div>
+    <div class="card"><div class="card-head"><strong>Warnings</strong><span>${(s.warnings||[]).length} total</span></div>${(s.warnings||[]).map(w=>`<div class="ticket-msg"><small>${esc(fmt(w.created_at))}</small><div>${esc(w.reason)}</div>${w.active?`<button class="btn" style="margin-top:7px" onclick="resolveWarning('${w.id}')">Resolve warning</button>`:'<span class="status resolved" style="display:inline-flex;margin-top:7px">Resolved</span>'}</div>`).join('')||'<div class="empty">No warnings.</div>'}</div>
+    <div class="card"><div class="card-head"><strong>Internal notes</strong><span>${(s.notes||[]).length} total</span></div>${(s.notes||[]).map(n=>`<div class="ticket-msg staff"><small>${esc(fmt(n.created_at))}</small><div>${esc(n.note)}</div></div>`).join('')||'<div class="empty">No notes.</div>'}</div>
   `;
 }
 async function banUser(banned){
