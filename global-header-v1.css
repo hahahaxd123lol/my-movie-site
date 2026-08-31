@@ -1086,3 +1086,15 @@ main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-ban
 
 /* f2w-force-save:header-layout-repair-v19:1788214305 */
  
+
+/* F2W v20 — Account modal cleanup
+   Favorites remain available from the normal Favorites page/header button.
+   They are intentionally removed from every Account box for every role. */
+.account-modal #account-favorites,
+#account-modal #account-favorites,
+.account-modal .account-favorites,
+#account-modal .account-favorites {
+  display:none !important;
+}
+/* f2w-force-save:remove-account-favorites-sitewide-v20:1788214488 */
+ 
