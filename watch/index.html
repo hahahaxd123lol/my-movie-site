@@ -7765,6 +7765,225 @@ if(currentUser){
   <script src="/realtime-v7.js" defer></script>
 
   <script src="/final-v35.js?v=44-1788219651" defer></script>
+
+<style id="f2w-watch-tools-v47-css">
+  .f2w-watch-toast-v47{
+    position:fixed;right:18px;top:92px;z-index:2147483000;
+    min-width:220px;max-width:min(360px,calc(100vw - 28px));
+    padding:11px 13px;border:1px solid #2a425b;border-radius:10px;
+    background:#071522;color:#fff;font-size:.76rem;font-weight:750;
+    box-shadow:0 18px 55px rgba(0,0,0,.45);
+    opacity:0;transform:translateY(-6px);pointer-events:none;
+    transition:opacity .16s ease,transform .16s ease
+  }
+  .f2w-watch-toast-v47.show{opacity:1;transform:translateY(0)}
+  .f2w-watch-toast-v47.error{border-color:#6e2430;color:#ff8a95}
+
+  body.f2w-watch-dimmed::before{
+    content:"";position:fixed;inset:0;z-index:2147470000;
+    background:rgba(0,0,0,.76);pointer-events:none
+  }
+  body.f2w-watch-dimmed .watch-player-shell,
+  body.f2w-watch-dimmed #watch-player-shell,
+  body.f2w-watch-dimmed .player-shell,
+  body.f2w-watch-dimmed .video-player-wrap,
+  body.f2w-watch-dimmed .watch-player,
+  body.f2w-watch-dimmed iframe{
+    position:relative!important;z-index:2147471000!important
+  }
+
+  .watch-faq-list{display:grid!important;gap:9px!important}
+  .watch-faq-item{border:1px solid #21384f!important;border-radius:11px!important;background:#071522!important;overflow:hidden!important}
+  .watch-faq-question{width:100%!important;display:flex!important;justify-content:space-between!important;align-items:center!important;gap:12px!important;padding:13px 14px!important;margin:0!important;border:0!important;background:transparent!important;color:#fff!important;text-align:left!important;font-weight:800!important;cursor:pointer!important}
+  .watch-faq-answer{display:none;padding:0 14px 14px!important;color:#8da2bb!important;line-height:1.55!important;font-size:.76rem!important}
+  .watch-faq-item.open .watch-faq-answer{display:block!important}
+</style>
+
+<script id="f2w-watch-tools-v47">
+(() => {
+  'use strict';
+
+  const toast=(message,error=false)=>{
+    let el=document.getElementById('f2w-watch-toast-v47');
+    if(!el){
+      el=document.createElement('div');
+      el.id='f2w-watch-toast-v47';
+      el.className='f2w-watch-toast-v47';
+      document.body.appendChild(el);
+    }
+    el.textContent=String(message||'Done');
+    el.classList.toggle('error',!!error);
+    el.classList.add('show');
+    clearTimeout(el._timer);
+    el._timer=setTimeout(()=>el.classList.remove('show'),2600);
+  };
+
+  // ---------------- Dim lights ----------------
+  function findDimButton(){
+    return [...document.querySelectorAll('button,a')].find(el=>{
+      const t=(el.textContent||'').trim().toLowerCase();
+      return t.includes('dim lights') || t.includes('lights off') || t.includes('cinema mode');
+    });
+  }
+
+  function bindDimLights(){
+    const btn=findDimButton();
+    if(!btn || btn.dataset.f2wDimV47)return;
+    btn.dataset.f2wDimV47='1';
+    btn.addEventListener('click',e=>{
+      e.preventDefault();
+      const active=document.body.classList.toggle('f2w-watch-dimmed');
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-pressed',active?'true':'false');
+      toast(active?'Lights dimmed.':'Lights restored.');
+    });
+  }
+
+  // ---------------- Copy watch link ----------------
+  function findCopyButton(){
+    return [...document.querySelectorAll('button,a')].find(el=>{
+      const t=(el.textContent||'').trim().toLowerCase();
+      return t.includes('copy watch link') || t==='copy link' || t.includes('copy link');
+    });
+  }
+
+  async function copyCurrentWatchLink(){
+    const url=location.href;
+    try{
+      if(navigator.clipboard?.writeText){
+        await navigator.clipboard.writeText(url);
+      }else{
+        const ta=document.createElement('textarea');
+        ta.value=url;ta.setAttribute('readonly','');
+        ta.style.position='fixed';ta.style.opacity='0';
+        document.body.appendChild(ta);ta.select();
+        if(!document.execCommand('copy'))throw new Error('Copy failed');
+        ta.remove();
+      }
+      toast('Watch link copied.');
+    }catch(error){
+      toast('Could not copy the watch link.',true);
+    }
+  }
+
+  function bindCopyLink(){
+    const btn=findCopyButton();
+    if(!btn || btn.dataset.f2wCopyV47)return;
+    btn.dataset.f2wCopyV47='1';
+    btn.addEventListener('click',e=>{
+      e.preventDefault();
+      copyCurrentWatchLink();
+    });
+  }
+
+  // ---------------- Rating auth guard ----------------
+  function findRatingSaveButtons(){
+    return [...document.querySelectorAll('button')].filter(btn=>{
+      const t=(btn.textContent||'').trim().toLowerCase();
+      return t==='save rating' || t.includes('save rating');
+    });
+  }
+
+  async function getSession(){
+    try{
+      if(window.chatSupabase?.auth){
+        const {data}=await window.chatSupabase.auth.getSession();
+        return data?.session||null;
+      }
+      if(window.supabase && window.SUPABASE_URL && window.SUPABASE_KEY){
+        const client=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_KEY);
+        const {data}=await client.auth.getSession();
+        return data?.session||null;
+      }
+    }catch{}
+    return null;
+  }
+
+  function openAuthChoice(){
+    if(typeof window.openHeaderAuth==='function'){
+      window.openHeaderAuth('login');
+      return;
+    }
+    if(typeof window.openAccountModal==='function'){
+      window.openAccountModal('login');
+      return;
+    }
+    const login=document.getElementById('header-login-btn');
+    if(login){login.click();return;}
+    toast('Log in or create an account to save a rating.',true);
+  }
+
+  function bindRatingGuard(){
+    findRatingSaveButtons().forEach(btn=>{
+      if(btn.dataset.f2wRatingGuardV47)return;
+      btn.dataset.f2wRatingGuardV47='1';
+      btn.addEventListener('click',async e=>{
+        const session=await getSession();
+        if(session?.user)return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        toast('Log in or create an account to save your rating.');
+        openAuthChoice();
+      },true);
+    });
+  }
+
+  // ---------------- More FAQs ----------------
+  const extraFaqs=[
+    ['Why do I need an account to watch?','An account helps Flix2Watch apply account-level moderation, save ratings and favorites, and reduce automated abuse.'],
+    ['Do I need a subscription?','No. Flix2Watch does not require a paid subscription to use the site.'],
+    ['Why does a source sometimes fail?','Streaming sources are third-party services and can occasionally be offline, blocked, slow, or missing a title. Try Next Source when that happens.'],
+    ['What does Try Next Source do?','It switches the player to another available source for the same movie or episode without changing the title page.'],
+    ['Why is playback different between sources?','Each source controls its own player, subtitles, quality options and availability.'],
+    ['Does Flix2Watch host the video files?','The Watch page embeds third-party playback sources. Flix2Watch does not need to host the streamed video file itself.'],
+    ['How does Recently Watched work?','When you are logged in and open a movie or series, it can appear on your profile Recently Watched list. Only the most recent titles are kept.'],
+    ['How do ratings work?','Choose a star rating and save it while logged in. Your rating is associated with your account and can contribute to your profile activity.'],
+    ['Why can’t I save a rating while logged out?','Ratings are account data, so you need to log in or create an account before saving one.'],
+    ['What does Dim Lights do?','Dim Lights darkens the rest of the Watch page while keeping the player visible, giving you a cinema-style viewing mode.'],
+    ['What does Copy Watch Link do?','It copies the current Watch page URL to your clipboard so you can share or reopen the same title.'],
+    ['Will my player restart if I click page controls?','Normal page controls should not intentionally reload the same player source. Changing source can reload the player because a different embed is being loaded.']
+  ];
+
+  function addFaqs(){
+    const list=document.querySelector('.watch-faq-list');
+    if(!list || list.dataset.f2wFaqV47)return;
+    list.dataset.f2wFaqV47='1';
+    extraFaqs.forEach(([q,a])=>{
+      const item=document.createElement('div');
+      item.className='watch-faq-item';
+      item.innerHTML=`<button class="watch-faq-question" type="button"><span>${q}</span><i class="fa-solid fa-chevron-down"></i></button><div class="watch-faq-answer">${a}</div>`;
+      list.appendChild(item);
+    });
+  }
+
+  function bindFaqs(){
+    document.querySelectorAll('.watch-faq-item').forEach(item=>{
+      const q=item.querySelector('.watch-faq-question');
+      if(!q || q.dataset.f2wFaqBound)return;
+      q.dataset.f2wFaqBound='1';
+      q.addEventListener('click',()=>{
+        item.classList.toggle('open');
+        const icon=q.querySelector('i');
+        if(icon)icon.className=item.classList.contains('open')?'fa-solid fa-chevron-up':'fa-solid fa-chevron-down';
+      });
+    });
+  }
+
+  function init(){
+    bindDimLights();
+    bindCopyLink();
+    bindRatingGuard();
+    addFaqs();
+    bindFaqs();
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+
+  new MutationObserver(()=>init()).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
@@ -7816,4 +8035,5 @@ if(currentUser){
 <!-- f2w-force-save:v43-watch-auth-cache:1788219527:watch/index.html -->
 <!-- f2w-force-save:v44-header-cache:1788219651:watch/index.html -->
 <!-- f2w-force-save:watch-index-v46:1788219920 -->
+<!-- f2w-force-save:watch-tools-v47:1788219995 -->
  
