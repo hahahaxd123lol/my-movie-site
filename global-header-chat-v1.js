@@ -6,10 +6,10 @@
 
   let frame=null;
   let shell=null;
-  let previousOverflow='';
-  let previousHtmlOverflow='';
   let open=false;
   let ready=false;
+  let lastTrustedChatIntent=0;
+  const CHAT_INTENT_WINDOW_MS=1500;
 
   function ensureShell(){
     if(shell)return shell;
@@ -78,19 +78,19 @@
     return shell;
   }
 
-  function openChatOverlay(){
+  function openChatOverlay(force=false){
+    // Only allow the overlay to become visible after an actual user Chat click.
+    // This blocks legacy page scripts from calling openChat() during boot and
+    // accidentally dragging visitors straight into chat on normal page loads.
+    if(!force && Date.now()-lastTrustedChatIntent>CHAT_INTENT_WINDOW_MS) return false;
     ensureShell();
-    if(open)return;
+    if(open)return true;
     open=true;
-    previousOverflow=document.body.style.overflow;
-    previousHtmlOverflow=document.documentElement.style.overflow;
     shell.classList.add('open');
     shell.setAttribute('aria-hidden','false');
-    document.documentElement.style.overflow='hidden';
-    document.body.style.overflow='hidden';
-    // Intentionally DO NOT push /chat/ into history here. The current page remains
-    // exactly where it is, so headers/layout/auth scripts do not react as if a new
-    // page was opened. /chat/ still works as a standalone URL when entered directly.
+    // Deliberately do not change body/html overflow or history. Keeping the host
+    // page completely untouched prevents header/content jumps when chat opens.
+    return true;
   }
 
   function closeChatOverlay(){
@@ -98,11 +98,9 @@
     open=false;
     shell.classList.remove('open');
     shell.setAttribute('aria-hidden','true');
-    document.documentElement.style.overflow=previousHtmlOverflow;
-    document.body.style.overflow=previousOverflow;
   }
 
-  window.openChat=openChatOverlay;
+  window.openChat=()=>openChatOverlay(false);
   window.closeGlobalChat=closeChatOverlay;
 
   // Eager background boot. The iframe is NOT display:none and is not detached,
@@ -114,9 +112,11 @@
   document.addEventListener('click',event=>{
     const button=event.target.closest?.('.chat-button');
     if(!button)return;
+    // A trusted click is the ONLY thing that may reveal the preloaded chat shell.
+    if(event.isTrusted) lastTrustedChatIntent=Date.now();
     event.preventDefault();
     event.stopImmediatePropagation();
-    openChatOverlay();
+    openChatOverlay(true);
   },true);
 
   window.addEventListener('message',event=>{
@@ -129,4 +129,6 @@
   });
 })();
 /* f2w-update-20260831-chat-eager-offscreen-v5 */
-/* f2w-force-trailing-space-v5 */ 
+/* f2w-force-trailing-space-v5 */
+/* f2w-update-20260831-silent-preload-no-auto-open-v6 */
+ 
