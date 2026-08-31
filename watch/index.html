@@ -3281,6 +3281,7 @@
       </div>
       <div class="server-groups" id="server-buttons-container">
         <button class="server-btn active" data-server="flix2watchapi" onclick="switchServer('flix2watchapi', this)">Flix2Watch API <span aria-hidden="true">★</span></button>
+        <button class="server-btn" data-server="vidlink" onclick="switchServer('vidlink', this)">VidLink</button>
         <button class="server-btn" data-server="frembed" onclick="switchServer('frembed', this)">FR Embed</button>
         <button class="server-btn" data-server="uembed" onclick="switchServer('uembed', this)">U Embed Premium</button>
         <button class="server-btn" data-server="vidsrcsu" onclick="switchServer('vidsrcsu', this)">Vid SRC SU</button>
@@ -3292,7 +3293,6 @@
         <button class="server-btn" data-server="pstream" onclick="switchServer('pstream', this)">P-Stream</button>
         <button class="server-btn" data-server="moviesapi" onclick="switchServer('moviesapi', this)">MoviesAPI</button>
         <button class="server-btn" data-server="hexa" onclick="switchServer('hexa', this)">Hexa</button>
-        <button class="server-btn" data-server="vidlink" onclick="switchServer('vidlink', this)">VidLink</button>
         <button class="server-btn" data-server="vidsrcrip" onclick="switchServer('vidsrcrip', this)">VidSrcRIP</button>
         <button class="server-btn" data-server="vidsrcvip" onclick="switchServer('vidsrcvip', this)">VidSrcVIP</button>
         <button class="server-btn" data-server="2embed" onclick="switchServer('2embed', this)">2Embed</button>
@@ -5488,9 +5488,9 @@ if(currentUser){
 
 
     let serverQueue = [
-      'flix2watchapi', 'frembed', 'uembed', 'vidsrcsu', 'embedsu',
+      'flix2watchapi', 'vidlink', 'frembed', 'uembed', 'vidsrcsu', 'embedsu',
       'videasy', 'vidfast', 'multiembed', 'vidsrcxyz', 'vidsrccc', '2embed',
-      'moviesapi', 'vidlink', 'smashystream', 'autoembed', 'vidify', 'pstream',
+      'moviesapi', 'smashystream', 'autoembed', 'vidify', 'pstream',
       'hexa', 'vidsrcrip', 'vidsrcvip', '123embed', '111movies', 'flicky',
       'rivestream', 'vidora', 'streamflix', 'nebulaflix', 'vidjoy', 'vidzee',
       'spenflix', 'vidsrccx'
@@ -5732,6 +5732,16 @@ if(currentUser){
         default:
           embedUrl = mediaType === 'tv' ? `https://multiembed.mov/?video_id=${mediaId}&tmdb=1&s=${seasonNum}&e=${episodeNum}` : `https://multiembed.mov/?video_id=${mediaId}&tmdb=1`;
           break;
+      }
+
+      // Only Flix2Watch API is sandboxed. It keeps the permissions needed for
+      // playback but deliberately omits allow-popups / allow-popups-to-escape-sandbox,
+      // which blocks the provider from opening advertising tabs/windows. Every
+      // other source remains completely unsandboxed.
+      if(currentServer === 'flix2watchapi') {
+        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-downloads');
+      } else {
+        iframe.removeAttribute('sandbox');
       }
 
       iframe.src = embedUrl;
@@ -6917,7 +6927,7 @@ if(currentUser){
         // Keep the requested primary source order even when Staff stream
         // configuration has its own priority values. Unknown/new sources stay
         // enabled unless Staff explicitly disables them later.
-        const fixedPriority=['flix2watchapi','frembed','uembed','vidsrcsu','embedsu'].filter(name=>
+        const fixedPriority=['flix2watchapi','vidlink','frembed','uembed','vidsrcsu','embedsu'].filter(name=>
           serverQueue.includes(name)&&streamSourceConfig.get(name)?.enabled!==false
         );
         serverQueue=[...fixedPriority,...serverQueue.filter(name=>!fixedPriority.includes(name))];
@@ -6935,7 +6945,7 @@ if(currentUser){
         document.querySelectorAll('.server-groups').forEach(group=>{
           const buttons=[...group.querySelectorAll('.server-btn[data-server]')];
           buttons.sort((a,b)=>{
-            const fixed={flix2watchapi:1,frembed:2,uembed:3,vidsrcsu:4,embedsu:5};
+            const fixed={flix2watchapi:1,vidlink:2,frembed:3,uembed:4,vidsrcsu:5,embedsu:6};
             if(fixed[a.dataset.server]&&fixed[b.dataset.server])return fixed[a.dataset.server]-fixed[b.dataset.server];
             if(fixed[a.dataset.server])return -1;
             if(fixed[b.dataset.server])return 1;
