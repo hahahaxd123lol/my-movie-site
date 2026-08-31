@@ -208,3 +208,22 @@
 })();
 // f2w-force-save:header-stability-v19:1788214305
  
+
+/* F2W v23 — guarantee Chat pulse exists on every header instance */
+(() => {
+  'use strict';
+  function ensureChatDot() {
+    document.querySelectorAll('body.f2w-main-page > header .chat-button').forEach(button=>{
+      if(button.querySelector('.chat-online-dot'))return;
+      const dot=document.createElement('span');
+      dot.className='chat-online-dot';
+      dot.setAttribute('aria-hidden','true');
+      button.appendChild(dot);
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureChatDot,{once:true});
+  else ensureChatDot();
+  new MutationObserver(ensureChatDot).observe(document.documentElement,{childList:true,subtree:true});
+})();
+// f2w-force-save:chat-dot-guard-v23:178821-v23-dot-guard
+ 

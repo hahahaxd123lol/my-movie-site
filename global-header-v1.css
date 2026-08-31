@@ -1314,3 +1314,53 @@ body.f2w-main-page > header #theme-menu {
 
 /* f2w-force-save:true-static-header-v21:1788214596 */
  
+
+/* ============================================================
+   F2W v23 — CHAT ONLINE GREEN PULSE, SITEWIDE
+   ============================================================ */
+body.f2w-main-page > header .chat-button {
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  overflow:visible !important;
+}
+
+body.f2w-main-page > header .chat-button .chat-online-dot {
+  display:inline-block !important;
+  flex:0 0 7px !important;
+  width:7px !important;
+  height:7px !important;
+  min-width:7px !important;
+  min-height:7px !important;
+  margin-left:1px !important;
+  border-radius:50% !important;
+  background:#10b981 !important;
+  box-shadow:0 0 0 0 rgba(16,185,129,.72),0 0 8px #10b981 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  animation:f2wChatOnlinePulse 1.45s ease-in-out infinite !important;
+}
+
+@keyframes f2wChatOnlinePulse {
+  0%,100% {
+    opacity:.58;
+    box-shadow:0 0 0 0 rgba(16,185,129,.52),0 0 6px #10b981;
+    transform:scale(.92);
+  }
+  50% {
+    opacity:1;
+    box-shadow:0 0 0 5px rgba(16,185,129,0),0 0 12px #10b981;
+    transform:scale(1.08);
+  }
+}
+
+/* Keep the indicator visible even inside the fixed-width static header cell. */
+@media (min-width:1181px) {
+  body.f2w-main-page > header .f2w-action-cluster > .chat-button {
+    overflow:visible !important;
+  }
+}
+
+/* f2w-force-save:chat-online-dot-v23:1788215130 */
+ 
