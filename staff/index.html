@@ -700,6 +700,20 @@
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
   <link rel="stylesheet" href="/final-v35.css">
+
+<style id="staff-v36-support-tickets">
+  #panel-support .card{overflow:hidden}
+  .staff-support-rail{display:flex;gap:10px;overflow-x:auto;padding:3px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin}
+  .staff-support-ticket{flex:0 0 min(330px,86vw);scroll-snap-align:start;margin:0!important;padding:14px!important;text-align:left!important;background:#08131f!important;color:#fff!important;border:1px solid #203044!important;border-radius:12px!important}
+  .staff-support-ticket:hover,.staff-support-ticket:focus-visible{border-color:rgba(var(--accent-rgb),.5)!important;background:#0b1826!important;outline:none!important}.staff-support-ticket strong{display:block;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.staff-support-ticket span{display:block;color:#8292a8;font-size:.7rem;margin-top:4px}.staff-support-ticket .ticket-status{color:#fff;font-size:.65rem;font-weight:850;text-transform:uppercase;margin-top:8px}
+  .staff-ticket-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.80);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}.staff-ticket-modal[hidden]{display:none!important}
+  .staff-ticket-chat{width:min(820px,100%);max-height:min(850px,calc(100vh - 36px));display:grid;grid-template-rows:auto minmax(220px,1fr) auto;border:1px solid #29394d;border-radius:18px;overflow:hidden;background:#07101a;box-shadow:0 32px 100px rgba(0,0,0,.75)}
+  .staff-ticket-head{display:flex;align-items:center;gap:12px;padding:15px 17px;border-bottom:1px solid #1d2b3c;background:#091522}.staff-ticket-head-copy{min-width:0;flex:1}.staff-ticket-head-copy strong{display:block;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.staff-ticket-head-copy span{display:block;color:#8494a9;font-size:.72rem;margin-top:3px}.staff-ticket-close{margin:0!important;width:40px;height:40px;padding:0!important;justify-content:center!important}
+  .staff-ticket-messages{overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px}.staff-ticket-bubble{max-width:78%;align-self:flex-start;padding:10px 12px;border:1px solid #26374b;border-radius:13px;background:#0c1723}.staff-ticket-bubble.mine{align-self:flex-end;background:rgba(var(--accent-rgb),.10);border-color:rgba(var(--accent-rgb),.28)}.staff-ticket-bubble small{display:block;color:#8191a7;font-size:.66rem;margin-bottom:5px}.staff-ticket-bubble .body{font-size:.84rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.staff-ticket-bubble img{display:block;max-width:min(430px,100%);max-height:360px;object-fit:contain;border-radius:10px;margin-top:8px;border:1px solid rgba(255,255,255,.09)}
+  .staff-ticket-compose{padding:13px;border-top:1px solid #1d2b3c;background:#091522}.staff-ticket-compose textarea{min-height:76px}.staff-ticket-compose-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}.staff-ticket-file{min-width:120px;flex:1;color:#8393a8;font-size:.7rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.staff-ticket-statusline{min-height:18px;color:#8fa0b5;font-size:.7rem;margin-top:6px}.staff-ticket-statusline.error{color:#fca5a5}
+  @media(max-width:650px){.staff-ticket-modal{padding:8px}.staff-ticket-chat{max-height:calc(100vh - 16px);border-radius:13px}.staff-ticket-messages{padding:12px}.staff-ticket-bubble{max-width:90%}}
+</style>
+
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
@@ -887,7 +901,7 @@
     <button class="tab-btn" data-tab="profiles"><i class="fa-solid fa-address-card"></i> Profiles</button>
     <button class="tab-btn" data-tab="chat"><i class="fa-solid fa-comments"></i> Chat</button>
     <button class="tab-btn" data-tab="announcements"><i class="fa-solid fa-bullhorn"></i> Announcements</button>
-    <button class="tab-btn" data-tab="support"><i class="fa-solid fa-life-ring"></i> Support</button>
+    <button class="tab-btn" data-tab="support"><i class="fa-solid fa-ticket"></i> Support Tickets</button>
     <div class="staff-nav-title">Website</div>
     <button class="tab-btn" data-tab="homepage"><i class="fa-solid fa-clapperboard"></i> Homepage</button>
     <button class="tab-btn" data-tab="streams"><i class="fa-solid fa-server"></i> Streams</button>
@@ -1157,10 +1171,10 @@
     </section>
 
     <section class="panel" id="panel-support">
-      <div class="help-inline"><strong>Support:</strong> Urgent tickets should be handled first. Reply sets the ticket to waiting for the user; Resolve means the issue is complete.</div>
+      <div class="help-inline"><strong>Support Tickets:</strong> Owner and Staff ticket queue. Tickets stay in one horizontal line; click one to open the full conversation. Replies and image attachments send directly from the popup.</div>
       <div class="card">
-        <div class="card-head"><strong>Support queue</strong><button class="btn" onclick="loadTickets()">Refresh</button></div>
-        <div id="tickets-list"></div>
+        <div class="card-head"><strong><i class="fa-solid fa-ticket" style="color:var(--accent)"></i> Support ticket queue</strong><button class="btn" onclick="loadTickets()"><i class="fa-solid fa-rotate"></i> Refresh</button></div>
+        <div id="tickets-list"><div class="empty">Loading tickets…</div></div>
       </div>
     </section>
 
@@ -2330,35 +2344,57 @@ async function loadSources(){
 }
 async function saveSource(name){try{await rpc('staff_set_stream_source',{p_source_name:name,p_enabled:document.getElementById(`src-enabled-${name}`).checked,p_priority:Number(document.getElementById(`src-priority-${name}`).value)||999,p_notice:document.getElementById(`src-notice-${name}`).value||null});toast('Source updated');await loadSources()}catch(e){toast(e.message)}}
 
+let staffSupportTickets=[];
+let activeStaffTicketId=null;
+let pendingStaffTicketImage=null;
+
+function parseStaffSupportMessage(raw=''){
+  const text=String(raw||'');
+  const match=text.match(/\[\[support-image:(https:\/\/[^\]]+)\]\]/i);
+  return {body:match?text.replace(match[0],'').trim():text,imageUrl:match?.[1]||''};
+}
+function safeStaffSupportImage(url=''){
+  try{const u=new URL(url);return u.protocol==='https:'&&u.hostname==='viqufxlcxwgboyxbdhjb.supabase.co'&&u.pathname.includes('/storage/v1/object/public/chat-media/')?u.href:''}catch{return ''}
+}
+function ticketWords(v='open'){return String(v||'open').replaceAll('_',' ')}
+
 async function loadTickets(){
-  const host=document.getElementById('tickets-list');
+  const host=document.getElementById('tickets-list');if(!host)return;
+  host.innerHTML='<div class="empty">Loading tickets…</div>';
   try{
     const {data,error}=await db.from('support_tickets').select('*,support_ticket_messages(*)').order('updated_at',{ascending:false}).limit(100);
     if(error)throw error;
-    const priorityRank={urgent:0,high:1,normal:2,low:3};
-    const orderedTickets=[...(data||[])].sort((a,b)=>{
-      const rank=(priorityRank[a.priority]??2)-(priorityRank[b.priority]??2);
-      if(rank!==0)return rank;
-      return new Date(b.updated_at)-new Date(a.updated_at);
-    });
-    host.innerHTML=orderedTickets.map(t=>`<div class="card">
-      <div class="card-head"><strong>${esc(t.subject)}</strong><span><i class="fa-solid fa-user"></i> Created by @${esc(t.username||'user')} · ${esc(t.priority)} · ${esc(t.status)}</span></div>
-      <div>${(t.support_ticket_messages||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)).map(m=>`<div class="ticket-msg ${esc(m.sender_role)}"><small>${esc(m.sender_role)} · ${esc(fmt(m.created_at))}</small><div>${esc(m.message)}</div></div>`).join('')}</div>
-      <div class="row">
-        <button class="btn purple" onclick="replyTicket('${t.id}')">Reply</button>
-        <button class="btn green" onclick="updateTicket('${t.id}','resolved','${t.priority}')">Resolve</button>
-        <button class="btn" onclick="updateTicket('${t.id}','closed','${t.priority}')">Close</button>
-        <select id="ticket-priority-${t.id}" style="max-width:120px"><option value="low" ${t.priority==='low'?'selected':''}>Low — can wait</option><option value="normal" ${t.priority==='normal'?'selected':''}>Normal — standard</option><option value="high" ${t.priority==='high'?'selected':''}>High — important</option><option value="urgent" ${t.priority==='urgent'?'selected':''}>Urgent — handle first</option></select>
-        <button class="btn" onclick="updateTicket('${t.id}','${t.status}',document.getElementById('ticket-priority-${t.id}').value)">Set priority</button>
-      </div>
-    </div>`).join('')||'<div class="empty">No support tickets.</div>';
-  }catch(e){host.innerHTML=`<div class="empty">${esc(e.message)}</div>`}
+    const weight={urgent:0,high:1,normal:2,low:3};
+    staffSupportTickets=[...(data||[])].sort((a,b)=>(weight[a.priority]??9)-(weight[b.priority]??9)||new Date(b.updated_at)-new Date(a.updated_at));
+    host.innerHTML=staffSupportTickets.length?`<div class="staff-support-rail">${staffSupportTickets.map(t=>`<button class="staff-support-ticket" type="button" onclick="openStaffTicketModal('${t.id}')"><strong>${esc(t.subject)}</strong><span>@${esc(t.username||'user')} · ${esc(t.priority||'normal')} · ${esc(fmt(t.updated_at))}</span><span class="ticket-status">${esc(ticketWords(t.status))}</span></button>`).join('')}</div>`:'<div class="empty">No support tickets.</div>';
+    if(activeStaffTicketId){const active=staffSupportTickets.find(t=>String(t.id)===String(activeStaffTicketId));if(active)renderStaffTicketModal(active)}
+  }catch(e){host.innerHTML=`<div class="empty">${esc(e.message||'Could not load tickets.')}</div>`}
 }
-async function replyTicket(id){
-  const msg=await staffPrompt({title:'Reply to support ticket',copy:'Write the Staff response. Ctrl/Command + Enter also sends.',multiline:true,placeholder:'Reply…',confirmText:'Send reply'});
-  if(!msg)return;
-  try{await rpc('add_support_ticket_message',{p_ticket_id:id,p_message:msg});toast('Reply sent');await loadTickets()}catch(e){toast(e.message)}
+
+function renderStaffTicketModal(ticket){
+  document.getElementById('staff-ticket-modal-title').textContent=ticket.subject||'Support ticket';
+  document.getElementById('staff-ticket-modal-meta').textContent=`@${ticket.username||'user'} · ${ticketWords(ticket.status)} · updated ${fmt(ticket.updated_at)}`;
+  document.getElementById('staff-ticket-priority').value=ticket.priority||'normal';
+  const host=document.getElementById('staff-ticket-modal-messages');
+  const rows=[...(ticket.support_ticket_messages||[])].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  host.innerHTML=rows.map(m=>{const parsed=parseStaffSupportMessage(m.message);const img=safeStaffSupportImage(parsed.imageUrl);const mine=['owner','staff'].includes(String(m.sender_role||'').toLowerCase());return `<div class="staff-ticket-bubble ${mine?'mine':''}"><small>${esc(m.sender_role||'member')} · ${esc(fmt(m.created_at))}</small>${parsed.body?`<div class="body">${esc(parsed.body)}</div>`:''}${img?`<a href="${esc(img)}" target="_blank" rel="noopener"><img src="${esc(img)}" alt="Support attachment"></a>`:''}</div>`}).join('')||'<div class="empty">No messages.</div>';
+  requestAnimationFrame(()=>{host.scrollTop=host.scrollHeight});
 }
+function openStaffTicketModal(id){
+  const t=staffSupportTickets.find(x=>String(x.id)===String(id));if(!t)return;
+  activeStaffTicketId=t.id;pendingStaffTicketImage=null;document.getElementById('staff-ticket-image').value='';document.getElementById('staff-ticket-file').textContent='No image selected';document.getElementById('staff-ticket-reply').value='';setStaffTicketStatus('');renderStaffTicketModal(t);
+  const modal=document.getElementById('staff-ticket-modal');modal.hidden=false;modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';setTimeout(()=>document.getElementById('staff-ticket-reply')?.focus(),30)
+}
+function closeStaffTicketModal(){const modal=document.getElementById('staff-ticket-modal');modal.hidden=true;modal.setAttribute('aria-hidden','true');document.body.style.overflow='';activeStaffTicketId=null;pendingStaffTicketImage=null}
+function setStaffTicketStatus(message,error=false){const el=document.getElementById('staff-ticket-statusline');if(!el)return;el.textContent=message||'';el.classList.toggle('error',Boolean(error))}
+function selectStaffTicketImage(file){pendingStaffTicketImage=null;const n=document.getElementById('staff-ticket-file');if(!file){n.textContent='No image selected';return}const allowed=new Set(['image/jpeg','image/png','image/webp','image/gif']);if(!allowed.has(file.type)){setStaffTicketStatus('Use JPG, PNG, WEBP or GIF.',true);return}if(file.size>5*1024*1024){setStaffTicketStatus('Image must be 5 MB or smaller.',true);return}pendingStaffTicketImage=file;n.textContent=file.name;setStaffTicketStatus('Image ready to send.')}
+async function uploadStaffTicketImage(ticketId){if(!pendingStaffTicketImage)return '';const {data}=await db.auth.getUser();const user=data?.user;if(!user)throw new Error('Sign in again before uploading.');const ext=(pendingStaffTicketImage.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=`${user.id}/support/${ticketId}/${Date.now()}-${crypto.randomUUID?.()||Math.random().toString(36).slice(2)}.${ext}`;const {error}=await db.storage.from('chat-media').upload(path,pendingStaffTicketImage,{upsert:false,contentType:pendingStaffTicketImage.type,cacheControl:'3600'});if(error)throw error;return db.storage.from('chat-media').getPublicUrl(path).data?.publicUrl||''}
+async function sendStaffTicketReply(){
+  if(!activeStaffTicketId)return;const input=document.getElementById('staff-ticket-reply');const button=document.getElementById('staff-ticket-send');const text=input.value.trim();if(!text&&!pendingStaffTicketImage){setStaffTicketStatus('Write a reply or choose an image.',true);return}button.disabled=true;setStaffTicketStatus(pendingStaffTicketImage?'Uploading image…':'Sending…');
+  try{const imageUrl=await uploadStaffTicketImage(activeStaffTicketId);const payload=`${text}${text&&imageUrl?'\n':''}${imageUrl?`[[support-image:${imageUrl}]]`:''}`.slice(0,4000);await rpc('add_support_ticket_message',{p_ticket_id:activeStaffTicketId,p_message:payload});const priority=document.getElementById('staff-ticket-priority').value;await rpc('staff_update_ticket',{p_ticket_id:activeStaffTicketId,p_status:'waiting_user',p_priority:priority});input.value='';pendingStaffTicketImage=null;document.getElementById('staff-ticket-image').value='';document.getElementById('staff-ticket-file').textContent='No image selected';toast('Reply sent');setStaffTicketStatus('Sent.');await Promise.all([loadTickets(),loadStats()])}catch(e){setStaffTicketStatus(e.message||'Could not send reply.',true)}finally{button.disabled=false}
+}
+async function setActiveTicketStatus(status){if(!activeStaffTicketId)return;const p=document.getElementById('staff-ticket-priority').value;try{await rpc('staff_update_ticket',{p_ticket_id:activeStaffTicketId,p_status:status,p_priority:p});toast('Ticket updated');await Promise.all([loadTickets(),loadStats()]);if(status==='resolved'||status==='closed')closeStaffTicketModal()}catch(e){setStaffTicketStatus(e.message,true)}}
+async function replyTicket(id){openStaffTicketModal(id)}
 async function updateTicket(id,status,priority){try{await rpc('staff_update_ticket',{p_ticket_id:id,p_status:status,p_priority:priority});toast('Ticket updated');await Promise.all([loadTickets(),loadStats()])}catch(e){toast(e.message)}}
 
 async function loadSettings(){
@@ -2452,6 +2488,30 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js" defer></script>
+  <script src="/final-v35.js" defer>
+document.getElementById('staff-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='staff-ticket-modal')closeStaffTicketModal()});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('staff-ticket-modal')?.hidden)closeStaffTicketModal()});
+document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendStaffTicketReply()}});
+</script>
+
+<div class="staff-ticket-modal" id="staff-ticket-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="staff-ticket-modal-title">
+  <div class="staff-ticket-chat">
+    <div class="staff-ticket-head"><div class="staff-ticket-head-copy"><strong id="staff-ticket-modal-title">Support ticket</strong><span id="staff-ticket-modal-meta"></span></div><button class="btn staff-ticket-close" type="button" onclick="closeStaffTicketModal()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="staff-ticket-messages" id="staff-ticket-modal-messages"></div>
+    <div class="staff-ticket-compose">
+      <textarea id="staff-ticket-reply" maxlength="4000" placeholder="Reply to this ticket…"></textarea>
+      <div class="staff-ticket-compose-actions">
+        <input id="staff-ticket-image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="selectStaffTicketImage(this.files?.[0])">
+        <button class="btn" type="button" onclick="document.getElementById('staff-ticket-image').click()"><i class="fa-regular fa-image"></i> Image</button>
+        <span class="staff-ticket-file" id="staff-ticket-file">No image selected</span>
+        <select id="staff-ticket-priority" style="max-width:140px"><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+        <button class="btn" type="button" onclick="setActiveTicketStatus('resolved')"><i class="fa-solid fa-check"></i> Resolve</button>
+        <button class="btn purple" id="staff-ticket-send" type="button" onclick="sendStaffTicketReply()"><i class="fa-solid fa-paper-plane"></i> Send</button>
+      </div>
+      <div class="staff-ticket-statusline" id="staff-ticket-statusline"></div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
