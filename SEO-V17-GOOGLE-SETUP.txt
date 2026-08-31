@@ -1,0 +1,40 @@
+FLIX2WATCH V17 — GOOGLE SEARCH / INDEXING CHECKLIST
+
+The V17 build already contains:
+- crawlable robots.txt
+- sitemap.xml
+- canonical URL hints
+- descriptive title/description metadata
+- Open Graph + Twitter social preview metadata
+- WebSite + Organization JSON-LD
+- dynamic Movie / TVSeries structured data on Watch pages
+- a dynamic Home ItemList of movie cards
+- a stable square V16 favicon/app icon family
+- public title details that are visible without login
+- Staff Control Center marked noindex
+- Favorites marked noindex because it is account-specific
+
+AFTER DEPLOYMENT
+
+1. Open Google Search Console.
+2. Add/verify the flix2watch.com Domain property.
+3. Submit:
+     https://flix2watch.com/sitemap.xml
+4. Use URL Inspection on:
+     https://flix2watch.com/
+     https://flix2watch.com/home/
+   and request indexing after the V17 deployment.
+5. Inspect a few real Watch URLs after deployment to make sure Google can render
+   the title, overview, poster and JSON-LD.
+6. Keep the favicon URL stable after V17. Google may take days or weeks to
+   recrawl and update favicon/search appearance.
+7. Monitor Search Console Page Indexing, Enhancements and Performance reports.
+
+IMPORTANT
+
+No technical SEO change can guarantee first place, instant indexing, or any
+specific Google ranking. V17 improves crawlability, canonicalization, metadata,
+structured data and site identity without keyword stuffing or fake ratings.
+
+The login wall applies only to playback. Public movie/TV details remain visible
+to crawlers and visitors.

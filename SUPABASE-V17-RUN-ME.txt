@@ -1,0 +1,47 @@
+FLIX2WATCH V17 — SUPABASE RUN ORDER
+
+IF YOUR LIVE SITE ALREADY HAS V16/V14 INSTALLED:
+
+1. SUPABASE SQL EDITOR
+   Run:
+     v17_notifications_dm_setup.sql
+
+2. SUPABASE EDGE FUNCTIONS
+   Redeploy the included:
+     rapid-worker.ts
+
+   Keep Verify JWT disabled for this existing worker setup because the worker
+   continues to use the site's custom chat-token flow as well as Supabase Auth.
+
+3. KEEP EXISTING EDGE FUNCTION SECRETS
+   SUPABASE_URL
+   SUPABASE_SERVICE_ROLE_KEY
+   CHAT_OWNER_PASSWORD
+   CHAT_TOKEN_SECRET
+
+   Do NOT put any of those secrets in GitHub or frontend JavaScript.
+
+4. DEPLOY THE ENTIRE V17 SITE ZIP.
+
+WHAT THE NEW SQL PROVIDES
+- Notifications
+- follower notifications
+- warning/ban/mute/Staff event notifications
+- DM notifications
+- persistent private conversations
+- AES-256 encrypted-at-rest DM bodies
+- participant-only DM APIs
+- sender-only DM deletion
+
+WHAT THE NEW WORKER PROVIDES
+- Login by username OR email
+- username-to-account lookup stays server-side
+- browser receives a session only after the password is validated
+
+IF SETTING UP EVERYTHING FROM SCRATCH:
+- Run staff_control_center_setup.sql
+- Deploy rapid-worker.ts
+
+GOOGLE / DISCORD OAUTH:
+- Existing V14 provider configuration remains unchanged.
+- If not configured yet, follow SUPABASE-V14-OAUTH-SETUP.txt.

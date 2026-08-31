@@ -1,0 +1,25 @@
+FLIX2WATCH V17 — DIRECT MESSAGE SECURITY NOTES
+
+WHAT V17 DOES
+- Direct-message tables are not granted normal browser CRUD access.
+- Reads/writes happen through security-definer RPC functions.
+- Every DM RPC checks auth.uid() against conversation participants.
+- Message bodies are encrypted at rest using pgcrypto AES-256.
+- Conversation encryption secrets are stored server-side and are not returned
+  to browser clients.
+- Normal network transport uses HTTPS/TLS through Supabase.
+- Only the sender can delete a sent message through the site API.
+- Public-chat 24-hour cleanup does not touch direct messages.
+
+WHAT V17 DOES NOT CLAIM
+- DMs are NOT end-to-end encrypted.
+- DMs cannot honestly be described as "100% safe".
+- Privileged database/service infrastructure operators can technically access
+  server-side encrypted data and keys.
+
+USER-FACING WORDING
+The Chat UI says:
+  "Participant-only access, TLS in transit and AES-256 encrypted message bodies
+   at rest. This is not end-to-end encryption."
+
+This is intentionally accurate rather than giving users a false security promise.

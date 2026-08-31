@@ -1,0 +1,37 @@
+FLIX2WATCH SECURITY CHECKLIST
+
+IMPORTANT:
+You cannot hide frontend HTML/JS from F12.
+Anything sent to a browser is public.
+
+REAL SECURITY:
+- Keep all privileged secrets out of GitHub/HTML.
+- Enforce every write with Supabase RLS/storage policies.
+- Edge Function secrets stay only in Supabase secrets.
+
+SAFE TO BE PUBLIC:
+- Supabase sb_publishable_* key
+  This is designed for frontend use, provided RLS is correct.
+
+NEVER PUT IN GITHUB/HTML:
+- service_role key
+- sb_secret_* key
+- database password
+- CHAT_OWNER_PASSWORD
+- CHAT_TOKEN_SECRET
+- Discord client secret
+- any admin password
+
+PROFILE SECURITY IN THIS PACK:
+- Edit controls are hidden unless a fresh authenticated session exists.
+- A fresh supabase.auth.getUser() check runs before every profile write.
+- The authenticated user's UUID must equal viewedProfile.user_id.
+- Banner/avatar/privacy/bio/display-name writes fail if logged out.
+- Backend RLS still blocks writes even if someone manually unhides buttons with F12.
+
+IF A SECRET WAS EVER COMMITTED:
+Deleting it from the latest file is not enough.
+Rotate/revoke it immediately because Git history may still contain it.
+
+RUN:
+security_hardening.sql

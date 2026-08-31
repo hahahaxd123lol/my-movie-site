@@ -1,0 +1,24 @@
+FLIX2WATCH V16 — SUPABASE RUN ORDER
+
+If your current live site already has the latest V14/V15 backend:
+
+1. Open Supabase Dashboard.
+2. Open SQL Editor.
+3. Create a new query.
+4. Paste/run:
+     v16_profile_roles_support_setup.sql
+5. Wait for "Success".
+
+That is the ONLY new SQL required specifically for V16.
+
+You do NOT need to redeploy rapid-worker.ts just for V16.
+
+If you are installing the backend from scratch instead:
+  Run staff_control_center_setup.sql
+
+Google/Discord:
+  If they are not already configured, follow
+  SUPABASE-V14-OAUTH-SETUP.txt
+
+V16 public roles are display badges only.
+Core Staff/Owner permissions remain handled by the existing Staff system.
