@@ -1775,11 +1775,13 @@ async function buildAbuseSignals(request: Request, body: Record<string, unknown>
 async function checkBanEvasion(signals: {
   device_hash: string;
   fingerprint_hash: string;
+  ip_hash: string;
   ip_ua_hash: string;
 }) {
   const hashes = [
     signals.device_hash,
     signals.fingerprint_hash,
+    signals.ip_hash,
     signals.ip_ua_hash,
   ].filter(Boolean);
 
@@ -1809,13 +1811,20 @@ async function checkBanEvasion(signals: {
       row.signal_hash === signals.fingerprint_hash
     );
 
-  const network = rows.find((row: any) =>
-    row.signal_type === "ip_ua" &&
-    row.signal_hash === signals.ip_ua_hash
-  );
+  const network =
+    rows.find((row: any) =>
+      row.signal_type === "ip_ua" &&
+      row.signal_hash === signals.ip_ua_hash
+    ) ??
+    rows.find((row: any) =>
+      row.signal_type === "ip" &&
+      row.signal_hash === signals.ip_hash
+    );
 
+  // v39 strict policy: exact banned IP+UA, or the exact banned IP itself,
+  // is a hard block. This is intentionally stronger and can affect shared/VPN IPs.
   return {
-    blocked: Boolean(hard),
+    blocked: Boolean(hard || network),
     networkMatch: Boolean(network),
     match: hard ?? network ?? null,
   };
@@ -2789,4 +2798,5 @@ Deno.serve(async (request: Request) => {
 // f2w-force-save:hard-chat24-cleanup-v31:1788217048
 // f2w-force-save:worker-fast-request-path-v34:1788217565
 // f2w-force-save:public-chat-slowmode-v37:1788218042
+// f2w-force-save:strict-ban-evasion-v39:1788218599
  

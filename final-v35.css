@@ -1028,3 +1028,138 @@ body.f2w-main-page img {
 }
 /* f2w-force-save:rendering-performance-v33:1788217440 */
  
+
+/* ============================================================
+   F2W v39 — PROFILE ORDER + WHITE PARTICLES + RECENT TITLES
+   ============================================================ */
+.f2w-profile-social-inline-v39 {
+  margin-top:12px!important;
+  margin-bottom:4px!important;
+}
+.f2w-profile-social-inline-v39 .f2w-profile-socials {
+  margin-top:0!important;
+}
+/* Social links are part of the hero, so Roles & Badges naturally moves up. */
+#v32-profile-social-panel { display:none!important; }
+
+/* Particles.gif is rendered as-is (white). Never tint/filter the GIF. */
+.f2w-role-name {
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:repeat-x!important;
+  background-position:center!important;
+  background-size:6.657em auto!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+}
+.f2w-role-name::before,
+.f2w-role-name::after {
+  filter:none!important;
+  mix-blend-mode:normal!important;
+}
+/* The display name itself is still highest-role coloured. */
+.f2w-role-owner{--role-main:#ff2638!important}
+.f2w-role-staff{--role-main:#c05cff!important}
+.f2w-role-moderator{--role-main:#62b4ff!important}
+.f2w-role-support{--role-main:#32c8ff!important}
+.f2w-role-developer{--role-main:#31d9ad!important}
+.f2w-role-verified{--role-main:#579dff!important}
+.f2w-role-contributor{--role-main:#ffc13d!important}
+.f2w-role-curator{--role-main:#ff6be1!important}
+
+.f2w-recently-watched-grid {
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr))!important;
+}
+/* f2w-force-save:profile-order-particles-v39:1788218599 */
+ 
+
+/* ============================================================
+   F2W v40 — UNIFIED WHITE ROLE PARTICLES
+   Same display-name effect site-wide; smaller particles on compact names.
+   ============================================================ */
+.f2w-role-name {
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:repeat-x!important;
+  background-position:center center!important;
+  background-size:3.8em auto!important;
+  background-color:transparent!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+  overflow:visible!important;
+}
+
+/* Larger profile names can carry slightly more spacing while keeping the same particle artwork. */
+#profile-name.f2w-role-name,
+.profile-name.f2w-role-name {
+  background-size:4.6em auto!important;
+}
+
+/* Compact locations: rankings/chat/comments get smaller, tighter particles. */
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  background-size:3.15em auto!important;
+}
+
+/* Kill all legacy particle layers that could create role-coloured blobs. */
+.f2w-role-name::before,
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after,
+.f2w-role-fairy-dust,
+.f2w-role-fairy-dust * {
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+
+/* Role affects the letters only. Particle image stays untouched/white. */
+.f2w-role-owner{--role-main:#ff2638!important;--role-shadow:rgba(255,38,56,.82)!important}
+.f2w-role-staff{--role-main:#c05cff!important;--role-shadow:rgba(192,92,255,.82)!important}
+.f2w-role-moderator{--role-main:#62b4ff!important;--role-shadow:rgba(98,180,255,.82)!important}
+.f2w-role-support{--role-main:#32c8ff!important;--role-shadow:rgba(50,200,255,.82)!important}
+.f2w-role-developer{--role-main:#31d9ad!important;--role-shadow:rgba(49,217,173,.82)!important}
+.f2w-role-verified{--role-main:#579dff!important;--role-shadow:rgba(87,157,255,.82)!important}
+.f2w-role-contributor{--role-main:#ffc13d!important;--role-shadow:rgba(255,193,61,.82)!important}
+.f2w-role-curator{--role-main:#ff6be1!important;--role-shadow:rgba(255,107,225,.82)!important}
+
+/* f2w-force-save:unified-white-particles-v40:1788218691 */
+ 
+
+/* ============================================================
+   F2W v40 — MANDATORY USERNAME GATE
+   ============================================================ */
+.f2w-username-required-gate {
+  position:fixed!important;inset:0!important;z-index:2147483600!important;
+  display:grid!important;place-items:center!important;padding:18px!important;
+  background:rgba(1,6,12,.94)!important;
+}
+.f2w-username-required-gate[hidden]{display:none!important}
+.f2w-username-gate-card {
+  width:min(460px,100%)!important;padding:26px!important;
+  border:1px solid #29425c!important;border-radius:18px!important;
+  background:#071522!important;box-shadow:0 30px 90px rgba(0,0,0,.65)!important;color:#fff!important;
+}
+.f2w-username-gate-icon {
+  width:46px;height:46px;display:grid;place-items:center;margin-bottom:14px;
+  border-radius:13px;background:rgba(229,9,20,.13);color:#ff2b3b;font-size:1.15rem;
+}
+.f2w-username-gate-kicker{color:#ff3040;font-size:.62rem;font-weight:900;letter-spacing:.12em}
+.f2w-username-gate-card h2{margin:7px 0 7px;font-size:1.45rem}
+.f2w-username-gate-card p{margin:0 0 18px;color:#8095ae;font-size:.78rem;line-height:1.55}
+.f2w-username-gate-card label{display:block;color:#8da1b8;font-size:.62rem;font-weight:850;letter-spacing:.09em}
+.f2w-username-gate-input{display:flex;align-items:center;margin-top:6px;border:1px solid #29425c;border-radius:10px;background:#06111c;overflow:hidden}
+.f2w-username-gate-input span{padding-left:12px;color:#ff3040;font-weight:900}
+.f2w-username-gate-input input{width:100%;height:42px;border:0!important;background:transparent!important;color:#fff!important;outline:0!important;padding:0 11px!important;font-size:16px!important}
+.f2w-username-gate-help{margin-top:6px;color:#5f748c;font-size:.64rem}
+.f2w-username-gate-status{min-height:20px;margin-top:9px;color:#7ee0aa;font-size:.68rem}
+.f2w-username-gate-status.error{color:#ff6975}
+.f2w-username-gate-card button{width:100%;min-height:42px;margin-top:8px;border-radius:10px;border:1px solid #ff3444;background:#e50914;color:#fff;font-weight:850;cursor:pointer}
+.f2w-username-gate-card button.secondary{border-color:#29425c;background:#0a1a29;color:#9db0c5}
+html.f2w-username-gated body{overflow:hidden!important}
+/* f2w-force-save:mandatory-username-gate-css-v40:1788218691 */
+ 

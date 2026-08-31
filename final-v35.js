@@ -1408,17 +1408,130 @@ function f2wDebounce(fn,wait=140){
     });
   }
 
+
+  /* ---------- v40 mandatory username gate ---------- */
+  let usernameGateRunning=false;
+
+  function usernameGateMarkup(){
+    return `<div class="f2w-username-gate-card">
+      <div class="f2w-username-gate-icon"><i class="fa-solid fa-at"></i></div>
+      <span class="f2w-username-gate-kicker">USERNAME REQUIRED</span>
+      <h2>Choose your Flix2Watch username</h2>
+      <p>Every account needs a unique username. This is separate from your display name.</p>
+      <label>USERNAME
+        <div class="f2w-username-gate-input"><span>@</span><input id="f2w-required-username" maxlength="30" autocomplete="username" placeholder="username"></div>
+      </label>
+      <div class="f2w-username-gate-help">2–30 letters or numbers only.</div>
+      <div id="f2w-username-gate-status" class="f2w-username-gate-status"></div>
+      <button type="button" id="f2w-username-gate-save"><i class="fa-solid fa-check"></i> Continue</button>
+      <button type="button" id="f2w-username-gate-logout" class="secondary"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+    </div>`;
+  }
+
+  function showUsernameGate(){
+    let gate=document.getElementById('f2w-username-required-gate');
+    if(!gate){
+      gate=document.createElement('div');
+      gate.id='f2w-username-required-gate';
+      gate.className='f2w-username-required-gate';
+      gate.innerHTML=usernameGateMarkup();
+      document.body.appendChild(gate);
+    }
+    gate.hidden=false;
+    document.documentElement.classList.add('f2w-username-gated');
+
+    const input=gate.querySelector('#f2w-required-username');
+    const save=gate.querySelector('#f2w-username-gate-save');
+    const status=gate.querySelector('#f2w-username-gate-status');
+    const logout=gate.querySelector('#f2w-username-gate-logout');
+
+    const submit=async()=>{
+      const username=String(input?.value||'').trim();
+      if(username.length<2||username.length>30||!/^[A-Za-z0-9]+$/.test(username)){
+        status.textContent='Use 2–30 letters or numbers only.';
+        status.classList.add('error');
+        return;
+      }
+      save.disabled=true;
+      status.classList.remove('error');
+      status.textContent='Checking username…';
+      try{
+        const result=await rpc('claim_my_username_v40',{p_username:username});
+        const claimed=String(result?.username||username);
+        try{localStorage.setItem('f2w_profile_username_v24',claimed)}catch{}
+        status.textContent=`@${claimed} saved.`;
+        setTimeout(()=>{
+          gate.hidden=true;
+          document.documentElement.classList.remove('f2w-username-gated');
+          location.reload();
+        },180);
+      }catch(error){
+        status.textContent=error?.message||'That username is unavailable.';
+        status.classList.add('error');
+      }finally{
+        save.disabled=false;
+      }
+    };
+
+    save.onclick=submit;
+    input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();submit();}};
+    logout.onclick=async()=>{
+      try{await db()?.auth?.signOut()}catch{}
+      location.href='/home/';
+    };
+    setTimeout(()=>input?.focus(),40);
+  }
+
+  async function enforceUsernameGate(){
+    if(usernameGateRunning)return;
+    usernameGateRunning=true;
+    try{
+      const client=db();if(!client)return;
+      const {data:{session}}=await client.auth.getSession();
+      const user=session?.user;
+      if(!user?.id){
+        document.getElementById('f2w-username-required-gate')?.setAttribute('hidden','');
+        document.documentElement.classList.remove('f2w-username-gated');
+        return;
+      }
+
+      const {data,error}=await client
+        .from('profiles')
+        .select('username')
+        .eq('user_id',user.id)
+        .maybeSingle();
+
+      if(error)throw error;
+      const username=String(data?.username||'').trim();
+      const invalid=!username || username.length<2 || username.length>30 || !/^[A-Za-z0-9]+$/.test(username);
+
+      if(invalid){
+        showUsernameGate();
+      }else{
+        try{localStorage.setItem('f2w_profile_username_v24',username)}catch{}
+        const gate=document.getElementById('f2w-username-required-gate');
+        if(gate)gate.hidden=true;
+        document.documentElement.classList.remove('f2w-username-gated');
+      }
+    }catch(error){
+      console.warn('Username requirement check failed:',error?.message||error);
+    }finally{
+      usernameGateRunning=false;
+    }
+  }
+
   /* ---------- boot ---------- */
   async function boot(){
     forceRedLogo();addLeaderboardNav();hardenRouting();installDmSearch();reorderSourceButtons();
     installAuthAbuseGuard();
     await syncAuthUI();
+    await enforceUsernameGate();
     registerCurrentAbuseSignals();
     prewarmChat();
     setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();bootProfileRealtime();enrichForum();bootLeaderboard();decorateNames();installStaffQuickModeration()},350);
     roleDecorateTimer=null;
     const client=db();
-    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{installAuthAbuseGuard();syncAuthUI();registerCurrentAbuseSignals();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments();enrichForum()},0))}catch{}
+    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{installAuthAbuseGuard();syncAuthUI();enforceUsernameGate();registerCurrentAbuseSignals();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments();enrichForum()},0))}catch{}
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchPresence();recordWatchOpen();}else{leavePresence();}});
     window.addEventListener('pagehide',()=>{leavePresence()});
     let f2wDomRefreshTimer=null;
@@ -1455,4 +1568,5 @@ function f2wDebounce(fn,wait=140){
   window.decorateNames=f2wDebounce(()=>raw(),70);
 })();
 // f2w-force-save:debounce-role-decorate-v33:1788217440
+// f2w-force-save:mandatory-username-v40:1788218691
  
