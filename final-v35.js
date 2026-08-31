@@ -506,6 +506,133 @@
     },15000);
   }
 
+
+  /* ---------- profile editor v22 helpers ---------- */
+  const PROFILE_TMDB_KEY='925c48dd6e24fd5e975fe224238bbb45';
+  const PROFILE_GENRES=[
+    'Action','Adventure','Animation','Comedy','Crime','Documentary','Drama','Family',
+    'Fantasy','History','Horror','Music','Mystery','Romance','Science Fiction',
+    'TV Movie','Thriller','War','Western'
+  ];
+
+  function cleanSocialHandle(value){
+    return String(value||'').trim().replace(/^@/,'');
+  }
+
+  function socialHref(kind,value){
+    const raw=String(value||'').trim();
+    const v=cleanSocialHandle(raw);
+    if(!raw)return '';
+    if(kind==='website')return /^https?:\/\//i.test(raw)?raw:`https://${raw}`;
+    if(kind==='instagram')return `https://instagram.com/${encodeURIComponent(v)}`;
+    if(kind==='snapchat')return `https://www.snapchat.com/add/${encodeURIComponent(v)}`;
+    if(kind==='reddit')return `https://www.reddit.com/user/${encodeURIComponent(v)}`;
+    if(kind==='tiktok')return `https://www.tiktok.com/@${encodeURIComponent(v)}`;
+    if(kind==='steam'){
+      if(/^https?:\/\//i.test(raw))return raw;
+      return `https://steamcommunity.com/id/${encodeURIComponent(v)}`;
+    }
+    if(kind==='discord'){
+      if(/^\d{8,24}$/.test(v))return `https://discord.com/users/${v}`;
+      return 'https://discord.com/';
+    }
+    return '';
+  }
+
+  function socialLink(kind,value,label,icon){
+    if(!value)return '';
+    const href=socialHref(kind,value);
+    const text=kind==='website'?'Website':(label||cleanSocialHandle(value));
+    return `<a class="f2w-profile-social-link f2w-social-${kind}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">
+      <i class="${icon}"></i><span>${esc(text)}</span><i class="fa-solid fa-arrow-up-right-from-square f2w-social-out"></i>
+    </a>`;
+  }
+
+  let profileMovieSearchTimer=null;
+  let profileMovieAbort=null;
+
+  function selectedGenreValues(modal){
+    return [...modal.querySelectorAll('.f2w-genre-choice.active')].map(btn=>btn.dataset.genre).filter(Boolean);
+  }
+
+  function bindGenreChoices(modal){
+    modal.querySelectorAll('.f2w-genre-choice').forEach(btn=>{
+      btn.onclick=()=>{
+        const active=btn.classList.toggle('active');
+        btn.setAttribute('aria-pressed',active?'true':'false');
+      };
+    });
+  }
+
+  async function searchProfileMovies(query){
+    const q=String(query||'').trim();
+    if(q.length<2)return [];
+    if(profileMovieAbort)profileMovieAbort.abort();
+    profileMovieAbort=new AbortController();
+    const url=`https://api.themoviedb.org/3/search/movie?api_key=${PROFILE_TMDB_KEY}&language=en-US&include_adult=false&query=${encodeURIComponent(q)}&page=1`;
+    const response=await fetch(url,{signal:profileMovieAbort.signal});
+    if(!response.ok)throw new Error('Movie search unavailable');
+    const payload=await response.json();
+    return (payload?.results||[]).slice(0,8);
+  }
+
+  function renderMovieSearchResults(modal,items){
+    const host=modal.querySelector('#v22-movie-results');if(!host)return;
+    if(!items.length){
+      host.innerHTML='<div class="f2w-movie-search-empty">No matching movies found.</div>';
+      host.hidden=false;
+      return;
+    }
+    host.innerHTML=items.map(item=>{
+      const title=String(item.title||item.original_title||'Untitled');
+      const year=item.release_date?String(item.release_date).slice(0,4):'';
+      const poster=item.poster_path?`https://image.tmdb.org/t/p/w92${item.poster_path}`:'/flix2watch-logo-red-v34.png';
+      return `<button type="button" class="f2w-movie-result"
+        data-id="${Number(item.id)||0}"
+        data-title="${esc(title)}"
+        data-poster="${esc(item.poster_path||'')}">
+        <img src="${poster}" alt="" loading="lazy">
+        <span><strong>${esc(title)}</strong><small>${esc(year||'Movie')}</small></span>
+        <i class="fa-solid fa-plus"></i>
+      </button>`;
+    }).join('');
+    host.hidden=false;
+
+    host.querySelectorAll('.f2w-movie-result').forEach(btn=>btn.onclick=()=>{
+      const input=modal.querySelector('#v22-edit-favorite-movie');
+      input.value=btn.dataset.title||'';
+      input.dataset.movieId=btn.dataset.id||'';
+      input.dataset.posterPath=btn.dataset.poster||'';
+      modal.querySelector('#v22-movie-selected').innerHTML=`<i class="fa-solid fa-circle-check"></i> Selected: <strong>${esc(btn.dataset.title||'')}</strong>`;
+      host.hidden=true;
+    });
+  }
+
+  function bindMovieAutocomplete(modal){
+    const input=modal.querySelector('#v22-edit-favorite-movie');
+    const host=modal.querySelector('#v22-movie-results');
+    if(!input||!host)return;
+
+    input.addEventListener('input',()=>{
+      input.dataset.movieId='';
+      input.dataset.posterPath='';
+      modal.querySelector('#v22-movie-selected').textContent='';
+      clearTimeout(profileMovieSearchTimer);
+      const query=input.value.trim();
+      if(query.length<2){host.hidden=true;host.innerHTML='';return;}
+      host.hidden=false;
+      host.innerHTML='<div class="f2w-movie-search-empty"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching movies…</div>';
+      profileMovieSearchTimer=setTimeout(async()=>{
+        try{renderMovieSearchResults(modal,await searchProfileMovies(query));}
+        catch(error){if(error?.name!=='AbortError')host.innerHTML='<div class="f2w-movie-search-empty">Movie search unavailable right now.</div>';}
+      },180);
+    });
+
+    input.addEventListener('focus',()=>{
+      if(host.innerHTML.trim())host.hidden=false;
+    });
+  }
+
   /* ---------- profile activity + richer profile editor ---------- */
   function viewedProfileObject(){try{return typeof viewedProfile!=='undefined'?viewedProfile:null}catch{return null}}
   function isOwnProfile(profile){return Boolean(profile&&authUser&&String(profile.user_id)===String(authUser.id));}
@@ -597,27 +724,19 @@
       <div class="f2w-profile-extra">
         ${pronouns?`<span class="f2w-profile-chip"><i class="fa-solid fa-id-card"></i>${esc(pronouns)}</span>`:''}
         ${profile.location?`<span class="f2w-profile-chip"><i class="fa-solid fa-location-dot"></i>${esc(profile.location)}</span>`:''}
-        ${genres.slice(0,6).map(g=>`<span class="f2w-profile-chip">${esc(g)}</span>`).join('')}
-        ${profile.favorite_movie_text?`<span class="f2w-profile-chip"><i class="fa-solid fa-film"></i>${esc(profile.favorite_movie_text)}</span>`:''}
-        ${profile.favorite_tv_text?`<span class="f2w-profile-chip"><i class="fa-solid fa-tv"></i>${esc(profile.favorite_tv_text)}</span>`:''}
+        ${genres.slice(0,8).map(g=>`<span class="f2w-profile-chip">${esc(g)}</span>`).join('')}
+        ${profile.favorite_movie_text?`<a class="f2w-profile-chip f2w-favorite-movie-chip" href="${profile.favorite_movie_tmdb_id?`/watch/?id=${encodeURIComponent(profile.favorite_movie_tmdb_id)}&type=movie`:'#'}"><i class="fa-solid fa-film"></i>${esc(profile.favorite_movie_text)}</a>`:''}
       </div>
       ${quote?`<blockquote class="f2w-profile-quote">“${esc(quote)}”</blockquote>`:''}
-      <div class="f2w-profile-socials">
-        ${profile.website_url?`<a href="${esc(profile.website_url)}" target="_blank" rel="noopener"><i class="fa-solid fa-link"></i> Website</a>`:''}
-        ${profile.instagram_username?`<a href="https://instagram.com/${encodeURIComponent(profile.instagram_username)}" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i> ${esc(profile.instagram_username)}</a>`:''}
-        ${profile.discord_username?`<span class="f2w-profile-chip"><i class="fa-brands fa-discord"></i>${esc(profile.discord_username)}</span>`:''}
+      <div class="f2w-profile-socials f2w-profile-socials-v22">
+        ${socialLink('website',profile.website_url,'Website','fa-solid fa-globe')}
+        ${socialLink('instagram',profile.instagram_username,cleanSocialHandle(profile.instagram_username),'fa-brands fa-instagram')}
+        ${socialLink('discord',profile.discord_username,cleanSocialHandle(profile.discord_username),'fa-brands fa-discord')}
+        ${socialLink('snapchat',profile.snapchat_username,cleanSocialHandle(profile.snapchat_username),'fa-brands fa-snapchat')}
+        ${socialLink('reddit',profile.reddit_username,cleanSocialHandle(profile.reddit_username),'fa-brands fa-reddit-alien')}
+        ${socialLink('steam',profile.steam_profile,cleanSocialHandle(profile.steam_profile),'fa-brands fa-steam')}
+        ${socialLink('tiktok',profile.tiktok_username,cleanSocialHandle(profile.tiktok_username),'fa-brands fa-tiktok')}
       </div>`;
-
-    const hero=document.getElementById('profile-hero');
-    if(hero){
-      if(profile.profile_banner_url){
-        hero.style.setProperty('--f2w-profile-banner',`url("${String(profile.profile_banner_url).replace(/["\\]/g,'')}")`);
-        hero.classList.add('f2w-has-profile-banner');
-      }else{
-        hero.classList.remove('f2w-has-profile-banner');
-        hero.style.removeProperty('--f2w-profile-banner');
-      }
-    }
   }
 
   function openProfileEditor(){
@@ -631,113 +750,152 @@
       document.body.appendChild(modal);
     }
 
-    const genres=Array.isArray(profile.favorite_genres)?profile.favorite_genres.join(', '):'';
-    modal.innerHTML=`<div class="f2w-profile-editor f2w-profile-editor-v17">
+    const activeGenres=new Set(Array.isArray(profile.favorite_genres)?profile.favorite_genres:[]);
+    modal.innerHTML=`<div class="f2w-profile-editor f2w-profile-editor-v22">
       <aside class="f2w-profile-editor-nav">
-        <h3>Edit Profile</h3>
-        <button class="f2w-edit-nav active" data-tab="identity"><i class="fa-solid fa-user"></i> Identity</button>
-        <button class="f2w-edit-nav" data-tab="style"><i class="fa-solid fa-wand-magic-sparkles"></i> Style</button>
-        <button class="f2w-edit-nav" data-tab="favorites"><i class="fa-solid fa-heart"></i> Favorites</button>
-        <button class="f2w-edit-nav" data-tab="social"><i class="fa-solid fa-link"></i> Social</button>
-        <button class="f2w-edit-nav" data-tab="privacy"><i class="fa-solid fa-shield-halved"></i> Privacy</button>
+        <div class="f2w-editor-brand">
+          <div class="f2w-editor-brand-icon"><i class="fa-solid fa-user-pen"></i></div>
+          <div><strong>Edit Profile</strong><span>@${esc(profile.username||'you')}</span></div>
+        </div>
+        <nav>
+          <button class="f2w-edit-nav active" data-tab="identity"><i class="fa-solid fa-user"></i><span>Profile</span></button>
+          <button class="f2w-edit-nav" data-tab="favorites"><i class="fa-solid fa-heart"></i><span>Favorites</span></button>
+          <button class="f2w-edit-nav" data-tab="social"><i class="fa-solid fa-share-nodes"></i><span>Social</span></button>
+          <button class="f2w-edit-nav" data-tab="privacy"><i class="fa-solid fa-shield-halved"></i><span>Privacy</span></button>
+        </nav>
       </aside>
+
       <div class="f2w-profile-editor-body">
         <div class="f2w-editor-head">
-          <div><h2>Customize your profile</h2><small>Changes update publicly in realtime.</small></div>
+          <div>
+            <span class="f2w-editor-eyebrow">PROFILE SETTINGS</span>
+            <h2>Make your profile yours.</h2>
+            <p>Clean settings, useful details, no theme clutter.</p>
+          </div>
           <button class="f2w-editor-close" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
-        <section class="f2w-editor-section active" data-section="identity">
-          <div class="f2w-editor-grid">
-            <div class="f2w-editor-field"><label>DISPLAY NAME</label><input id="v35-edit-display" maxlength="50" value="${esc(profile.display_name||'')}"></div>
-            <div class="f2w-editor-field"><label>PRONOUNS</label><input id="v17-edit-pronouns" maxlength="40" placeholder="Optional" value="${esc(profile.pronouns||'')}"></div>
-            <div class="f2w-editor-field full"><label>STATUS</label><input id="v17-edit-status" maxlength="80" placeholder="What are you watching?" value="${esc(profile.status_text||'')}"></div>
-            <div class="f2w-editor-field full"><label>BIO</label><textarea id="v35-edit-bio" maxlength="500">${esc(profile.bio||'')}</textarea></div>
-            <div class="f2w-editor-field"><label>LOCATION</label><input id="v35-edit-location" maxlength="80" value="${esc(profile.location||'')}"></div>
-            <div class="f2w-editor-field"><label>PROFILE QUOTE</label><input id="v17-edit-quote" maxlength="180" value="${esc(profile.profile_quote||'')}"></div>
-          </div>
-        </section>
+        <div class="f2w-editor-scroll">
+          <section class="f2w-editor-section active" data-section="identity">
+            <div class="f2w-section-title"><i class="fa-solid fa-user"></i><div><h3>Profile</h3><p>Your public identity on Flix2Watch.</p></div></div>
+            <div class="f2w-editor-grid">
+              <div class="f2w-editor-field"><label>DISPLAY NAME</label><input id="v35-edit-display" maxlength="50" value="${esc(profile.display_name||'')}" placeholder="Display name"></div>
+              <div class="f2w-editor-field"><label>PRONOUNS <em>OPTIONAL</em></label><input id="v17-edit-pronouns" maxlength="40" value="${esc(profile.pronouns||'')}" placeholder="e.g. he/him"></div>
+              <div class="f2w-editor-field full"><label>STATUS</label><input id="v17-edit-status" maxlength="80" value="${esc(profile.status_text||'')}" placeholder="What are you watching?"></div>
+              <div class="f2w-editor-field full"><label>BIO</label><textarea id="v35-edit-bio" maxlength="500" placeholder="Tell people a little about yourself…">${esc(profile.bio||'')}</textarea><small>Up to 500 characters.</small></div>
+              <div class="f2w-editor-field"><label>LOCATION <em>OPTIONAL</em></label><input id="v35-edit-location" maxlength="80" value="${esc(profile.location||'')}" placeholder="City / Country"></div>
+              <div class="f2w-editor-field"><label>PROFILE QUOTE <em>OPTIONAL</em></label><input id="v17-edit-quote" maxlength="180" value="${esc(profile.profile_quote||'')}" placeholder="A short quote"></div>
+            </div>
+          </section>
 
-        <section class="f2w-editor-section" data-section="style">
-          <div class="f2w-editor-grid">
-            <div class="f2w-editor-field full"><label>AVATAR URL</label><input id="v35-edit-avatar" maxlength="2048" value="${esc(profile.avatar_url||'')}"></div>
-            <div class="f2w-editor-field full"><label>BANNER IMAGE URL</label><input id="v17-edit-banner" maxlength="2048" placeholder="https://..." value="${esc(profile.profile_banner_url||'')}"></div>
-            <div class="f2w-editor-field"><label>PROFILE ACCENT</label><select id="v35-edit-accent"><option value="red">Red</option><option value="purple">Purple</option><option value="blue">Blue</option><option value="green">Green</option><option value="gold">Gold</option></select></div>
-          </div>
-        </section>
+          <section class="f2w-editor-section" data-section="favorites">
+            <div class="f2w-section-title"><i class="fa-solid fa-heart"></i><div><h3>Favorites</h3><p>Pick genres and search the actual movie database.</p></div></div>
 
-        <section class="f2w-editor-section" data-section="favorites">
-          <div class="f2w-editor-grid">
-            <div class="f2w-editor-field full"><label>FAVORITE GENRES</label><input id="v35-edit-genres" maxlength="250" placeholder="Action, Anime, Sci-Fi..." value="${esc(genres)}"></div>
-            <div class="f2w-editor-field"><label>FAVORITE MOVIE</label><input id="v17-edit-favorite-movie" maxlength="100" value="${esc(profile.favorite_movie_text||'')}"></div>
-            <div class="f2w-editor-field"><label>FAVORITE TV / ANIME</label><input id="v17-edit-favorite-tv" maxlength="100" value="${esc(profile.favorite_tv_text||'')}"></div>
-          </div>
-        </section>
+            <div class="f2w-editor-field full">
+              <label>FAVORITE GENRES</label>
+              <div class="f2w-genre-picker" id="v22-genre-picker">
+                ${PROFILE_GENRES.map(g=>`<button type="button" class="f2w-genre-choice ${activeGenres.has(g)?'active':''}" data-genre="${esc(g)}" aria-pressed="${activeGenres.has(g)?'true':'false'}">${esc(g)}</button>`).join('')}
+              </div>
+              <small>Tap to select or deselect.</small>
+            </div>
 
-        <section class="f2w-editor-section" data-section="social">
-          <div class="f2w-editor-grid">
-            <div class="f2w-editor-field full"><label>WEBSITE</label><input id="v35-edit-website" maxlength="2048" value="${esc(profile.website_url||'')}"></div>
-            <div class="f2w-editor-field"><label>INSTAGRAM</label><input id="v35-edit-instagram" maxlength="80" value="${esc(profile.instagram_username||'')}"></div>
-            <div class="f2w-editor-field"><label>DISCORD</label><input id="v35-edit-discord" maxlength="80" value="${esc(profile.discord_username||'')}"></div>
-          </div>
-        </section>
+            <div class="f2w-editor-field full f2w-movie-autocomplete">
+              <label>FAVORITE MOVIE</label>
+              <div class="f2w-movie-search-input">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="v22-edit-favorite-movie"
+                  autocomplete="off"
+                  value="${esc(profile.favorite_movie_text||'')}"
+                  data-movie-id="${esc(profile.favorite_movie_tmdb_id||'')}"
+                  data-poster-path="${esc(profile.favorite_movie_poster_path||'')}"
+                  placeholder="Start typing a movie…">
+              </div>
+              <div id="v22-movie-results" class="f2w-movie-results" hidden></div>
+              <div id="v22-movie-selected" class="f2w-movie-selected">${profile.favorite_movie_text?`<i class="fa-solid fa-circle-check"></i> Selected: <strong>${esc(profile.favorite_movie_text)}</strong>`:''}</div>
+            </div>
+          </section>
 
-        <section class="f2w-editor-section" data-section="privacy">
-          <div class="f2w-editor-grid">
-            <div class="f2w-editor-field"><label>PROFILE VISIBILITY</label><select id="v35-edit-private"><option value="false">Public</option><option value="true">Private</option></select></div>
-          </div>
-          <div class="f2w-editor-help"><i class="fa-solid fa-circle-info"></i> Private profiles hide favorites and recently watched from other users.</div>
-        </section>
+          <section class="f2w-editor-section" data-section="social">
+            <div class="f2w-section-title"><i class="fa-solid fa-share-nodes"></i><div><h3>Social</h3><p>Links appear as clickable social buttons on your profile.</p></div></div>
+            <div class="f2w-editor-grid f2w-social-editor-grid">
+              <div class="f2w-editor-field full f2w-icon-field"><label><i class="fa-solid fa-globe"></i> WEBSITE</label><input id="v35-edit-website" maxlength="2048" value="${esc(profile.website_url||'')}" placeholder="yourwebsite.com"></div>
+              <div class="f2w-editor-field f2w-icon-field"><label><i class="fa-brands fa-instagram"></i> INSTAGRAM</label><input id="v35-edit-instagram" maxlength="80" value="${esc(profile.instagram_username||'')}" placeholder="@username"></div>
+              <div class="f2w-editor-field f2w-icon-field"><label><i class="fa-brands fa-discord"></i> DISCORD</label><input id="v35-edit-discord" maxlength="80" value="${esc(profile.discord_username||'')}" placeholder="username or user ID"></div>
+              <div class="f2w-editor-field f2w-icon-field"><label><i class="fa-brands fa-snapchat"></i> SNAPCHAT</label><input id="v22-edit-snapchat" maxlength="80" value="${esc(profile.snapchat_username||'')}" placeholder="@username"></div>
+              <div class="f2w-editor-field f2w-icon-field"><label><i class="fa-brands fa-reddit-alien"></i> REDDIT</label><input id="v22-edit-reddit" maxlength="80" value="${esc(profile.reddit_username||'')}" placeholder="u/username"></div>
+              <div class="f2w-editor-field f2w-icon-field"><label><i class="fa-brands fa-steam"></i> STEAM</label><input id="v22-edit-steam" maxlength="2048" value="${esc(profile.steam_profile||'')}" placeholder="Vanity name or Steam profile URL"></div>
+              <div class="f2w-editor-field f2w-icon-field"><label><i class="fa-brands fa-tiktok"></i> TIKTOK</label><input id="v22-edit-tiktok" maxlength="80" value="${esc(profile.tiktok_username||'')}" placeholder="@username"></div>
+            </div>
+          </section>
 
-        <div class="f2w-editor-actions">
-          <button class="f2w-editor-save" type="button" id="v35-profile-save"><i class="fa-solid fa-floppy-disk"></i> Save profile</button>
+          <section class="f2w-editor-section" data-section="privacy">
+            <div class="f2w-section-title"><i class="fa-solid fa-shield-halved"></i><div><h3>Privacy</h3><p>Control your personal profile activity.</p></div></div>
+            <div class="f2w-privacy-choice">
+              <div><strong>Private profile</strong><span>Hide favorites and recently watched from other users.</span></div>
+              <label class="f2w-switch"><input id="v35-edit-private" type="checkbox" ${profile.is_private?'checked':''}><span></span></label>
+            </div>
+          </section>
+        </div>
+
+        <div class="f2w-editor-footer">
+          <span id="v22-profile-save-state">Changes are saved when you press Save Profile.</span>
+          <button class="f2w-editor-save" type="button" id="v35-profile-save"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
         </div>
       </div>
     </div>`;
 
     modal.hidden=false;
-    modal.querySelector('#v35-edit-private').value=String(Boolean(profile.is_private));
-    modal.querySelector('#v35-edit-accent').value=profile.profile_accent||'red';
     modal.querySelector('.f2w-editor-close').onclick=()=>{modal.hidden=true};
     modal.querySelectorAll('.f2w-edit-nav').forEach(btn=>btn.onclick=()=>{
       modal.querySelectorAll('.f2w-edit-nav').forEach(x=>x.classList.toggle('active',x===btn));
       modal.querySelectorAll('.f2w-editor-section').forEach(sec=>sec.classList.toggle('active',sec.dataset.section===btn.dataset.tab));
     });
+    bindGenreChoices(modal);
+    bindMovieAutocomplete(modal);
     modal.querySelector('#v35-profile-save').onclick=saveProfileEditor;
   }
 
   async function saveProfileEditor(){
-    const button=document.getElementById('v35-profile-save');if(button)button.disabled=true;
+    const modal=document.getElementById('v35-profile-modal');
+    const button=document.getElementById('v35-profile-save');
+    const state=document.getElementById('v22-profile-save-state');
+    if(button)button.disabled=true;
+    if(state)state.textContent='Saving…';
+
     try{
-      const genres=String(document.getElementById('v35-edit-genres')?.value||'').split(',').map(v=>v.trim()).filter(Boolean).slice(0,12);
-      const result=await rpc('update_my_profile_v17',{
+      const movieInput=document.getElementById('v22-edit-favorite-movie');
+      const result=await rpc('update_my_profile_v22',{
         p_display_name:String(document.getElementById('v35-edit-display')?.value||'').trim(),
         p_bio:String(document.getElementById('v35-edit-bio')?.value||'').trim(),
-        p_avatar_url:String(document.getElementById('v35-edit-avatar')?.value||'').trim()||null,
-        p_is_private:document.getElementById('v35-edit-private')?.value==='true',
+        p_is_private:Boolean(document.getElementById('v35-edit-private')?.checked),
         p_location:String(document.getElementById('v35-edit-location')?.value||'').trim()||null,
-        p_favorite_genres:genres,
+        p_favorite_genres:selectedGenreValues(modal),
         p_website_url:String(document.getElementById('v35-edit-website')?.value||'').trim()||null,
-        p_instagram_username:String(document.getElementById('v35-edit-instagram')?.value||'').trim()||null,
-        p_discord_username:String(document.getElementById('v35-edit-discord')?.value||'').trim()||null,
-        p_profile_accent:String(document.getElementById('v35-edit-accent')?.value||'red'),
+        p_instagram_username:cleanSocialHandle(document.getElementById('v35-edit-instagram')?.value)||null,
+        p_discord_username:cleanSocialHandle(document.getElementById('v35-edit-discord')?.value)||null,
+        p_snapchat_username:cleanSocialHandle(document.getElementById('v22-edit-snapchat')?.value)||null,
+        p_reddit_username:String(document.getElementById('v22-edit-reddit')?.value||'').trim().replace(/^u\//i,'').replace(/^@/,'')||null,
+        p_steam_profile:String(document.getElementById('v22-edit-steam')?.value||'').trim()||null,
+        p_tiktok_username:cleanSocialHandle(document.getElementById('v22-edit-tiktok')?.value)||null,
         p_status_text:String(document.getElementById('v17-edit-status')?.value||'').trim()||null,
         p_pronouns:String(document.getElementById('v17-edit-pronouns')?.value||'').trim()||null,
-        p_profile_banner_url:String(document.getElementById('v17-edit-banner')?.value||'').trim()||null,
-        p_favorite_movie_text:String(document.getElementById('v17-edit-favorite-movie')?.value||'').trim()||null,
-        p_favorite_tv_text:String(document.getElementById('v17-edit-favorite-tv')?.value||'').trim()||null,
+        p_favorite_movie_text:String(movieInput?.value||'').trim()||null,
+        p_favorite_movie_tmdb_id:Number(movieInput?.dataset.movieId)||null,
+        p_favorite_movie_poster_path:String(movieInput?.dataset.posterPath||'').trim()||null,
         p_profile_quote:String(document.getElementById('v17-edit-quote')?.value||'').trim()||null
       });
 
       try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile=Object.assign(viewedProfile,result||{});}catch{}
-      document.getElementById('v35-profile-modal').hidden=true;
+      if(state)state.textContent='Saved';
       toast('Profile updated');
       setTimeout(()=>{
+        modal.hidden=true;
         try{renderViewedProfile?.();}catch{}
         renderProfileExtras(viewedProfileObject());
         decorateNames();
-      },100);
+      },180);
     }catch(error){
+      if(state)state.textContent=error.message||'Could not save profile.';
       toast(error.message||'Could not update profile.');
     }finally{
       if(button)button.disabled=false;
@@ -1101,4 +1259,5 @@
 })();
 // f2w-force-save:ban-evasion-final-v35-v1:1788212206
 // f2w-force-save:realtime-profile-leaderboard-v17:1788213599
+// f2w-force-save:profile-editor-v22:1788214990
  
