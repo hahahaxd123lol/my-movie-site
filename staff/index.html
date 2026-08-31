@@ -703,9 +703,11 @@
 
 <style id="staff-v36-support-tickets">
   #panel-support .card{overflow:hidden}
-  .staff-support-rail{display:flex;gap:10px;overflow-x:auto;padding:3px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin}
-  .staff-support-ticket{flex:0 0 min(330px,86vw);scroll-snap-align:start;margin:0!important;padding:14px!important;text-align:left!important;background:#08131f!important;color:#fff!important;border:1px solid #203044!important;border-radius:12px!important}
-  .staff-support-ticket:hover,.staff-support-ticket:focus-visible{border-color:rgba(var(--accent-rgb),.5)!important;background:#0b1826!important;outline:none!important}.staff-support-ticket strong{display:block;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.staff-support-ticket span{display:block;color:#8292a8;font-size:.7rem;margin-top:4px}.staff-support-ticket .ticket-status{color:#fff;font-size:.65rem;font-weight:850;text-transform:uppercase;margin-top:8px}
+  .staff-support-list{display:flex;flex-direction:column;gap:8px}
+  .staff-support-ticket{width:100%;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(150px,.75fr) minmax(110px,.5fr) minmax(110px,.5fr);gap:14px;align-items:center;margin:0!important;padding:15px 16px!important;text-align:left!important;background:#08131f!important;color:#fff!important;border:1px solid #203044!important;border-radius:12px!important}
+  .staff-support-ticket:hover,.staff-support-ticket:focus-visible{border-color:rgba(var(--accent-rgb),.5)!important;background:#0b1826!important;outline:none!important}.staff-support-ticket .ticket-main{min-width:0}.staff-support-ticket strong{display:block;font-size:.94rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.staff-support-ticket .ticket-user{display:flex;align-items:center;gap:7px;color:#f3f7fb;font-size:.82rem;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.staff-support-ticket .ticket-user i{color:var(--accent)}.staff-support-ticket .ticket-submeta{display:block;color:#8292a8;font-size:.72rem;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.staff-support-ticket .ticket-cell{color:#a8b5c7;font-size:.76rem}.staff-support-ticket .ticket-status{display:inline-flex;align-items:center;justify-content:center;width:max-content;max-width:100%;padding:5px 8px;border:1px solid #2a3b50;border-radius:999px;color:#fff;font-size:.67rem;font-weight:850;text-transform:uppercase;white-space:nowrap}
+  .staff-ticket-pagination{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid #1b2a3c}.staff-ticket-page-info{color:#8797ab;font-size:.76rem}.staff-ticket-page-buttons{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}.staff-ticket-page-buttons button{min-width:38px}.staff-ticket-page-buttons .active{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
+  @media(max-width:900px){.staff-support-ticket{grid-template-columns:minmax(0,1fr) auto}.staff-support-ticket .ticket-cell.date,.staff-support-ticket .ticket-cell.priority{display:none}}
   .staff-ticket-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.80);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}.staff-ticket-modal[hidden]{display:none!important}
   .staff-ticket-chat{width:min(820px,100%);max-height:min(850px,calc(100vh - 36px));display:grid;grid-template-rows:auto minmax(220px,1fr) auto;border:1px solid #29394d;border-radius:18px;overflow:hidden;background:#07101a;box-shadow:0 32px 100px rgba(0,0,0,.75)}
   .staff-ticket-head{display:flex;align-items:center;gap:12px;padding:15px 17px;border-bottom:1px solid #1d2b3c;background:#091522}.staff-ticket-head-copy{min-width:0;flex:1}.staff-ticket-head-copy strong{display:block;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.staff-ticket-head-copy span{display:block;color:#8494a9;font-size:.72rem;margin-top:3px}.staff-ticket-close{margin:0!important;width:40px;height:40px;padding:0!important;justify-content:center!important}
@@ -1171,7 +1173,7 @@
     </section>
 
     <section class="panel" id="panel-support">
-      <div class="help-inline"><strong>Support Tickets:</strong> Owner and Staff ticket queue. Tickets stay in one horizontal line; click one to open the full conversation. Replies and image attachments send directly from the popup.</div>
+      <div class="help-inline"><strong>Support Tickets:</strong> Owner and Staff ticket queue. Tickets are shown as a clear paginated list so usernames, status and priority stay readable even when the queue gets busy. Click any ticket to open the full conversation.</div>
       <div class="card">
         <div class="card-head"><strong><i class="fa-solid fa-ticket" style="color:var(--accent)"></i> Support ticket queue</strong><button class="btn" onclick="loadTickets()"><i class="fa-solid fa-rotate"></i> Refresh</button></div>
         <div id="tickets-list"><div class="empty">Loading tickets…</div></div>
@@ -2345,6 +2347,8 @@ async function loadSources(){
 async function saveSource(name){try{await rpc('staff_set_stream_source',{p_source_name:name,p_enabled:document.getElementById(`src-enabled-${name}`).checked,p_priority:Number(document.getElementById(`src-priority-${name}`).value)||999,p_notice:document.getElementById(`src-notice-${name}`).value||null});toast('Source updated');await loadSources()}catch(e){toast(e.message)}}
 
 let staffSupportTickets=[];
+let staffSupportPage=1;
+const STAFF_SUPPORT_PAGE_SIZE=15;
 let activeStaffTicketId=null;
 let pendingStaffTicketImage=null;
 
@@ -2358,15 +2362,34 @@ function safeStaffSupportImage(url=''){
 }
 function ticketWords(v='open'){return String(v||'open').replaceAll('_',' ')}
 
+function renderStaffTicketPage(){
+  const host=document.getElementById('tickets-list');if(!host)return;
+  if(!staffSupportTickets.length){host.innerHTML='<div class="empty">No support tickets.</div>';return}
+  const pageCount=Math.max(1,Math.ceil(staffSupportTickets.length/STAFF_SUPPORT_PAGE_SIZE));
+  staffSupportPage=Math.min(Math.max(1,staffSupportPage),pageCount);
+  const start=(staffSupportPage-1)*STAFF_SUPPORT_PAGE_SIZE;
+  const pageRows=staffSupportTickets.slice(start,start+STAFF_SUPPORT_PAGE_SIZE);
+  const rows=pageRows.map(t=>`<button class="staff-support-ticket" type="button" onclick="openStaffTicketModal('${t.id}')">
+    <span class="ticket-main"><strong>${esc(t.subject||'Untitled ticket')}</strong><span class="ticket-submeta">${esc(t.category||'General')} · updated ${esc(fmt(t.updated_at))}</span></span>
+    <span class="ticket-user"><i class="fa-solid fa-user"></i>@${esc(t.username||'user')}</span>
+    <span class="ticket-cell priority">${esc(String(t.priority||'normal').toUpperCase())}</span>
+    <span class="ticket-status">${esc(ticketWords(t.status))}</span>
+  </button>`).join('');
+  const first=start+1,last=Math.min(start+pageRows.length,staffSupportTickets.length);
+  const buttons=Array.from({length:pageCount},(_,i)=>i+1).filter(p=>pageCount<=7||p===1||p===pageCount||Math.abs(p-staffSupportPage)<=2).map((p,i,arr)=>`${i&&p-arr[i-1]>1?'<span style="color:#66758a">…</span>':''}<button class="btn ${p===staffSupportPage?'active':''}" type="button" onclick="setStaffSupportPage(${p})">${p}</button>`).join('');
+  host.innerHTML=`<div class="staff-support-list">${rows}</div><div class="staff-ticket-pagination"><div class="staff-ticket-page-info">Showing ${first}–${last} of ${staffSupportTickets.length} tickets</div><div class="staff-ticket-page-buttons"><button class="btn" type="button" onclick="setStaffSupportPage(${staffSupportPage-1})" ${staffSupportPage===1?'disabled':''}><i class="fa-solid fa-chevron-left"></i></button>${buttons}<button class="btn" type="button" onclick="setStaffSupportPage(${staffSupportPage+1})" ${staffSupportPage===pageCount?'disabled':''}><i class="fa-solid fa-chevron-right"></i></button></div></div>`;
+}
+function setStaffSupportPage(page){staffSupportPage=Number(page)||1;renderStaffTicketPage();document.getElementById('panel-support')?.scrollIntoView({behavior:'smooth',block:'start'})}
 async function loadTickets(){
   const host=document.getElementById('tickets-list');if(!host)return;
   host.innerHTML='<div class="empty">Loading tickets…</div>';
   try{
-    const {data,error}=await db.from('support_tickets').select('*,support_ticket_messages(*)').order('updated_at',{ascending:false}).limit(100);
+    const {data,error}=await db.from('support_tickets').select('*,support_ticket_messages(*)').order('updated_at',{ascending:false}).limit(300);
     if(error)throw error;
     const weight={urgent:0,high:1,normal:2,low:3};
     staffSupportTickets=[...(data||[])].sort((a,b)=>(weight[a.priority]??9)-(weight[b.priority]??9)||new Date(b.updated_at)-new Date(a.updated_at));
-    host.innerHTML=staffSupportTickets.length?`<div class="staff-support-rail">${staffSupportTickets.map(t=>`<button class="staff-support-ticket" type="button" onclick="openStaffTicketModal('${t.id}')"><strong>${esc(t.subject)}</strong><span>@${esc(t.username||'user')} · ${esc(t.priority||'normal')} · ${esc(fmt(t.updated_at))}</span><span class="ticket-status">${esc(ticketWords(t.status))}</span></button>`).join('')}</div>`:'<div class="empty">No support tickets.</div>';
+    const maxPage=Math.max(1,Math.ceil(staffSupportTickets.length/STAFF_SUPPORT_PAGE_SIZE));if(staffSupportPage>maxPage)staffSupportPage=maxPage;
+    renderStaffTicketPage();
     if(activeStaffTicketId){const active=staffSupportTickets.find(t=>String(t.id)===String(activeStaffTicketId));if(active)renderStaffTicketModal(active)}
   }catch(e){host.innerHTML=`<div class="empty">${esc(e.message||'Could not load tickets.')}</div>`}
 }
