@@ -2407,6 +2407,16 @@ window.addEventListener('flix2watch:account-state',event=>{
 </script>
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
+  <script>
+// Staff page owns its moderation controls. Remove the legacy V35 duplicate injector card.
+(function removeLegacyQuickModeration(){
+  const remove=()=>document.getElementById('v35-quick-mod')?.remove();
+  remove();
+  const observer=new MutationObserver(remove);
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
+})();
+  </script>
   <script src="/final-v35.js" defer></script>
 </body>
 </html>
