@@ -2329,6 +2329,40 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   }
 </style>
 
+
+<style id="f2w-login-required-above-featured-v1">
+  /* Keep Login Required to Watch above Featured at every viewport size. */
+  #f2w-login-required-top{
+    width:min(1180px,calc(100% - 32px));
+    margin:18px auto 18px;
+  }
+  #f2w-login-required-top > .f2w-guest-card{
+    width:100%!important;
+    box-sizing:border-box!important;
+    margin:0!important;
+    padding:22px 26px!important;
+    min-height:0!important;
+    border-radius:16px!important;
+  }
+  #f2w-login-required-top .f2w-lock-title{
+    display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;
+    text-align:center!important;font-size:18px!important;line-height:1.25!important;margin-bottom:10px!important;
+  }
+  #f2w-login-required-top .f2w-lock-title i{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:22px!important;height:22px!important;font-size:18px!important;line-height:1!important;
+  }
+  #f2w-login-required-top .f2w-guest-lock-copy{max-width:700px!important;margin:0 auto 14px!important;text-align:center!important;}
+  #f2w-login-required-top .f2w-guest-checks{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;}
+  body.f2w-authenticated #f2w-login-required-top{display:none!important;}
+  @media(max-width:760px){
+    #f2w-login-required-top{width:calc(100% - 20px);margin:12px auto 14px;}
+    #f2w-login-required-top > .f2w-guest-card{padding:18px 16px!important;}
+    #f2w-login-required-top .f2w-guest-checks{grid-template-columns:1fr!important;}
+    #f2w-login-required-top .f2w-lock-title{font-size:17px!important;}
+  }
+</style>
+
 <style id="f2w-mobile-hero-controls-fix-v1">
 /* Mobile/tablet featured carousel controls: reserve their own bottom row so they never cover titles or action buttons. */
 @media (max-width: 900px){
@@ -2764,6 +2798,20 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   </div>
 
 
+
+  <section class="f2w-login-required-top" id="f2w-login-required-top" aria-label="Playback login requirement">
+      <div class="f2w-guest-card" id="f2w-login-required-card">
+        <div class="f2w-lock-title"><i class="fa-solid fa-lock"></i> Login Required to Watch</div>
+        <p class="f2w-guest-lock-copy">Browse freely, see full title information, then log in when you are ready to play something.</p>
+        <div class="f2w-guest-checks">
+          <div class="f2w-guest-check ok"><i class="fa-solid fa-check"></i><span>Browse all movies &amp; shows</span></div>
+          <div class="f2w-guest-check ok"><i class="fa-solid fa-check"></i><span>See titles, posters &amp; info</span></div>
+          <div class="f2w-guest-check locked"><i class="fa-solid fa-lock"></i><span>Sources hidden until login</span></div>
+          <div class="f2w-guest-check locked"><i class="fa-solid fa-lock"></i><span>Playback locked until login</span></div>
+        </div>
+      </div>
+  </section>
+
   <div class="f2w-home-stage">
     <div class="hero-banner" id="hero-banner">
       <div class="hero-content">
@@ -2849,17 +2897,6 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
               <div class="f2w-quick-signup-copy">Already have an account? <button type="button" onclick="setHomeQuickAuthMode('login')">Log in instead</button></div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="f2w-guest-card">
-        <div class="f2w-lock-title"><i class="fa-solid fa-lock"></i> Login Required to Watch</div>
-        <p class="f2w-guest-lock-copy">Browse freely, see full title information, then log in when you are ready to play something.</p>
-        <div class="f2w-guest-checks">
-          <div class="f2w-guest-check ok"><i class="fa-solid fa-check"></i><span>Browse all movies & shows</span></div>
-          <div class="f2w-guest-check ok"><i class="fa-solid fa-check"></i><span>See titles, posters & info</span></div>
-          <div class="f2w-guest-check locked"><i class="fa-solid fa-lock"></i><span>Sources hidden until login</span></div>
-          <div class="f2w-guest-check locked"><i class="fa-solid fa-lock"></i><span>Playback locked until login</span></div>
         </div>
       </div>
     </aside>
@@ -6501,4 +6538,5 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 <!-- f2w-force-save:mobile-hero-controls:1788210595 -->
 <!-- f2w-force-save:oauth-wording:1788210751:home -->
 <!-- f2w-force-save:compact-modal-v11:1788210997:home -->
+<!-- f2w-force-save:home-login-required-above-featured:1788211110 -->
  
