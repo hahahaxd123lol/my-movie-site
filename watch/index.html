@@ -3274,12 +3274,14 @@
         <i class="fa-solid fa-server" style="color:var(--accent);"></i> Sources
       </div>
       <div class="server-groups" id="server-buttons-container">
-        <button class="server-btn active" data-server="videasy" onclick="switchServer('videasy', this)">VidEasy 4K <span aria-hidden="true">★</span></button>
+        <button class="server-btn active" data-server="flix2watchapi" onclick="switchServer('flix2watchapi', this)">Flix2Watch API <span aria-hidden="true">★</span></button>
+        <button class="server-btn" data-server="frembed" onclick="switchServer('frembed', this)">FR Embed</button>
+        <button class="server-btn" data-server="uembed" onclick="switchServer('uembed', this)">U Embed Premium</button>
+        <button class="server-btn" data-server="vidsrcsu" onclick="switchServer('vidsrcsu', this)">Vid SRC SU</button>
+        <button class="server-btn" data-server="embedsu" onclick="switchServer('embedsu', this)">Embed SU</button>
+        <button class="server-btn" data-server="videasy" onclick="switchServer('videasy', this)">VidEasy 4K</button>
         <button class="server-btn" data-server="vidfast" onclick="switchServer('vidfast', this)">VidFast 4K</button>
-        <button class="server-btn" data-server="uembed" onclick="switchServer('uembed', this)">UEmbed (premium)</button>
         <button class="server-btn" data-server="multiembed" onclick="switchServer('multiembed', this)">MultiEmbed</button>
-        <button class="server-btn" data-server="vidsrcsu" onclick="switchServer('vidsrcsu', this)">VidSrcSU</button>
-        <button class="server-btn" data-server="embedsu" onclick="switchServer('embedsu', this)">EmbedSU</button>
         <button class="server-btn" data-server="vidsrcxyz" onclick="switchServer('vidsrcxyz', this)">VidSrcXyz</button>
         <button class="server-btn" data-server="pstream" onclick="switchServer('pstream', this)">P-Stream</button>
         <button class="server-btn" data-server="moviesapi" onclick="switchServer('moviesapi', this)">MoviesAPI</button>
@@ -3305,12 +3307,6 @@
         <button class="server-btn" data-server="vidsrccx" onclick="switchServer('vidsrccx', this)">VidSrcCX</button>
       </div>
 
-      <div class="sources-section-title" style="margin-top: 5px;">
-        <i class="fa-solid fa-globe" style="color:var(--accent);"></i> French Source
-      </div>
-      <div class="server-groups">
-        <button class="server-btn" data-server="frembed" onclick="switchServer('frembed', this)">Frembed</button>
-      </div>
       <div class="stream-source-notice" id="stream-source-notice"></div>
     </div>
 
@@ -5331,7 +5327,8 @@ if(currentUser){
     const urlParams = new URLSearchParams(window.location.search);
     const mediaId = urlParams.get('id');
     const mediaType = urlParams.get('type') || 'movie';
-    let currentServer = 'videasy';
+    let currentServer = 'flix2watchapi';
+    let currentImdbId = '';
     let tvSeasonsData = [];
 
     let currentFavoriteTitle='';
@@ -5485,13 +5482,14 @@ if(currentUser){
 
 
     let serverQueue = [
-      'videasy', 'vidfast', 'uembed', 'multiembed', 'vidsrcsu', 'embedsu', 'vidsrcxyz',
-      'vidsrccc', '2embed', 'moviesapi', 'vidlink', 'smashystream', 'autoembed',
-      'vidify', 'pstream', 'hexa', 'vidsrcrip', 'vidsrcvip',
-      '123embed', '111movies', 'flicky', 'rivestream', 'vidora', 'streamflix',
-      'nebulaflix', 'vidjoy', 'vidzee', 'spenflix', 'vidsrccx', 'frembed'
+      'flix2watchapi', 'frembed', 'uembed', 'vidsrcsu', 'embedsu',
+      'videasy', 'vidfast', 'multiembed', 'vidsrcxyz', 'vidsrccc', '2embed',
+      'moviesapi', 'vidlink', 'smashystream', 'autoembed', 'vidify', 'pstream',
+      'hexa', 'vidsrcrip', 'vidsrcvip', '123embed', '111movies', 'flicky',
+      'rivestream', 'vidora', 'streamflix', 'nebulaflix', 'vidjoy', 'vidzee',
+      'spenflix', 'vidsrccx'
     ];
-    let currentServerIndex = 0; // VidEasy 4K is first configured fallback; V35 API template can precede it.
+    let currentServerIndex = 0; // Flix2Watch API is the default and first fallback.
     function logTerminal() { /* debug console disabled */ }
 
     let watchMetadataStarted=false;
@@ -5523,7 +5521,7 @@ if(currentUser){
     startWatchMetadata();
 
     function fetchMediaMetadata() {
-      const endpoint = `https://api.themoviedb.org/3/${mediaType}/${mediaId}?api_key=${API_KEY}`;
+      const endpoint = `https://api.themoviedb.org/3/${mediaType}/${mediaId}?api_key=${API_KEY}&append_to_response=external_ids`;
       logTerminal(`Querying TMDB for metadata payload ID: ${mediaId}...`);
 
       fetch(endpoint)
@@ -5531,6 +5529,7 @@ if(currentUser){
         .then(data => {
           const title = data.title || data.name;
           const releaseDate = data.release_date || data.first_air_date;
+          currentImdbId = String(data?.external_ids?.imdb_id || data?.imdb_id || '').trim();
 
           currentFavoriteTitle = title || '';
           currentFavoritePosterPath = data.poster_path || '';
@@ -5664,8 +5663,23 @@ if(currentUser){
       }
 
       switch(currentServer) {
+        case 'flix2watchapi': {
+          // VidSrcMe accepts IMDb or TMDB identifiers. Prefer the IMDb ID
+          // requested for Flix2Watch API and fall back to the existing TMDB ID
+          // only when TMDB does not expose an IMDb mapping for the title.
+          const streamId = currentImdbId || mediaId;
+          embedUrl = mediaType === 'tv'
+            ? `https://vidsrcme.su/embed/tv/${streamId}/${seasonNum}/${episodeNum}`
+            : `https://vidsrcme.su/embed/movie/${streamId}`;
+          break;
+        }
         case 'multiembed':
           embedUrl = mediaType === 'tv' ? `https://multiembed.mov/?video_id=${mediaId}&tmdb=1&s=${seasonNum}&e=${episodeNum}` : `https://multiembed.mov/?video_id=${mediaId}&tmdb=1`;
+          break;
+        case 'uembed':
+          embedUrl = mediaType === 'tv'
+            ? `https://uembed.to/embed/tv/${mediaId}/${seasonNum}/${episodeNum}`
+            : `https://uembed.to/embed/movie/${mediaId}`;
           break;
         case 'vidsrcsu':
           embedUrl = mediaType === 'tv' ? `https://vidsrc.su/embed/tv/${mediaId}/${seasonNum}/${episodeNum}` : `https://vidsrc.su/embed/movie/${mediaId}`;
@@ -6894,8 +6908,10 @@ if(currentUser){
           ...existing
         ];
 
-        // V35 reliable fallback order: VidEasy 4K, then VidFast 4K.
-        const fixedPriority=['videasy','vidfast'].filter(name=>
+        // Keep the requested primary source order even when Staff stream
+        // configuration has its own priority values. Unknown/new sources stay
+        // enabled unless Staff explicitly disables them later.
+        const fixedPriority=['flix2watchapi','frembed','uembed','vidsrcsu','embedsu'].filter(name=>
           serverQueue.includes(name)&&streamSourceConfig.get(name)?.enabled!==false
         );
         serverQueue=[...fixedPriority,...serverQueue.filter(name=>!fixedPriority.includes(name))];
@@ -6913,7 +6929,7 @@ if(currentUser){
         document.querySelectorAll('.server-groups').forEach(group=>{
           const buttons=[...group.querySelectorAll('.server-btn[data-server]')];
           buttons.sort((a,b)=>{
-            const fixed={videasy:1,vidfast:2};
+            const fixed={flix2watchapi:1,frembed:2,uembed:3,vidsrcsu:4,embedsu:5};
             if(fixed[a.dataset.server]&&fixed[b.dataset.server])return fixed[a.dataset.server]-fixed[b.dataset.server];
             if(fixed[a.dataset.server])return -1;
             if(fixed[b.dataset.server])return 1;
