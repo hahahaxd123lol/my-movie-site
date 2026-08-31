@@ -654,6 +654,44 @@
       filter:hue-rotate(110deg) saturate(1.55) brightness(1.05) drop-shadow(0 0 14px var(--accent-glow));
     }
 
+    // VidSrcMe player integration: save progress from its documented
+    // postMessage PLAYER_EVENT payload. This does not change sources or react
+    // to popup/new-tab activity; closing an external tab leaves playback intact.
+    window.addEventListener('message', (event) => {
+      if (event.origin !== 'https://vidsrcme.su') return;
+      const payload = event.data;
+      if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
+
+      const info = payload.data.player_info || {};
+      const status = String(payload.data.player_status || '');
+      const progress = Number(payload.data.player_progress || 0);
+      const eventType = info.mediaType === 'tv' ? 'tv' : 'movie';
+      const id = info.imdb || info.tmdb || currentImdbId || mediaId;
+      if (!id) return;
+
+      const s = Number(info.season || 1);
+      const e = Number(info.episode || 1);
+      const key = `f2w_vidsrcme_progress_${eventType}_${id}${eventType === 'tv' ? `_s${s}e${e}` : ''}`;
+
+      try {
+        if ((status === 'playing' || status === 'paused' || status === 'seeked') && Number.isFinite(progress) && progress >= 0) {
+          localStorage.setItem(key, String(progress));
+        } else if (status === 'completed') {
+          localStorage.removeItem(key);
+        }
+      } catch (_) {}
+
+      // Keep Flix2Watch's own episode selectors in sync after VidSrcMe finishes
+      // and auto-advances. We do not force any source switch.
+      if (status === 'completed' && eventType === 'tv' && currentServer === 'flix2watchapi') {
+        const episodeSelect = document.getElementById('episode-select');
+        const nextEpisode = e + 1;
+        if (episodeSelect && [...episodeSelect.options].some(opt => Number(opt.value) === nextEpisode)) {
+          episodeSelect.value = String(nextEpisode);
+        }
+      }
+    });
+
     /* ================= EXTENDED WATCH PAGE ================= */
     .watch-extra{
       margin-top:50px;
@@ -5671,13 +5709,22 @@ if(currentUser){
 
       switch(currentServer) {
         case 'flix2watchapi': {
-          // VidSrcMe accepts IMDb or TMDB identifiers. Prefer the IMDb ID
-          // requested for Flix2Watch API and fall back to the existing TMDB ID
-          // only when TMDB does not expose an IMDb mapping for the title.
-          const streamId = currentImdbId || mediaId;
+          // VidSrcMe official query-string embed format. IMDb is preferred when
+          // TMDB exposes it; otherwise use the numeric TMDB id. Keep this source
+          // unsandboxed because its player requires normal browser permissions.
+          const idParam = currentImdbId ? `imdb=${encodeURIComponent(currentImdbId)}` : `tmdb=${encodeURIComponent(mediaId)}`;
+          const common = `${idParam}&autoplay=1&ds_lang=en`;
           embedUrl = mediaType === 'tv'
-            ? `https://vidsrcme.su/embed/tv/${streamId}/${seasonNum}/${episodeNum}`
-            : `https://vidsrcme.su/embed/movie/${streamId}`;
+            ? `https://vidsrcme.su/embed/tv?${common}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&autonext=1`
+            : `https://vidsrcme.su/embed/movie?${common}`;
+
+          // Restore VidSrcMe position when we have one. The provider accepts
+          // startAt in seconds and sends PLAYER_EVENT progress messages back.
+          try {
+            const progressKey = `f2w_vidsrcme_progress_${mediaType}_${currentImdbId || mediaId}${mediaType === 'tv' ? `_s${seasonNum}e${episodeNum}` : ''}`;
+            const saved = Number(localStorage.getItem(progressKey) || 0);
+            if (Number.isFinite(saved) && saved > 10) embedUrl += `&startAt=${Math.floor(saved)}`;
+          } catch (_) {}
           break;
         }
         case 'multiembed':
@@ -5779,6 +5826,44 @@ if(currentUser){
       loadPlayer();
     }
   
+    // VidSrcMe player integration: save progress from its documented
+    // postMessage PLAYER_EVENT payload. This does not change sources or react
+    // to popup/new-tab activity; closing an external tab leaves playback intact.
+    window.addEventListener('message', (event) => {
+      if (event.origin !== 'https://vidsrcme.su') return;
+      const payload = event.data;
+      if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
+
+      const info = payload.data.player_info || {};
+      const status = String(payload.data.player_status || '');
+      const progress = Number(payload.data.player_progress || 0);
+      const eventType = info.mediaType === 'tv' ? 'tv' : 'movie';
+      const id = info.imdb || info.tmdb || currentImdbId || mediaId;
+      if (!id) return;
+
+      const s = Number(info.season || 1);
+      const e = Number(info.episode || 1);
+      const key = `f2w_vidsrcme_progress_${eventType}_${id}${eventType === 'tv' ? `_s${s}e${e}` : ''}`;
+
+      try {
+        if ((status === 'playing' || status === 'paused' || status === 'seeked') && Number.isFinite(progress) && progress >= 0) {
+          localStorage.setItem(key, String(progress));
+        } else if (status === 'completed') {
+          localStorage.removeItem(key);
+        }
+      } catch (_) {}
+
+      // Keep Flix2Watch's own episode selectors in sync after VidSrcMe finishes
+      // and auto-advances. We do not force any source switch.
+      if (status === 'completed' && eventType === 'tv' && currentServer === 'flix2watchapi') {
+        const episodeSelect = document.getElementById('episode-select');
+        const nextEpisode = e + 1;
+        if (episodeSelect && [...episodeSelect.options].some(opt => Number(opt.value) === nextEpisode)) {
+          episodeSelect.value = String(nextEpisode);
+        }
+      }
+    });
+
     /* ================= EXTENDED WATCH PAGE ================= */
 
     function buildWatchMiniCard(item,type) {
