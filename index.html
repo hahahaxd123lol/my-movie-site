@@ -1931,7 +1931,7 @@
     <meta property="og:title" content="Flix2Watch">
     <meta property="og:description" content="Discover movies and TV shows, save your favorites, build your profile, and see what other people are watching.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://flix2watch.com/chat/">
+    <meta property="og:url" content="https://flix2watch.com/home/">
     <meta property="og:image" content="https://flix2watch.com/og-image-v16.png">
     <meta property="og:image:secure_url" content="https://flix2watch.com/og-image-v16.png">
     <meta property="og:image:type" content="image/png">
@@ -1945,7 +1945,7 @@
     <meta name="twitter:description" content="Discover movies and TV shows, save your favorites, build your profile, and see what other people are watching.">
     <meta name="twitter:image" content="https://flix2watch.com/og-image-v16.png">
 
-  <link rel="canonical" href="https://flix2watch.com/chat/">
+  <link rel="canonical" href="https://flix2watch.com/home/">
 
   <!-- Flix2Watch Ultra performance hints -->
   <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
@@ -2253,49 +2253,37 @@
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css">
+  <script src="/global-header-chat-v1.js" defer></script>
 
-  <style id="f2w-dedicated-chat-page">
-    /* /chat/ is a dedicated chat route, not a disguised Home page. */
-    body.f2w-chat-page > main,
-    body.f2w-chat-page > .home-extra,
-    body.f2w-chat-page > footer,
-    body.f2w-chat-page > .site-announcement { display:none !important; }
-    body.f2w-chat-page #chat-modal {
-      display:flex !important;
-      opacity:1 !important;
-      visibility:visible !important;
-      pointer-events:auto !important;
+  <style id="f2w-mobile-login-above-featured">
+    /* Mobile/tablet home layout: keep the login/signup card above Featured. */
+    @media (max-width:1180px){
+      body:not(.f2w-authenticated) .f2w-home-stage{
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:stretch !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .f2w-guest-rail{
+        display:contents !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .f2w-guest-rail > .f2w-guest-brand{
+        order:-2 !important;
+        width:100% !important;
+        margin:0 !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .hero-banner{
+        order:-1 !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .f2w-guest-rail > .f2w-guest-card:not(.f2w-guest-brand){
+        order:0 !important;
+        width:100% !important;
+        margin:0 !important;
+      }
     }
-  </style>
-
-  <style id="f2w-chat-readability-v1">
-    /* Direct Messages readability pass */
-    .v17-dm-conversation-copy strong{font-size:.76rem!important;line-height:1.25!important;font-weight:700!important}
-    .v17-dm-conversation-copy span{font-size:.63rem!important;line-height:1.35!important}
-    .v17-dm-conversation-meta small{font-size:.54rem!important}
-    .v17-dm-list-head strong{font-size:.72rem!important}
-    .v17-dm-security strong{font-size:.68rem!important}
-    .v17-dm-security span{font-size:.56rem!important;line-height:1.45!important}
-    .v17-dm-thread-head strong{font-size:.80rem!important;line-height:1.25!important}
-    .v17-dm-thread-head span{font-size:.61rem!important;line-height:1.35!important}
-    .v17-dm-message{padding:9px 11px!important}
-    .v17-dm-message div{font-size:.80rem!important;line-height:1.55!important}
-    .v17-dm-message small{font-size:.56rem!important;margin-top:5px!important}
-    .v17-dm-empty{font-size:.68rem!important;line-height:1.5!important}
-    .v17-dm-compose input{font-size:.76rem!important;min-height:40px!important;padding:8px 10px!important}
-
-    /* Keep the user-search control compact */
-    .f2w-dm-search-wrap{padding:6px 9px 8px!important}
-    .f2w-dm-search-wrap input{font-size:.62rem!important;min-height:31px!important;padding:6px 9px!important;border-radius:8px!important}
-    .f2w-dm-search-wrap input::placeholder{font-size:.62rem!important}
-    .f2w-dm-search-results{margin-top:5px!important;gap:4px!important}
-    .f2w-dm-result{padding:6px!important;gap:7px!important;font-size:.68rem!important}
-    .f2w-dm-result img{width:30px!important;height:30px!important}
-    .f2w-dm-result small{font-size:.56rem!important}
   </style>
 </head>
 
-<body class="theme-red f2w-main-page f2w-chat-page">
+<body class="theme-red f2w-main-page f2w-home-page">
 <header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
       <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
@@ -2402,7 +2390,7 @@
       </div>
 
       <div class="f2w-action-cluster">
-        <button class="tool-btn chat-button" onclick="window.location.href='/chat/'">
+        <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
           <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
         </button>
 
@@ -3018,7 +3006,7 @@
       <div class="footer-col">
         <h4>TOOLS</h4>
         <div class="footer-links">
-          <button type="button" onclick="window.location.href='/chat/'">Open Chat</button>
+          <button type="button" onclick="openGlobalChat(); return false;">Open Chat</button>
           <button type="button" onclick="openAccountModal()">Account</button>
           <button type="button" onclick="openNetModal()">NetTools</button>
           <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
@@ -3107,46 +3095,6 @@
   const OWNER_UUID = 'f5454804-a2a6-4602-9086-51cf51f11c77';
 
   const chatSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-  async function fetchChatBootstrap(){
-    let edgeError=null;
-    try{
-      const controller=new AbortController();
-      const timeout=setTimeout(()=>controller.abort(),8000);
-      const response=await fetch(CHAT_API_URL,{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'apikey':SUPABASE_KEY
-        },
-        cache:'no-store',
-        signal:controller.signal,
-        body:JSON.stringify({action:'list'})
-      });
-      clearTimeout(timeout);
-      let result={};
-      try{ result=await response.json(); }catch{}
-      if(response.ok&&result?.success)return result;
-      throw new Error(result?.error||`Chat server returned HTTP ${response.status}.`);
-    }catch(error){
-      edgeError=error;
-      console.warn('[Flix2Watch Chat] Edge bootstrap failed, trying Supabase RPC fallback:',error);
-    }
-
-    try{
-      const {data,error}=await chatSupabase.rpc('get_public_chat_bootstrap');
-      if(error)throw error;
-      if(!data||typeof data!=='object')throw new Error('Fallback returned no chat data.');
-      return {success:true,...data,__fallback:true};
-    }catch(error){
-      const edgeMsg=edgeError?.name==='AbortError'?'connection timed out':(edgeError?.message||'network error');
-      const rpcMsg=String(error?.message||error||'fallback failed');
-      if(/get_public_chat_bootstrap|schema cache|function/i.test(rpcMsg)){
-        throw new Error(`Chat fallback SQL is not installed yet. Edge connection: ${edgeMsg}`);
-      }
-      throw new Error(`Chat backend unavailable. Edge: ${edgeMsg}. Fallback: ${rpcMsg}`);
-    }
-  }
   const grid = document.getElementById('movie-grid');
 
   let currentMode = 'trending';
@@ -3203,8 +3151,9 @@
 
   async function loadSiteAnnouncement(){
     try{
-      const result=await fetchChatBootstrap();
-      if(result.success){
+      const response=await fetch(CHAT_API_URL,{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({action:'list'})});
+      const result=await response.json();
+      if(response.ok&&result.success){
         renderSiteAnnouncement(result.announcement||null);
       publicOpsConfig=result.config||publicOpsConfig||{};
       renderPublicOpsConfig();
@@ -3568,7 +3517,7 @@
   }
 
   async function workerRequest(action, body={}, token=chatToken){
-    const headers={'Content-Type':'application/json','apikey':SUPABASE_KEY};
+    const headers={'Content-Type':'application/json'};
     if(token)headers.Authorization=`Bearer ${token}`;
 
     const response=await fetch(CHAT_API_URL,{
@@ -4335,10 +4284,11 @@
     setChatStatus(currentUser?'LOADING CHAT...':'LOADING PUBLIC CHAT...','');
 
     try{
-      const result=await fetchChatBootstrap();
+      const response=await fetch(CHAT_API_URL,{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({action:'list'})});
+      const result=await response.json();
 
-      if(!result.success){
-        throw new Error(result.error||'Chat server returned an invalid response.');
+      if(!response.ok||!result.success){
+        throw new Error(result.error||`Chat server returned HTTP ${response.status}.`);
       }
 
       container.innerHTML='';
@@ -5231,12 +5181,7 @@ if(currentUser){
     const requestedOpen=String(launchParams.get('open')||'').toLowerCase();
     const requestedAccount=String(launchParams.get('account')||'').toLowerCase();
     const requestedSearch=String(launchParams.get('search')||'').trim();
-
-    if(requestedOpen==='chat'){
-      setTimeout(()=>openChat(),180);
-    }
-
-    if(requestedAccount==='login'||requestedAccount==='signup'){
+if(requestedAccount==='login'||requestedAccount==='signup'){
       setTimeout(()=>{
         showAccountMode(requestedAccount);
         openAccountModal();
@@ -6344,153 +6289,11 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
   <script src="/final-v35.js" defer></script>
-
-  <!-- F2W dedicated chat route bootstrap -->
-
-
-  <script id="f2w-chat-route-bootstrap">
-  (()=>{
-    const params=new URLSearchParams(location.search);
-    const embedded=params.get('f2w_chat_embed')==='1';
-    let opened=false;
-    let dmWarmed=false;
-
-    const showShell=()=>{
-      const modal=document.getElementById('chat-modal');
-      if(!modal)return false;
-      modal.classList.add('open');
-      modal.style.setProperty('display','flex','important');
-      modal.setAttribute('aria-hidden','false');
-      return true;
-    };
-
-    const warmDm=async()=>{
-      if(dmWarmed&&typeof window.refreshDirectMessages!=='function')return;
-      if(typeof window.refreshDirectMessages==='function'){
-        try{
-          await window.refreshDirectMessages();
-          dmWarmed=true;
-        }catch(err){ console.warn('[Flix2Watch Chat] DM preload:',err); }
-      }
-    };
-
-    const announceReady=()=>{
-      if(embedded){
-        try{ parent.postMessage({type:'F2W_CHAT_READY'},location.origin); }catch{}
-      }
-    };
-
-    const warmChat=async()=>{
-      if(opened||typeof window.openChat!=='function')return;
-      opened=true;
-      try{ await window.openChat(); }
-      catch(err){ console.warn('[Flix2Watch Chat] initial open:',err); }
-      showShell();
-      await warmDm();
-      announceReady();
-    };
-
-    const boot=()=>{
-      showShell();
-      // Start both public chat and DM initialization as soon as /chat/ exists,
-      // including while it is preloaded invisibly by another page.
-      let tries=0;
-      const timer=setInterval(async()=>{
-        showShell();
-        await warmChat();
-        await warmDm();
-        if((opened&&dmWarmed)||++tries>=120){
-          clearInterval(timer);
-          announceReady();
-        }
-      },100);
-      warmChat();
-      warmDm();
-    };
-
-    if(embedded){
-      document.documentElement.classList.add('f2w-chat-embedded');
-      document.body?.classList.add('f2w-chat-embedded');
-      const style=document.createElement('style');
-      style.textContent=`
-        html.f2w-chat-embedded,body.f2w-chat-embedded{background:transparent!important;overflow:hidden!important}
-        body.f2w-chat-embedded>header,body.f2w-chat-embedded>main,body.f2w-chat-embedded>footer,
-        body.f2w-chat-embedded>.site-announcement{display:none!important}
-        body.f2w-chat-embedded #chat-modal{padding:0!important;background:transparent!important;backdrop-filter:none!important}
-        body.f2w-chat-embedded #chat-modal .chat-card{height:100vh!important;max-height:100vh!important;width:100%!important;max-width:none!important;border-radius:0!important}
-      `;
-      document.head.appendChild(style);
-    }
-
-    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
-    else boot();
-
-    window.addEventListener('load',()=>{
-      showShell();
-      warmChat();
-      warmDm();
-      window.closeChat=()=>{
-        if(embedded){
-          parent.postMessage({type:'F2W_CHAT_CLOSE'},location.origin);
-          return;
-        }
-        if(history.length>1) history.back();
-        else location.href='/home/';
-      };
-    },{once:true});
-  })();
-  </script>
-
-
-<style id="f2w-dm-loggedout-gate-v1">
-  .f2w-dm-login-gate{height:100%;min-height:320px;display:flex;align-items:center;justify-content:center;padding:22px}
-  .f2w-dm-login-card{width:min(520px,100%);text-align:center;border:1px solid rgba(255,72,72,.28);background:linear-gradient(180deg,rgba(62,11,18,.88),rgba(20,8,12,.96));border-radius:16px;padding:28px 22px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-  .f2w-dm-login-lock{width:58px;height:58px;border-radius:16px;margin:0 auto 14px;display:grid;place-items:center;background:rgba(255,45,64,.14);border:1px solid rgba(255,74,88,.28);color:#ff3d4f;font-size:1.55rem}
-  .f2w-dm-login-card h3{margin:0 0 7px;font:800 1rem/1.2 Inter,system-ui,sans-serif;letter-spacing:.01em;color:#fff}
-  .f2w-dm-login-card p{margin:0 auto 18px;max-width:390px;font:500 .72rem/1.55 Inter,system-ui,sans-serif;color:#b8b8c3}
-  .f2w-dm-login-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  .f2w-dm-login-actions button{min-height:38px;padding:0 16px;border-radius:9px;border:1px solid rgba(255,255,255,.14);font:750 .7rem/1 Inter,system-ui,sans-serif;cursor:pointer}
-  .f2w-dm-login-actions .primary{background:#e6293f;color:#fff;border-color:#e6293f}
-  .f2w-dm-login-actions .secondary{background:#18181d;color:#fff}
-</style>
-<script id="f2w-dm-loggedout-access-v1">
-(()=>{
-  function loggedOut(){ return !window.currentUser && !currentUser; }
-  function renderLoggedOutDm(){
-    const publicTab=document.getElementById('v17-chat-public-tab');
-    const dmTab=document.getElementById('v17-chat-dm-tab');
-    const pub=document.getElementById('v17-public-chat-panel');
-    const dm=document.getElementById('v17-dm-panel');
-    if(!dmTab||!dm)return;
-    publicTab?.classList.remove('active');
-    dmTab.classList.add('active');
-    if(pub){pub.hidden=true;pub.style.display='none';}
-    dm.hidden=false; dm.style.display='grid';
-    dm.innerHTML=`<div class="f2w-dm-login-gate" style="grid-column:1/-1"><div class="f2w-dm-login-card"><div class="f2w-dm-login-lock"><i class="fa-solid fa-lock"></i></div><h3>Direct Messages are locked</h3><p>Sign in or create a free account to search people, start conversations and read your private messages.</p><div class="f2w-dm-login-actions"><button class="primary" type="button" data-f2w-dm-login>Sign In</button><button class="secondary" type="button" data-f2w-dm-signup>Create Account</button></div></div></div>`;
-    dm.querySelector('[data-f2w-dm-login]')?.addEventListener('click',()=>{ try{showAccountMode('login')}catch{}; try{openAccountModal()}catch{}; });
-    dm.querySelector('[data-f2w-dm-signup]')?.addEventListener('click',()=>{ try{showAccountMode('signup')}catch{}; try{openAccountModal()}catch{}; });
-  }
-  document.addEventListener('click',(e)=>{
-    const tab=e.target.closest?.('#v17-chat-dm-tab');
-    if(!tab)return;
-    let isOut=false;
-    try{isOut=loggedOut()}catch{isOut=true}
-    if(!isOut)return;
-    e.preventDefault(); e.stopImmediatePropagation();
-    renderLoggedOutDm();
-  },true);
-  window.addEventListener('f2w-auth-changed',()=>{});
-})();
-</script>
 </body>
 </html>
-<!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
-<!-- f2w-force-push-20260831-batch2:chat:4cb2d50896 -->
-<!-- f2w-update-20260831-chat-instant-preload-dm-v3 -->
-<!-- f2w-force-update-chat-20260831 -->
-<!-- f2w-update-20260831-chat-eager-public-dm-v5 -->
-<!-- F2W_UPDATE_MARKER chat-resilient-bootstrap-20260831 -->
-<!-- F2W force-update chat 2026-08-31T21:10:00+01:00 -->
+<!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
+<!-- f2w-update-marker: shared-chat-v7:home -->
 <!-- f2w-force-save: 20260831-2110 -->
-<!-- f2w-force-update:chat-loggedout-dm:1788207965 -->
+<!-- f2w-force-update:home-mobile-login-top:20260831 -->
+<!-- f2w-force-save:chat-v8-never-auto-open:1788208311:data -->
  

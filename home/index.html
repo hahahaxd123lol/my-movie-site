@@ -5181,12 +5181,7 @@ if(currentUser){
     const requestedOpen=String(launchParams.get('open')||'').toLowerCase();
     const requestedAccount=String(launchParams.get('account')||'').toLowerCase();
     const requestedSearch=String(launchParams.get('search')||'').trim();
-
-    if(requestedOpen==='chat'){
-      setTimeout(()=>openChat(),180);
-    }
-
-    if(requestedAccount==='login'||requestedAccount==='signup'){
+if(requestedAccount==='login'||requestedAccount==='signup'){
       setTimeout(()=>{
         showAccountMode(requestedAccount);
         openAccountModal();
@@ -6300,4 +6295,5 @@ if(currentUser){
 <!-- f2w-update-marker: shared-chat-v7:home -->
 <!-- f2w-force-save: 20260831-2110 -->
 <!-- f2w-force-update:home-mobile-login-top:20260831 -->
+<!-- f2w-force-save:chat-v8-never-auto-open:1788208311:home -->
  
