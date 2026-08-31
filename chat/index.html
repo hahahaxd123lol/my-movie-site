@@ -2253,7 +2253,6 @@
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css">
-  <script src="/global-header-chat-v1.js" defer></script>
 </head>
 
 <body class="theme-red f2w-main-page f2w-home-page">
@@ -2363,7 +2362,7 @@
       </div>
 
       <div class="f2w-action-cluster">
-        <button class="tool-btn chat-button" onclick="openChat()">
+        <button class="tool-btn chat-button" onclick="window.location.href='/chat/'">
           <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
         </button>
 
@@ -2979,7 +2978,7 @@
       <div class="footer-col">
         <h4>TOOLS</h4>
         <div class="footer-links">
-          <button type="button" onclick="openChat()">Open Chat</button>
+          <button type="button" onclick="window.location.href='/chat/'">Open Chat</button>
           <button type="button" onclick="openAccountModal()">Account</button>
           <button type="button" onclick="openNetModal()">NetTools</button>
           <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
@@ -6267,6 +6266,27 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
   <script src="/final-v35.js" defer></script>
+
+  <!-- F2W dedicated chat route bootstrap -->
+  <script>
+  (()=>{
+    const openDedicatedChat=()=>{
+      const modal=document.getElementById('chat-modal');
+      try{ if(typeof window.openChat==='function') window.openChat(); }catch(e){ console.warn('Chat open retry:',e); }
+      if(modal){ modal.classList.add('open'); modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
+    };
+    let attempts=0;
+    const timer=setInterval(()=>{
+      attempts++; openDedicatedChat();
+      const modal=document.getElementById('chat-modal');
+      if((modal?.classList.contains('open') && typeof window.openChat==='function') || attempts>=60) clearInterval(timer);
+    },150);
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',openDedicatedChat,{once:true});
+    else openDedicatedChat();
+    window.addEventListener('load',openDedicatedChat,{once:true});
+  })();
+  </script>
+
 </body>
 </html>
  
