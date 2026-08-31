@@ -491,4 +491,147 @@ main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-ban
 }
 
 /* f2w-force-save:device-stability-v9:20260831-205349 */
+
+/* ================= F2W COMPACT ACCOUNT MODAL / SWIPE AUTH v10 ================= */
+/* Keep every sign-in/create-account gate compact like the Home auth card. */
+.account-modal{
+  padding:clamp(14px,3vw,28px) !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+.account-modal .account-card{
+  width:min(92vw,520px) !important;
+  max-width:520px !important;
+  max-height:min(88dvh,760px) !important;
+  margin:auto !important;
+  border-radius:18px !important;
+  overflow:hidden !important;
+  box-shadow:0 28px 80px rgba(0,0,0,.72),0 0 26px rgba(229,9,20,.12) !important;
+}
+.account-modal .account-header{
+  padding:15px 18px 13px !important;
+  align-items:center !important;
+}
+.account-modal .account-title{
+  font-size:1.2rem !important;
+  line-height:1.1 !important;
+  letter-spacing:.5px !important;
+}
+.account-modal .account-subtitle{
+  display:none !important;
+}
+.account-modal .account-body{
+  padding:16px 18px 18px !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+}
+.account-modal .f2w-account-brand{
+  margin:0 0 13px !important;
+  padding:0 !important;
+  text-align:center !important;
+}
+.account-modal .f2w-account-brand img{
+  width:min(210px,58%) !important;
+  max-height:74px !important;
+  object-fit:contain !important;
+  margin:0 auto 5px !important;
+}
+.account-modal .f2w-account-brand strong{
+  font-size:.9rem !important;
+}
+.account-modal .f2w-account-brand > span{
+  font-size:.68rem !important;
+}
+.account-modal .v17-free-note{
+  margin-top:10px !important;
+  padding:9px 10px !important;
+  border-radius:9px !important;
+  text-align:left !important;
+}
+.account-modal .v17-free-note strong{font-size:.68rem !important}
+.account-modal .v17-free-note span{font-size:.61rem !important;line-height:1.4 !important}
+.account-modal .account-tabs{
+  position:relative !important;
+  gap:4px !important;
+  padding:4px !important;
+  margin-bottom:13px !important;
+  border-radius:11px !important;
+  overflow:hidden !important;
+}
+.account-modal .account-tab{
+  position:relative !important;
+  z-index:1 !important;
+  padding:9px 8px !important;
+  font-size:.75rem !important;
+  transition:color .22s ease,transform .22s ease !important;
+}
+.account-modal .account-tab.active{
+  box-shadow:0 0 12px rgba(229,9,20,.24) !important;
+}
+.account-modal .account-label{
+  margin:9px 0 5px !important;
+  font-size:.61rem !important;
+}
+.account-modal .account-input{
+  padding:10px 11px !important;
+  min-height:40px !important;
+  font-size:.79rem !important;
+  border-radius:8px !important;
+}
+.account-modal .account-primary{
+  margin-top:12px !important;
+  min-height:42px !important;
+  padding:10px 13px !important;
+  font-size:.78rem !important;
+}
+.account-modal .f2w-oauth-block{margin-top:11px !important}
+.account-modal .f2w-oauth-divider{margin:9px 0 !important}
+.account-modal .f2w-oauth-grid{gap:7px !important}
+.account-modal .f2w-oauth-btn{
+  min-height:39px !important;
+  padding:9px 10px !important;
+  font-size:.72rem !important;
+}
+.account-modal .f2w-oauth-note{
+  margin-top:7px !important;
+  font-size:.58rem !important;
+  line-height:1.35 !important;
+}
+.account-modal .account-message{margin-top:7px !important;font-size:.62rem !important}
+
+/* Swipe the form content when the existing Log In / Create Account tabs change. */
+@keyframes f2wAuthSwipeToLogin{
+  0%{opacity:.3;transform:translateX(-22px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+@keyframes f2wAuthSwipeToSignup{
+  0%{opacity:.3;transform:translateX(22px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+.account-modal .account-card:has(#account-login-tab.active) #account-logged-out{
+  animation:f2wAuthSwipeToLogin .24s cubic-bezier(.2,.8,.2,1);
+}
+.account-modal .account-card:has(#account-signup-tab.active) #account-logged-out{
+  animation:f2wAuthSwipeToSignup .24s cubic-bezier(.2,.8,.2,1);
+}
+
+@media(max-width:640px){
+  .account-modal{padding:12px !important}
+  .account-modal .account-card{
+    width:min(94vw,440px) !important;
+    max-width:440px !important;
+    max-height:90dvh !important;
+  }
+  .account-modal .account-header{padding:13px 14px 11px !important}
+  .account-modal .account-body{padding:13px 14px 15px !important}
+  .account-modal .f2w-account-brand img{width:min(180px,56%) !important}
+  .account-modal .v17-free-note{display:none !important}
+  .account-modal .f2w-oauth-note{display:none !important}
+}
+
+@media(min-width:1200px){
+  .account-modal .account-card{width:500px !important;max-width:500px !important}
+}
+
+/* f2w-force-save:auth-modal-v10:1788210514 */
  
