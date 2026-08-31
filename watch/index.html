@@ -3322,6 +3322,71 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 /* f2w-force-save:watch-login-compact-v43:1788219527 */
 </style>
 
+
+<style id="f2w-watch-login-pc-compact-v45">
+/* F2W v45 — make Login to Watch genuinely smaller on PC/desktop only */
+@media (min-width:601px) {
+  #watch-login-overlay .watch-login-card,
+  #watch-login-overlay .login-card,
+  #watch-login-overlay .auth-card,
+  #login-to-watch-overlay .watch-login-card,
+  #login-to-watch-overlay .login-card,
+  #login-to-watch-overlay .auth-card,
+  .watch-login-card,
+  .login-to-watch-card,
+  .watch-auth-card {
+    width:min(360px,calc(100vw - 40px))!important;
+    max-width:360px!important;
+    padding:16px 16px 15px!important;
+    border-radius:14px!important;
+    box-sizing:border-box!important;
+  }
+
+  #watch-login-overlay h2,
+  #login-to-watch-overlay h2,
+  .watch-login-card h2,
+  .login-to-watch-card h2,
+  .watch-auth-card h2 {
+    font-size:1.05rem!important;
+    line-height:1.15!important;
+    margin:5px 0 5px!important;
+  }
+
+  #watch-login-overlay p,
+  #login-to-watch-overlay p,
+  .watch-login-card p,
+  .login-to-watch-card p,
+  .watch-auth-card p {
+    font-size:.72rem!important;
+    line-height:1.4!important;
+    margin:0 0 10px!important;
+  }
+
+  #watch-login-overlay .watch-login-actions,
+  #login-to-watch-overlay .watch-login-actions,
+  .watch-login-card .watch-login-actions,
+  .login-to-watch-card .watch-login-actions,
+  .watch-auth-card .watch-login-actions,
+  #watch-login-overlay .auth-actions,
+  #login-to-watch-overlay .auth-actions {
+    gap:7px!important;
+    margin-top:10px!important;
+  }
+
+  #watch-login-overlay button,
+  #login-to-watch-overlay button,
+  .watch-login-card button,
+  .login-to-watch-card button,
+  .watch-auth-card button {
+    min-height:36px!important;
+    padding:0 12px!important;
+    font-size:.75rem!important;
+  }
+}
+
+/* f2w-force-save:watch-login-pc-compact-v45:1788219752 */
+</style>
+
 </head>
 <body class="theme-red f2w-main-page f2w-watch-page watch-locked">
 <header>
@@ -7711,4 +7776,5 @@ if(currentUser){
 <!-- f2w-force-save:watch-login-box-v43:1788219527 -->
 <!-- f2w-force-save:v43-watch-auth-cache:1788219527:watch/index.html -->
 <!-- f2w-force-save:v44-header-cache:1788219651:watch/index.html -->
+<!-- f2w-force-save:watch-index-v45:1788219752 -->
  
