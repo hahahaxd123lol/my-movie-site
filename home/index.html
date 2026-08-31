@@ -2254,6 +2254,33 @@
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css">
   <script src="/global-header-chat-v1.js" defer></script>
+
+  <style id="f2w-mobile-login-above-featured">
+    /* Mobile/tablet home layout: keep the login/signup card above Featured. */
+    @media (max-width:1180px){
+      body:not(.f2w-authenticated) .f2w-home-stage{
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:stretch !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .f2w-guest-rail{
+        display:contents !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .f2w-guest-rail > .f2w-guest-brand{
+        order:-2 !important;
+        width:100% !important;
+        margin:0 !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .hero-banner{
+        order:-1 !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .f2w-guest-rail > .f2w-guest-card:not(.f2w-guest-brand){
+        order:0 !important;
+        width:100% !important;
+        margin:0 !important;
+      }
+    }
+  </style>
 </head>
 
 <body class="theme-red f2w-main-page f2w-home-page">
@@ -6272,4 +6299,5 @@ if(currentUser){
 <!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
 <!-- f2w-update-marker: shared-chat-v7:home -->
 <!-- f2w-force-save: 20260831-2110 -->
+<!-- f2w-force-update:home-mobile-login-top:20260831 -->
  
