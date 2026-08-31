@@ -1,13 +1,177 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Community Leaderboard • Flix2Watch</title><meta name="description" content="Live Flix2Watch community rankings."><link rel="icon" href="/favicon-v16.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link rel="stylesheet" href="/responsive-v7.css"><link rel="stylesheet" href="/approved-ui-v12.css"><link rel="stylesheet" href="/final-v34.css"><link rel="stylesheet" href="/final-v35.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--lb-accent:#ff1727;--lb-bg:#020914;--lb-panel:rgba(7,18,31,.82);--lb-line:#18334d;--lb-muted:#8ca0b8;--lb-text:#f6f8fb}.theme-blue{--lb-accent:#19a7ff}.theme-green{--lb-accent:#35e88d}.theme-purple{--lb-accent:#a855f7}.theme-gold{--lb-accent:#f6c84c}.theme-cyan{--lb-accent:#20e0e8}.theme-pink{--lb-accent:#ff4ca3}.theme-orange{--lb-accent:#ff8a2b}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,color-mix(in srgb,var(--lb-accent) 13%,transparent),transparent 34%),#020914;color:var(--lb-text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}header{position:sticky;top:0;z-index:50;background:rgba(2,10,21,.94);backdrop-filter:blur(18px);border-bottom:1px solid #19324b;display:flex;align-items:center;gap:20px;padding:13px 24px}.logo-image{width:170px;display:block}.header-tools{display:flex;align-items:center;gap:12px;flex:1;min-width:0}.lb-nav{display:flex;gap:4px;align-items:center;white-space:nowrap}.lb-nav a{color:#d7e0eb;text-decoration:none;font-size:13px;font-weight:800;padding:11px 9px;border-radius:9px}.lb-nav a:hover,.lb-nav a.active{color:#fff;background:#101d2b}.lb-nav a.active{color:var(--lb-accent)}.lb-head-actions{display:flex;gap:7px;margin-left:auto;align-items:center}.lb-search{height:40px;background:#071321;border:1px solid #24425f;color:white;border-radius:9px;padding:0 12px;min-width:165px}.lb-btn{height:40px;border:1px solid #284765;background:#071321;color:white;border-radius:9px;padding:0 12px;font-weight:800;cursor:pointer}.lb-btn:hover{border-color:var(--lb-accent);color:var(--lb-accent)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,color-mix(in srgb,var(--lb-accent) 13%,transparent),transparent 34%),#020914;color:var(--lb-text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
 main{max-width:1420px;margin:auto;padding:28px 24px 70px}.hero{position:relative;overflow:hidden;border:1px solid color-mix(in srgb,var(--lb-accent) 55%,#25394d);border-radius:24px;background:linear-gradient(120deg,color-mix(in srgb,var(--lb-accent) 12%,#0b0b18),#071423 62%,#08101d);padding:34px}.hero:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:-120px;top:-260px;background:var(--lb-accent);filter:blur(90px);opacity:.14}.kicker{font:900 11px ui-monospace,monospace;letter-spacing:2px;text-transform:uppercase;color:var(--lb-accent)}h1{font-size:clamp(36px,5vw,62px);margin:12px 0 6px;letter-spacing:-2.5px}.hero p{max-width:780px;color:#aab8c9;font-size:17px;line-height:1.55;margin:0}.live-pill{position:absolute;right:28px;bottom:28px;border:1px solid #215b45;background:#071f1a;color:#57efa8;border-radius:999px;padding:9px 13px;font-weight:900;font-size:12px}.live-pill i{font-size:8px;margin-right:6px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}.stat{border:1px solid var(--lb-line);border-radius:16px;background:var(--lb-panel);padding:17px 19px}.stat span{display:block;color:#6f89a5;font:800 10px ui-monospace,monospace;letter-spacing:1.3px;text-transform:uppercase}.stat strong{display:block;font-size:24px;margin-top:6px}.podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:14px;align-items:end;margin:26px 0}.podium-card{position:relative;border:1px solid #243b53;border-radius:22px;background:linear-gradient(160deg,#0a1725,#07111d);padding:22px;text-align:center;min-height:220px;cursor:pointer;transition:.2s}.podium-card:hover{transform:translateY(-4px);border-color:var(--lb-accent)}.podium-card.first{min-height:260px;border-color:#8d6b18;background:linear-gradient(160deg,#241b07,#0a1520)}.crown{font-size:25px;color:#ffd54a;margin-bottom:8px}.avatar-wrap{width:82px;height:82px;margin:0 auto 11px;position:relative}.first .avatar-wrap{width:104px;height:104px}.avatar{width:100%;height:100%;object-fit:cover;border-radius:50%;border:3px solid #344b63;background:#07101b}.first .avatar{border-color:#ffd54a;box-shadow:0 0 30px #ffd54a2b}.presence{position:absolute;width:16px;height:16px;border-radius:50%;right:3px;bottom:4px;background:#64748b;border:3px solid #07111d}.presence.on{background:#28e78d;box-shadow:0 0 10px #28e78d}.pod-rank{position:absolute;left:16px;top:14px;font-size:20px;font-weight:1000;color:#7990a8}.podium-card h3{margin:5px 0 2px;font-size:18px}.handle{color:#758ba3;font-size:12px}.score{font:1000 25px ui-monospace,monospace;color:var(--lb-accent);margin-top:14px}.first .score{color:#ffd54a}.role{display:inline-flex;margin-top:7px;padding:4px 8px;border-radius:999px;background:#142437;color:#a9bdd2;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.8px}
 .toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:18px}.tabs{display:flex;gap:6px;overflow:auto;padding:5px;border:1px solid var(--lb-line);background:#071321;border-radius:14px}.tab{border:0;background:transparent;color:#92a6bc;padding:10px 14px;border-radius:9px;font-weight:900;cursor:pointer;white-space:nowrap}.tab.active{background:var(--lb-accent);color:white;box-shadow:0 7px 22px color-mix(in srgb,var(--lb-accent) 25%,transparent)}.rank-list{display:grid;gap:9px;margin-top:14px}.rank-row{display:grid;grid-template-columns:70px minmax(250px,1fr) repeat(4,115px) 130px 40px;align-items:center;border:1px solid #172e44;background:linear-gradient(90deg,#07121f,#06101b);border-radius:16px;padding:12px 14px;transition:.18s}.rank-row:hover{transform:translateX(3px);border-color:#365470;background:#091827}.rank-no{font:1000 20px ui-monospace,monospace;color:#6e859c}.user{display:flex;align-items:center;gap:12px;min-width:0;cursor:pointer}.user img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #2d4963;background:#06101a}.user-copy{min-width:0}.user-copy strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}.user-copy small{color:#7189a2}.metric{text-align:center}.metric b{display:block;font-size:16px}.metric span{display:block;color:#637b94;font-size:10px;text-transform:uppercase;font-weight:800;margin-top:3px}.row-score{text-align:right;font:1000 18px ui-monospace,monospace;color:var(--lb-accent)}.chev{color:#627c97;text-align:right}.empty{padding:42px;border:1px dashed #29435c;border-radius:16px;text-align:center;color:#8ba0b5}.pager{display:flex;justify-content:center;gap:7px;margin-top:18px}.pagebtn{border:1px solid #28445f;background:#071321;color:#9fb1c5;border-radius:9px;min-width:39px;height:39px;font-weight:900;cursor:pointer}.pagebtn.active{background:var(--lb-accent);border-color:var(--lb-accent);color:#fff}.pagebtn:disabled{opacity:.35}.status-note{margin-top:12px;color:#71879d;font-size:12px;text-align:center}.error{border-color:#73313a;color:#ff9aa2;background:#210b10}.skeleton{height:78px;border-radius:16px;background:linear-gradient(90deg,#071321,#102337,#071321);background-size:200% 100%;animation:sh 1.2s infinite}@keyframes sh{to{background-position:-200% 0}}
-@media(max-width:1100px){.lb-search{display:none}.rank-row{grid-template-columns:55px minmax(220px,1fr) repeat(2,100px) 110px 30px}.metric.hide-md{display:none}.lb-nav a:nth-child(4){display:none}}@media(max-width:760px){header{padding:10px 12px}.logo-image{width:130px}.lb-nav{display:none}.lb-head-actions .lb-btn span{display:none}.hero{padding:25px 20px}.live-pill{position:static;display:inline-block;margin-top:16px}.stats{grid-template-columns:1fr 1fr}.podium{grid-template-columns:1fr}.podium-card.first{order:-1}.toolbar{display:block}.tabs{margin-bottom:10px}.rank-row{grid-template-columns:45px minmax(0,1fr) 80px 25px;padding:10px}.metric{display:none}.row-score{font-size:15px}.user img{width:44px;height:44px}main{padding:18px 12px 55px}}
-</style></head><body class="theme-red">
-<header><a href="/home/" class="logo"><img class="logo-image" src="/flix2watch-logo-red-v34.png" alt="Flix2Watch"></a><div class="header-tools"><nav class="lb-nav"><a href="/home/"><i class="fa-solid fa-house"></i> Home</a><a href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a><a href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a><a class="active" href="/leaderboard/"><i class="fa-solid fa-trophy"></i> Leaderboard</a><a href="/forum/"><i class="fa-solid fa-comments"></i> Community</a><a href="/home/?genre=16&page=1"><i class="fa-solid fa-location-dot"></i> Genres</a></nav><div class="lb-head-actions"><input id="titleSearch" class="lb-search" placeholder="Search movies…"><input id="userSearch" class="lb-search" placeholder="Search users…"><button class="lb-btn" onclick="location.href='/home/?chat=1'"><i class="fa-regular fa-message"></i> <span>Chat</span></button><button class="lb-btn" id="themeBtn"><i class="fa-solid fa-sun"></i> <span>Theme</span></button><button class="lb-btn" onclick="location.href='/favorites/'"><i class="fa-regular fa-heart"></i> <span>Favorites</span></button><button class="lb-btn" id="profileBtn"><i class="fa-regular fa-id-card"></i> <span>Profile</span></button><button class="lb-btn" onclick="location.href='/support/'"><i class="fa-regular fa-life-ring"></i> <span>Support</span></button></div></div></header>
+@media(max-width:1100px){.rank-row{grid-template-columns:55px minmax(220px,1fr) repeat(2,100px) 110px 30px}.metric.hide-md{display:none}}@media(max-width:760px){.hero{padding:25px 20px}.live-pill{position:static;display:inline-block;margin-top:16px}.stats{grid-template-columns:1fr 1fr}.podium{grid-template-columns:1fr}.podium-card.first{order:-1}.toolbar{display:block}.tabs{margin-bottom:10px}.rank-row{grid-template-columns:45px minmax(0,1fr) 80px 25px;padding:10px}.metric{display:none}.row-score{font-size:15px}.user img{width:44px;height:44px}main{padding:18px 12px 55px}}
+</style>
+<style id="leaderboard-watch-header-match">
+#f2w-genre-menu.open{display:grid!important}
+@media(max-width:900px){.header-tools.mobile-open{display:flex!important}}
+</style>
+</head><body class="theme-red">
+<header>
+    <a href="/home/" class="logo" aria-label="Flix2Watch home">
+      <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
+    </a>
+
+    <button class="f2w-mobile-nav-toggle" type="button" aria-label="Open navigation" onclick="toggleF2WMobileMenu()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="header-tools">
+      <nav class="f2w-primary-nav" aria-label="Main navigation">
+        <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
+        <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
+        <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
+        <a class="f2w-nav-link" id="f2w-nav-forum" href="/forum/"><i class="fa-solid fa-comments"></i> Community</a>
+
+          <div class="f2w-genre-wrap">
+            <button class="f2w-nav-button" id="f2w-nav-genres" type="button" onclick="toggleF2WGenreMenu(event)">
+              <i class="fa-solid fa-location-dot"></i> Genres <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i>
+            </button>
+            <div class="f2w-genre-menu" id="f2w-genre-menu">
+              <a href="/home/?genre=28&page=1">Action</a>
+              <a href="/home/?genre=35&page=1">Comedy</a>
+              <a href="/home/?genre=27&page=1">Horror</a>
+              <a href="/home/?genre=878&page=1">Sci-Fi</a>
+              <a href="/home/?genre=53&page=1">Thriller</a>
+              <a href="/home/?genre=80&page=1">Crime</a>
+              <a href="/home/?genre=10749&page=1">Romance</a>
+              <a href="/home/?genre=16&page=1">Animation</a>
+              <a href="/home/?genre=99&page=1">Documentary</a>
+              <a href="/home/?genre=14&page=1">Fantasy</a>
+              <a href="/home/?genre=12&page=1">Adventure</a>
+              <a href="/home/?genre=18&page=1">Drama</a>
+              <a href="/home/?genre=10751&page=1">Family</a>
+              <a href="/home/?genre=9648&page=1">Mystery</a>
+              <a href="/home/?genre=36&page=1">History</a>
+              <a href="/home/?genre=10402&page=1">Music</a>
+              <a href="/home/?genre=10752&page=1">War</a>
+              <a href="/home/?genre=37&page=1">Western</a>
+            </div>
+          </div>
+
+      </nav>
+
+      <div class="f2w-search-pair">
+        <div class="search-container" role="search">
+          <i class="fa-solid fa-search"></i>
+          <input
+            id="movie-search"
+            name="flix2watch_title_lookup_query"
+            class="search-bar"
+            type="search"
+            placeholder="Search movies..."
+            autocomplete="one-time-code"
+            inputmode="search"
+            enterkeyhint="search"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Search movies and TV shows"
+            aria-autocomplete="none"
+            data-form-type="search"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-protonpass-ignore="true"
+            data-keeper-ignore="true"
+            readonly
+            oninput="v18HeaderMovieSearch(this.value)"
+            onfocus="protectMovieSearchField(this)">
+        </div>
+
+        <div class="user-search-container" role="search">
+          <i class="fa-solid fa-user"></i>
+          <input
+            type="search"
+            id="user-search"
+            name="flix2watch_people_search_query"
+            class="user-search-bar"
+            placeholder="Search users..."
+            autocomplete="one-time-code"
+            inputmode="search"
+            enterkeyhint="search"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Search Flix2Watch users"
+            aria-autocomplete="none"
+            data-form-type="search"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-protonpass-ignore="true"
+            data-keeper-ignore="true"
+            readonly
+            oninput="handleUserSearchInput(this)"
+            onfocus="protectUserSearchField(this)"
+          >
+          <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <div class="user-search-results" id="user-search-results"></div>
+        </div>
+      </div>
+
+      <div class="f2w-action-cluster">
+        <button class="tool-btn chat-button" onclick="openChat()">
+          <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
+        </button>
+
+        <div class="dropdown-wrapper">
+          <button class="tool-btn" id="theme-menu-button" type="button" aria-haspopup="menu" aria-expanded="false" onclick="toggleDropdown('theme-menu')"><i class="fa-solid fa-sun"></i> Theme <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i></button>
+          <div class="dropdown-menu" id="theme-menu" hidden aria-hidden="true">
+            <div class="dropdown-item" onclick="setTheme('red','theme-red')"><span class="dot red"></span> Netflix Red</div>
+            <div class="dropdown-item" onclick="setTheme('blue','theme-blue')"><span class="dot blue"></span> Cyber Blue</div>
+            <div class="dropdown-item" onclick="setTheme('green','theme-green')"><span class="dot green"></span> Emerald Green</div>
+            <div class="dropdown-item" onclick="setTheme('purple','theme-purple')"><span class="dot purple"></span> Neon Purple</div>
+            <div class="dropdown-item" onclick="setTheme('amber','theme-amber')"><span class="dot amber"></span> Amber Terminal</div>
+            <div class="dropdown-item" onclick="setTheme('matrix','theme-matrix')"><span class="dot matrix"></span> Matrix Green</div>
+            <div class="dropdown-item" onclick="setTheme('cyan','theme-cyan')"><span class="dot cyan"></span> Electric Cyan</div>
+            <div class="dropdown-item" onclick="setTheme('pink','theme-pink')"><span class="dot pink"></span> Hot Pink</div>
+            <div class="dropdown-item" onclick="setTheme('orange','theme-orange')"><span class="dot orange"></span> Cinema Orange</div>
+            <div class="dropdown-item" onclick="setTheme('ice','theme-ice')"><span class="dot ice"></span> Ice Blue</div>
+            <div class="dropdown-item" onclick="setTheme('gold','theme-gold')"><span class="dot gold"></span> Premiere Gold</div>
+            <div class="dropdown-item" onclick="setTheme('midnight','theme-midnight')"><span class="dot midnight"></span> Midnight Indigo</div>
+          </div>
+        </div>
+
+        <button class="f2w-auth-top-btn login" id="header-login-btn" type="button" style="display:none" onclick="openHeaderAuth('login')">Login</button>
+        <button class="f2w-auth-top-btn signup" id="header-signup-btn" type="button" style="display:none" onclick="openHeaderAuth('signup')">Sign Up</button>
+
+        <button class="tool-btn" id="favorites-nav-btn" onclick="window.location.href='/favorites/'" style="display:none"><i class="fa-regular fa-heart"></i> Favorites</button>
+        <button class="tool-btn" id="profile-nav-btn" onclick="openMyProfile()" style="display:none"><i class="fa-regular fa-id-card"></i> Profile</button>
+        <button class="tool-btn f2w-hide-tablet" id="support-nav-btn" onclick="window.location.href='/support/'" style="display:none"><i class="fa-regular fa-life-ring"></i> Support</button>
+        <button class="tool-btn" id="account-btn" onclick="openAccountModal()" style="display:none"><i class="fa-regular fa-user"></i> Account</button>
+
+
+        <div class="v17-notification-wrap" id="notification-wrap" style="display:none">
+          <button class="tool-btn v17-notification-btn" id="notification-btn" type="button" onclick="toggleNotifications(event)" aria-label="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span>Notifications</span>
+            <b class="v17-notification-count" id="notification-count" hidden>0</b>
+          </button>
+          <div class="v17-notification-menu" id="notification-menu" hidden>
+            <div class="v17-notification-head">
+              <strong>Notifications</strong>
+              <button type="button" onclick="markAllNotificationsRead()">Mark all read</button>
+            </div>
+            <div class="v17-notification-list" id="notification-list">
+              <div class="v17-notification-empty">No notifications yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="tool-btn" id="staff-control-nav" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1">
+          <i class="fa-solid fa-shield-halved"></i> Staff Control Panel
+        </button>
+      </div>
+    </div>
+  </header>
 <main><section class="hero"><div class="kicker"><i class="fa-solid fa-trophy"></i> Flix2Watch Competitive Rankings</div><h1>Community Leaderboard</h1><p>Every watch, rating and achievement pushes the rankings forward. See who is climbing, who is online and who owns the top of Flix2Watch right now.</p><div class="live-pill"><i class="fa-solid fa-circle"></i> LIVE RANKINGS</div></section>
 <section class="stats"><div class="stat"><span>Registered players</span><strong id="count">—</strong></div><div class="stat"><span>Online now</span><strong id="online">—</strong></div><div class="stat"><span>Combined watch time</span><strong id="watch">—</strong></div><div class="stat"><span>Current page</span><strong id="pageStat">1 / 1</strong></div></section>
 <section class="podium" id="podium"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></section>
@@ -20,8 +184,22 @@ function row(r){return `<article class="rank-row"><div class="rank-no">#${fmt(r.
 function bindProfiles(){document.querySelectorAll('[data-user]').forEach(x=>x.onclick=()=>profile(x.dataset.user))}
 function pager(total){const pages=Math.max(1,Math.ceil(total/25));$('#pageStat').textContent=`${page} / ${pages}`;let h=`<button class="pagebtn" data-p="${page-1}" ${page===1?'disabled':''}><i class="fa-solid fa-chevron-left"></i></button>`;for(let p=Math.max(1,page-2);p<=Math.min(pages,page+2);p++)h+=`<button class="pagebtn ${p===page?'active':''}" data-p="${p}">${p}</button>`;h+=`<button class="pagebtn" data-p="${page+1}" ${page===pages?'disabled':''}><i class="fa-solid fa-chevron-right"></i></button>`;$('#pager').innerHTML=h;$('#pager').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{page=+b.dataset.p;load()})}
 async function load(){if(busy)return;busy=true;$('#updated').textContent='Refreshing live rankings…';try{const {data,error}=await db.rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:sort});if(error)throw error;const rows=data||[],total=Number(rows[0]?.total_count||0);$('#count').textContent=fmt(total);$('#online').textContent=fmt(rows.filter(x=>x.online).length)+(page>1?' on page':'');$('#watch').textContent=time(rows.reduce((a,x)=>a+Number(x.watch_minutes||0),0))+(page>1?' on page':'');$('#list').innerHTML=rows.map(row).join('')||'<div class="empty">No ranked profiles yet.</div>';pager(total);bindProfiles();if(page===1){const top=rows.slice(0,3);$('#podium').innerHTML=pod(top[1],2)+pod(top[0],1)+pod(top[2],3);bindProfiles()}$('#updated').textContent='Live · updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}catch(e){$('#list').innerHTML=`<div class="empty error"><b>Leaderboard backend needs one quick update.</b><br><br>${esc(e.message)}<br><br>Run <b>leaderboard-fix.sql</b> in Supabase SQL Editor, then refresh this page.</div>`;$('#podium').innerHTML='';$('#updated').textContent='Backend update required';}finally{busy=false}}
-$('#tabs').onclick=e=>{const b=e.target.closest('[data-sort]');if(!b)return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));sort=b.dataset.sort;page=1;load()};$('#titleSearch').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim())location.href='/home/?q='+encodeURIComponent(e.target.value.trim())});$('#userSearch').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim())location.href='/profile/?user='+encodeURIComponent(e.target.value.trim().replace(/^@/,''))});
-const themes=['theme-red','theme-blue','theme-green','theme-purple','theme-cyan','theme-pink','theme-orange','theme-gold'];let ti=Math.max(0,themes.indexOf(localStorage.getItem('flix2watch-theme')||'theme-red'));document.body.className=themes[ti];$('#themeBtn').onclick=()=>{document.body.classList.remove(...themes);ti=(ti+1)%themes.length;document.body.classList.add(themes[ti]);localStorage.setItem('flix2watch-theme',themes[ti])};db.auth.getUser().then(async({data})=>{if(data?.user){const {data:p}=await db.from('profiles').select('username').eq('user_id',data.user.id).maybeSingle();$('#profileBtn').onclick=()=>location.href=p?.username?'/profile/?user='+encodeURIComponent(p.username):'/home/'}else $('#profileBtn').onclick=()=>location.href='/home/'});
+$('#tabs').onclick=e=>{const b=e.target.closest('[data-sort]');if(!b)return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));sort=b.dataset.sort;page=1;load()};
+const themes=['theme-red','theme-blue','theme-green','theme-purple','theme-cyan','theme-pink','theme-orange','theme-gold','theme-amber','theme-matrix','theme-ice','theme-midnight'];let currentTheme=localStorage.getItem('flix2watch-theme')||'theme-red';document.body.classList.add(currentTheme);
+window.setTheme=(name,cls)=>{document.body.classList.remove(...themes);document.body.classList.add(cls);currentTheme=cls;localStorage.setItem('flix2watch-theme',cls);const m=document.getElementById('theme-menu');if(m){m.hidden=true;m.setAttribute('aria-hidden','true')}};
+window.toggleDropdown=id=>{const m=document.getElementById(id);if(!m)return;m.hidden=!m.hidden;m.setAttribute('aria-hidden',m.hidden?'true':'false')};
+window.toggleF2WGenreMenu=e=>{e?.stopPropagation();const m=document.getElementById('f2w-genre-menu');if(m)m.classList.toggle('open')};
+window.toggleF2WMobileMenu=()=>document.querySelector('.header-tools')?.classList.toggle('mobile-open');
+window.v18HeaderMovieSearch=v=>{};window.protectMovieSearchField=el=>{if(el.readOnly){el.readOnly=false;setTimeout(()=>el.focus(),0)}};window.protectUserSearchField=el=>{if(el.readOnly){el.readOnly=false;setTimeout(()=>el.focus(),0)}};
+window.submitUserDirectorySearch=()=>{const el=document.getElementById('user-search');const q=el?.value.trim().replace(/^@/,'');if(q)location.href='/profile/?user='+encodeURIComponent(q)};
+window.handleUserSearchInput=()=>{};
+window.openChat=()=>location.href='/home/?chat=1';
+window.openHeaderAuth=()=>location.href='/home/';window.openAccountModal=()=>location.href='/home/';
+let myUsername='';window.openMyProfile=()=>location.href=myUsername?'/profile/?user='+encodeURIComponent(myUsername):'/home/';
+document.getElementById('movie-search')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim())location.href='/home/?q='+encodeURIComponent(e.target.value.trim())});
+document.getElementById('user-search')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitUserDirectorySearch()});
+document.addEventListener('click',e=>{if(!e.target.closest('.f2w-genre-wrap'))document.getElementById('f2w-genre-menu')?.classList.remove('open');if(!e.target.closest('.dropdown-wrapper')){const m=document.getElementById('theme-menu');if(m){m.hidden=true;m.setAttribute('aria-hidden','true')}}});
+db.auth.getUser().then(async({data})=>{const logged=!!data?.user;for(const id of ['favorites-nav-btn','profile-nav-btn','support-nav-btn','account-btn']){const el=document.getElementById(id);if(el)el.style.display=logged?'':'none'}const li=document.getElementById('header-login-btn'),su=document.getElementById('header-signup-btn');if(li)li.style.display=logged?'none':'';if(su)su.style.display=logged?'none':'';if(logged){const {data:p}=await db.from('profiles').select('username').eq('user_id',data.user.id).maybeSingle();myUsername=p?.username||''}});
 let timer;const refresh=()=>{clearTimeout(timer);timer=setTimeout(load,250)};try{db.channel('leaderboard-v2-live').on('postgres_changes',{event:'*',schema:'public',table:'user_presence'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_watch_time'},refresh).subscribe(s=>{if(s==='SUBSCRIBED')$('#updated').textContent='Realtime connected'})}catch{}load();setInterval(load,60000);
 })();
 </script></body></html>
