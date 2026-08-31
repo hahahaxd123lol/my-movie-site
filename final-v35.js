@@ -375,31 +375,60 @@
     el.classList.add('f2w-role-name',roleClass(role));
     el.dataset.f2wRole=role;
   }
-
   async function decorateNames(){
-    const targets=[...document.querySelectorAll('[data-f2w-username]')];
-    /* Current profile heading is not data-tagged in older markup. */
+    const nodes=[...document.querySelectorAll('[data-username],.chat-user,.chat-username,.comment-author,.leaderboard-username,.profile-username,.user-name,.display-name')]
+      .filter(el=>el && !el.dataset.f2wRoleDecorated);
+
+    if(!nodes.length)return;
+
+    const usernames=[...new Set(nodes.map(el=>String(el.dataset.username||el.getAttribute('data-user')||el.textContent||'').trim().replace(/^@/,'')).filter(Boolean))];
+    if(!usernames.length)return;
+
+    let effects={};
     try{
-      if(typeof viewedProfile!=='undefined'&&viewedProfile?.username){
-        const nameEl=document.getElementById('profile-display-name')||document.querySelector('.profile-name,.profile-identity h1');
-        if(nameEl){nameEl.dataset.f2wUsername=viewedProfile.username;targets.push(nameEl);}
+      const {data,error}=await chatSupabase.rpc('get_public_name_effects',{p_usernames:usernames});
+      if(!error && Array.isArray(data)){
+        data.forEach(row=>{
+          const key=String(row.username||'').trim().toLowerCase();
+          if(key)effects[key]=String(row.top_role||'').trim().toLowerCase();
+        });
       }
-    }catch{}
-    const pending=targets.filter(el=>!el.dataset.f2wRoleChecked&&el.dataset.f2wUsername);
-    if(!pending.length)return;
-    const names=[...new Set(pending.map(el=>String(el.dataset.f2wUsername||'').replace(/^@/,'').toLowerCase()).filter(Boolean))];
-    if(!names.length)return;
-    try{
-      const rows=await rpc('get_public_name_effects',{p_usernames:names});
-      const map=new Map((rows||[]).map(row=>[String(row.username||'').toLowerCase(),row.top_role]));
-      pending.forEach(el=>{
-        const role=map.get(String(el.dataset.f2wUsername||'').replace(/^@/,'').toLowerCase());
-        if(role)applyRoleEffect(el,role);
-        el.dataset.f2wRoleChecked='1';
-      });
-    }catch{
-      pending.forEach(el=>{el.dataset.f2wRoleChecked='1'});
+    }catch(error){
+      console.warn('Could not load name effects:',error);
     }
+
+    nodes.forEach(el=>{
+      const raw=String(el.dataset.username||el.getAttribute('data-user')||el.textContent||'').trim();
+      const clean=raw.replace(/^@/,'');
+      const role=effects[clean.toLowerCase()]||String(el.dataset.role||'').toLowerCase();
+      if(!role)return;
+
+      el.dataset.f2wRoleDecorated='1';
+      el.dataset.f2wRole=role;
+
+      // Keep the effect strictly around the actual word/characters.
+      if(el.classList.contains('f2w-role-name'))return;
+
+      const originalText=el.textContent;
+      if(!originalText.trim())return;
+
+      el.textContent='';
+      const span=document.createElement('span');
+      span.className=`f2w-role-name f2w-role-${role}`;
+      span.dataset.role=role;
+
+      const text=document.createElement('span');
+      text.className='f2w-role-name-text';
+      text.textContent=originalText;
+
+      const dust=document.createElement('span');
+      dust.className='f2w-role-fairy-dust';
+      dust.setAttribute('aria-hidden','true');
+      dust.innerHTML='<i></i><i></i><i></i><i></i><i></i><i></i>';
+
+      span.append(text,dust);
+      el.appendChild(span);
+    });
   }
 
   /* ---------- direct-message search ---------- */
@@ -1260,4 +1289,5 @@
 // f2w-force-save:ban-evasion-final-v35-v1:1788212206
 // f2w-force-save:realtime-profile-leaderboard-v17:1788213599
 // f2w-force-save:profile-editor-v22:1788214990
+// f2w-force-save:role-name-fairy-dust-v25:1788215879
  

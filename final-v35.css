@@ -455,3 +455,149 @@ body.f2w-authenticated .f2w-guest-rail{display:none!important}
 #v35-edit-avatar,#v17-edit-banner,#v35-edit-accent,.f2w-profile-editor-v22 [data-tab="style"],.f2w-profile-editor-v22 [data-section="style"]{display:none!important}
 /* f2w-force-save:profile-editor-css-v22:1788214990 */
  
+
+/* ============================================================
+   F2W v25 — ROLE NAME FAIRY DUST
+   Tight to the word itself; no giant particles sweeping across names.
+   ============================================================ */
+
+.f2w-role-name {
+  --role-a:#ffffff;
+  --role-b:#ffffff;
+  --role-glow:rgba(255,255,255,.55);
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  line-height:1.05!important;
+  vertical-align:baseline!important;
+  padding:0!important;
+  margin:0!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+
+.f2w-role-name-text {
+  position:relative!important;
+  z-index:2!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  color:transparent!important;
+  background:
+    linear-gradient(
+      90deg,
+      var(--role-a) 0%,
+      var(--role-b) 32%,
+      #fff 50%,
+      var(--role-b) 68%,
+      var(--role-a) 100%
+    )!important;
+  background-size:220% 100%!important;
+  background-position:0% 50%!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+  text-shadow:
+    0 0 2px var(--role-glow),
+    0 0 5px color-mix(in srgb,var(--role-a) 58%, transparent)!important;
+  animation:f2wRoleTextShimmer 3.2s linear infinite!important;
+  filter:saturate(1.18)!important;
+}
+
+.f2w-role-fairy-dust {
+  position:absolute!important;
+  z-index:3!important;
+  inset:-2px -3px!important;
+  pointer-events:none!important;
+  overflow:visible!important;
+}
+
+.f2w-role-fairy-dust i {
+  position:absolute!important;
+  width:2px!important;
+  height:2px!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  box-shadow:
+    0 0 2px #fff,
+    0 0 4px rgba(255,255,255,.95),
+    0 0 5px var(--role-glow)!important;
+  opacity:0!important;
+  transform:scale(.35)!important;
+  animation:f2wFairyDustTwinkle 2.25s ease-in-out infinite!important;
+}
+
+.f2w-role-fairy-dust i::before,
+.f2w-role-fairy-dust i::after {
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  background:rgba(255,255,255,.95)!important;
+  transform:translate(-50%,-50%)!important;
+  border-radius:999px!important;
+}
+.f2w-role-fairy-dust i::before { width:1px!important;height:4px!important; }
+.f2w-role-fairy-dust i::after { width:4px!important;height:1px!important; }
+
+.f2w-role-fairy-dust i:nth-child(1){left:3%!important;top:12%!important;animation-delay:.05s!important}
+.f2w-role-fairy-dust i:nth-child(2){left:22%!important;top:86%!important;animation-delay:.52s!important}
+.f2w-role-fairy-dust i:nth-child(3){left:47%!important;top:4%!important;animation-delay:1.02s!important}
+.f2w-role-fairy-dust i:nth-child(4){left:68%!important;top:88%!important;animation-delay:1.46s!important}
+.f2w-role-fairy-dust i:nth-child(5){left:88%!important;top:15%!important;animation-delay:.78s!important}
+.f2w-role-fairy-dust i:nth-child(6){left:97%!important;top:70%!important;animation-delay:1.82s!important}
+
+@keyframes f2wRoleTextShimmer {
+  0%{background-position:0% 50%}
+  100%{background-position:220% 50%}
+}
+
+@keyframes f2wFairyDustTwinkle {
+  0%,72%,100%{opacity:0;transform:scale(.25) rotate(0deg)}
+  80%{opacity:.9;transform:scale(.72) rotate(45deg)}
+  87%{opacity:1;transform:scale(1) rotate(90deg)}
+  94%{opacity:.38;transform:scale(.55) rotate(135deg)}
+}
+
+/* Role palettes: the letters themselves carry the role colour. */
+.f2w-role-owner{--role-a:#ff1830;--role-b:#ff6b79;--role-glow:rgba(255,24,48,.70)}
+.f2w-role-staff{--role-a:#ff3045;--role-b:#ff8a98;--role-glow:rgba(255,48,69,.62)}
+.f2w-role-moderator{--role-a:#9b5cff;--role-b:#c9a6ff;--role-glow:rgba(155,92,255,.62)}
+.f2w-role-support{--role-a:#35a8ff;--role-b:#8bd0ff;--role-glow:rgba(53,168,255,.58)}
+.f2w-role-developer{--role-a:#21d0b2;--role-b:#83f3df;--role-glow:rgba(33,208,178,.58)}
+.f2w-role-verified{--role-a:#2f8cff;--role-b:#83bfff;--role-glow:rgba(47,140,255,.58)}
+.f2w-role-contributor{--role-a:#f3b630;--role-b:#ffe08a;--role-glow:rgba(243,182,48,.56)}
+.f2w-role-curator{--role-a:#f06bff;--role-b:#ffb2ff;--role-glow:rgba(240,107,255,.58)}
+
+/* Prevent old pseudo-particle systems from creating wide moving blobs. */
+.f2w-role-name::before,
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Keep the wrapper no wider than the actual name text. */
+[data-f2w-role-decorated="1"],
+[data-f2w-role-decorated="1"] > .f2w-role-name {
+  max-width:max-content!important;
+}
+
+/* Mobile: keep sparkles subtle instead of noisy. */
+@media(max-width:720px){
+  .f2w-role-fairy-dust i{width:1.5px!important;height:1.5px!important}
+  .f2w-role-name-text{text-shadow:0 0 2px var(--role-glow),0 0 4px color-mix(in srgb,var(--role-a) 50%, transparent)!important}
+}
+
+/* Respect reduced-motion without losing the role colour. */
+@media(prefers-reduced-motion:reduce){
+  .f2w-role-name-text,.f2w-role-fairy-dust i{animation:none!important}
+  .f2w-role-fairy-dust i{opacity:.42!important}
+}
+
+/* f2w-force-save:role-fairy-dust-css-v25:1788215879 */
+ 
