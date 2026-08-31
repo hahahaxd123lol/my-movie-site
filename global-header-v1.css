@@ -1554,3 +1554,45 @@ body.f2w-main-page > header .v17-notification-list [class*="icon"] {
 }
 /* f2w-force-save:notification-readability-v31:1788217048 */
  
+
+/* ============================================================
+   F2W v32 — STATIC STATUS LIGHTS SITEWIDE
+   No pulsing/blinking. Fixed translucent status balls only.
+   ============================================================ */
+body.f2w-main-page .chat-online-dot,
+body.f2w-main-page .live-dot,
+body.f2w-main-page .chat-status-dot,
+body.f2w-main-page .f2w-presence-dot,
+body.f2w-main-page .f2w-profile-presence-dot,
+body.f2w-main-page [class*="status-dot"],
+body.f2w-main-page [class*="online-dot"] {
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  opacity:.82!important;
+  border-radius:50%!important;
+}
+
+body.f2w-main-page .chat-online-dot,
+body.f2w-main-page .live-dot,
+body.f2w-main-page .chat-status.connected .chat-status-dot,
+body.f2w-main-page .f2w-presence.online .f2w-presence-dot,
+body.f2w-main-page .f2w-profile-presence.online .f2w-profile-presence-dot {
+  background:rgba(33,216,121,.78)!important;
+  box-shadow:0 0 0 1px rgba(33,216,121,.18),0 0 4px rgba(33,216,121,.28)!important;
+}
+
+body.f2w-main-page .chat-status.error .chat-status-dot,
+body.f2w-main-page .f2w-presence.offline .f2w-presence-dot,
+body.f2w-main-page .f2w-profile-presence.offline .f2w-profile-presence-dot {
+  background:rgba(239,51,64,.78)!important;
+  box-shadow:0 0 0 1px rgba(239,51,64,.18),0 0 4px rgba(239,51,64,.25)!important;
+}
+
+body.f2w-main-page .chat-status:not(.connected):not(.error) .chat-status-dot {
+  background:rgba(245,158,11,.78)!important;
+  box-shadow:0 0 0 1px rgba(245,158,11,.16)!important;
+}
+
+/* f2w-force-save:static-status-lights-v32:1788217362 */
+ 

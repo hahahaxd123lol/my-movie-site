@@ -616,12 +616,16 @@
     }
     return '';
   }
-
   function socialLink(kind,value,label,icon){
     if(!value)return '';
-    const href=socialHref(kind,value);
     const text=kind==='website'?'Website':(label||cleanSocialHandle(value));
-    return `<a class="f2w-profile-social-link f2w-social-${kind}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">
+    if(kind==='discord'){
+      return `<span class="f2w-profile-social-link f2w-social-discord f2w-social-disabled" title="Discord username">
+        <i class="${icon}"></i><span>${esc(text)}</span>
+      </span>`;
+    }
+    const href=socialHref(kind,value);
+    return `<a class="f2w-profile-social-link f2w-social-${kind}" href="${esc(href)}" target="_blank" rel="noopener noreferrer external">
       <i class="${icon}"></i><span>${esc(text)}</span><i class="fa-solid fa-arrow-up-right-from-square f2w-social-out"></i>
     </a>`;
   }
@@ -779,23 +783,26 @@
     target.appendChild(button);
     renderProfileExtras(profile);
   }
-
   function renderProfileExtras(profile){
     if(!profile||!location.pathname.startsWith('/profile'))return;
-    const anchor=document.querySelector('#profile-hero > div:last-child,.profile-bio,.profile-identity,.profile-header-copy');
-    if(!anchor)return;
 
-    let host=document.getElementById('v17-profile-extra');
-    if(!host){
-      host=document.createElement('div');
-      host.id='v17-profile-extra';
-      anchor.appendChild(host);
-    }
+    const heroCopy=document.querySelector('#profile-hero > div:last-child');
+    const rolesPanel=document.getElementById('v16-profile-badges-panel');
+    if(!heroCopy)return;
 
     const genres=Array.isArray(profile.favorite_genres)?profile.favorite_genres:[];
     const status=String(profile.status_text||'').trim();
     const pronouns=String(profile.pronouns||'').trim();
     const quote=String(profile.profile_quote||'').trim();
+
+    // Bottom-of-hero profile details (this is where socials used to render).
+    let host=document.getElementById('v17-profile-extra');
+    if(!host){
+      host=document.createElement('div');
+      host.id='v17-profile-extra';
+      host.className='f2w-profile-bottom-details';
+      heroCopy.appendChild(host);
+    }
 
     host.innerHTML=`
       ${status?`<div class="f2w-profile-status-text"><i class="fa-solid fa-message"></i>${esc(status)}</div>`:''}
@@ -805,7 +812,28 @@
         ${genres.slice(0,8).map(g=>`<span class="f2w-profile-chip">${esc(g)}</span>`).join('')}
         ${profile.favorite_movie_text?`<a class="f2w-profile-chip f2w-favorite-movie-chip" href="${profile.favorite_movie_tmdb_id?`/watch/?id=${encodeURIComponent(profile.favorite_movie_tmdb_id)}&type=movie`:'#'}"><i class="fa-solid fa-film"></i>${esc(profile.favorite_movie_text)}</a>`:''}
       </div>
-      ${quote?`<blockquote class="f2w-profile-quote">“${esc(quote)}”</blockquote>`:''}
+      ${quote?`<blockquote class="f2w-profile-quote">“${esc(quote)}”</blockquote>`:''}`;
+
+    const meta=document.querySelector('#profile-hero .profile-meta');
+    if(meta && meta.parentElement!==host){
+      host.appendChild(meta);
+    }
+
+    // Dedicated social panel between Edit Profile area and Roles & Badges.
+    let socialPanel=document.getElementById('v32-profile-social-panel');
+    if(!socialPanel){
+      socialPanel=document.createElement('section');
+      socialPanel.id='v32-profile-social-panel';
+      socialPanel.className='profile-v16-panel f2w-profile-social-panel-v32';
+      if(rolesPanel?.parentNode)rolesPanel.parentNode.insertBefore(socialPanel,rolesPanel);
+      else document.getElementById('profile-root')?.appendChild(socialPanel);
+    }
+
+    socialPanel.innerHTML=`
+      <div class="profile-v16-panel-head">
+        <h2><i class="fa-solid fa-share-nodes" style="color:var(--accent)"></i> Social Links</h2>
+        <span>Public links</span>
+      </div>
       <div class="f2w-profile-socials f2w-profile-socials-v22">
         ${socialLink('website',profile.website_url,'Website','fa-solid fa-globe')}
         ${socialLink('instagram',profile.instagram_username,cleanSocialHandle(profile.instagram_username),'fa-brands fa-instagram')}
@@ -1337,6 +1365,41 @@
     refresh();
   }
 
+
+  function openProfileAvatarViewer(){
+    const img=document.getElementById('profile-avatar');
+    if(!img||img.style.display==='none'||!img.src)return;
+    let modal=document.getElementById('f2w-avatar-viewer-v32');
+    if(!modal){
+      modal=document.createElement('div');
+      modal.id='f2w-avatar-viewer-v32';
+      modal.className='f2w-avatar-viewer';
+      modal.innerHTML='<button type="button" class="f2w-avatar-viewer-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button><img alt="Profile picture">';
+      modal.onclick=e=>{if(e.target===modal)modal.hidden=true};
+      modal.querySelector('button').onclick=()=>{modal.hidden=true};
+      document.body.appendChild(modal);
+    }
+    modal.querySelector('img').src=img.src;
+    modal.hidden=false;
+  }
+
+  function installProfileAvatarViewer(){
+    const shell=document.getElementById('profile-avatar-shell');
+    if(!shell||shell.dataset.f2wAvatarViewer)return;
+    shell.dataset.f2wAvatarViewer='1';
+    shell.classList.add('f2w-avatar-clickable');
+    shell.setAttribute('role','button');
+    shell.setAttribute('tabindex','0');
+    shell.setAttribute('aria-label','Open profile picture');
+    shell.addEventListener('click',e=>{
+      if(e.target.closest?.('.avatar-edit-label'))return;
+      openProfileAvatarViewer();
+    });
+    shell.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();openProfileAvatarViewer();}
+    });
+  }
+
   /* ---------- boot ---------- */
   async function boot(){
     forceRedLogo();addLeaderboardNav();hardenRouting();installDmSearch();reorderSourceButtons();
@@ -1372,4 +1435,5 @@
 // f2w-force-save:role-sparkle-stability-v27:1788216279
 // f2w-force-save:role-name-effects-v30:1788216738
 // f2w-force-save:stable-role-name-v31:1788217048
+// f2w-force-save:profile-social-static-status-v32:1788217362
  

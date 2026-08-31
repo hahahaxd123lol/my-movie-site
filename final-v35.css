@@ -847,3 +847,158 @@ body.f2w-authenticated .f2w-guest-rail{display:none!important}
 
 /* f2w-force-save:direct-role-name-css-v31:1788217048 */
  
+
+/* ============================================================
+   F2W v32 — PROFILE SOCIAL/LAYOUT/PERFORMANCE POLISH
+   ============================================================ */
+
+/* Profile presence lights are still balls, just no animation. */
+.f2w-presence-dot,
+.f2w-profile-presence-dot {
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  opacity:.82!important;
+}
+.f2w-presence.online .f2w-presence-dot,
+.f2w-profile-presence.online .f2w-profile-presence-dot {
+  background:rgba(33,216,121,.78)!important;
+  box-shadow:0 0 4px rgba(33,216,121,.3)!important;
+}
+.f2w-presence.offline .f2w-presence-dot,
+.f2w-profile-presence.offline .f2w-profile-presence-dot {
+  background:rgba(239,51,64,.78)!important;
+  box-shadow:0 0 4px rgba(239,51,64,.26)!important;
+}
+
+/* Social panel lives immediately before Roles & Badges. */
+.f2w-profile-social-panel-v32 {
+  margin-top:14px!important;
+}
+.f2w-profile-socials-v22 {
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:9px!important;
+}
+.f2w-profile-social-link {
+  min-height:36px!important;
+  padding:0 12px!important;
+  font-size:.75rem!important;
+}
+.f2w-profile-social-link.f2w-social-disabled {
+  cursor:default!important;
+  opacity:.72!important;
+  user-select:text!important;
+  pointer-events:auto!important;
+}
+.f2w-profile-social-link.f2w-social-disabled .f2w-social-out {
+  display:none!important;
+}
+
+/* Followers/following are slightly larger, still compact. */
+.profile-social-counts {
+  gap:14px!important;
+  margin-top:14px!important;
+}
+.profile-social-count {
+  font-size:.78rem!important;
+  min-height:32px!important;
+  padding:4px 2px!important;
+}
+.profile-social-count strong {
+  font-size:.88rem!important;
+  margin-right:3px!important;
+}
+
+/* Favorites + join date now live at the bottom where socials used to be. */
+.f2w-profile-bottom-details {
+  margin-top:16px!important;
+  padding-top:12px!important;
+  border-top:1px solid rgba(255,255,255,.065)!important;
+}
+.f2w-profile-bottom-details .profile-meta {
+  margin-top:12px!important;
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+}
+.profile-chip-button {
+  appearance:none!important;
+  cursor:pointer!important;
+  font:inherit!important;
+}
+.profile-chip-button:hover {
+  border-color:#526a87!important;
+  color:#fff!important;
+}
+
+/* Existing favorite cards remain direct links to Watch and get obvious click affordance. */
+.profile-fav-card {
+  cursor:pointer!important;
+}
+.profile-fav-card:focus-within,
+.profile-fav-card:hover {
+  outline:none!important;
+}
+
+/* Avatar opens inside Flix2Watch. */
+.f2w-avatar-clickable {
+  cursor:zoom-in!important;
+}
+.f2w-avatar-viewer {
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483500!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  background:rgba(0,5,10,.88)!important;
+  backdrop-filter:blur(9px)!important;
+}
+.f2w-avatar-viewer[hidden]{display:none!important}
+.f2w-avatar-viewer img {
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:min(720px,90vw)!important;
+  max-height:86dvh!important;
+  object-fit:contain!important;
+  border:1px solid #334a65!important;
+  border-radius:18px!important;
+  box-shadow:0 30px 90px rgba(0,0,0,.65)!important;
+}
+.f2w-avatar-viewer-close {
+  position:fixed!important;
+  top:18px!important;
+  right:18px!important;
+  width:40px!important;
+  height:40px!important;
+  border:1px solid #334a65!important;
+  border-radius:11px!important;
+  background:#081522!important;
+  color:#fff!important;
+  cursor:pointer!important;
+}
+
+/* Highest role = actual display-name colour.
+   Particle GIF is the only status/name animation requested. */
+.f2w-role-owner{--role-main:#ff2638!important;--role-shadow:#ff001c!important}
+.f2w-role-staff{--role-main:#c05cff!important;--role-shadow:#9b2cff!important}
+.f2w-role-moderator{--role-main:#62b4ff!important;--role-shadow:#2f8de8!important}
+.f2w-role-support{--role-main:#32c8ff!important;--role-shadow:#00a9e8!important}
+.f2w-role-developer{--role-main:#31d9ad!important;--role-shadow:#12b98f!important}
+.f2w-role-verified{--role-main:#579dff!important;--role-shadow:#2f7ee8!important}
+.f2w-role-contributor{--role-main:#ffc13d!important;--role-shadow:#e79c00!important}
+.f2w-role-curator{--role-main:#ff6be1!important;--role-shadow:#da36ba!important}
+.f2w-role-name {
+  animation:none!important;
+  transition:none!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-size:6.657em auto!important;
+  background-repeat:repeat-x!important;
+  background-position:center!important;
+}
+
+/* f2w-force-save:profile-layout-role-v32:1788217362 */
+ 
