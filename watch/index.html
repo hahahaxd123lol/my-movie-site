@@ -3320,7 +3320,13 @@
       </div>
       <div class="server-groups" id="server-buttons-container">
         <button class="server-btn active" data-server="flix2watchapi" onclick="switchServer('flix2watchapi', this)">Flix2Watch API <span aria-hidden="true">★</span></button>
+        <button class="server-btn" data-server="vidcore" onclick="switchServer('vidcore', this)">VidCore</button>
+        <button class="server-btn" data-server="ezvidapi" onclick="switchServer('ezvidapi', this)">EZVid API</button>
         <button class="server-btn" data-server="vidlink" onclick="switchServer('vidlink', this)">VidLink</button>
+        <button class="server-btn" data-server="moviesrc" onclick="switchServer('moviesrc', this)">MovieSrc</button>
+        <button class="server-btn" data-server="vidsrchair" onclick="switchServer('vidsrchair', this)">VidSrc Hair</button>
+        <button class="server-btn" data-server="vidsrcio" onclick="switchServer('vidsrcio', this)">VidSrc IO</button>
+        <button class="server-btn" data-server="vidsrcfyi" onclick="switchServer('vidsrcfyi', this)">VidSrc FYI</button>
         <button class="server-btn" data-server="frembed" onclick="switchServer('frembed', this)">FR Embed</button>
         <button class="server-btn" data-server="uembed" onclick="switchServer('uembed', this)">U Embed Premium</button>
         <button class="server-btn" data-server="vidsrcsu" onclick="switchServer('vidsrcsu', this)">Vid SRC SU</button>
@@ -5527,7 +5533,8 @@ if(currentUser){
 
 
     let serverQueue = [
-      'flix2watchapi', 'vidlink', 'frembed', 'uembed', 'vidsrcsu', 'embedsu',
+      'flix2watchapi', 'vidcore', 'ezvidapi', 'vidlink', 'moviesrc', 'vidsrchair', 'vidsrcio', 'vidsrcfyi',
+      'frembed', 'uembed', 'vidsrcsu', 'embedsu',
       'videasy', 'vidfast', 'multiembed', 'vidsrcxyz', 'vidsrccc', '2embed',
       'moviesapi', 'smashystream', 'autoembed', 'vidify', 'pstream',
       'hexa', 'vidsrcrip', 'vidsrcvip', '123embed', '111movies', 'flicky',
@@ -5758,9 +5765,37 @@ if(currentUser){
         case 'moviesapi':
           embedUrl = mediaType === 'tv' ? `https://moviesapi.club/tv/${mediaId}-${seasonNum}-${episodeNum}` : `https://moviesapi.club/movie/${mediaId}`;
           break;
+        case 'vidcore':
+          // TMDB-native, documented movie/TV embeds; provider advertises anime coverage through TV routes.
+          embedUrl = mediaType === 'tv' ? `https://vidcore.org/embed/tv/${mediaId}/${seasonNum}/${episodeNum}` : `https://vidcore.org/embed/movie/${mediaId}`;
+          break;
+        case 'ezvidapi':
+          // Multi-provider TMDB player with explicit TV/anime support and upstream failover.
+          embedUrl = mediaType === 'tv' ? `https://ezvidapi.com/embed/tv/${mediaId}/${seasonNum}/${episodeNum}` : `https://ezvidapi.com/embed/movie/${mediaId}`;
+          break;
         case 'vidlink':
           embedUrl = mediaType === 'tv' ? `https://vidlink.pro/tv/${mediaId}/${seasonNum}/${episodeNum}` : `https://vidlink.pro/movie/${mediaId}`;
           break;
+        case 'moviesrc':
+          // MovieSrc documents TMDB movie/TV routes plus a dedicated MAL anime route.
+          // Use its TMDB TV route here so anime catalogued as TV can work without a MAL-ID lookup.
+          embedUrl = mediaType === 'tv' ? `https://movie-src.xyz/v1/embed/tv/${mediaId}/${seasonNum}/${episodeNum}` : `https://movie-src.xyz/v1/embed/movie/${mediaId}`;
+          break;
+        case 'vidsrchair': {
+          const streamId = currentImdbId || mediaId;
+          embedUrl = mediaType === 'tv' ? `https://vidsrc.hair/embed/tv/${streamId}/${seasonNum}/${episodeNum}` : `https://vidsrc.hair/embed/movie/${streamId}`;
+          break;
+        }
+        case 'vidsrcio': {
+          const streamId = currentImdbId || mediaId;
+          embedUrl = mediaType === 'tv' ? `https://vidsrc.io/embed/tv/${streamId}/${seasonNum}/${episodeNum}` : `https://vidsrc.io/embed/movie/${streamId}`;
+          break;
+        }
+        case 'vidsrcfyi': {
+          const streamId = currentImdbId || mediaId;
+          embedUrl = mediaType === 'tv' ? `https://vidsrc.fyi/embed/tv/${streamId}/${seasonNum}/${episodeNum}` : `https://vidsrc.fyi/embed/movie/${streamId}`;
+          break;
+        }
         case 'smashystream':
           embedUrl = mediaType === 'tv' ? `https://player.smashystream.com/tv/${mediaId}?s=${seasonNum}&e=${episodeNum}` : `https://player.smashystream.com/movie/${mediaId}`;
           break;
@@ -7023,7 +7058,7 @@ if(currentUser){
         // Keep the requested primary source order even when Staff stream
         // configuration has its own priority values. Unknown/new sources stay
         // enabled unless Staff explicitly disables them later.
-        const fixedPriority=['flix2watchapi','vidlink','frembed','uembed','vidsrcsu','embedsu'].filter(name=>
+        const fixedPriority=['flix2watchapi','vidcore','ezvidapi','vidlink','moviesrc','vidsrchair','vidsrcio','vidsrcfyi','frembed','uembed','vidsrcsu','embedsu'].filter(name=>
           serverQueue.includes(name)&&streamSourceConfig.get(name)?.enabled!==false
         );
         serverQueue=[...fixedPriority,...serverQueue.filter(name=>!fixedPriority.includes(name))];
@@ -7041,7 +7076,7 @@ if(currentUser){
         document.querySelectorAll('.server-groups').forEach(group=>{
           const buttons=[...group.querySelectorAll('.server-btn[data-server]')];
           buttons.sort((a,b)=>{
-            const fixed={flix2watchapi:1,vidlink:2,frembed:3,uembed:4,vidsrcsu:5,embedsu:6};
+            const fixed={flix2watchapi:1,vidcore:2,ezvidapi:3,vidlink:4,moviesrc:5,vidsrchair:6,vidsrcio:7,vidsrcfyi:8,frembed:9,uembed:10,vidsrcsu:11,embedsu:12};
             if(fixed[a.dataset.server]&&fixed[b.dataset.server])return fixed[a.dataset.server]-fixed[b.dataset.server];
             if(fixed[a.dataset.server])return -1;
             if(fixed[b.dataset.server])return 1;
