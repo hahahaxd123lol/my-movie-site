@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script id="f2w-fixed-theme">
+try{localStorage.setItem('flix2watch_theme','theme-red');localStorage.setItem('josh_site_theme','theme-red');}catch(_e){}
+document.documentElement.dataset.flix2watchTheme='theme-red';
+</script>
+
   <script src="/popup-protection-v34.js"></script>
   <meta charset="UTF-8">
   <script id="v18-force-https">
@@ -443,24 +448,6 @@
           <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
         </button>
 
-        <div class="dropdown-wrapper">
-          <button class="tool-btn" id="theme-menu-button" type="button" aria-haspopup="menu" aria-expanded="false" onclick="toggleDropdown('theme-menu')"><i class="fa-solid fa-sun"></i> Theme <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i></button>
-          <div class="dropdown-menu" id="theme-menu" hidden aria-hidden="true">
-            <div class="dropdown-item" onclick="setTheme('red','theme-red')"><span class="dot red"></span> Netflix Red</div>
-            <div class="dropdown-item" onclick="setTheme('blue','theme-blue')"><span class="dot blue"></span> Cyber Blue</div>
-            <div class="dropdown-item" onclick="setTheme('green','theme-green')"><span class="dot green"></span> Emerald Green</div>
-            <div class="dropdown-item" onclick="setTheme('purple','theme-purple')"><span class="dot purple"></span> Neon Purple</div>
-            <div class="dropdown-item" onclick="setTheme('amber','theme-amber')"><span class="dot amber"></span> Amber Terminal</div>
-            <div class="dropdown-item" onclick="setTheme('matrix','theme-matrix')"><span class="dot matrix"></span> Matrix Green</div>
-            <div class="dropdown-item" onclick="setTheme('cyan','theme-cyan')"><span class="dot cyan"></span> Electric Cyan</div>
-            <div class="dropdown-item" onclick="setTheme('pink','theme-pink')"><span class="dot pink"></span> Hot Pink</div>
-            <div class="dropdown-item" onclick="setTheme('orange','theme-orange')"><span class="dot orange"></span> Cinema Orange</div>
-            <div class="dropdown-item" onclick="setTheme('ice','theme-ice')"><span class="dot ice"></span> Ice Blue</div>
-            <div class="dropdown-item" onclick="setTheme('gold','theme-gold')"><span class="dot gold"></span> Premiere Gold</div>
-            <div class="dropdown-item" onclick="setTheme('midnight','theme-midnight')"><span class="dot midnight"></span> Midnight Indigo</div>
-          </div>
-        </div>
-
         <button class="f2w-auth-top-btn login" id="header-login-btn" type="button" style="display:none" onclick="openHeaderAuth('login')">Login</button>
         <button class="f2w-auth-top-btn signup" id="header-signup-btn" type="button" style="display:none" onclick="openHeaderAuth('signup')">Sign Up</button>
 
@@ -778,4 +765,5 @@
 <!-- f2w-update-marker: shared-chat-v7:users -->
 <!-- f2w-force-save: 20260831-2110 -->
 <!-- f2w-force-save:chat-v8-never-auto-open:1788208311:users -->
+<!-- f2w-force-save:fixed-theme-login-card:1788209019:users-index.html -->
  

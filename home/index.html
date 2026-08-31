@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script id="f2w-fixed-theme">
+try{localStorage.setItem('flix2watch_theme','theme-red');localStorage.setItem('josh_site_theme','theme-red');}catch(_e){}
+document.documentElement.dataset.flix2watchTheme='theme-red';
+</script>
+
   <script src="/popup-protection-v34.js"></script>
   <meta charset="UTF-8">
   <script id="v18-force-https">
@@ -2281,18 +2286,6 @@
       }
     }
   </style>
-
-  <style id="f2w-inline-home-auth-slide">
-    .f2w-inline-auth-tabs button{transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease}
-    .f2w-inline-auth-tabs button.active{background:#e50914!important;color:#fff!important;border-color:#e50914!important;box-shadow:0 8px 22px rgba(229,9,20,.22)}
-    .f2w-quick-auth-viewport{width:100%;overflow:hidden;transition:height .32s cubic-bezier(.2,.8,.2,1);will-change:height}
-    .f2w-quick-auth-track{display:flex;width:200%;align-items:flex-start;transform:translateX(0);transition:transform .36s cubic-bezier(.2,.85,.25,1);will-change:transform}
-    .f2w-quick-auth-track.signup{transform:translateX(-50%)}
-    .f2w-quick-auth-pane{width:50%;flex:0 0 50%;box-sizing:border-box}
-    .f2w-quick-signup{padding-top:1px}
-    .f2w-inline-signup-rule{font:500 11px/1.45 Inter,system-ui,sans-serif;color:#8f9bad;margin:-2px 2px 10px}
-    @media (prefers-reduced-motion:reduce){.f2w-quick-auth-track,.f2w-quick-auth-viewport{transition:none!important}}
-  </style>
 </head>
 
 <body class="theme-red f2w-main-page f2w-home-page">
@@ -2405,24 +2398,6 @@
         <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
           <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
         </button>
-
-        <div class="dropdown-wrapper">
-          <button class="tool-btn" id="theme-menu-button" type="button" aria-haspopup="menu" aria-expanded="false" onclick="toggleDropdown('theme-menu')"><i class="fa-solid fa-sun"></i> Theme <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i></button>
-          <div class="dropdown-menu" id="theme-menu" hidden aria-hidden="true">
-            <div class="dropdown-item" onclick="setTheme('red','theme-red')"><span class="dot red"></span> Netflix Red</div>
-            <div class="dropdown-item" onclick="setTheme('blue','theme-blue')"><span class="dot blue"></span> Cyber Blue</div>
-            <div class="dropdown-item" onclick="setTheme('green','theme-green')"><span class="dot green"></span> Emerald Green</div>
-            <div class="dropdown-item" onclick="setTheme('purple','theme-purple')"><span class="dot purple"></span> Neon Purple</div>
-            <div class="dropdown-item" onclick="setTheme('amber','theme-amber')"><span class="dot amber"></span> Amber Terminal</div>
-            <div class="dropdown-item" onclick="setTheme('matrix','theme-matrix')"><span class="dot matrix"></span> Matrix Green</div>
-            <div class="dropdown-item" onclick="setTheme('cyan','theme-cyan')"><span class="dot cyan"></span> Electric Cyan</div>
-            <div class="dropdown-item" onclick="setTheme('pink','theme-pink')"><span class="dot pink"></span> Hot Pink</div>
-            <div class="dropdown-item" onclick="setTheme('orange','theme-orange')"><span class="dot orange"></span> Cinema Orange</div>
-            <div class="dropdown-item" onclick="setTheme('ice','theme-ice')"><span class="dot ice"></span> Ice Blue</div>
-            <div class="dropdown-item" onclick="setTheme('gold','theme-gold')"><span class="dot gold"></span> Premiere Gold</div>
-            <div class="dropdown-item" onclick="setTheme('midnight','theme-midnight')"><span class="dot midnight"></span> Midnight Indigo</div>
-          </div>
-        </div>
 
         <button class="f2w-auth-top-btn login" id="header-login-btn" type="button" style="display:none" onclick="openHeaderAuth('login')">Login</button>
         <button class="f2w-auth-top-btn signup" id="header-signup-btn" type="button" style="display:none" onclick="openHeaderAuth('signup')">Sign Up</button>
@@ -2718,58 +2693,27 @@
         <strong>Watch. Chill. Repeat.</strong>
         <p>Create an account or log in to start watching.</p>
 
-        <div class="f2w-guest-actions f2w-guest-tabs f2w-inline-auth-tabs">
-          <button class="primary active" id="home-inline-login-tab" type="button" onclick="setHomeQuickAuthMode('login')">Login</button>
-          <button id="home-inline-signup-tab" type="button" onclick="setHomeQuickAuthMode('signup')">Sign Up</button>
+        <div class="f2w-guest-actions f2w-guest-tabs">
+          <button class="primary" type="button" onclick="document.getElementById('home-quick-email')?.focus()">Login</button>
+          <button type="button" onclick="openHeaderAuth('signup')">Sign Up</button>
         </div>
 
-        <div class="f2w-quick-auth-viewport" id="home-quick-auth-viewport">
-          <div class="f2w-quick-auth-track" id="home-quick-auth-track">
-            <div class="f2w-quick-auth-pane f2w-quick-login" id="home-quick-login-pane">
-              <label>
-                <i class="fa-regular fa-envelope"></i>
-                <input id="home-quick-email" type="text" autocomplete="username" placeholder="Username or email">
-              </label>
-              <label>
-                <i class="fa-solid fa-lock"></i>
-                <input id="home-quick-password" type="password" autocomplete="current-password" placeholder="Password">
-              </label>
-              <button class="f2w-quick-login-btn" id="home-quick-login-btn" type="button" onclick="quickHomeLogin()">Login <i class="fa-solid fa-chevron-right"></i></button>
-              <div class="f2w-quick-oauth">
-                <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> Google</button>
-                <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> Discord</button>
-              </div>
-              <div class="f2w-quick-login-message" id="home-quick-login-message"></div>
-              <div class="f2w-quick-signup-copy">No account? <button type="button" onclick="setHomeQuickAuthMode('signup')">Sign up instead</button></div>
-            </div>
-
-            <div class="f2w-quick-auth-pane f2w-quick-login f2w-quick-signup" id="home-quick-signup-pane">
-              <label>
-                <i class="fa-solid fa-user"></i>
-                <input id="home-quick-signup-username" type="text" maxlength="30" autocomplete="username" placeholder="Choose username">
-              </label>
-              <label>
-                <i class="fa-regular fa-envelope"></i>
-                <input id="home-quick-signup-email" type="email" autocomplete="email" placeholder="Email address">
-              </label>
-              <label>
-                <i class="fa-solid fa-lock"></i>
-                <input id="home-quick-signup-password" type="password" autocomplete="new-password" placeholder="Create password">
-              </label>
-              <label>
-                <i class="fa-solid fa-shield-halved"></i>
-                <input id="home-quick-signup-confirm" type="password" autocomplete="new-password" placeholder="Confirm password">
-              </label>
-              <div class="f2w-inline-signup-rule">A-Z and 0-9 only for usernames. Passwords need at least 6 characters.</div>
-              <button class="f2w-quick-login-btn" id="home-quick-signup-btn" type="button" onclick="quickHomeSignup()">Create Account <i class="fa-solid fa-chevron-right"></i></button>
-              <div class="f2w-quick-oauth">
-                <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> Google</button>
-                <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> Discord</button>
-              </div>
-              <div class="f2w-quick-login-message" id="home-quick-signup-message"></div>
-              <div class="f2w-quick-signup-copy">Already have an account? <button type="button" onclick="setHomeQuickAuthMode('login')">Log in instead</button></div>
-            </div>
+        <div class="f2w-quick-login">
+          <label>
+            <i class="fa-regular fa-envelope"></i>
+            <input id="home-quick-email" type="text" autocomplete="username" placeholder="Username or email">
+          </label>
+          <label>
+            <i class="fa-solid fa-lock"></i>
+            <input id="home-quick-password" type="password" autocomplete="current-password" placeholder="Password">
+          </label>
+          <button class="f2w-quick-login-btn" id="home-quick-login-btn" type="button" onclick="quickHomeLogin()">Login <i class="fa-solid fa-chevron-right"></i></button>
+          <div class="f2w-quick-oauth">
+            <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> Google</button>
+            <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> Discord</button>
           </div>
+          <div class="f2w-quick-login-message" id="home-quick-login-message"></div>
+          <div class="f2w-quick-signup-copy">No account? <button type="button" onclick="openHeaderAuth('signup')">Sign up instead</button></div>
         </div>
       </div>
 
@@ -3771,81 +3715,6 @@
     }
   }
 
-
-  let homeQuickAuthMode='login';
-
-  function sizeHomeQuickAuth(){
-    const viewport=document.getElementById('home-quick-auth-viewport');
-    const pane=document.getElementById(homeQuickAuthMode==='signup'?'home-quick-signup-pane':'home-quick-login-pane');
-    if(viewport&&pane){
-      viewport.style.height=`${Math.ceil(pane.scrollHeight)}px`;
-    }
-  }
-
-  function setHomeQuickAuthMode(mode){
-    homeQuickAuthMode=mode==='signup'?'signup':'login';
-    const track=document.getElementById('home-quick-auth-track');
-    const loginTab=document.getElementById('home-inline-login-tab');
-    const signupTab=document.getElementById('home-inline-signup-tab');
-    track?.classList.toggle('signup',homeQuickAuthMode==='signup');
-    loginTab?.classList.toggle('active',homeQuickAuthMode==='login');
-    signupTab?.classList.toggle('active',homeQuickAuthMode==='signup');
-    loginTab?.classList.toggle('primary',homeQuickAuthMode==='login');
-    signupTab?.classList.toggle('primary',homeQuickAuthMode==='signup');
-    requestAnimationFrame(()=>{
-      sizeHomeQuickAuth();
-      setTimeout(sizeHomeQuickAuth,380);
-      const focusId=homeQuickAuthMode==='signup'?'home-quick-signup-username':'home-quick-email';
-      document.getElementById(focusId)?.focus({preventScroll:true});
-    });
-  }
-
-  window.addEventListener('resize',()=>requestAnimationFrame(sizeHomeQuickAuth),{passive:true});
-  window.addEventListener('load',()=>setTimeout(sizeHomeQuickAuth,80),{once:true});
-
-  async function quickHomeSignup(){
-    const username=document.getElementById('home-quick-signup-username')?.value.trim()||'';
-    const email=document.getElementById('home-quick-signup-email')?.value.trim()||'';
-    const password=document.getElementById('home-quick-signup-password')?.value||'';
-    const confirm=document.getElementById('home-quick-signup-confirm')?.value||'';
-    const message=document.getElementById('home-quick-signup-message');
-    const button=document.getElementById('home-quick-signup-btn');
-    const show=(txt,error=false)=>{if(message){message.textContent=txt;message.classList.toggle('error',error);} requestAnimationFrame(sizeHomeQuickAuth);};
-
-    if(username.length<2||username.length>30){show('Username must be between 2 and 30 characters.',true);return;}
-    if(!/^[A-Za-z0-9]+$/.test(username)){show('Username can only use A-Z and numbers 0-9.',true);return;}
-    if(username.toLowerCase()==='josh'){show('That username is reserved.',true);return;}
-    if(!email||!password){show('Enter your email and password.',true);return;}
-    if(password.length<6){show('Use a password with at least 6 characters.',true);return;}
-    if(password!==confirm){show('Passwords do not match.',true);return;}
-
-    if(button)button.disabled=true;
-    show('Creating account…');
-    try{
-      const {data,error}=await chatSupabase.auth.signUp({
-        email,
-        password,
-        options:{data:{username,chat_alias:username}}
-      });
-      if(error)throw error;
-      if(data?.session){
-        currentUser=data.user;
-        chatAlias=isCurrentUserOwner()?'josh':username;
-        localStorage.removeItem('josh_chat_token');
-        chatToken='';
-        await ensureChatIdentity();
-        refreshAccountUI();
-        show('Account created. You are signed in.');
-      }else{
-        show('Account created. Check your email to confirm it, then log in.');
-      }
-    }catch(error){
-      show(error?.message||'Could not create account.',true);
-    }finally{
-      if(button)button.disabled=false;
-      requestAnimationFrame(sizeHomeQuickAuth);
-    }
-  }
 
   async function quickHomeLogin(){
     const email=document.getElementById('home-quick-email')?.value.trim()||'';
@@ -5724,11 +5593,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
     {icon:'fa-rocket',title:'Sci-Fi',sub:'Browse science fiction',url:'/home/?genre=878&page=1'},
     {icon:'fa-heart',title:'My Favorites',sub:'Open your saved library',action:ultraOpenFavorites},
     {icon:'fa-user',title:'My Profile',sub:'Open your public profile',action:ultraOpenProfile},
-    {icon:'fa-comments',title:'Open Chat',sub:'Join the 24-hour public chat',action:()=>{closeUltraCommand();openChat()}},
-    {icon:'fa-palette',title:'Theme: Netflix Red',sub:'Switch to red theme',action:()=>setTheme('red','theme-red')},
-    {icon:'fa-palette',title:'Theme: Cyber Blue',sub:'Switch to blue theme',action:()=>setTheme('blue','theme-blue')},
-    {icon:'fa-palette',title:'Theme: Neon Purple',sub:'Switch to purple theme',action:()=>setTheme('purple','theme-purple')},
-    {icon:'fa-arrow-up',title:'Back to top',sub:'Jump to the top of this page',action:()=>window.scrollTo({top:0,behavior:'smooth'})}
+    {icon:'fa-comments',title:'Open Chat',sub:'Join the 24-hour public chat',action:()=>{closeUltraCommand();openChat()}},    {icon:'fa-arrow-up',title:'Back to top',sub:'Jump to the top of this page',action:()=>window.scrollTo({top:0,behavior:'smooth'})}
   ];
   let ultraCommandSelection=0;
 
@@ -6407,12 +6272,6 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
   <script src="/final-v35.js" defer></script>
-
-<script>
-document.addEventListener('DOMContentLoaded',()=>{
-  setTimeout(()=>{ if(typeof sizeHomeQuickAuth==='function') sizeHomeQuickAuth(); },120);
-});
-</script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
@@ -6420,5 +6279,5 @@ document.addEventListener('DOMContentLoaded',()=>{
 <!-- f2w-force-save: 20260831-2110 -->
 <!-- f2w-force-update:home-mobile-login-top:20260831 -->
 <!-- f2w-force-save:chat-v8-never-auto-open:1788208311:home -->
-<!-- f2w-update-marker:home-inline-signup-slide:20260831-204149 -->
+<!-- f2w-force-save:fixed-theme-login-card:1788209019:home-index.html -->
  

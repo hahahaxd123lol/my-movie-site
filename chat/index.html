@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script id="f2w-fixed-theme">
+try{localStorage.setItem('flix2watch_theme','theme-red');localStorage.setItem('josh_site_theme','theme-red');}catch(_e){}
+document.documentElement.dataset.flix2watchTheme='theme-red';
+</script>
+
   <script src="/popup-protection-v34.js"></script>
   <meta charset="UTF-8">
   <script id="v18-force-https">
@@ -2405,24 +2410,6 @@
         <button class="tool-btn chat-button" onclick="window.location.href='/chat/'">
           <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
         </button>
-
-        <div class="dropdown-wrapper">
-          <button class="tool-btn" id="theme-menu-button" type="button" aria-haspopup="menu" aria-expanded="false" onclick="toggleDropdown('theme-menu')"><i class="fa-solid fa-sun"></i> Theme <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i></button>
-          <div class="dropdown-menu" id="theme-menu" hidden aria-hidden="true">
-            <div class="dropdown-item" onclick="setTheme('red','theme-red')"><span class="dot red"></span> Netflix Red</div>
-            <div class="dropdown-item" onclick="setTheme('blue','theme-blue')"><span class="dot blue"></span> Cyber Blue</div>
-            <div class="dropdown-item" onclick="setTheme('green','theme-green')"><span class="dot green"></span> Emerald Green</div>
-            <div class="dropdown-item" onclick="setTheme('purple','theme-purple')"><span class="dot purple"></span> Neon Purple</div>
-            <div class="dropdown-item" onclick="setTheme('amber','theme-amber')"><span class="dot amber"></span> Amber Terminal</div>
-            <div class="dropdown-item" onclick="setTheme('matrix','theme-matrix')"><span class="dot matrix"></span> Matrix Green</div>
-            <div class="dropdown-item" onclick="setTheme('cyan','theme-cyan')"><span class="dot cyan"></span> Electric Cyan</div>
-            <div class="dropdown-item" onclick="setTheme('pink','theme-pink')"><span class="dot pink"></span> Hot Pink</div>
-            <div class="dropdown-item" onclick="setTheme('orange','theme-orange')"><span class="dot orange"></span> Cinema Orange</div>
-            <div class="dropdown-item" onclick="setTheme('ice','theme-ice')"><span class="dot ice"></span> Ice Blue</div>
-            <div class="dropdown-item" onclick="setTheme('gold','theme-gold')"><span class="dot gold"></span> Premiere Gold</div>
-            <div class="dropdown-item" onclick="setTheme('midnight','theme-midnight')"><span class="dot midnight"></span> Midnight Indigo</div>
-          </div>
-        </div>
 
         <button class="f2w-auth-top-btn login" id="header-login-btn" type="button" style="display:none" onclick="openHeaderAuth('login')">Login</button>
         <button class="f2w-auth-top-btn signup" id="header-signup-btn" type="button" style="display:none" onclick="openHeaderAuth('signup')">Sign Up</button>
@@ -5661,11 +5648,7 @@ if(currentUser){
     {icon:'fa-rocket',title:'Sci-Fi',sub:'Browse science fiction',url:'/home/?genre=878&page=1'},
     {icon:'fa-heart',title:'My Favorites',sub:'Open your saved library',action:ultraOpenFavorites},
     {icon:'fa-user',title:'My Profile',sub:'Open your public profile',action:ultraOpenProfile},
-    {icon:'fa-comments',title:'Open Chat',sub:'Join the 24-hour public chat',action:()=>{closeUltraCommand();openChat()}},
-    {icon:'fa-palette',title:'Theme: Netflix Red',sub:'Switch to red theme',action:()=>setTheme('red','theme-red')},
-    {icon:'fa-palette',title:'Theme: Cyber Blue',sub:'Switch to blue theme',action:()=>setTheme('blue','theme-blue')},
-    {icon:'fa-palette',title:'Theme: Neon Purple',sub:'Switch to purple theme',action:()=>setTheme('purple','theme-purple')},
-    {icon:'fa-arrow-up',title:'Back to top',sub:'Jump to the top of this page',action:()=>window.scrollTo({top:0,behavior:'smooth'})}
+    {icon:'fa-comments',title:'Open Chat',sub:'Join the 24-hour public chat',action:()=>{closeUltraCommand();openChat()}},    {icon:'fa-arrow-up',title:'Back to top',sub:'Jump to the top of this page',action:()=>window.scrollTo({top:0,behavior:'smooth'})}
   ];
   let ultraCommandSelection=0;
 
@@ -6540,4 +6523,5 @@ if(currentUser){
 <!-- f2w-force-save: 20260831-2110 -->
 <!-- f2w-force-save:chat-v8:1788208311 -->
 <!-- f2w-force-save:guest-dm-lock-additive:1788208643 -->
+<!-- f2w-force-save:fixed-theme-login-card:1788209019:chat-index.html -->
  

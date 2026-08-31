@@ -260,4 +260,7 @@ body.f2w-global-chat-open{overflow:hidden!important}
 body.f2w-global-chat-open{overflow:initial!important}
 /* f2w-update-marker: global-header-css-chat-v7 */
 /* f2w-force-save: 20260831-2110 */
+/* Flix2Watch fixed-theme cleanup: theme switching retired. */
+#theme-menu-button,#theme-menu{display:none!important;}
+/* f2w-force-save:fixed-theme:1788209019 */
  
