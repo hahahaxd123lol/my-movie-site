@@ -658,7 +658,7 @@
     // postMessage PLAYER_EVENT payload. This does not change sources or react
     // to popup/new-tab activity; closing an external tab leaves playback intact.
     window.addEventListener('message', (event) => {
-      if (event.origin !== 'https://vidsrcme.su') return;
+      if (event.origin !== 'https://player.flix2watch.com') return;
       const payload = event.data;
       if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
 
@@ -5715,8 +5715,8 @@ if(currentUser){
           const idParam = currentImdbId ? `imdb=${encodeURIComponent(currentImdbId)}` : `tmdb=${encodeURIComponent(mediaId)}`;
           const common = `${idParam}&autoplay=1&ds_lang=en`;
           embedUrl = mediaType === 'tv'
-            ? `https://vidsrcme.su/embed/tv?${common}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&autonext=1`
-            : `https://vidsrcme.su/embed/movie?${common}`;
+            ? `https://player.flix2watch.com/embed/tv?${common}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&autonext=1`
+            : `https://player.flix2watch.com/embed/movie?${common}`;
 
           // Restore VidSrcMe position when we have one. The provider accepts
           // startAt in seconds and sends PLAYER_EVENT progress messages back.
@@ -5830,7 +5830,7 @@ if(currentUser){
     // postMessage PLAYER_EVENT payload. This does not change sources or react
     // to popup/new-tab activity; closing an external tab leaves playback intact.
     window.addEventListener('message', (event) => {
-      if (event.origin !== 'https://vidsrcme.su') return;
+      if (event.origin !== 'https://player.flix2watch.com') return;
       const payload = event.data;
       if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
 
