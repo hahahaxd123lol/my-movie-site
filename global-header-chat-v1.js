@@ -12,4 +12,4 @@
     goToChat();
   },true);
 })();
- 
+/* f2w-force-push-20260831-batch2:global-header-chat-v1.js:df9b04b464 */ 

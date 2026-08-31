@@ -253,4 +253,4 @@
 #f2w-global-chat-panel.ready #f2w-global-chat-loading{display:none}
 body.f2w-global-chat-open{overflow:hidden!important}
 @media(max-width:760px){#f2w-global-chat-overlay{padding:0}#f2w-global-chat-panel{width:100vw;height:100dvh;border-radius:0;border:0}#f2w-global-chat-close{right:8px;top:8px}}
- 
+/* f2w-force-push-20260831-batch2:global-header-v1.css:a396d17080 */ 
