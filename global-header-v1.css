@@ -841,3 +841,79 @@ main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-ban
 /* f2w-force-save:account-gap-no-card-scroll-v13:1788211530 */
 /* f2w-force-save:remove-nettools-v14:1788211808:global-header-v1.css */
  
+
+/* ==========================================================
+   F2W v15 — universal legal footer
+   ========================================================== */
+.f2w-legal-footer {
+  width:100%;
+  box-sizing:border-box;
+  margin-top:48px;
+  padding:26px max(18px, env(safe-area-inset-left)) calc(28px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-right));
+  border-top:1px solid rgba(255,255,255,.09);
+  background:linear-gradient(180deg,rgba(5,9,16,.72),rgba(2,5,10,.98));
+  color:#8e9aae;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.f2w-legal-footer-inner {
+  width:min(1280px,100%);
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px 28px;
+  flex-wrap:wrap;
+}
+.f2w-legal-footer-brand {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:180px;
+  font-size:.82rem;
+}
+.f2w-legal-footer-brand img {
+  width:auto;
+  height:26px;
+  object-fit:contain;
+}
+.f2w-legal-footer-links {
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:8px 18px;
+  flex-wrap:wrap;
+}
+.f2w-legal-footer-links a {
+  color:#aab4c4;
+  text-decoration:none;
+  font-size:.8rem;
+  font-weight:650;
+  white-space:nowrap;
+  transition:color .16s ease,opacity .16s ease;
+}
+.f2w-legal-footer-links a:hover {
+  color:#fff;
+}
+@media (max-width:760px) {
+  .f2w-legal-footer {
+    margin-top:34px;
+    padding-top:22px;
+  }
+  .f2w-legal-footer-inner {
+    display:block;
+    text-align:center;
+  }
+  .f2w-legal-footer-brand {
+    justify-content:center;
+    margin-bottom:15px;
+  }
+  .f2w-legal-footer-links {
+    justify-content:center;
+    gap:11px 16px;
+  }
+  .f2w-legal-footer-links a {
+    font-size:.78rem;
+  }
+}
+/* f2w-force-save:universal-legal-footer-v15:1788212347 */
+ 

@@ -160,3 +160,36 @@
 // f2w-force-save:mobile-auth-handoff-v13:1788211530
 // f2w-force-save:remove-nettools-v14:1788211808:global-header-chat-v1.js
  
+
+/* F2W v15 — universal bottom legal navigation */
+(() => {
+  'use strict';
+  const links = [
+    ['/privacy/','Privacy'],
+    ['/terms/','Terms & Conditions'],
+    ['/removal-requests/','Removal Requests'],
+    ['/law-enforcement/','Law Enforcement'],
+    ['/copyright/','Copyright / DMCA'],
+    ['/support/','Support']
+  ];
+  function mountLegalFooter() {
+    if (document.getElementById('f2w-legal-footer')) return;
+    const footer=document.createElement('footer');
+    footer.id='f2w-legal-footer';
+    footer.className='f2w-legal-footer';
+    footer.innerHTML=`<div class="f2w-legal-footer-inner">
+      <div class="f2w-legal-footer-brand">
+        <img src="/flix2watch-logo-red-v34.png" alt="">
+        <span>© ${new Date().getFullYear()} Flix2Watch</span>
+      </div>
+      <nav class="f2w-legal-footer-links" aria-label="Legal and policy links">
+        ${links.map(([href,label])=>`<a href="${href}">${label}</a>`).join('')}
+      </nav>
+    </div>`;
+    document.body.appendChild(footer);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',mountLegalFooter,{once:true});
+  else mountLegalFooter();
+})();
+// f2w-force-save:universal-legal-footer-v15:1788212347
+ 

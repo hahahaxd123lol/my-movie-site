@@ -2257,8 +2257,8 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <link rel="stylesheet" href="/final-v35.css">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=13-1788211530">
-  <script src="/global-header-chat-v1.js?v=13-1788211530" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=15-1788212347">
+  <script src="/global-header-chat-v1.js?v=15-1788212347" defer></script>
 
   <style id="f2w-mobile-login-above-featured">
     /* Mobile/tablet home layout: keep the login/signup card above Featured. */
@@ -2880,21 +2880,23 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
     <nav class="catalog-pagination" id="catalog-pagination" aria-label="Movie catalogue pages"></nav>
 
     
-  <section class="recent-section" id="recently-viewed-section">
-    <div class="section-heading-row">
-      <div class="section-heading-copy">
-        <div class="section-kicker">Pick up where you left off</div>
-        <h2>Recently Viewed</h2>
-        <p>Quick access to the movies and series you opened most recently on this device.</p>
-      </div>
-      <span class="glass-chip"><i class="fa-solid fa-clock-rotate-left"></i> Device history</span>
-    </div>
-    <div class="recent-strip" id="recently-viewed-strip"></div>
-  </section>
+  
 
 <div class="home-extra">
 
-      <section class="extra-section" aria-labelledby="top-rated-title">
+<section class="extra-section" aria-labelledby="popular-movies-title">
+        <div class="extra-section-head">
+          <div>
+            <div class="extra-eyebrow">SERIES DISCOVERY</div>
+            <h2 id="popular-movies-title">Popular Movies Right Now</h2>
+            <p class="extra-subtitle">A quick row of popular movies without replacing your main movie grid above.</p>
+          </div>
+        </div>
+        <div class="media-strip" id="popular-movies-strip">
+          <div class="extra-loading">Loading popular movies...</div>
+        </div>
+      </section>
+<section class="extra-section" aria-labelledby="top-rated-title">
         <div class="extra-section-head">
           <div>
             <div class="extra-eyebrow">CURATED PICKS</div>
@@ -2909,21 +2911,17 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
           <div class="extra-loading">Loading top rated movies...</div>
         </div>
       </section>
-
-      <section class="extra-section" aria-labelledby="popular-tv-title">
-        <div class="extra-section-head">
-          <div>
-            <div class="extra-eyebrow">SERIES DISCOVERY</div>
-            <h2 id="popular-tv-title">Popular TV Right Now</h2>
-            <p class="extra-subtitle">A quick row of popular series without replacing your main movie grid above.</p>
-          </div>
+<section class="f2w-ultra-section">
+      <div class="f2w-ultra-head">
+        <div>
+          <div class="f2w-ultra-kicker">COMING UP</div>
+          <h2 class="f2w-ultra-title">Upcoming Movies</h2>
+          <p class="f2w-ultra-sub">A quick look at upcoming theatrical releases.</p>
         </div>
-        <div class="media-strip" id="popular-tv-strip">
-          <div class="extra-loading">Loading popular TV...</div>
-        </div>
-      </section>
-
-      <section class="extra-section" aria-labelledby="genre-title">
+      </div>
+      <div class="f2w-horizontal" id="f2w-upcoming-row"><div class="f2w-empty-loader"><i class="fa-solid fa-circle-notch fa-spin"></i>Loading on demand…</div></div>
+    </section>
+<section class="extra-section" aria-labelledby="genre-title">
         <div class="extra-section-head">
           <div>
             <div class="extra-eyebrow">FIND SOMETHING FAST</div>
@@ -2965,6 +2963,24 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
           </button>
         </div>
       </section>
+<section class="recent-section" id="recently-viewed-section">
+    <div class="section-heading-row">
+      <div class="section-heading-copy">
+        <div class="section-kicker">Pick up where you left off</div>
+        <h2>Recently Viewed</h2>
+        <p>Quick access to the movies and series you opened most recently on this device.</p>
+      </div>
+      <span class="glass-chip"><i class="fa-solid fa-clock-rotate-left"></i> Device history</span>
+    </div>
+    <div class="recent-strip" id="recently-viewed-strip"></div>
+  </section>
+
+
+      
+
+      
+
+      
 
       <section class="surprise-panel" aria-label="Surprise me">
         <div class="surprise-copy">
@@ -2996,11 +3012,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
             <h3>Multiple Sources</h3>
             <p>The watch page includes a source matrix and a quick fallback button when a player source is unavailable.</p>
           </div>
-          <div class="feature-card">
-            <i class="fa-solid fa-palette"></i>
-            <h3>Theme Controls</h3>
-            <p>Switch the whole interface between red, blue, green, purple, amber and matrix themes.</p>
-          </div>
+          
         </div>
       </section>
 
@@ -3021,13 +3033,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
             <div class="faq-answer">Open the watch page and use the source buttons or the “Switch to Next Working Source” control above the player.</div>
           </div>
 
-          <div class="faq-item">
-            <button class="faq-question" type="button" onclick="toggleFAQ(this)">
-              Does my theme stay selected?
-              <i class="fa-solid fa-plus"></i>
-            </button>
-            <div class="faq-answer">Yes. Your chosen theme is saved in your browser and is shared between the index and watch pages.</div>
-          </div>
+          
 
           <div class="faq-item">
             <button class="faq-question" type="button" onclick="toggleFAQ(this)">
@@ -3086,25 +3092,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
         </div>
       </div>
     </footer>
-<section class="f2w-ultra-section" id="f2w-mood-lab">
-      <div class="f2w-ultra-head">
-        <div>
-          <div class="f2w-ultra-kicker">MOOD MIXER</div>
-          <h2 class="f2w-ultra-title">Pick a vibe, not a title.</h2>
-          <p class="f2w-ultra-sub">Jump straight into a genre when you know the mood but not what you want to watch.</p>
-        </div>
-      </div>
-      <div class="f2w-chip-grid">
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=53&page=1')"><i class="fa-solid fa-bolt"></i> Tense</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=35&page=1')"><i class="fa-solid fa-face-laugh"></i> Funny</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=27&page=1')"><i class="fa-solid fa-ghost"></i> Scary</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=10749&page=1')"><i class="fa-solid fa-heart"></i> Romantic</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=878&page=1')"><i class="fa-solid fa-rocket"></i> Futuristic</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=80&page=1')"><i class="fa-solid fa-user-secret"></i> Crime</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=16&page=1')"><i class="fa-solid fa-wand-magic-sparkles"></i> Animated</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=99&page=1')"><i class="fa-solid fa-earth-americas"></i> Real Stories</button>
-      </div>
-    </section>
+
 
     <section class="f2w-ultra-section" id="f2w-hidden-gems">
       <div class="f2w-ultra-head">
@@ -3117,16 +3105,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
       <div class="f2w-horizontal" id="f2w-gems-row"><div class="f2w-empty-loader"><i class="fa-solid fa-circle-notch fa-spin"></i>Loading on demand…</div></div>
     </section>
 
-    <section class="f2w-ultra-section">
-      <div class="f2w-ultra-head">
-        <div>
-          <div class="f2w-ultra-kicker">COMING UP</div>
-          <h2 class="f2w-ultra-title">Upcoming Movies</h2>
-          <p class="f2w-ultra-sub">A quick look at upcoming theatrical releases.</p>
-        </div>
-      </div>
-      <div class="f2w-horizontal" id="f2w-upcoming-row"><div class="f2w-empty-loader"><i class="fa-solid fa-circle-notch fa-spin"></i>Loading on demand…</div></div>
-    </section>
+    
 </main>
 
 
@@ -5396,7 +5375,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 
   function refreshExtraRows(){
     loadExtraMediaStrip('movie/top_rated','top-rated-strip','movie');
-    loadExtraMediaStrip('tv/popular','popular-tv-strip','tv');
+    loadExtraMediaStrip('movie/popular','popular-movies-strip','movie');
   }
 
   function browseGenreFromBottom(genreId){
@@ -6347,4 +6326,6 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 <!-- f2w-force-save:home-remove-login-required:1788211424 -->
 <!-- f2w-force-save:sitewide-auth-v13:1788211530:home/index.html -->
 <!-- f2w-force-save:remove-nettools-v14:1788211808:home/index.html -->
+<!-- f2w-force-save:home-reorder-footer-v15:1788212347 -->
+<!-- f2w-force-save:sitewide-footer-v15:1788212347:home/index.html -->
  
