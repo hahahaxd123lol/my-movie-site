@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script src="/popup-protection-v34.js"></script>
+<meta charset="utf-8">
+  <script id="v18-force-https">
+    (() => {
+      const localHosts=new Set(['localhost','127.0.0.1','::1']);
+      if(localHosts.has(location.hostname))return;
+
+      const canonicalHost=
+        location.hostname.toLowerCase()==='www.flix2watch.com'
+          ? 'flix2watch.com'
+          : location.host;
+
+      if(location.protocol!=='https:' || location.hostname.toLowerCase()==='www.flix2watch.com'){
+        location.replace(
+          'https://'+canonicalHost+location.pathname+location.search+location.hash
+        );
+      }
+    })();
+  </script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Support & Help | Flix2Watch</title>
+<link rel="icon" href="/favicon-v16.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-v16.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16-v16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon-v16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/silent-account-v16.js"></script>
+  <script src="/account-guard-v16.js" defer></script>
+<style>
+:root{--bg:#050508;--panel:#0b0b10;--line:rgba(255,255,255,.08);--muted:#8b93a7}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top right,rgba(229,9,20,.08),transparent 32%),var(--bg);color:#fff;font-family:Inter,system-ui,sans-serif}
+header{border-bottom:1px solid var(--line);background:rgba(5,5,8,.9);backdrop-filter:blur(18px)}.top{max-width:1050px;margin:auto;padding:13px 20px;display:flex;align-items:center;gap:14px}.top img{width:96px}.top a{margin-left:auto;color:#fff;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:.6rem}
+main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p{color:var(--muted);font-size:.66rem;line-height:1.5}.card{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:16px;margin-top:14px}label{display:block;color:var(--muted);font-size:.48rem;font-weight:800;margin:10px 0 5px}input,textarea{width:100%;border:1px solid var(--line);background:#08080d;color:#fff;border-radius:8px;padding:10px}textarea{min-height:110px}button{margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:#fff;color:#050507;font-weight:800;cursor:pointer}.ticket{border:1px solid var(--line);border-radius:11px;padding:12px;margin-top:10px}.msg{padding:8px;border:1px solid var(--line);border-radius:8px;margin:6px 0;background:#08080d}.msg.staff{border-color:rgba(168,85,247,.28)}.msg.owner{border-color:rgba(239,68,68,.28)}.msg small{display:block;color:var(--muted);font-size:.45rem;margin-bottom:4px}.msg div{font-size:.58rem;white-space:pre-wrap}.empty{padding:25px;text-align:center;color:var(--muted);font-size:.6rem}
+</style>
+  <link rel="preconnect" href="https://viqufxlcxwgboyxbdhjb.supabase.co" crossorigin>
+  <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
+  <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="dns-prefetch" href="//fonts.googleapis.com">
+  <link rel="dns-prefetch" href="//fonts.gstatic.com">
+  <link rel="stylesheet" href="/responsive-v7.css">
+  <link rel="stylesheet" href="/final-v9.css">
+  <link rel="stylesheet" href="/approved-ui-v12.css">
+  <link rel="stylesheet" href="/final-fixes-v13.css">
+  <link rel="stylesheet" href="/final-v14.css">
+  <link rel="stylesheet" href="/final-v15.css">
+  <link rel="stylesheet" href="/final-v16.css">
+  <link rel="stylesheet" href="/final-v17.css">
+  <link rel="stylesheet" href="/final-v18.css">
+  <link rel="stylesheet" href="/final-v19.css">
+  <link rel="stylesheet" href="/final-v20.css">
+  <link rel="stylesheet" href="/final-v22.css">
+  <link rel="stylesheet" href="/final-v27.css">
+  <link rel="stylesheet" href="/final-v28.css">
+  <link rel="stylesheet" href="/final-v32.css">
+  <link rel="stylesheet" href="/final-v33.css">
+  
+  <script src="/final-fixes-v13.js" defer></script>
+  <script src="/approved-ui-v12.js" defer></script>
+  <script src="/final-v14.js" defer></script>
+  <script src="/final-v15.js" defer></script>
+  <script src="/final-v16.js" defer></script>
+  <script src="/final-v17.js" defer></script>
+  <script src="/final-v18.js" defer></script>
+  <script src="/final-v19.js" defer></script>
+  <script src="/final-v20.js" defer></script>
+  <script src="/final-v22.js" defer></script>
+  
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta property="og:site_name" content="Flix2Watch">
+  <meta property="og:image" content="https://flix2watch.com/og-image-v16.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://flix2watch.com/og-image-v16.png">
+  <script src="/seo-v17.js" defer></script>
+
+  <style id="f2w-header-v21-critical">
+    /* V21: final, cache-resistant desktop header authority */
+    @media (min-width: 1181px) {
+      body.f2w-main-page > header{
+        position:sticky !important;
+        top:0 !important;
+        z-index:2147480000 !important;
+        display:flex !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        width:100% !important;
+        max-width:none !important;
+        height:82px !important;
+        min-height:82px !important;
+        max-height:82px !important;
+        margin:0 !important;
+        padding:10px 16px !important;
+        gap:14px !important;
+        overflow:visible !important;
+        background:rgba(2,8,19,.97) !important;
+        border:0 !important;
+        border-bottom:1px solid color-mix(in srgb,var(--accent) 18%,#27394f) !important;
+        border-radius:0 !important;
+        box-shadow:0 8px 26px rgba(0,0,0,.28) !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header > .logo{
+        position:static !important;
+        display:flex !important;
+        flex:0 0 158px !important;
+        width:158px !important;
+        min-width:158px !important;
+        max-width:158px !important;
+        height:56px !important;
+        margin:0 !important;
+        padding:0 !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header > .logo .logo-image{
+        display:block !important;
+        width:158px !important;
+        min-width:0 !important;
+        max-width:158px !important;
+        height:auto !important;
+        max-height:56px !important;
+        margin:0 !important;
+        object-fit:contain !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header > .f2w-mobile-nav-toggle{
+        display:none !important;
+      }
+
+      body.f2w-main-page > header > .header-tools{
+        position:static !important;
+        display:flex !important;
+        flex:1 1 auto !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        align-content:center !important;
+        min-width:0 !important;
+        width:auto !important;
+        height:42px !important;
+        min-height:42px !important;
+        max-height:42px !important;
+        margin:0 !important;
+        padding:0 !important;
+        gap:7px !important;
+        overflow:visible !important;
+        background:transparent !important;
+        border:0 !important;
+        box-shadow:none !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header .f2w-primary-nav{
+        display:flex !important;
+        flex:0 0 auto !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        width:auto !important;
+        height:42px !important;
+        margin:0 !important;
+        padding:0 !important;
+        gap:1px !important;
+      }
+
+      body.f2w-main-page > header .f2w-nav-link,
+      body.f2w-main-page > header .f2w-nav-button{
+        display:inline-flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:5px !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:40px !important;
+        min-height:40px !important;
+        max-height:40px !important;
+        margin:0 !important;
+        padding:7px 8px !important;
+        border-radius:7px !important;
+        font-size:11px !important;
+        line-height:1 !important;
+        white-space:nowrap !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header .f2w-search-pair{
+        display:flex !important;
+        flex:1 1 390px !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        width:auto !important;
+        min-width:260px !important;
+        max-width:585px !important;
+        height:40px !important;
+        margin:0 3px !important;
+        padding:0 !important;
+        gap:7px !important;
+      }
+
+      body.f2w-main-page > header .search-container,
+      body.f2w-main-page > header .user-search-container{
+        display:flex !important;
+        position:relative !important;
+        flex:1 1 0 !important;
+        min-width:115px !important;
+        width:auto !important;
+        height:40px !important;
+        margin:0 !important;
+        padding:0 !important;
+      }
+
+      body.f2w-main-page > header .search-bar,
+      body.f2w-main-page > header .user-search-bar{
+        width:100% !important;
+        min-width:0 !important;
+        height:40px !important;
+        min-height:40px !important;
+        max-height:40px !important;
+        margin:0 !important;
+        padding:8px 34px !important;
+        border-radius:8px !important;
+        font-size:11px !important;
+        line-height:1 !important;
+      }
+
+      body.f2w-main-page > header .f2w-action-cluster{
+        display:flex !important;
+        flex:0 0 auto !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        justify-content:flex-end !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:40px !important;
+        margin:0 0 0 auto !important;
+        padding:0 !important;
+        gap:6px !important;
+      }
+
+      body.f2w-main-page > header .tool-btn,
+      body.f2w-main-page > header .f2w-auth-top-btn,
+      body.f2w-main-page > header #staff-control-nav{
+        display:inline-flex !important;
+        flex:0 0 auto !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:5px !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:40px !important;
+        min-height:40px !important;
+        max-height:40px !important;
+        margin:0 !important;
+        padding:7px 8px !important;
+        border-radius:8px !important;
+        font-size:11px !important;
+        line-height:1 !important;
+        white-space:nowrap !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header .dropdown-wrapper,
+      body.f2w-main-page > header .f2w-genre-wrap,
+      body.f2w-main-page > header .v17-notification-wrap{
+        position:relative !important;
+        flex:0 0 auto !important;
+        width:auto !important;
+        margin:0 !important;
+      }
+
+      body.f2w-main-page > header .dropdown-menu{
+        top:calc(100% + 8px) !important;
+        right:0 !important;
+        left:auto !important;
+      }
+
+      body.f2w-main-page > header .f2w-genre-menu{
+        top:calc(100% + 8px) !important;
+        left:0 !important;
+        right:auto !important;
+      }
+    }
+
+    /* Medium desktop/laptop: still one row, simply tighter. */
+    @media (min-width:1181px) and (max-width:1650px){
+      body.f2w-main-page > header{
+        gap:9px !important;
+        padding-left:11px !important;
+        padding-right:11px !important;
+      }
+      body.f2w-main-page > header > .logo{
+        flex-basis:145px !important;
+        width:145px !important;
+        min-width:145px !important;
+        max-width:145px !important;
+      }
+      body.f2w-main-page > header > .logo .logo-image{
+        width:145px !important;
+        max-width:145px !important;
+      }
+      body.f2w-main-page > header .f2w-nav-link,
+      body.f2w-main-page > header .f2w-nav-button,
+      body.f2w-main-page > header .tool-btn,
+      body.f2w-main-page > header .f2w-auth-top-btn,
+      body.f2w-main-page > header #staff-control-nav{
+        padding-left:7px !important;
+        padding-right:7px !important;
+        font-size:10px !important;
+      }
+      body.f2w-main-page > header .f2w-search-pair{
+        min-width:235px !important;
+        max-width:500px !important;
+      }
+    }
+  </style>
+
+  <script src="/chat-safety-v33.js" defer></script>
+  <link rel="stylesheet" href="/final-v34.css">
+  <script src="/social-v34.js" defer></script>
+  <link rel="stylesheet" href="/final-v35.css">
+</head>
+<body class="f2w-main-page f2w-support-page">
+<header>
+    <a href="/home/" class="logo" aria-label="Flix2Watch home">
+      <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
+    </a>
+
+    <button class="f2w-mobile-nav-toggle" type="button" aria-label="Open navigation" onclick="toggleF2WMobileMenu()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="header-tools">
+      <nav class="f2w-primary-nav" aria-label="Main navigation">
+        <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
+        <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
+        <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
+        <a class="f2w-nav-link" id="f2w-nav-forum" href="/forum/"><i class="fa-solid fa-comments"></i> Community</a>
+
+          <div class="f2w-genre-wrap">
+            <button class="f2w-nav-button" id="f2w-nav-genres" type="button" onclick="toggleF2WGenreMenu(event)">
+              <i class="fa-solid fa-location-dot"></i> Genres <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i>
+            </button>
+            <div class="f2w-genre-menu" id="f2w-genre-menu">
+              <a href="/home/?genre=28&page=1">Action</a>
+              <a href="/home/?genre=35&page=1">Comedy</a>
+              <a href="/home/?genre=27&page=1">Horror</a>
+              <a href="/home/?genre=878&page=1">Sci-Fi</a>
+              <a href="/home/?genre=53&page=1">Thriller</a>
+              <a href="/home/?genre=80&page=1">Crime</a>
+              <a href="/home/?genre=10749&page=1">Romance</a>
+              <a href="/home/?genre=16&page=1">Animation</a>
+              <a href="/home/?genre=99&page=1">Documentary</a>
+              <a href="/home/?genre=14&page=1">Fantasy</a>
+              <a href="/home/?genre=12&page=1">Adventure</a>
+              <a href="/home/?genre=18&page=1">Drama</a>
+              <a href="/home/?genre=10751&page=1">Family</a>
+              <a href="/home/?genre=9648&page=1">Mystery</a>
+              <a href="/home/?genre=36&page=1">History</a>
+              <a href="/home/?genre=10402&page=1">Music</a>
+              <a href="/home/?genre=10752&page=1">War</a>
+              <a href="/home/?genre=37&page=1">Western</a>
+            </div>
+          </div>
+
+      </nav>
+
+      <div class="f2w-search-pair">
+        <div class="search-container" role="search">
+          <i class="fa-solid fa-search"></i>
+          <input
+            id="movie-search"
+            name="flix2watch_title_lookup_query"
+            class="search-bar"
+            type="search"
+            placeholder="Search movies..."
+            autocomplete="one-time-code"
+            inputmode="search"
+            enterkeyhint="search"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Search movies and TV shows"
+            aria-autocomplete="none"
+            data-form-type="search"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-protonpass-ignore="true"
+            data-keeper-ignore="true"
+            readonly
+            oninput="v18HeaderMovieSearch(this.value)"
+            onfocus="protectMovieSearchField(this)">
+        </div>
+
+        <div class="user-search-container" role="search">
+          <i class="fa-solid fa-user"></i>
+          <input
+            type="search"
+            id="user-search"
+            name="flix2watch_people_search_query"
+            class="user-search-bar"
+            placeholder="Search users..."
+            autocomplete="one-time-code"
+            inputmode="search"
+            enterkeyhint="search"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Search Flix2Watch users"
+            aria-autocomplete="none"
+            data-form-type="search"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-protonpass-ignore="true"
+            data-keeper-ignore="true"
+            readonly
+            oninput="handleUserSearchInput(this)"
+            onfocus="protectUserSearchField(this)"
+          >
+          <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <div class="user-search-results" id="user-search-results"></div>
+        </div>
+      </div>
+
+      <div class="f2w-action-cluster">
+        <button class="tool-btn chat-button" onclick="openChat()">
+          <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
+        </button>
+
+        <div class="dropdown-wrapper">
+          <button class="tool-btn" id="theme-menu-button" type="button" aria-haspopup="menu" aria-expanded="false" onclick="toggleDropdown('theme-menu')"><i class="fa-solid fa-sun"></i> Theme <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i></button>
+          <div class="dropdown-menu" id="theme-menu" hidden aria-hidden="true">
+            <div class="dropdown-item" onclick="setTheme('red','theme-red')"><span class="dot red"></span> Netflix Red</div>
+            <div class="dropdown-item" onclick="setTheme('blue','theme-blue')"><span class="dot blue"></span> Cyber Blue</div>
+            <div class="dropdown-item" onclick="setTheme('green','theme-green')"><span class="dot green"></span> Emerald Green</div>
+            <div class="dropdown-item" onclick="setTheme('purple','theme-purple')"><span class="dot purple"></span> Neon Purple</div>
+            <div class="dropdown-item" onclick="setTheme('amber','theme-amber')"><span class="dot amber"></span> Amber Terminal</div>
+            <div class="dropdown-item" onclick="setTheme('matrix','theme-matrix')"><span class="dot matrix"></span> Matrix Green</div>
+            <div class="dropdown-item" onclick="setTheme('cyan','theme-cyan')"><span class="dot cyan"></span> Electric Cyan</div>
+            <div class="dropdown-item" onclick="setTheme('pink','theme-pink')"><span class="dot pink"></span> Hot Pink</div>
+            <div class="dropdown-item" onclick="setTheme('orange','theme-orange')"><span class="dot orange"></span> Cinema Orange</div>
+            <div class="dropdown-item" onclick="setTheme('ice','theme-ice')"><span class="dot ice"></span> Ice Blue</div>
+            <div class="dropdown-item" onclick="setTheme('gold','theme-gold')"><span class="dot gold"></span> Premiere Gold</div>
+            <div class="dropdown-item" onclick="setTheme('midnight','theme-midnight')"><span class="dot midnight"></span> Midnight Indigo</div>
+          </div>
+        </div>
+
+        <button class="f2w-auth-top-btn login" id="header-login-btn" type="button" style="display:none" onclick="openHeaderAuth('login')">Login</button>
+        <button class="f2w-auth-top-btn signup" id="header-signup-btn" type="button" style="display:none" onclick="openHeaderAuth('signup')">Sign Up</button>
+
+        <button class="tool-btn" id="favorites-nav-btn" onclick="window.location.href='/favorites/'" style="display:none"><i class="fa-regular fa-heart"></i> Favorites</button>
+        <button class="tool-btn" id="profile-nav-btn" onclick="openMyProfile()" style="display:none"><i class="fa-regular fa-id-card"></i> Profile</button>
+        <button class="tool-btn f2w-hide-tablet" id="support-nav-btn" onclick="window.location.href='/support/'" style="display:none"><i class="fa-regular fa-life-ring"></i> Support</button>
+        <button class="tool-btn" id="account-btn" onclick="openAccountModal()" style="display:none"><i class="fa-regular fa-user"></i> Account</button>
+
+
+        <div class="v17-notification-wrap" id="notification-wrap" style="display:none">
+          <button class="tool-btn v17-notification-btn" id="notification-btn" type="button" onclick="toggleNotifications(event)" aria-label="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span>Notifications</span>
+            <b class="v17-notification-count" id="notification-count" hidden>0</b>
+          </button>
+          <div class="v17-notification-menu" id="notification-menu" hidden>
+            <div class="v17-notification-head">
+              <strong>Notifications</strong>
+              <button type="button" onclick="markAllNotificationsRead()">Mark all read</button>
+            </div>
+            <div class="v17-notification-list" id="notification-list">
+              <div class="v17-notification-empty">No notifications yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="tool-btn" id="staff-control-nav" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1">
+          <i class="fa-solid fa-shield-halved"></i> Staff Control Panel
+        </button>
+      </div>
+    </div>
+  </header>
+
+<main>
+  <section class="support-v16-hero">
+    <div>
+      <div class="support-v16-kicker">FLIX2WATCH HELP DESK</div>
+      <h1>Need a hand?</h1>
+      <p>Send a private ticket to Flix2Watch Staff for account help, playback problems, profile concerns or anything else that needs a human reply. Your ticket is visible only to you and authorized Staff/Owner accounts.</p>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:13px">
+        <a class="support-v16-primary" href="/home/" style="text-decoration:none"><i class="fa-solid fa-house"></i> Back to Home</a>
+        <button class="support-v16-secondary" type="button" onclick="document.getElementById('ticket-subject')?.focus()"><i class="fa-solid fa-plus"></i> New Ticket</button>
+      </div>
+    </div>
+    <div class="support-v16-brand">
+      <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch">
+    </div>
+  </section>
+
+  <section class="support-v16-grid" aria-label="Support shortcuts">
+    <button class="support-v16-quick" type="button" onclick="prefillSupport('Playback','Playback problem')">
+      <i class="fa-solid fa-circle-play"></i>
+      <strong>Playback help</strong>
+      <span>Player not loading, buffering, wrong title, audio or subtitle problems.</span>
+    </button>
+    <button class="support-v16-quick" type="button" onclick="prefillSupport('Account','Account help')">
+      <i class="fa-solid fa-user-lock"></i>
+      <strong>Account help</strong>
+      <span>Login, OAuth, username, profile or account-access questions.</span>
+    </button>
+    <button class="support-v16-quick" type="button" onclick="prefillSupport('Safety','Profile or user concern')">
+      <i class="fa-solid fa-user-shield"></i>
+      <strong>User concern</strong>
+      <span>Harassment, impersonation, unsafe profile content or moderation concerns.</span>
+    </button>
+  </section>
+
+  <section class="support-v16-layout">
+    <div class="support-v16-card" id="new-ticket-card">
+      <div class="support-v16-card-head">
+        <strong><i class="fa-regular fa-pen-to-square" style="color:var(--accent)"></i> New support ticket</strong>
+        <span>Private to you + Staff</span>
+      </div>
+
+      <label for="ticket-category">CATEGORY</label>
+      <select id="ticket-category">
+        <option value="General">General help</option>
+        <option value="Playback">Playback</option>
+        <option value="Account">Account / login</option>
+        <option value="Profile">Profile / username</option>
+        <option value="Safety">User / safety concern</option>
+        <option value="Feedback">Feedback / suggestion</option>
+      </select>
+
+      <label for="ticket-subject">SUBJECT</label>
+      <input id="ticket-subject" maxlength="160" placeholder="Short summary">
+
+      <label for="ticket-message">MESSAGE</label>
+      <textarea id="ticket-message" maxlength="4000" placeholder="Tell Staff what happened, what you expected, and anything useful for reproducing the problem."></textarea>
+
+      <button class="support-v16-primary" id="ticket-create-btn" type="button" onclick="createTicket()">
+        <i class="fa-solid fa-paper-plane"></i> Create ticket
+      </button>
+      <div class="support-v16-status" id="ticket-create-status"></div>
+    </div>
+
+    <div class="support-v16-card">
+      <div class="support-v16-card-head">
+        <strong><i class="fa-regular fa-comments" style="color:var(--accent)"></i> Your tickets</strong>
+        <button class="support-v16-secondary" type="button" onclick="loadTickets()" style="margin:0"><i class="fa-solid fa-rotate"></i> Refresh</button>
+      </div>
+      <div id="tickets"><div class="support-v16-empty">Loading your support history…</div></div>
+    </div>
+  </section>
+</main>
+
+
+<script>
+const db=window.supabase.createClient(
+  "https://viqufxlcxwgboyxbdhjb.supabase.co",
+  "sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge"
+);
+
+function esc(v=''){
+  return String(v).replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[c]));
+}
+
+function fmt(v){
+  try{return new Date(v).toLocaleString()}
+  catch{return String(v)}
+}
+
+async function rpc(name,args={}){
+  const {data,error}=await db.rpc(name,args);
+  if(error)throw error;
+  return data;
+}
+
+function setTicketStatus(message,error=false){
+  const el=document.getElementById('ticket-create-status');
+  if(!el)return;
+  el.textContent=message||'';
+  el.classList.toggle('error',Boolean(error));
+}
+
+function prefillSupport(category,subject){
+  const categoryEl=document.getElementById('ticket-category');
+  const subjectEl=document.getElementById('ticket-subject');
+  if(categoryEl)categoryEl.value=category;
+  if(subjectEl&&!subjectEl.value)subjectEl.value=subject;
+  document.getElementById('ticket-message')?.focus();
+}
+
+async function boot(){
+  const {data,error}=await db.auth.getUser();
+
+  if(error||!data?.user){
+    document.getElementById('new-ticket-card').innerHTML=`
+      <div class="support-v16-empty">
+        <i class="fa-solid fa-lock" style="color:var(--accent);font-size:1.1rem"></i>
+        <div style="margin-top:8px">Sign in to create and view private support tickets.</div>
+        <button class="support-v16-primary" type="button" onclick="openHeaderAuth('login')">
+          <i class="fa-regular fa-user"></i> Log In
+        </button>
+      </div>`;
+    document.getElementById('tickets').innerHTML=
+      '<div class="support-v16-empty">Your ticket history appears here after login.</div>';
+    return;
+  }
+
+  await loadTickets();
+}
+
+async function createTicket(){
+  const category=document.getElementById('ticket-category')?.value||'General';
+  const subject=document.getElementById('ticket-subject')?.value.trim()||'';
+  const message=document.getElementById('ticket-message')?.value.trim()||'';
+  const button=document.getElementById('ticket-create-btn');
+
+  if(!subject||!message){
+    setTicketStatus('Add a subject and message first.',true);
+    return;
+  }
+
+  if(button)button.disabled=true;
+  setTicketStatus('Sending ticket…');
+
+  try{
+    await rpc('create_support_ticket',{
+      p_subject:`[${category}] ${subject}`.slice(0,160),
+      p_message:message
+    });
+
+    document.getElementById('ticket-subject').value='';
+    document.getElementById('ticket-message').value='';
+    document.getElementById('ticket-category').value='General';
+
+    setTicketStatus('Ticket created. Staff can reply from the Control Center.');
+    await loadTickets();
+  }catch(error){
+    setTicketStatus(error.message||'Could not create ticket.',true);
+  }finally{
+    if(button)button.disabled=false;
+  }
+}
+
+function renderTicket(ticket){
+  const messages=[...(ticket.support_ticket_messages||[])]
+    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+
+  return `
+    <article class="support-v16-ticket">
+      <div class="support-v16-ticket-head">
+        <div>
+          <strong>${esc(ticket.subject)}</strong>
+          <div class="support-v16-ticket-user"><i class="fa-solid fa-user"></i> Created by @${esc(ticket.username||'user')}</div>
+          <div class="support-v16-ticket-meta">Updated ${esc(fmt(ticket.updated_at))} · ${esc(ticket.priority||'normal')} priority</div>
+        </div>
+        <span class="support-v16-ticket-status">${esc(ticket.status||'open')}</span>
+      </div>
+      <div class="support-v16-messages">
+        ${messages.map(message=>`
+          <div class="support-v16-msg ${esc(message.sender_role)}">
+            <small>${esc(message.sender_role)} · ${esc(fmt(message.created_at))}</small>
+            <div>${esc(message.message)}</div>
+          </div>`).join('')}
+      </div>
+      <div class="support-v16-reply">
+        <textarea id="reply-${ticket.id}" maxlength="4000" placeholder="Reply to this ticket…"></textarea>
+        <button type="button" onclick="reply('${ticket.id}')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+      </div>
+    </article>`;
+}
+
+async function loadTickets(){
+  const host=document.getElementById('tickets');
+  if(!host)return;
+
+  host.innerHTML='<div class="support-v16-empty">Loading tickets…</div>';
+
+  try{
+    const {data,error}=await db
+      .from('support_tickets')
+      .select('*,support_ticket_messages(*)')
+      .order('updated_at',{ascending:false});
+
+    if(error)throw error;
+
+    host.innerHTML=(data||[]).map(renderTicket).join('')
+      ||'<div class="support-v16-empty">No tickets yet. Use the form to start one.</div>';
+  }catch(error){
+    host.innerHTML=`<div class="support-v16-empty">${esc(error.message||'Could not load tickets.')}</div>`;
+  }
+}
+
+async function reply(id){
+  const input=document.getElementById(`reply-${id}`);
+  const message=input?.value.trim()||'';
+  if(!message)return;
+
+  try{
+    await rpc('add_support_ticket_message',{
+      p_ticket_id:id,
+      p_message:message
+    });
+    await loadTickets();
+  }catch(error){
+    setTicketStatus(error.message||'Could not send reply.',true);
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const message=document.getElementById('ticket-message');
+  if(message){
+    message.addEventListener('keydown',event=>{
+      if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){
+        event.preventDefault();
+        createTicket();
+      }
+    });
+  }
+});
+
+boot();
+</script>
+
+  <script src="/interaction-v7.js" defer></script>
+  <script src="/realtime-v7.js" defer></script>
+  <script src="/final-v35.js" defer></script>
+</body></html>

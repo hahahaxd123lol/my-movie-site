@@ -1,0 +1,386 @@
+
+/* ============================================================
+   FLIX2WATCH V15 — UNIFIED HEADER / WATCH / SEARCH CLEANUP
+   ============================================================ */
+
+/* ---------- One sticky site header everywhere ---------- */
+body.f2w-main-page > header{
+  position:sticky !important;
+  top:0 !important;
+  z-index:30000 !important;
+  margin:0 !important;
+}
+
+body.f2w-main-page{
+  padding-top:0 !important;
+}
+
+body.f2w-watch-page > header,
+body.f2w-support-page > header,
+body.f2w-staff-page > header,
+body.f2w-users-page > header,
+body.f2w-profile-page > header,
+body.f2w-favorites-page > header{
+  transform:none !important;
+  inset:auto !important;
+  margin-top:0 !important;
+}
+
+/* Staff's own page toolbar is content, not another sticky site header. */
+body.f2w-staff-page #staff-app-header.staff-page-toolbar{
+  position:relative !important;
+  top:auto !important;
+  z-index:1 !important;
+  margin:12px auto 0 !important;
+  width:min(100% - 28px,1580px) !important;
+  border:1px solid #263a53 !important;
+  border-radius:10px !important;
+  background:#07111d !important;
+}
+
+/* ---------- Theme logo fix: use html theme state, not page-specific body behavior ---------- */
+html[data-flix2watch-theme="theme-red"] .logo-image,
+html[data-flix2watch-theme="theme-red"] .f2w-guest-brand img,
+html[data-flix2watch-theme="theme-red"] .f2w-account-brand img,
+html[data-flix2watch-theme="theme-red"] body.f2w-staff-page #staff-app-header img{
+  filter:drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+
+html[data-flix2watch-theme="theme-blue"] .logo-image,
+html[data-flix2watch-theme="theme-blue"] .f2w-guest-brand img,
+html[data-flix2watch-theme="theme-blue"] .f2w-account-brand img,
+html[data-flix2watch-theme="theme-blue"] body.f2w-staff-page #staff-app-header img{
+  filter:hue-rotate(210deg) saturate(1.30) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+
+html[data-flix2watch-theme="theme-green"] .logo-image,
+html[data-flix2watch-theme="theme-green"] .f2w-guest-brand img,
+html[data-flix2watch-theme="theme-green"] .f2w-account-brand img,
+html[data-flix2watch-theme="theme-green"] body.f2w-staff-page #staff-app-header img{
+  filter:hue-rotate(105deg) saturate(1.40) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+
+html[data-flix2watch-theme="theme-purple"] .logo-image,
+html[data-flix2watch-theme="theme-purple"] .f2w-guest-brand img,
+html[data-flix2watch-theme="theme-purple"] .f2w-account-brand img,
+html[data-flix2watch-theme="theme-purple"] body.f2w-staff-page #staff-app-header img{
+  filter:hue-rotate(265deg) saturate(1.32) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+
+html[data-flix2watch-theme="theme-amber"] .logo-image,
+html[data-flix2watch-theme="theme-amber"] .f2w-guest-brand img,
+html[data-flix2watch-theme="theme-amber"] .f2w-account-brand img,
+html[data-flix2watch-theme="theme-amber"] body.f2w-staff-page #staff-app-header img{
+  filter:hue-rotate(42deg) saturate(1.35) brightness(1.04) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+
+html[data-flix2watch-theme="theme-matrix"] .logo-image,
+html[data-flix2watch-theme="theme-matrix"] .f2w-guest-brand img,
+html[data-flix2watch-theme="theme-matrix"] .f2w-account-brand img,
+html[data-flix2watch-theme="theme-matrix"] body.f2w-staff-page #staff-app-header img{
+  filter:hue-rotate(108deg) saturate(1.70) brightness(1.06) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+
+/* ---------- Home: dedicated movie search above Trending Today ---------- */
+.v15-movie-search-section{
+  width:min(100% - 28px,1540px);
+  margin:12px auto 0;
+  padding:14px;
+  border:1px solid color-mix(in srgb,var(--accent) 20%,#263a53);
+  border-radius:10px;
+  background:linear-gradient(180deg,#07111d,#06101b);
+  box-shadow:0 14px 34px rgba(0,0,0,.22);
+}
+
+.v15-movie-search-section[hidden]{
+  display:none !important;
+}
+
+.v15-search-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.v15-search-head span{
+  display:block;
+  color:var(--accent);
+  font-size:.54rem;
+  font-weight:850;
+  letter-spacing:.7px;
+}
+
+.v15-search-head h2{
+  margin:2px 0 0;
+  color:#fff;
+  font-size:1.10rem;
+  font-weight:820;
+}
+
+.v15-search-head button{
+  min-height:32px;
+  padding:5px 9px;
+  border:1px solid #2a3e56;
+  border-radius:7px;
+  background:#0a1523;
+  color:#cbd3df;
+  font-size:.59rem;
+  font-weight:680;
+  cursor:pointer;
+}
+
+.v15-search-head button:hover{
+  border-color:color-mix(in srgb,var(--accent) 44%,#5d718a);
+  color:#fff;
+}
+
+/* ---------- Watch: same vertical position / same header shell as Home ---------- */
+body.f2w-watch-page main{
+  margin-top:12px !important;
+}
+
+body.f2w-watch-page .site-ops-banner,
+body.f2w-watch-page .site-announcement{
+  width:min(100% - 28px,1260px) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+/* ---------- Watch: locked player is ALWAYS black with a visible login card ---------- */
+body.f2w-watch-page #flix-player-container{
+  position:relative !important;
+  isolation:isolate !important;
+  overflow:hidden !important;
+  aspect-ratio:16 / 9 !important;
+  min-height:0 !important;
+  background:#000 !important;
+}
+
+body.f2w-watch-page #video-frame{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:1 !important;
+  width:100% !important;
+  height:100% !important;
+  border:0 !important;
+  background:#000 !important;
+}
+
+body.f2w-watch-page.watch-locked #video-frame,
+body.f2w-watch-page:not(.watch-authenticated) #video-frame{
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+body.f2w-watch-page .watch-login-overlay{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:80 !important;
+  display:grid !important;
+  place-items:center !important;
+  padding:18px !important;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(var(--f2w-accent-rgb),.08),transparent 34%),
+    #000 !important;
+  color:#fff !important;
+  pointer-events:auto !important;
+}
+
+body.f2w-watch-page .watch-login-overlay[hidden]{
+  display:none !important;
+}
+
+body.f2w-watch-page .watch-login-card{
+  width:min(380px,100%) !important;
+  padding:18px !important;
+  border:1px solid color-mix(in srgb,var(--accent) 22%,#263a53) !important;
+  border-radius:10px !important;
+  background:rgba(7,17,29,.96) !important;
+  box-shadow:0 20px 55px rgba(0,0,0,.52) !important;
+}
+
+body.f2w-watch-page .watch-login-card .lock-icon{
+  width:42px !important;
+  height:42px !important;
+  margin:0 auto 9px !important;
+  border:1px solid color-mix(in srgb,var(--accent) 40%,#263a53) !important;
+  border-radius:10px !important;
+  background:rgba(var(--f2w-accent-rgb),.08) !important;
+  color:var(--accent) !important;
+  font-size:1rem !important;
+}
+
+body.f2w-watch-page .watch-login-card h2{
+  font-size:.96rem !important;
+  font-weight:800 !important;
+}
+
+body.f2w-watch-page .watch-login-card p{
+  max-width:330px !important;
+  margin-top:6px !important;
+  color:#9da9b9 !important;
+  font-size:.62rem !important;
+  line-height:1.5 !important;
+}
+
+body.f2w-watch-page .watch-login-actions{
+  gap:7px !important;
+  margin-top:12px !important;
+}
+
+body.f2w-watch-page .watch-login-actions button{
+  min-width:0 !important;
+  min-height:32px !important;
+  padding:5px 10px !important;
+  border-radius:7px !important;
+  font-size:.59rem !important;
+  font-weight:700 !important;
+}
+
+/* Sources are entirely absent visually until authenticated. */
+body.f2w-watch-page.watch-locked .stream-toolbar,
+body.f2w-watch-page.watch-locked .tv-controls,
+body.f2w-watch-page:not(.watch-authenticated) .stream-toolbar,
+body.f2w-watch-page:not(.watch-authenticated) .tv-controls{
+  display:none !important;
+}
+
+/* ---------- Watch buttons: deliberately smaller than Home controls ---------- */
+body.f2w-watch-page .player-header-actions{
+  gap:5px !important;
+}
+
+body.f2w-watch-page .favorite-current-btn,
+body.f2w-watch-page .fallback-trigger-btn,
+body.f2w-watch-page #report-playback-btn{
+  min-height:29px !important;
+  height:29px !important;
+  padding:4px 7px !important;
+  border-radius:6px !important;
+  font-size:.55rem !important;
+  font-weight:650 !important;
+  line-height:1 !important;
+}
+
+body.f2w-watch-page .favorite-current-btn i,
+body.f2w-watch-page .fallback-trigger-btn i{
+  font-size:.58rem !important;
+}
+
+body.f2w-watch-page .server-btn{
+  min-height:29px !important;
+  padding:4px 7px !important;
+  font-size:.55rem !important;
+}
+
+/* ---------- Playback report: standalone centered themed box, never a chat panel ---------- */
+body.f2w-watch-page .report-modal{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:50000 !important;
+  display:grid !important;
+  place-items:center !important;
+  padding:18px !important;
+  background:rgba(0,5,12,.82) !important;
+  backdrop-filter:blur(12px) !important;
+  -webkit-backdrop-filter:blur(12px) !important;
+}
+
+body.f2w-watch-page .report-modal[hidden]{
+  display:none !important;
+}
+
+body.f2w-watch-page .report-modal.playback-report-mode .report-card,
+body.f2w-watch-page .report-card{
+  width:min(440px,calc(100vw - 26px)) !important;
+  max-height:min(620px,calc(100dvh - 36px)) !important;
+  overflow:auto !important;
+  padding:15px !important;
+  border:1px solid color-mix(in srgb,var(--accent) 30%,#2b4059) !important;
+  border-radius:10px !important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(var(--f2w-accent-rgb),.08),transparent 32%),
+    #07111d !important;
+  box-shadow:0 25px 80px rgba(0,0,0,.66) !important;
+}
+
+body.f2w-watch-page .report-head{
+  padding-bottom:9px !important;
+  margin-bottom:9px !important;
+  border-bottom:1px solid #263a53 !important;
+}
+
+body.f2w-watch-page .report-head strong,
+body.f2w-watch-page #report-modal-title i{
+  color:var(--accent) !important;
+}
+
+body.f2w-watch-page .report-context-copy{
+  border-color:color-mix(in srgb,var(--accent) 18%,#23364e) !important;
+  background:#06101c !important;
+}
+
+body.f2w-watch-page .report-actions .submit{
+  background:var(--accent) !important;
+  border-color:var(--accent) !important;
+  color:#fff !important;
+}
+
+/* Hide any old dead Trending Now presentation if stale cached markup appears. */
+#f2w-trending-lab,
+#f2w-trending-row{
+  display:none !important;
+}
+
+/* ---------- Tablet / phone ---------- */
+@media(max-width:820px), (max-width:1366px) and (pointer:coarse){
+  .v15-movie-search-section{
+    width:calc(100% - 20px);
+    padding:11px;
+  }
+
+  body.f2w-watch-page .site-ops-banner,
+  body.f2w-watch-page .site-announcement{
+    width:calc(100% - 20px) !important;
+  }
+
+  body.f2w-watch-page main{
+    margin-top:10px !important;
+  }
+
+  body.f2w-watch-page .watch-login-card{
+    width:min(340px,100%) !important;
+    padding:15px !important;
+  }
+
+  body.f2w-watch-page .player-header-actions{
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:5px !important;
+  }
+
+  body.f2w-watch-page .favorite-current-btn,
+  body.f2w-watch-page .fallback-trigger-btn,
+  body.f2w-watch-page #report-playback-btn{
+    width:100% !important;
+    min-width:0 !important;
+    white-space:normal !important;
+  }
+
+  body.f2w-staff-page #staff-app-header.staff-page-toolbar{
+    width:calc(100% - 20px) !important;
+  }
+}
+
+@media(max-width:520px){
+  body.f2w-watch-page .player-header-actions{
+    grid-template-columns:1fr !important;
+  }
+
+  .v15-search-head{
+    align-items:flex-start;
+  }
+}

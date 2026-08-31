@@ -1,0 +1,366 @@
+
+/* ============================================================
+   FLIX2WATCH V26 — WATCH MUST USE THE HOME HEADER
+   ============================================================ */
+
+/*
+   Watch contains old legacy rules for plain header/.logo/.header-tools.
+   This final block is deliberately pointer-based so desktop browser zoom
+   cannot make Watch fall back to the old oversized/two-row design.
+*/
+@media (hover:hover) and (pointer:fine){
+  body.f2w-watch-page > header{
+    position:sticky !important;
+    inset:auto !important;
+    top:0 !important;
+    z-index:2147480000 !important;
+
+    display:flex !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+    align-content:center !important;
+    justify-content:flex-start !important;
+
+    width:100% !important;
+    max-width:none !important;
+    height:82px !important;
+    min-height:82px !important;
+    max-height:82px !important;
+
+    margin:0 !important;
+    padding:10px 11px !important;
+    gap:9px !important;
+
+    overflow:visible !important;
+    transform:none !important;
+
+    background:rgba(2,8,19,.97) !important;
+    border:0 !important;
+    border-bottom:1px solid color-mix(in srgb,var(--accent) 18%,#27394f) !important;
+    border-radius:0 !important;
+    box-shadow:0 8px 26px rgba(0,0,0,.28) !important;
+    backdrop-filter:blur(18px) !important;
+    -webkit-backdrop-filter:blur(18px) !important;
+  }
+
+  body.f2w-watch-page > header::before,
+  body.f2w-watch-page > header::after{
+    content:none !important;
+    display:none !important;
+  }
+
+  body.f2w-watch-page > header > .logo{
+    position:static !important;
+    inset:auto !important;
+
+    display:flex !important;
+    flex:0 0 145px !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+
+    width:145px !important;
+    min-width:145px !important;
+    max-width:145px !important;
+    height:56px !important;
+
+    margin:0 !important;
+    padding:0 !important;
+    gap:0 !important;
+
+    font-size:initial !important;
+    letter-spacing:normal !important;
+    transform:none !important;
+  }
+
+  body.f2w-watch-page > header > .logo .logo-image{
+    display:block !important;
+    width:145px !important;
+    min-width:0 !important;
+    max-width:145px !important;
+    height:auto !important;
+    max-height:56px !important;
+
+    margin:0 !important;
+    padding:0 !important;
+    object-fit:contain !important;
+    transform:none !important;
+  }
+
+  body.f2w-watch-page > header > .f2w-mobile-nav-toggle{
+    display:none !important;
+  }
+
+  body.f2w-watch-page > header > .header-tools{
+    position:static !important;
+    inset:auto !important;
+
+    display:flex !important;
+    flex:1 1 auto !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+    align-content:center !important;
+    justify-content:flex-start !important;
+
+    width:auto !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:42px !important;
+    min-height:42px !important;
+    max-height:42px !important;
+
+    margin:0 !important;
+    padding:0 !important;
+    gap:7px !important;
+
+    overflow:visible !important;
+    background:transparent !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    transform:none !important;
+  }
+
+  body.f2w-watch-page > header .f2w-primary-nav{
+    position:static !important;
+
+    display:flex !important;
+    flex:0 0 auto !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+
+    width:auto !important;
+    height:42px !important;
+    margin:0 !important;
+    padding:0 !important;
+    gap:1px !important;
+  }
+
+  body.f2w-watch-page > header .f2w-nav-link,
+  body.f2w-watch-page > header .f2w-nav-button{
+    position:relative !important;
+
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:5px !important;
+
+    width:auto !important;
+    min-width:0 !important;
+    height:40px !important;
+    min-height:40px !important;
+    max-height:40px !important;
+
+    margin:0 !important;
+    padding:7px !important;
+
+    border-radius:7px !important;
+    font-family:inherit !important;
+    font-size:10px !important;
+    font-weight:700 !important;
+    line-height:1 !important;
+    letter-spacing:normal !important;
+    white-space:nowrap !important;
+    transform:none !important;
+  }
+
+  body.f2w-watch-page > header .f2w-search-pair{
+    position:static !important;
+
+    display:flex !important;
+    flex:1 1 390px !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+
+    width:auto !important;
+    min-width:235px !important;
+    max-width:500px !important;
+    height:40px !important;
+
+    margin:0 3px !important;
+    padding:0 !important;
+    gap:7px !important;
+  }
+
+  body.f2w-watch-page > header .search-container,
+  body.f2w-watch-page > header .user-search-container{
+    position:relative !important;
+
+    display:flex !important;
+    flex:1 1 0 !important;
+    align-items:center !important;
+
+    width:auto !important;
+    min-width:110px !important;
+    max-width:none !important;
+    height:40px !important;
+
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  body.f2w-watch-page > header .search-bar,
+  body.f2w-watch-page > header .user-search-bar,
+  body.f2w-watch-page > header .search-bar:focus,
+  body.f2w-watch-page > header .user-search-bar:focus{
+    display:block !important;
+
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:40px !important;
+    min-height:40px !important;
+    max-height:40px !important;
+
+    margin:0 !important;
+    padding:8px 34px !important;
+
+    border:1px solid #2a3e56 !important;
+    border-radius:8px !important;
+    background:#07111d !important;
+    box-shadow:none !important;
+
+    color:#eef2f7 !important;
+    font-family:inherit !important;
+    font-size:11px !important;
+    line-height:1 !important;
+    transform:none !important;
+  }
+
+  body.f2w-watch-page > header .search-container > i,
+  body.f2w-watch-page > header .user-search-container > i{
+    position:absolute !important;
+    left:12px !important;
+    top:50% !important;
+    z-index:2 !important;
+    transform:translateY(-50%) !important;
+    color:#8290a4 !important;
+    font-size:11px !important;
+    pointer-events:none !important;
+  }
+
+  body.f2w-watch-page > header .user-search-submit{
+    position:absolute !important;
+    right:5px !important;
+    top:50% !important;
+    z-index:3 !important;
+    transform:translateY(-50%) !important;
+
+    display:grid !important;
+    place-items:center !important;
+
+    width:28px !important;
+    min-width:28px !important;
+    height:28px !important;
+    min-height:28px !important;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    border:0 !important;
+    border-radius:6px !important;
+    background:transparent !important;
+    box-shadow:none !important;
+  }
+
+  body.f2w-watch-page > header .f2w-action-cluster{
+    position:static !important;
+
+    display:flex !important;
+    flex:0 0 auto !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+
+    width:auto !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:40px !important;
+
+    margin:0 0 0 auto !important;
+    padding:0 !important;
+    gap:6px !important;
+  }
+
+  body.f2w-watch-page > header .tool-btn,
+  body.f2w-watch-page > header .f2w-auth-top-btn,
+  body.f2w-watch-page > header #staff-control-nav{
+    display:inline-flex !important;
+    flex:0 0 auto !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:5px !important;
+
+    width:auto !important;
+    min-width:0 !important;
+    height:40px !important;
+    min-height:40px !important;
+    max-height:40px !important;
+
+    margin:0 !important;
+    padding:7px !important;
+
+    border:1px solid #2a3d55 !important;
+    border-radius:8px !important;
+    background:#07111d !important;
+    box-shadow:none !important;
+
+    color:#f3f6fa !important;
+    font-family:inherit !important;
+    font-size:10px !important;
+    font-weight:720 !important;
+    line-height:1 !important;
+    letter-spacing:normal !important;
+    white-space:nowrap !important;
+    transform:none !important;
+  }
+
+  body.f2w-watch-page > header .dropdown-wrapper,
+  body.f2w-watch-page > header .f2w-genre-wrap,
+  body.f2w-watch-page > header .v17-notification-wrap{
+    position:relative !important;
+    flex:0 0 auto !important;
+    width:auto !important;
+    margin:0 !important;
+  }
+
+  body.f2w-watch-page > header .dropdown-menu{
+    position:absolute !important;
+    top:calc(100% + 8px) !important;
+    right:0 !important;
+    left:auto !important;
+  }
+
+  body.f2w-watch-page > header .f2w-genre-menu{
+    position:absolute !important;
+    top:calc(100% + 8px) !important;
+    left:0 !important;
+    right:auto !important;
+  }
+}
+
+/* ============================================================
+   WATCH SOURCES — AUTHENTICATED USERS ONLY
+   The existing Watch authenticated state is the only state allowed to reveal sources.
+   ============================================================ */
+body.f2w-watch-page:not(.watch-authenticated) #stream-toolbar,
+body.f2w-watch-page:not(.watch-authenticated) #server-buttons-container,
+body.f2w-watch-page:not(.watch-authenticated) .server-groups,
+body.f2w-watch-page:not(.watch-authenticated) .server-btn,
+body.f2w-watch-page:not(.watch-authenticated) .sources-section-title,
+body.f2w-watch-page:not(.watch-authenticated) .stream-source-notice,
+body.f2w-watch-page:not(.watch-authenticated) #tv-controls{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+/* About This Title now belongs immediately below the title/poster card. */
+body.f2w-watch-page #f2w-title-lab{
+  margin-top:0 !important;
+  margin-bottom:4px !important;
+}

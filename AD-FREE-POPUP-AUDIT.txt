@@ -1,0 +1,23 @@
+FLIX2WATCH — AD / POPUP AUDIT
+
+FIRST-PARTY SITE
+- No Google Ads / AdSense script was added.
+- No DoubleClick ad script was added.
+- No PopAds/Adsterra-style first-party popup network was added.
+- No first-party window.open advertising code is present.
+
+STREAMING IFRAMES
+- The movie iframe is sandboxed without allow-popups.
+- It is sandboxed without top-navigation permissions.
+- This blocks embedded providers from opening normal popup windows or replacing
+  the Flix2Watch top-level page through ordinary iframe navigation APIs.
+- Fullscreen remains explicitly allowed.
+
+IMPORTANT BROWSER LIMIT
+A third-party streaming provider can still draw an advertisement INSIDE its own
+cross-origin video frame. Flix2Watch cannot inspect/remove those internal DOM
+elements because browsers enforce the Same-Origin Policy. Removing those would
+require control of the provider itself. This pack does not pretend otherwise.
+
+AUDIT RESULT
+No known first-party ad-network markers found.

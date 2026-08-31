@@ -1,0 +1,311 @@
+
+/* ============================================================
+   FLIX2WATCH V14 — MOBILE/IPAD DRAWER + OAUTH + PLAYER COMPAT
+   ============================================================ */
+
+/* OAuth buttons */
+.f2w-oauth-block{
+  margin-top:12px;
+}
+.f2w-oauth-divider{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:11px 0 9px;
+  color:#6f7d91;
+  font-size:.56rem;
+  font-weight:650;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.f2w-oauth-divider::before,
+.f2w-oauth-divider::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:#263a53;
+}
+.f2w-oauth-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.f2w-oauth-btn{
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:1px solid #2a3e56;
+  border-radius:8px;
+  background:#081321;
+  color:#f2f5f9;
+  font-size:.67rem;
+  font-weight:720;
+  cursor:pointer;
+  transition:.16s ease;
+}
+.f2w-oauth-btn:hover{
+  border-color:color-mix(in srgb,var(--accent) 40%,#5d718a);
+  background:#0c1827;
+}
+.f2w-oauth-btn.google i{
+  color:#fff;
+}
+.f2w-oauth-btn.discord i{
+  color:#8ea1ff;
+}
+.f2w-oauth-note{
+  margin-top:7px;
+  color:#738095;
+  font-size:.54rem;
+  line-height:1.45;
+  text-align:center;
+}
+
+/* Compact header is ONLY used on small/tablet devices.
+   Desktop/TV layout from V13 is untouched. */
+@media (max-width:820px), (max-width:1366px) and (pointer:coarse){
+  body.f2w-main-page > header{
+    position:sticky !important;
+    top:0 !important;
+    z-index:20000 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    align-items:center !important;
+    min-height:60px !important;
+    padding:8px 11px !important;
+    gap:8px !important;
+    overflow:visible !important;
+  }
+
+  body.f2w-main-page > header > .logo{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    justify-self:start !important;
+    margin:0 !important;
+  }
+
+  body.f2w-main-page > header > .logo .logo-image{
+    width:150px !important;
+    max-width:150px !important;
+  }
+
+  .f2w-mobile-nav-toggle{
+    grid-column:2 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    width:42px !important;
+    height:42px !important;
+    min-height:42px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border:1px solid #2a3e56 !important;
+    border-radius:9px !important;
+    background:#07111d !important;
+    color:#fff !important;
+    font-size:1rem !important;
+    box-shadow:none !important;
+  }
+
+  .f2w-mobile-nav-toggle:hover,
+  body.f2w-main-page > header.mobile-open .f2w-mobile-nav-toggle{
+    border-color:color-mix(in srgb,var(--accent) 55%,#2a3e56) !important;
+    background:rgba(var(--f2w-accent-rgb),.10) !important;
+    color:var(--accent) !important;
+  }
+
+  body.f2w-main-page > header > .header-tools{
+    position:absolute !important;
+    top:calc(100% + 7px) !important;
+    left:10px !important;
+    right:10px !important;
+    z-index:21000 !important;
+    width:auto !important;
+    max-height:calc(100dvh - 82px) !important;
+    display:none !important;
+    grid-template-columns:1fr !important;
+    gap:8px !important;
+    padding:10px !important;
+    margin:0 !important;
+    overflow:auto !important;
+    border:1px solid #2b4059 !important;
+    border-radius:11px !important;
+    background:rgba(4,12,22,.985) !important;
+    box-shadow:0 22px 70px rgba(0,0,0,.72) !important;
+    backdrop-filter:blur(22px) !important;
+    -webkit-backdrop-filter:blur(22px) !important;
+  }
+
+  body.f2w-main-page > header.mobile-open > .header-tools{
+    display:grid !important;
+  }
+
+  .f2w-primary-nav{
+    order:1 !important;
+    width:100% !important;
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    overflow:visible !important;
+  }
+
+  .f2w-nav-link,
+  .f2w-nav-button{
+    width:100% !important;
+    min-height:40px !important;
+    justify-content:flex-start !important;
+    padding:8px 10px !important;
+    border:1px solid #263951 !important;
+    border-radius:8px !important;
+    background:#07111d !important;
+    font-size:.68rem !important;
+  }
+
+  .f2w-nav-link.active::after,
+  .f2w-nav-button.active::after{
+    display:none !important;
+  }
+
+  .f2w-nav-link.active,
+  .f2w-nav-button.active{
+    border-color:color-mix(in srgb,var(--accent) 58%,#263951) !important;
+    background:rgba(var(--f2w-accent-rgb),.10) !important;
+  }
+
+  .f2w-genre-wrap{
+    width:100% !important;
+  }
+
+  .f2w-genre-menu{
+    position:static !important;
+    width:100% !important;
+    margin-top:6px !important;
+    box-shadow:none !important;
+  }
+
+  .f2w-search-pair{
+    order:2 !important;
+    width:100% !important;
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:7px !important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container{
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+  }
+
+  body.f2w-main-page > header .search-bar,
+  body.f2w-main-page > header .search-bar:focus,
+  body.f2w-main-page > header .user-search-bar{
+    width:100% !important;
+    max-width:none !important;
+    height:42px !important;
+    font-size:16px !important;
+  }
+
+  .f2w-action-cluster{
+    order:3 !important;
+    width:100% !important;
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    margin:0 !important;
+  }
+
+  .f2w-action-cluster > *,
+  .f2w-action-cluster .dropdown-wrapper,
+  .f2w-action-cluster .f2w-discover-wrap{
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+  }
+
+  body.f2w-main-page > header .tool-btn,
+  .f2w-auth-top-btn{
+    width:100% !important;
+    min-height:40px !important;
+    height:auto !important;
+    justify-content:flex-start !important;
+    padding:8px 10px !important;
+    white-space:normal !important;
+  }
+
+  .f2w-action-cluster .dropdown-menu,
+  .f2w-action-cluster .f2w-discover-menu{
+    position:static !important;
+    width:100% !important;
+    max-width:none !important;
+    margin-top:6px !important;
+    box-shadow:none !important;
+  }
+
+  body.f2w-main-page > header #staff-control-nav{
+    grid-column:1 / -1 !important;
+  }
+
+  /* No old tablet hide rules: every action remains reachable in hamburger. */
+  .f2w-hide-tablet{
+    display:flex !important;
+  }
+
+  body.f2w-main-page > header::after{
+    content:"";
+    display:none;
+    position:fixed;
+    inset:60px 0 0;
+    z-index:20500;
+    background:rgba(0,4,10,.52);
+    pointer-events:auto;
+  }
+
+  body.f2w-main-page > header.mobile-open::after{
+    display:block;
+  }
+
+  body.f2w-main-page > header.mobile-open > .header-tools{
+    z-index:22000 !important;
+  }
+}
+
+@media (max-width:520px){
+  .f2w-action-cluster{
+    grid-template-columns:1fr !important;
+  }
+  .f2w-primary-nav{
+    grid-template-columns:1fr 1fr !important;
+  }
+  .f2w-oauth-grid{
+    grid-template-columns:1fr !important;
+  }
+}
+
+
+.f2w-quick-oauth{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+.f2w-quick-oauth button{
+  min-height:34px;
+  border:1px solid #2a3e56;
+  border-radius:7px;
+  background:#081321;
+  color:#dce3ec;
+  font-size:.60rem;
+  font-weight:680;
+  cursor:pointer;
+}
+.f2w-quick-oauth button:hover{
+  border-color:color-mix(in srgb,var(--accent) 42%,#5d718a);
+}
+@media(max-width:520px){
+  .f2w-quick-oauth{grid-template-columns:1fr}
+}
+
+body.f2w-mobile-menu-open{overflow:hidden !important;}

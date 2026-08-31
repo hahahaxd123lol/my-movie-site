@@ -1,0 +1,28 @@
+
+FLIX2WATCH — OPTIONAL CLOUDFLARE PERFORMANCE SETUP
+
+This site pack already works on GitHub Pages without Cloudflare Worker code.
+
+If flix2watch.com is proxied through Cloudflare, cloudflare-worker.js can be
+deployed as an OPTIONAL Worker route for:
+- short edge caching of JS/CSS
+- longer edge caching of images/icons
+- no sticky HTML caching
+- basic security headers
+
+Recommended Cloudflare-side choices:
+1. Keep the flix2watch.com / www DNS records proxied if you want Cloudflare edge features.
+2. Enable Brotli/compression and HTTP/3 if those options are available on your plan.
+3. Do not create a long "Cache Everything" rule for HTML/profile pages.
+4. Static images can be cached much longer than HTML.
+5. Keep /account-guard.js, /interaction-v7.js and /realtime-v7.js on a short cache
+   so deployments update quickly.
+6. Purge the Cloudflare cache after a major deployment if you deliberately
+   configured extra cache rules outside this pack.
+
+The optional Worker contains NO service_role key and NO Supabase secret.
+
+IMPORTANT:
+GitHub Pages itself is public. Cloudflare caching cannot turn the public static
+site into a per-account private origin. The Supabase UUID/RLS/account guard remain
+the security boundary for signed-in actions.

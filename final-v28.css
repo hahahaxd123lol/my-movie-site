@@ -1,0 +1,182 @@
+
+/* ============================================================
+   FLIX2WATCH V28 — CHAT / DM CONTAINMENT FIX
+   ============================================================ */
+
+.chat-modal{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147482000 !important;
+  display:none !important;
+  place-items:center !important;
+  padding:18px !important;
+  background:rgba(0,4,11,.72) !important;
+  backdrop-filter:blur(5px) !important;
+  -webkit-backdrop-filter:blur(5px) !important;
+}
+
+.chat-modal.open,
+.chat-modal.show{
+  display:grid !important;
+}
+
+.chat-modal .chat-card.v17-chat-hub{
+  position:relative !important;
+  inset:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  width:min(900px,calc(100vw - 36px)) !important;
+  height:min(650px,calc(100dvh - 80px)) !important;
+  max-width:900px !important;
+  max-height:650px !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  border:1px solid #2b3d54 !important;
+  border-radius:11px !important;
+  background:#06101c !important;
+  box-shadow:0 28px 90px rgba(0,0,0,.72) !important;
+}
+
+.chat-modal .v17-chat-hub-header{
+  flex:0 0 auto !important;
+}
+
+.chat-modal .v17-chat-mode-panel{
+  position:relative !important;
+  inset:auto !important;
+  flex:1 1 auto !important;
+  width:100% !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+}
+
+.chat-modal #v17-public-chat-panel{
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+.chat-modal #v17-public-chat-panel[hidden]{
+  display:none !important;
+}
+
+.chat-modal #v17-dm-panel{
+  display:grid !important;
+  grid-template-columns:250px minmax(0,1fr) !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  background:#06101c !important;
+}
+
+.chat-modal #v17-dm-panel[hidden]{
+  display:none !important;
+}
+
+.chat-modal .v17-dm-sidebar{
+  position:relative !important;
+  inset:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:100% !important;
+  min-height:0 !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  border-right:1px solid #22354b !important;
+  background:#06101c !important;
+}
+
+.chat-modal .v17-dm-security{
+  flex:0 0 auto !important;
+  padding:10px !important;
+  border-bottom:1px solid #22354b !important;
+}
+
+.chat-modal .v17-dm-list-head{
+  flex:0 0 auto !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  min-height:42px !important;
+  padding:8px 10px !important;
+  border-bottom:1px solid #22354b !important;
+}
+
+.chat-modal .v17-dm-conversations{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+}
+
+.chat-modal .v17-dm-thread{
+  position:relative !important;
+  inset:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:100% !important;
+  min-height:0 !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  background:#07111d !important;
+}
+
+.chat-modal .v17-dm-thread-head{
+  flex:0 0 auto !important;
+  min-height:50px !important;
+  padding:9px 11px !important;
+  border-bottom:1px solid #22354b !important;
+}
+
+.chat-modal .v17-dm-messages{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  padding:12px !important;
+}
+
+.chat-modal .v17-dm-compose{
+  flex:0 0 auto !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 42px !important;
+  gap:7px !important;
+  padding:9px !important;
+  border-top:1px solid #22354b !important;
+  background:#06101c !important;
+}
+
+.chat-modal #v17-dm-input{
+  width:100% !important;
+  min-width:0 !important;
+  height:38px !important;
+}
+
+.chat-modal #v17-dm-send{
+  width:42px !important;
+  height:38px !important;
+  min-width:42px !important;
+}
+
+@media(max-width:820px), (max-width:1366px) and (pointer:coarse){
+  .chat-modal{
+    padding:8px !important;
+  }
+
+  .chat-modal .chat-card.v17-chat-hub{
+    width:calc(100vw - 16px) !important;
+    height:calc(100svh - 72px) !important;
+    max-height:calc(100svh - 72px) !important;
+  }
+
+  .chat-modal #v17-dm-panel{
+    grid-template-columns:1fr !important;
+  }
+
+  .chat-modal .v17-dm-sidebar{
+    max-height:205px !important;
+    border-right:0 !important;
+    border-bottom:1px solid #22354b !important;
+  }
+}

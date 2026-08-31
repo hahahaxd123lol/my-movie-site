@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script id="v18-force-https">
+    (() => {
+      const localHosts=new Set(['localhost','127.0.0.1','::1']);
+      if(localHosts.has(location.hostname))return;
+
+      const canonicalHost=
+        location.hostname.toLowerCase()==='www.flix2watch.com'
+          ? 'flix2watch.com'
+          : location.host;
+
+      if(location.protocol!=='https:' || location.hostname.toLowerCase()==='www.flix2watch.com'){
+        location.replace(
+          'https://'+canonicalHost+location.pathname+location.search+location.hash
+        );
+      }
+    })();
+  </script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Flix2Watch</title>
+  <meta name="robots" content="noindex">
+  <style>
+    html,body{margin:0;min-height:100%;background:#020204}
+  </style>
+  <link rel="stylesheet" href="/final-v35.css">
+</head>
+<body>
+<script>
+(function(){
+  const match=window.location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
+
+  if(match){
+    const username=match[1];
+    window.location.replace(
+      `/profile/?user=${encodeURIComponent(username)}`
+    );
+    return;
+  }
+
+  window.location.replace('/home/');
+})();
+</script>
+  <script src="/final-v35.js" defer></script>
+</body>
+</html>
