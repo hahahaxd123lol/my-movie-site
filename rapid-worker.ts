@@ -38,6 +38,7 @@ function json(data: unknown, status = 200) {
     headers: {
       ...CORS_HEADERS,
       "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store, max-age=0",
     },
   });
 }
@@ -1970,8 +1971,9 @@ Deno.serve(async (request: Request) => {
   }
 
   try {
-    await cleanupOldMessages();
-
+    // F2W v34 performance:
+    // The database cron job owns the guaranteed 24-hour purge.
+    // Do NOT block every chat request on a potentially large cleanup scan.
     if (request.method === "GET") {
       const [messages, announcement, config, pinnedMessage] = await Promise.all([
         getMessages(),
@@ -2787,4 +2789,5 @@ Deno.serve(async (request: Request) => {
 // f2w-force-save:ban-evasion-worker-v1:1788212206
 // f2w-force-save:cumulative-worker-v17:1788213599
 // f2w-force-save:hard-chat24-cleanup-v31:1788217048
+// f2w-force-save:worker-fast-request-path-v34:1788217565
  

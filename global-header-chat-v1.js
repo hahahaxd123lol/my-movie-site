@@ -339,3 +339,15 @@
 })();
 // f2w-force-save:navigation-warmup-v33:1788217440
  
+
+/* F2W v34 — service worker navigation accelerator */
+(() => {
+  'use strict';
+  if(!('serviceWorker' in navigator))return;
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/sw-v34.js?v=1788217565',{scope:'/'})
+      .catch(error=>console.warn('F2W service worker registration failed:',error));
+  },{once:true,passive:true});
+})();
+// f2w-force-save:service-worker-register-v34:1788217565
+ 

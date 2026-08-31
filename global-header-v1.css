@@ -1625,3 +1625,67 @@ body.f2w-main-page * {
 
 /* f2w-force-save:motion-performance-lock-v33:1788217440 */
  
+
+/* ============================================================
+   F2W v35 — HEADER BUTTON TEXT FIT
+   Chat / Staff Control Panel text must stay fully inside buttons.
+   ============================================================ */
+@media (min-width:1181px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:72px 84px 76px 78px 82px 116px 144px !important;
+    flex:0 0 688px !important;
+    width:688px !important;
+    min-width:688px !important;
+    max-width:688px !important;
+    gap:6px !important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > button,
+  body.f2w-main-page > header .f2w-action-cluster > a,
+  body.f2w-main-page > header .f2w-action-cluster .tool-btn,
+  body.f2w-main-page > header #staff-control-nav,
+  body.f2w-main-page > header .chat-button {
+    min-width:0 !important;
+    max-width:100% !important;
+    padding-left:8px !important;
+    padding-right:8px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+    box-sizing:border-box !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    font-size:10px !important;
+  }
+
+  body.f2w-main-page > header #staff-control-nav {
+    font-size:9.5px !important;
+    letter-spacing:-.01em !important;
+  }
+}
+
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:66px 76px 70px 70px 76px 104px 132px !important;
+    flex:0 0 630px !important;
+    width:630px !important;
+    min-width:630px !important;
+    max-width:630px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    font-size:9px !important;
+    padding-left:6px !important;
+    padding-right:6px !important;
+  }
+
+  body.f2w-main-page > header #staff-control-nav {
+    font-size:8.8px !important;
+    padding-left:6px !important;
+    padding-right:6px !important;
+  }
+}
+
+/* f2w-force-save:header-button-fit-v35:1788217735 */
+ 
