@@ -723,3 +723,78 @@ main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-ban
 
 /* f2w-force-save:1788210997:global-header */
  
+/* ================= F2W ACCOUNT MODAL HEADER GAP + NO INNER SCROLL v12 ================= */
+/* Keep the account card clear of the fixed site header and avoid a scrollbar inside the card. */
+.account-modal,
+#account-modal,
+.auth-modal,
+.login-modal{
+  inset:72px 0 0 0 !important;
+  padding:24px clamp(16px,3vw,34px) 28px !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-sizing:border-box !important;
+}
+.account-modal > .account-card,
+#account-modal > .account-card,
+.auth-modal > .account-card,
+.login-modal > .account-card{
+  width:min(92vw,540px) !important;
+  max-width:540px !important;
+  max-height:none !important;
+  overflow:visible !important;
+  flex:0 0 auto !important;
+}
+.account-modal .account-body,
+#account-modal .account-body{
+  max-height:none !important;
+  overflow:visible !important;
+}
+/* Create-account form is a touch tighter so the full card fits desktop/laptop heights without its own scrollbar. */
+.account-modal #account-signup-form,
+#account-modal #account-signup-form{
+  margin-top:0 !important;
+}
+.account-modal #account-signup-form .account-label,
+#account-modal #account-signup-form .account-label{
+  margin-top:9px !important;
+  margin-bottom:5px !important;
+}
+.account-modal #account-signup-form .account-input,
+#account-modal #account-signup-form .account-input{
+  padding-top:9px !important;
+  padding-bottom:9px !important;
+}
+@media (max-width:900px){
+  .account-modal,
+  #account-modal,
+  .auth-modal,
+  .login-modal{
+    inset:64px 0 0 0 !important;
+    padding:18px 12px 22px !important;
+    align-items:flex-start !important;
+  }
+  .account-modal > .account-card,
+  #account-modal > .account-card{
+    width:min(94vw,520px) !important;
+    max-width:520px !important;
+    margin:0 auto !important;
+  }
+}
+@media (max-height:760px) and (min-width:701px){
+  .account-modal,
+  #account-modal{
+    inset:64px 0 0 0 !important;
+    padding-top:14px !important;
+    padding-bottom:18px !important;
+    align-items:flex-start !important;
+  }
+  .account-modal > .account-card,
+  #account-modal > .account-card{
+    margin:0 auto !important;
+  }
+}
+/* f2w-force-save:account-gap-no-inner-scroll-v12 */
+ 
