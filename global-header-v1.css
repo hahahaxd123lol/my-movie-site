@@ -1730,3 +1730,63 @@ body.f2w-main-page * {
 
 /* f2w-force-save:chat-button-width-v38:1788218284 */
  
+
+/* ============================================================
+   F2W v42 — FINAL CHAT BUTTON WIDTH / CENTERING
+   Widen the box; do NOT shrink the text.
+   ============================================================ */
+@media (min-width:1181px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:94px 84px 76px 78px 82px 116px 144px !important;
+    flex:0 0 710px !important;
+    width:710px !important;
+    min-width:710px !important;
+    max-width:710px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:7px !important;
+    padding-left:10px !important;
+    padding-right:10px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+    box-sizing:border-box !important;
+    font-size:10px !important;
+  }
+
+  body.f2w-main-page > header .chat-button .chat-online-dot {
+    display:inline-block !important;
+    flex:0 0 7px !important;
+    width:7px !important;
+    height:7px !important;
+    min-width:7px !important;
+    min-height:7px !important;
+    margin:0 !important;
+  }
+}
+
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:88px 76px 70px 70px 76px 104px 132px !important;
+    flex:0 0 652px !important;
+    width:652px !important;
+    min-width:652px !important;
+    max-width:652px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    font-size:10px !important;
+    padding-left:9px !important;
+    padding-right:9px !important;
+  }
+}
+
+/* f2w-force-save:chat-button-final-width-v42:1788219270 */
+ 
