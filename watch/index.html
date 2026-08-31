@@ -3323,68 +3323,107 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </style>
 
 
-<style id="f2w-watch-login-pc-compact-v45">
-/* F2W v45 — make Login to Watch genuinely smaller on PC/desktop only */
+<style id="f2w-watch-login-compact-v46">
+/* F2W v46 — smaller Login to Watch card without making it tall/narrow */
 @media (min-width:601px) {
-  #watch-login-overlay .watch-login-card,
-  #watch-login-overlay .login-card,
-  #watch-login-overlay .auth-card,
-  #login-to-watch-overlay .watch-login-card,
-  #login-to-watch-overlay .login-card,
-  #login-to-watch-overlay .auth-card,
-  .watch-login-card,
-  .login-to-watch-card,
-  .watch-auth-card {
-    width:min(360px,calc(100vw - 40px))!important;
-    max-width:360px!important;
-    padding:16px 16px 15px!important;
+  .watch-login-overlay {
+    padding:18px!important;
+  }
+
+  .watch-login-card {
+    width:min(400px,calc(100vw - 40px))!important;
+    max-width:400px!important;
+    padding:18px 20px 17px!important;
     border-radius:14px!important;
-    box-sizing:border-box!important;
   }
 
-  #watch-login-overlay h2,
-  #login-to-watch-overlay h2,
-  .watch-login-card h2,
-  .login-to-watch-card h2,
-  .watch-auth-card h2 {
+  .watch-login-card .lock-icon {
+    width:46px!important;
+    height:46px!important;
+    margin:0 auto 11px!important;
+    border-radius:13px!important;
     font-size:1.05rem!important;
+  }
+
+  .watch-login-card h2 {
+    margin:0!important;
+    font-size:1.12rem!important;
     line-height:1.15!important;
-    margin:5px 0 5px!important;
   }
 
-  #watch-login-overlay p,
-  #login-to-watch-overlay p,
-  .watch-login-card p,
-  .login-to-watch-card p,
-  .watch-auth-card p {
+  .watch-login-card p {
+    max-width:330px!important;
+    margin:7px auto 0!important;
     font-size:.72rem!important;
-    line-height:1.4!important;
-    margin:0 0 10px!important;
+    line-height:1.42!important;
   }
 
-  #watch-login-overlay .watch-login-actions,
-  #login-to-watch-overlay .watch-login-actions,
-  .watch-login-card .watch-login-actions,
-  .login-to-watch-card .watch-login-actions,
-  .watch-auth-card .watch-login-actions,
-  #watch-login-overlay .auth-actions,
-  #login-to-watch-overlay .auth-actions {
-    gap:7px!important;
-    margin-top:10px!important;
+  .watch-login-actions {
+    gap:8px!important;
+    margin-top:14px!important;
+    flex-wrap:nowrap!important;
   }
 
-  #watch-login-overlay button,
-  #login-to-watch-overlay button,
-  .watch-login-card button,
-  .login-to-watch-card button,
-  .watch-auth-card button {
-    min-height:36px!important;
+  .watch-login-actions button {
+    flex:1 1 0!important;
+    min-width:0!important;
+    min-height:38px!important;
+    height:38px!important;
     padding:0 12px!important;
-    font-size:.75rem!important;
+    border-radius:8px!important;
+    font-size:.76rem!important;
   }
 }
 
-/* f2w-force-save:watch-login-pc-compact-v45:1788219752 */
+@media (max-width:600px) {
+  .watch-login-overlay {
+    padding:14px!important;
+  }
+
+  .watch-login-card {
+    width:min(330px,calc(100vw - 28px))!important;
+    max-width:330px!important;
+    padding:15px 16px 14px!important;
+    border-radius:13px!important;
+  }
+
+  .watch-login-card .lock-icon {
+    width:42px!important;
+    height:42px!important;
+    margin:0 auto 9px!important;
+    border-radius:12px!important;
+    font-size:.95rem!important;
+  }
+
+  .watch-login-card h2 {
+    font-size:1rem!important;
+    line-height:1.15!important;
+  }
+
+  .watch-login-card p {
+    max-width:292px!important;
+    margin-top:6px!important;
+    font-size:.69rem!important;
+    line-height:1.38!important;
+  }
+
+  .watch-login-actions {
+    gap:7px!important;
+    margin-top:12px!important;
+    flex-wrap:nowrap!important;
+  }
+
+  .watch-login-actions button {
+    flex:1 1 0!important;
+    min-width:0!important;
+    min-height:36px!important;
+    height:36px!important;
+    padding:0 8px!important;
+    font-size:.72rem!important;
+  }
+}
+
+/* f2w-force-save:watch-login-compact-v46:1788219920 */
 </style>
 
 </head>
@@ -7776,5 +7815,5 @@ if(currentUser){
 <!-- f2w-force-save:watch-login-box-v43:1788219527 -->
 <!-- f2w-force-save:v43-watch-auth-cache:1788219527:watch/index.html -->
 <!-- f2w-force-save:v44-header-cache:1788219651:watch/index.html -->
-<!-- f2w-force-save:watch-index-v45:1788219752 -->
+<!-- f2w-force-save:watch-index-v46:1788219920 -->
  
