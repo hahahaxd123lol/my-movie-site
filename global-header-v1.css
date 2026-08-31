@@ -1098,3 +1098,219 @@ main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-ban
 }
 /* f2w-force-save:remove-account-favorites-sitewide-v20:1788214488 */
  
+
+/* ============================================================
+   F2W v21 — TRUE STATIC CANONICAL HEADER
+   Every page now ships the exact same header markup.
+   Auth controls use fixed grid cells, so hydration cannot move buttons.
+   ============================================================ */
+
+@media (min-width:1181px) {
+  body.f2w-main-page > header {
+    display:flex !important;
+    align-items:center !important;
+    flex-wrap:nowrap !important;
+    width:100% !important;
+    height:82px !important;
+    min-height:82px !important;
+    max-height:82px !important;
+    padding:10px 12px !important;
+    gap:10px !important;
+    overflow:visible !important;
+    transform:none !important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    flex:0 0 145px !important;
+    width:145px !important;
+    min-width:145px !important;
+    max-width:145px !important;
+  }
+
+  body.f2w-main-page > header > .header-tools {
+    position:static !important;
+    display:flex !important;
+    flex:1 1 auto !important;
+    align-items:center !important;
+    flex-wrap:nowrap !important;
+    min-width:0 !important;
+    width:auto !important;
+    height:42px !important;
+    gap:7px !important;
+    transform:none !important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    display:flex !important;
+    align-items:center !important;
+    flex:0 1 auto !important;
+    flex-wrap:nowrap !important;
+    min-width:0 !important;
+    height:42px !important;
+    gap:1px !important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    display:grid !important;
+    grid-template-columns:minmax(120px,1fr) minmax(120px,1fr) !important;
+    flex:1 1 320px !important;
+    width:auto !important;
+    min-width:240px !important;
+    max-width:500px !important;
+    height:40px !important;
+    gap:7px !important;
+    margin:0 2px !important;
+  }
+
+  /* Fixed action grid. Login occupies the Favorites cell and Sign Up occupies
+     the Profile cell while logged out. Logged-in controls occupy those exact
+     same coordinates, so nothing can slide when Supabase restores the session. */
+  body.f2w-main-page > header .f2w-action-cluster {
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:62px 84px 74px 76px 78px 112px 122px !important;
+    grid-template-rows:40px !important;
+    align-items:stretch !important;
+    justify-content:start !important;
+    flex:0 0 644px !important;
+    width:644px !important;
+    min-width:644px !important;
+    max-width:644px !important;
+    height:40px !important;
+    gap:6px !important;
+    margin-left:auto !important;
+    overflow:visible !important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > .chat-button {
+    grid-column:1 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #header-login-btn,
+  body.f2w-main-page > header #favorites-nav-btn {
+    grid-column:2 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #header-signup-btn,
+  body.f2w-main-page > header #profile-nav-btn {
+    grid-column:3 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #support-nav-btn {
+    grid-column:4 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #account-btn {
+    grid-column:5 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #notification-wrap {
+    grid-column:6 !important;
+    grid-row:1 !important;
+    min-width:0 !important;
+    width:112px !important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    grid-column:7 !important;
+    grid-row:1 !important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > button,
+  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap,
+  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap > button {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    height:40px !important;
+    box-sizing:border-box !important;
+    margin:0 !important;
+    transform:none !important;
+    translate:none !important;
+  }
+
+  /* Hidden auth-state controls remain in their fixed cells invisibly.
+     This is safe because Login/Favorites and SignUp/Profile intentionally share cells. */
+  body.f2w-main-page > header #header-login-btn[style*="display:none"],
+  body.f2w-main-page > header #header-login-btn[style*="display: none"],
+  body.f2w-main-page > header #header-signup-btn[style*="display:none"],
+  body.f2w-main-page > header #header-signup-btn[style*="display: none"],
+  body.f2w-main-page > header #favorites-nav-btn[style*="display:none"],
+  body.f2w-main-page > header #favorites-nav-btn[style*="display: none"],
+  body.f2w-main-page > header #profile-nav-btn[style*="display:none"],
+  body.f2w-main-page > header #profile-nav-btn[style*="display: none"],
+  body.f2w-main-page > header #support-nav-btn[style*="display:none"],
+  body.f2w-main-page > header #support-nav-btn[style*="display: none"],
+  body.f2w-main-page > header #account-btn[style*="display:none"],
+  body.f2w-main-page > header #account-btn[style*="display: none"],
+  body.f2w-main-page > header #notification-wrap[style*="display:none"],
+  body.f2w-main-page > header #notification-wrap[style*="display: none"],
+  body.f2w-main-page > header #staff-control-nav[hidden] {
+    display:flex !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+
+  /* Visible state wins without changing geometry. */
+  body.f2w-main-page > header #header-login-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #header-signup-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #favorites-nav-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #profile-nav-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #support-nav-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #account-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #notification-wrap:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #staff-control-nav:not([hidden]) {
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page > header a,
+  body.f2w-main-page > header button,
+  body.f2w-main-page > header input {
+    transform:none !important;
+    translate:none !important;
+    transition-property:color,background-color,border-color,box-shadow,opacity !important;
+  }
+}
+
+/* Compress only typography/search width on narrower desktop; coordinates stay fixed. */
+@media (min-width:1181px) and (max-width:1550px) {
+  body.f2w-main-page > header > .logo {
+    flex-basis:126px !important;
+    width:126px !important;
+    min-width:126px !important;
+    max-width:126px !important;
+  }
+  body.f2w-main-page > header > .logo .logo-image {
+    width:126px !important;
+    max-width:126px !important;
+  }
+  body.f2w-main-page > header .f2w-search-pair {
+    min-width:180px !important;
+    max-width:300px !important;
+  }
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button {
+    padding-left:5px !important;
+    padding-right:5px !important;
+    font-size:9px !important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:56px 76px 68px 68px 72px 102px 108px !important;
+    flex-basis:586px !important;
+    width:586px !important;
+    min-width:586px !important;
+    max-width:586px !important;
+    gap:6px !important;
+  }
+}
+
+/* Theme is retired everywhere. */
+body.f2w-main-page > header #theme-menu-button,
+body.f2w-main-page > header #theme-menu {
+  display:none !important;
+}
+
+/* f2w-force-save:true-static-header-v21:1788214596 */
+ 
