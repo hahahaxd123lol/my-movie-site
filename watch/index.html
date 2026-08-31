@@ -2925,6 +2925,130 @@
 }
 </style>
 
+
+<style id="f2w-watch-login-rating-polish-v5">
+/* Desktop/TV login gate: intentionally reduced from the oversized v4 while staying clearly readable. */
+#watch-login-overlay .watch-login-card{
+  width:min(560px,calc(100% - 40px)) !important;
+  max-width:560px !important;
+  padding:34px 38px 32px !important;
+  border-radius:20px !important;
+}
+#watch-login-overlay .watch-login-card .lock-icon{
+  width:62px !important;
+  height:62px !important;
+  margin:0 auto 16px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:24px !important;
+}
+#watch-login-overlay .watch-login-card h2{font-size:28px !important;line-height:1.12 !important;}
+#watch-login-overlay .watch-login-card p{max-width:470px !important;margin:12px auto 0 !important;font-size:15px !important;line-height:1.55 !important;}
+#watch-login-overlay .watch-login-actions{margin-top:22px !important;gap:12px !important;}
+#watch-login-overlay .watch-login-actions button{min-width:165px !important;min-height:50px !important;padding:12px 18px !important;font-size:15px !important;}
+@media (min-width:1800px){
+  #watch-login-overlay .watch-login-card{width:min(620px,calc(100% - 56px)) !important;max-width:620px !important;padding:40px 46px 38px !important;}
+  #watch-login-overlay .watch-login-card h2{font-size:31px !important;}
+  #watch-login-overlay .watch-login-card p{font-size:16px !important;max-width:520px !important;}
+  #watch-login-overlay .watch-login-actions button{min-width:180px !important;min-height:52px !important;font-size:15.5px !important;}
+}
+@media (max-width:700px){
+  #watch-login-overlay .watch-login-card{width:100% !important;max-width:500px !important;padding:25px 20px !important;}
+  #watch-login-overlay .watch-login-card .lock-icon{width:56px !important;height:56px !important;font-size:21px !important;margin-bottom:14px !important;}
+  #watch-login-overlay .watch-login-card h2{font-size:23px !important;}
+  #watch-login-overlay .watch-login-card p{font-size:14px !important;}
+}
+
+/* Polished rating panel — replaces the unstyled/raw controls. */
+.f2w-v34-rating-card{
+  margin:28px 0 30px !important;
+  padding:24px !important;
+  border:1px solid rgba(255,255,255,.11) !important;
+  border-radius:18px !important;
+  background:linear-gradient(145deg,rgba(9,20,34,.96),rgba(5,11,20,.98)) !important;
+  box-shadow:0 18px 50px rgba(0,0,0,.26) !important;
+  display:grid !important;
+  grid-template-columns:minmax(220px,1fr) minmax(300px,1.35fr) !important;
+  gap:18px 28px !important;
+  align-items:center !important;
+}
+.f2w-v34-rating-copy{grid-column:1 / -1 !important;}
+.f2w-v34-rating-copy .f2w-ultra-kicker{font-size:11px !important;letter-spacing:.14em !important;color:#f43f5e !important;font-weight:700 !important;}
+.f2w-v34-rating-copy h2{margin:5px 0 4px !important;font-size:27px !important;line-height:1.15 !important;font-weight:750 !important;}
+.f2w-v34-rating-copy p{margin:0 !important;color:#9ba8ba !important;font-size:14px !important;line-height:1.55 !important;}
+.f2w-v34-rating-stars{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:8px !important;
+  align-items:center !important;
+  min-height:44px !important;
+}
+.f2w-v34-rating-stars button{
+  width:42px !important;
+  height:42px !important;
+  padding:0 !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:11px !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  background:#0a1523 !important;
+  color:#fbbf24 !important;
+  font-size:15px !important;
+  font-weight:700 !important;
+  cursor:pointer !important;
+  transition:transform .14s ease,border-color .14s ease,background .14s ease !important;
+}
+.f2w-v34-rating-stars button:hover,.f2w-v34-rating-stars button:focus-visible{transform:translateY(-2px) !important;border-color:rgba(244,63,94,.62) !important;background:#101c2c !important;outline:none !important;}
+.f2w-v34-rating-summary{
+  display:grid !important;
+  grid-template-columns:auto 1fr auto 1fr !important;
+  align-items:center !important;
+  gap:4px 10px !important;
+  padding:12px 14px !important;
+  border-radius:12px !important;
+  background:rgba(255,255,255,.035) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+}
+.f2w-v34-rating-summary strong{font-size:21px !important;color:#fff !important;}
+.f2w-v34-rating-summary span{font-size:11px !important;color:#8190a5 !important;text-transform:uppercase !important;letter-spacing:.08em !important;}
+#f2w-v34-rating-review{
+  grid-column:1 / -1 !important;
+  width:100% !important;
+  min-height:90px !important;
+  resize:vertical !important;
+  box-sizing:border-box !important;
+  border-radius:12px !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  background:#07111e !important;
+  color:#eef2f7 !important;
+  padding:13px 14px !important;
+  font:500 14px/1.5 Inter,system-ui,sans-serif !important;
+  outline:none !important;
+}
+#f2w-v34-rating-review:focus{border-color:rgba(244,63,94,.7) !important;box-shadow:0 0 0 3px rgba(244,63,94,.10) !important;}
+.f2w-v34-rating-actions{grid-column:1 / -1 !important;display:flex !important;gap:10px !important;align-items:center !important;}
+.f2w-v34-rating-actions button{
+  min-height:44px !important;
+  padding:0 18px !important;
+  border-radius:10px !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  background:#0a1523 !important;
+  color:#fff !important;
+  font:700 13px/1 Inter,system-ui,sans-serif !important;
+  cursor:pointer !important;
+}
+#f2w-v34-save-rating{background:#e50914 !important;border-color:#e50914 !important;}
+.f2w-v34-rating-actions button:hover{filter:brightness(1.08) !important;}
+@media(max-width:760px){
+  .f2w-v34-rating-card{grid-template-columns:1fr !important;padding:18px !important;gap:14px !important;}
+  .f2w-v34-rating-copy{grid-column:auto !important;}
+  .f2w-v34-rating-stars{gap:6px !important;}
+  .f2w-v34-rating-stars button{width:38px !important;height:38px !important;}
+  #f2w-v34-rating-review,.f2w-v34-rating-actions{grid-column:auto !important;}
+}
+</style>
+
 </head>
 <body class="theme-red f2w-main-page f2w-watch-page watch-locked">
 <header>
@@ -7386,4 +7510,5 @@ if(currentUser){
 <!-- f2w-force-save:f2w-watch-login-card-desktop-tv-v3:1788209509 -->
 <!-- f2w-force-save:device-v9:20260831-205349:watch -->
 <!-- f2w-force-save:watch-login-size-v4:1788209763 -->
+<!-- f2w-force-save:watch-login-rating-polish:1788210109555980084 -->
  
