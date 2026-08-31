@@ -270,7 +270,12 @@ main{max-width:1420px;margin:auto;padding:28px 24px 70px}.hero{position:relative
         max-width:500px !important;
       }
     }
-  </style>
+  
+/* Same-origin shared chat bridge: uses the exact Home/Watch chat implementation. */
+.f2w-shared-chat-shell{position:fixed;inset:0;z-index:999999;display:none;background:rgba(0,0,0,.78);backdrop-filter:blur(8px)}
+.f2w-shared-chat-shell.open{display:block}
+.f2w-shared-chat-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}
+</style>
 </head><body class="theme-red f2w-main-page">
 <header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
@@ -432,6 +437,9 @@ main{max-width:1420px;margin:auto;padding:28px 24px 70px}.hero{position:relative
       </div>
     </div>
   </header>
+<div class="f2w-shared-chat-shell" id="f2w-shared-chat-shell" aria-hidden="true">
+  <iframe class="f2w-shared-chat-frame" id="f2w-shared-chat-frame" title="Flix2Watch Chat" src="about:blank" allow="clipboard-write"></iframe>
+</div>
 <main><section class="hero"><div class="kicker"><i class="fa-solid fa-trophy"></i> Flix2Watch Competitive Rankings</div><h1>Community Leaderboard</h1><p>Every watch, rating and achievement pushes the rankings forward. See who is climbing, who is online and who owns the top of Flix2Watch right now.</p><div class="live-pill"><i class="fa-solid fa-circle"></i> LIVE RANKINGS</div></section>
 <section class="stats"><div class="stat"><span>Registered players</span><strong id="count">—</strong></div><div class="stat"><span>Online now</span><strong id="online">—</strong></div><div class="stat"><span>Combined watch time</span><strong id="watch">—</strong></div><div class="stat"><span>Current page</span><strong id="pageStat">1 / 1</strong></div></section>
 <section class="podium" id="podium"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></section>
@@ -453,11 +461,62 @@ window.toggleF2WMobileMenu=()=>document.querySelector('.header-tools')?.classLis
 window.v18HeaderMovieSearch=v=>{};window.protectMovieSearchField=el=>{if(el.readOnly){el.readOnly=false;setTimeout(()=>el.focus(),0)}};window.protectUserSearchField=el=>{if(el.readOnly){el.readOnly=false;setTimeout(()=>el.focus(),0)}};
 window.submitUserDirectorySearch=()=>{const el=document.getElementById('user-search');const q=el?.value.trim().replace(/^@/,'');if(q)location.href='/profile/?user='+encodeURIComponent(q)};
 window.handleUserSearchInput=()=>{};
-window.openChat=()=>location.href='/home/?chat=1';
+window.openChat=()=>{
+  const shell=document.getElementById('f2w-shared-chat-shell');
+  const frame=document.getElementById('f2w-shared-chat-frame');
+  if(!shell||!frame)return;
+  shell.classList.add('open');
+  shell.setAttribute('aria-hidden','false');
+
+  const boot=()=>{
+    let attempts=0;
+    const timer=setInterval(()=>{
+      attempts++;
+      try{
+        const w=frame.contentWindow,d=frame.contentDocument;
+        if(!w||!d)return;
+        if(typeof w.openChat!=='function'){if(attempts>120)clearInterval(timer);return;}
+        clearInterval(timer);
+
+        // The iframe is same-origin, so use the site's real chat implementation
+        // and hide the surrounding Home page rather than recreating chat here.
+        let st=d.getElementById('f2w-leaderboard-chat-bridge-style');
+        if(!st){
+          st=d.createElement('style');
+          st.id='f2w-leaderboard-chat-bridge-style';
+          st.textContent=`html,body{background:transparent!important;overflow:hidden!important} body>*:not(#chat-modal):not(script):not(style){display:none!important} #chat-modal{z-index:2147483647!important}`;
+          (d.head||d.documentElement).appendChild(st);
+        }
+
+        const originalClose=w.closeChat;
+        if(!w.__f2wLeaderboardChatCloseWrapped){
+          w.__f2wLeaderboardChatCloseWrapped=true;
+          w.closeChat=function(){
+            try{if(typeof originalClose==='function')originalClose.call(w)}catch{}
+            shell.classList.remove('open');
+            shell.setAttribute('aria-hidden','true');
+          };
+        }
+        w.openChat();
+      }catch(err){
+        clearInterval(timer);
+        shell.classList.remove('open');
+        shell.setAttribute('aria-hidden','true');
+        console.error('Could not open shared chat',err);
+      }
+    },100);
+  };
+
+  if(frame.dataset.loaded==='1'){boot();return;}
+  frame.onload=()=>{frame.dataset.loaded='1';boot()};
+  frame.src='/home/';
+};
 window.openHeaderAuth=()=>location.href='/home/';window.openAccountModal=()=>location.href='/home/';
 let myUsername='';window.openMyProfile=()=>location.href=myUsername?'/profile/?user='+encodeURIComponent(myUsername):'/home/';
 document.getElementById('movie-search')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim())location.href='/home/?q='+encodeURIComponent(e.target.value.trim())});
 document.getElementById('user-search')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitUserDirectorySearch()});
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const shell=document.getElementById('f2w-shared-chat-shell');if(shell?.classList.contains('open')){try{document.getElementById('f2w-shared-chat-frame')?.contentWindow?.closeChat?.()}catch{}shell.classList.remove('open');shell.setAttribute('aria-hidden','true')}}});
 document.addEventListener('click',e=>{if(!e.target.closest('.f2w-genre-wrap'))document.getElementById('f2w-genre-menu')?.classList.remove('open');if(!e.target.closest('.dropdown-wrapper')){const m=document.getElementById('theme-menu');if(m){m.hidden=true;m.setAttribute('aria-hidden','true')}}});
 db.auth.getUser().then(async({data})=>{const logged=!!data?.user;for(const id of ['favorites-nav-btn','profile-nav-btn','support-nav-btn','account-btn']){const el=document.getElementById(id);if(el)el.style.display=logged?'':'none'}const li=document.getElementById('header-login-btn'),su=document.getElementById('header-signup-btn');if(li)li.style.display=logged?'none':'';if(su)su.style.display=logged?'none':'';if(logged){const {data:p}=await db.from('profiles').select('username').eq('user_id',data.user.id).maybeSingle();myUsername=p?.username||''}});
 let timer;const refresh=()=>{clearTimeout(timer);timer=setTimeout(load,250)};try{db.channel('leaderboard-v2-live').on('postgres_changes',{event:'*',schema:'public',table:'user_presence'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_watch_time'},refresh).subscribe(s=>{if(s==='SUBSCRIBED')$('#updated').textContent='Realtime connected'})}catch{}load();setInterval(load,60000);
