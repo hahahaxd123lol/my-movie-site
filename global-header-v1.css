@@ -1,0 +1,255 @@
+
+    /* V21: final, cache-resistant desktop header authority */
+    @media (min-width: 1181px) {
+      body.f2w-main-page > header{
+        position:sticky !important;
+        top:0 !important;
+        z-index:2147480000 !important;
+        display:flex !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        width:100% !important;
+        max-width:none !important;
+        height:82px !important;
+        min-height:82px !important;
+        max-height:82px !important;
+        margin:0 !important;
+        padding:10px 16px !important;
+        gap:14px !important;
+        overflow:visible !important;
+        background:rgba(2,8,19,.97) !important;
+        border:0 !important;
+        border-bottom:1px solid color-mix(in srgb,var(--accent) 18%,#27394f) !important;
+        border-radius:0 !important;
+        box-shadow:0 8px 26px rgba(0,0,0,.28) !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header > .logo{
+        position:static !important;
+        display:flex !important;
+        flex:0 0 158px !important;
+        width:158px !important;
+        min-width:158px !important;
+        max-width:158px !important;
+        height:56px !important;
+        margin:0 !important;
+        padding:0 !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header > .logo .logo-image{
+        display:block !important;
+        width:158px !important;
+        min-width:0 !important;
+        max-width:158px !important;
+        height:auto !important;
+        max-height:56px !important;
+        margin:0 !important;
+        object-fit:contain !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header > .f2w-mobile-nav-toggle{
+        display:none !important;
+      }
+
+      body.f2w-main-page > header > .header-tools{
+        position:static !important;
+        display:flex !important;
+        flex:1 1 auto !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        align-content:center !important;
+        min-width:0 !important;
+        width:auto !important;
+        height:42px !important;
+        min-height:42px !important;
+        max-height:42px !important;
+        margin:0 !important;
+        padding:0 !important;
+        gap:7px !important;
+        overflow:visible !important;
+        background:transparent !important;
+        border:0 !important;
+        box-shadow:none !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header .f2w-primary-nav{
+        display:flex !important;
+        flex:0 0 auto !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        width:auto !important;
+        height:42px !important;
+        margin:0 !important;
+        padding:0 !important;
+        gap:1px !important;
+      }
+
+      body.f2w-main-page > header .f2w-nav-link,
+      body.f2w-main-page > header .f2w-nav-button{
+        display:inline-flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:5px !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:40px !important;
+        min-height:40px !important;
+        max-height:40px !important;
+        margin:0 !important;
+        padding:7px 8px !important;
+        border-radius:7px !important;
+        font-size:11px !important;
+        line-height:1 !important;
+        white-space:nowrap !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header .f2w-search-pair{
+        display:flex !important;
+        flex:1 1 390px !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        width:auto !important;
+        min-width:260px !important;
+        max-width:585px !important;
+        height:40px !important;
+        margin:0 3px !important;
+        padding:0 !important;
+        gap:7px !important;
+      }
+
+      body.f2w-main-page > header .search-container,
+      body.f2w-main-page > header .user-search-container{
+        display:flex !important;
+        position:relative !important;
+        flex:1 1 0 !important;
+        min-width:115px !important;
+        width:auto !important;
+        height:40px !important;
+        margin:0 !important;
+        padding:0 !important;
+      }
+
+      body.f2w-main-page > header .search-bar,
+      body.f2w-main-page > header .user-search-bar{
+        width:100% !important;
+        min-width:0 !important;
+        height:40px !important;
+        min-height:40px !important;
+        max-height:40px !important;
+        margin:0 !important;
+        padding:8px 34px !important;
+        border-radius:8px !important;
+        font-size:11px !important;
+        line-height:1 !important;
+      }
+
+      body.f2w-main-page > header .f2w-action-cluster{
+        display:flex !important;
+        flex:0 0 auto !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        justify-content:flex-end !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:40px !important;
+        margin:0 0 0 auto !important;
+        padding:0 !important;
+        gap:6px !important;
+      }
+
+      body.f2w-main-page > header .tool-btn,
+      body.f2w-main-page > header .f2w-auth-top-btn,
+      body.f2w-main-page > header #staff-control-nav{
+        display:inline-flex !important;
+        flex:0 0 auto !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:5px !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:40px !important;
+        min-height:40px !important;
+        max-height:40px !important;
+        margin:0 !important;
+        padding:7px 8px !important;
+        border-radius:8px !important;
+        font-size:11px !important;
+        line-height:1 !important;
+        white-space:nowrap !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header .dropdown-wrapper,
+      body.f2w-main-page > header .f2w-genre-wrap,
+      body.f2w-main-page > header .v17-notification-wrap{
+        position:relative !important;
+        flex:0 0 auto !important;
+        width:auto !important;
+        margin:0 !important;
+      }
+
+      body.f2w-main-page > header .dropdown-menu{
+        top:calc(100% + 8px) !important;
+        right:0 !important;
+        left:auto !important;
+      }
+
+      body.f2w-main-page > header .f2w-genre-menu{
+        top:calc(100% + 8px) !important;
+        left:0 !important;
+        right:auto !important;
+      }
+    }
+
+    /* Medium desktop/laptop: still one row, simply tighter. */
+    @media (min-width:1181px) and (max-width:1650px){
+      body.f2w-main-page > header{
+        gap:9px !important;
+        padding-left:11px !important;
+        padding-right:11px !important;
+      }
+      body.f2w-main-page > header > .logo{
+        flex-basis:145px !important;
+        width:145px !important;
+        min-width:145px !important;
+        max-width:145px !important;
+      }
+      body.f2w-main-page > header > .logo .logo-image{
+        width:145px !important;
+        max-width:145px !important;
+      }
+      body.f2w-main-page > header .f2w-nav-link,
+      body.f2w-main-page > header .f2w-nav-button,
+      body.f2w-main-page > header .tool-btn,
+      body.f2w-main-page > header .f2w-auth-top-btn,
+      body.f2w-main-page > header #staff-control-nav{
+        padding-left:7px !important;
+        padding-right:7px !important;
+        font-size:10px !important;
+      }
+      body.f2w-main-page > header .f2w-search-pair{
+        min-width:235px !important;
+        max-width:500px !important;
+      }
+    }
+  
+
+/* Flix2Watch global preloaded chat shell */
+#f2w-global-chat-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(1,5,12,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#f2w-global-chat-overlay.open{display:flex}
+#f2w-global-chat-panel{position:relative;width:min(1180px,96vw);height:min(820px,92vh);border:1px solid color-mix(in srgb,var(--accent,#e50914) 48%,#26374b);border-radius:22px;overflow:hidden;background:#050a12;box-shadow:0 28px 90px rgba(0,0,0,.68)}
+#f2w-global-chat-frame{display:block;width:100%;height:100%;border:0;background:#050a12}
+#f2w-global-chat-close{position:absolute;right:12px;top:12px;z-index:8;width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(5,10,18,.92);color:#fff;cursor:pointer;font-size:18px;display:grid;place-items:center}
+#f2w-global-chat-loading{position:absolute;inset:0;display:grid;place-items:center;color:#cbd5e1;font:700 14px/1.4 Inter,system-ui,sans-serif;letter-spacing:.04em;background:#050a12;z-index:3}
+#f2w-global-chat-panel.ready #f2w-global-chat-loading{display:none}
+body.f2w-global-chat-open{overflow:hidden!important}
+@media(max-width:760px){#f2w-global-chat-overlay{padding:0}#f2w-global-chat-panel{width:100vw;height:100dvh;border-radius:0;border:0}#f2w-global-chat-close{right:8px;top:8px}}
