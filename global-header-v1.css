@@ -917,3 +917,130 @@ main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-ban
 }
 /* f2w-force-save:universal-legal-footer-v15:1788212347 */
  
+
+/* ============================================================
+   F2W v18 — STATIC HEADER GEOMETRY / NO JITTER
+   Keeps the header footprint fixed while auth/session data hydrates.
+   ============================================================ */
+
+/* No header element is allowed to animate width/position/transform. */
+body.f2w-main-page > header,
+body.f2w-main-page > header *,
+body.f2w-main-page > header *::before,
+body.f2w-main-page > header *::after {
+  transition-property: color,background-color,border-color,opacity,box-shadow !important;
+  animation-duration: 0s;
+}
+
+/* Stable desktop columns. */
+@media (min-width:1181px) {
+  body.f2w-main-page > header {
+    display:grid !important;
+    grid-template-columns:158px minmax(0,1fr) !important;
+    column-gap:14px !important;
+  }
+
+  body.f2w-main-page > header > .header-tools {
+    display:grid !important;
+    grid-template-columns:max-content minmax(290px,1fr) max-content !important;
+    align-items:center !important;
+    column-gap:8px !important;
+    width:100% !important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    grid-column:1 !important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    grid-column:2 !important;
+    width:100% !important;
+    min-width:290px !important;
+    max-width:none !important;
+    margin:0 !important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-column:3 !important;
+    display:grid !important;
+    grid-auto-flow:column !important;
+    grid-auto-columns:max-content !important;
+    align-items:center !important;
+    justify-content:end !important;
+    gap:6px !important;
+    min-width:0 !important;
+  }
+
+  /* Reserve exact auth footprints before Supabase resolves the session. */
+  body.f2w-main-page > header #header-login-btn {
+    width:58px !important;
+    min-width:58px !important;
+  }
+  body.f2w-main-page > header #header-signup-btn {
+    width:66px !important;
+    min-width:66px !important;
+  }
+  body.f2w-main-page > header #account-btn,
+  body.f2w-main-page > header #header-account-btn {
+    width:76px !important;
+    min-width:76px !important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    width:74px !important;
+    min-width:74px !important;
+  }
+
+  /* Hidden async-state buttons retain their slot, but are non-interactive.
+     This prevents the whole right side from shifting when auth resolves. */
+  body.f2w-main-page > header .f2w-action-cluster > [style*="display:none"],
+  body.f2w-main-page > header .f2w-action-cluster > [style*="display: none"],
+  body.f2w-main-page > header .f2w-action-cluster > [hidden] {
+    display:inline-flex !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+
+  /* Staff remains a reserved slot only when the button exists in markup. */
+  body.f2w-main-page > header #staff-control-nav[hidden] {
+    display:inline-flex !important;
+    visibility:hidden !important;
+    pointer-events:none !important;
+    opacity:0 !important;
+  }
+}
+
+/* Mobile/tablet menu should not resize/reflow the actual header bar. */
+@media (max-width:1180px) {
+  body.f2w-main-page > header {
+    contain:layout paint !important;
+  }
+  body.f2w-main-page > header > .header-tools {
+    position:fixed !important;
+    top:var(--f2w-mobile-header-height,66px) !important;
+    left:10px !important;
+    right:10px !important;
+    width:auto !important;
+    max-height:calc(100dvh - var(--f2w-mobile-header-height,66px) - 20px) !important;
+    overflow-y:auto !important;
+    overscroll-behavior:contain !important;
+    transform:none !important;
+  }
+  body.f2w-main-page > header > .header-tools:not(.mobile-open) {
+    display:none !important;
+  }
+  body.f2w-main-page > header > .header-tools.mobile-open {
+    display:flex !important;
+  }
+}
+
+/* Popovers/modals never change header dimensions. */
+body:has(.account-modal.open) > header,
+body:has(#account-modal.open) > header,
+body:has(.dropdown-menu.open) > header {
+  width:100% !important;
+  transform:none !important;
+}
+
+/* f2w-force-save:static-header-v18:1788213893 */
+ 

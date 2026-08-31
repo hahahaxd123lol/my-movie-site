@@ -2243,7 +2243,7 @@
   <link rel="stylesheet" href="/final-v35.css?v=17-1788213599">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=15-1788212347">
+  <link rel="stylesheet" href="/global-header-v1.css?v=18-1788213893">
 
   <style id="f2w-dedicated-chat-page">
     /* /chat/ is a dedicated chat route, not a disguised Home page. */
@@ -4601,6 +4601,7 @@
     
     clearAutofilledUserSearch();
 currentUser=session?.user||null;
+    window.currentUser=currentUser;
 
     if(currentUser){
       chatAlias=isCurrentUserOwner()?'josh':getAccountUsername();
@@ -4626,6 +4627,7 @@ currentUser=session?.user||null;
   window.addEventListener('DOMContentLoaded',async()=>{
     const {data}=await chatSupabase.auth.getSession();
     currentUser=data.session?.user||null;
+    window.currentUser=currentUser;
 
     
     clearAutofilledUserSearch();
@@ -6323,6 +6325,8 @@ if(currentUser){
   .v17-dm-sidebar.f2w-dm-sidebar-guest{opacity:.55;filter:saturate(.55)}
   .v17-dm-sidebar.f2w-dm-sidebar-guest .v17-dm-conversations,
   .v17-dm-sidebar.f2w-dm-sidebar-guest button{pointer-events:none!important}
+  .f2w-dm-auth-check{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(5,10,18,.92);color:#aeb8c8;font:800 14px/1.2 Inter,system-ui,sans-serif}
+  .f2w-dm-auth-check i{color:#e50914;font-size:20px}
 </style>
 <script id="f2w-guest-dm-lock-patch">
 (()=>{
@@ -6383,23 +6387,81 @@ if(currentUser){
   }
 
   window.switchChatMode=function(mode){
-    if(mode==='dm' && !window.currentUser){
-      fallbackSwitch('dm');
-      renderGuestDmLock();
+    if(mode!=='dm'){
+      restoreDmPanel();
+      if(originalSwitch)return originalSwitch(mode);
+      fallbackSwitch(mode);
       return;
     }
-    restoreDmPanel();
-    if(originalSwitch) return originalSwitch(mode);
-    fallbackSwitch(mode);
+
+    const openDmForUser=(user)=>{
+      window.currentUser=user||null;
+      if(user){
+        restoreDmPanel();
+        if(originalSwitch)return originalSwitch('dm');
+        fallbackSwitch('dm');
+        return;
+      }
+      fallbackSwitch('dm');
+      renderGuestDmLock();
+    };
+
+    if(window.currentUser){
+      return openDmForUser(window.currentUser);
+    }
+
+    // Auth can still be hydrating when the user taps DM. Ask Supabase directly
+    // instead of treating an unresolved session as logged out.
+    try{
+      const getter=window.chatSupabase?.auth?.getSession
+        ? window.chatSupabase.auth.getSession.bind(window.chatSupabase.auth)
+        : (typeof chatSupabase!=='undefined'&&chatSupabase?.auth?.getSession
+            ? chatSupabase.auth.getSession.bind(chatSupabase.auth)
+            : null);
+
+      if(getter){
+        fallbackSwitch('dm');
+        const thread=document.querySelector('#v17-dm-panel .v17-dm-thread');
+        if(thread&&!thread.querySelector('.f2w-dm-auth-check')){
+          const checking=document.createElement('div');
+          checking.className='f2w-dm-auth-check';
+          checking.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i><span>Checking your session…</span>';
+          thread.appendChild(checking);
+        }
+        getter().then(({data})=>{
+          document.querySelectorAll('.f2w-dm-auth-check').forEach(el=>el.remove());
+          openDmForUser(data?.session?.user||null);
+        }).catch(()=>{
+          document.querySelectorAll('.f2w-dm-auth-check').forEach(el=>el.remove());
+          openDmForUser(null);
+        });
+        return;
+      }
+    }catch{}
+
+    openDmForUser(null);
   };
 
   // Re-apply after auth state changes without touching the silent-preload/opening logic.
   const mo=new MutationObserver(()=>{
     const dmTab=document.getElementById('v17-chat-dm-tab');
-    if(dmTab?.classList.contains('active')){
-      if(window.currentUser) restoreDmPanel();
-      else renderGuestDmLock();
+    if(!dmTab?.classList.contains('active'))return;
+    if(window.currentUser){
+      restoreDmPanel();
+      return;
     }
+    // Do not flash the guest lock during auth hydration.
+    clearTimeout(window.__f2wDmGuestDelay);
+    window.__f2wDmGuestDelay=setTimeout(async()=>{
+      try{
+        const {data}=await chatSupabase.auth.getSession();
+        window.currentUser=data?.session?.user||null;
+        if(window.currentUser)restoreDmPanel();
+        else renderGuestDmLock();
+      }catch{
+        renderGuestDmLock();
+      }
+    },180);
   });
   if(document.documentElement) mo.observe(document.documentElement,{subtree:true,childList:true});
 })();
@@ -6426,4 +6488,6 @@ if(currentUser){
 <!-- f2w-force-save:chat-dm-lock-report-v16:1788212934 -->
 <!-- f2w-force-save:chat-route-cache-v16:1788212934:chat/index.html -->
 <!-- f2w-force-save:sitewide-v17:1788213599:chat/index.html -->
+<!-- f2w-force-save:dm-auth-race-v18:1788213893 -->
+<!-- f2w-force-save:sitewide-header-v18:1788213893:chat/index.html -->
  
