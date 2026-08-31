@@ -1,4 +1,12 @@
 (() => {
+
+function f2wDebounce(fn,wait=140){
+  let t=null;
+  return function(...args){
+    clearTimeout(t);
+    t=setTimeout(()=>fn.apply(this,args),wait);
+  };
+}
   'use strict';
 
   const SUPABASE_URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
@@ -707,7 +715,7 @@
       profileMovieSearchTimer=setTimeout(async()=>{
         try{renderMovieSearchResults(modal,await searchProfileMovies(query));}
         catch(error){if(error?.name!=='AbortError')host.innerHTML='<div class="f2w-movie-search-empty">Movie search unavailable right now.</div>';}
-      },180);
+      },120);
     });
 
     input.addEventListener('focus',()=>{
@@ -999,7 +1007,7 @@
         try{renderViewedProfile?.();}catch{}
         renderProfileExtras(viewedProfileObject());
         decorateNames();
-      },180);
+      },120);
     }catch(error){
       if(state)state.textContent=error.message||'Could not save profile.';
       toast(error.message||'Could not update profile.');
@@ -1436,4 +1444,15 @@
 // f2w-force-save:role-name-effects-v30:1788216738
 // f2w-force-save:stable-role-name-v31:1788217048
 // f2w-force-save:profile-social-static-status-v32:1788217362
+ 
+
+/* F2W v33 — debounce repeated role decoration bursts */
+(() => {
+  'use strict';
+  if(typeof window.decorateNames!=='function'||window.__f2wDecorateNamesDebounced)return;
+  window.__f2wDecorateNamesDebounced=true;
+  const raw=window.decorateNames;
+  window.decorateNames=f2wDebounce(()=>raw(),70);
+})();
+// f2w-force-save:debounce-role-decorate-v33:1788217440
  

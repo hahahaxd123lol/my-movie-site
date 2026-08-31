@@ -293,3 +293,49 @@
 })();
 // f2w-force-save:fade-state-v26:1788216027
  
+
+/* F2W v33 — navigation warmup + low-overhead performance */
+(() => {
+  'use strict';
+
+  const warmed=new Set();
+  function warm(href){
+    try{
+      const u=new URL(href,location.href);
+      if(u.origin!==location.origin || warmed.has(u.pathname+u.search) || u.href===location.href)return;
+      warmed.add(u.pathname+u.search);
+
+      const link=document.createElement('link');
+      link.rel='prefetch';
+      link.href=u.href;
+      link.fetchPriority='low';
+      document.head.appendChild(link);
+    }catch{}
+  }
+
+  const common=[
+    '/home/','/watch/','/favorites/','/profile/','/support/',
+    '/chat/','/leaderboard/','/forum/','/users/'
+  ];
+
+  const run=()=>{
+    common.forEach(warm);
+    document.querySelectorAll('body.f2w-main-page > header a[href]').forEach(a=>warm(a.href));
+  };
+
+  if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:800});
+  else setTimeout(run,180);
+
+  document.addEventListener('pointerover',e=>{
+    const a=e.target.closest?.('a[href]');
+    if(a)warm(a.href);
+  },{passive:true});
+
+  // Let the browser reuse already-loaded documents/resources when navigating back/forward.
+  window.addEventListener('pageshow',()=>{
+    document.documentElement.classList.remove('f2w-page-enter');
+    document.documentElement.classList.add('f2w-page-ready');
+  },{passive:true});
+})();
+// f2w-force-save:navigation-warmup-v33:1788217440
+ 

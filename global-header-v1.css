@@ -1365,101 +1365,7 @@ body.f2w-main-page > header .chat-button .chat-online-dot {
 /* f2w-force-save:chat-online-dot-v23:1788215130 */
  
 
-/* ============================================================
-   F2W v26 — SITEWIDE PAGE FADE / APP-LIKE NAVIGATION
-   Opacity-only transitions: smooth without shifting layout.
-   ============================================================ */
 
-/* Initial document paint */
-html.f2w-page-enter body {
-  opacity:0;
-}
-html.f2w-page-ready body {
-  opacity:1;
-  transition:opacity .88s cubic-bezier(.22,.61,.36,1);
-}
-
-/* Same-origin browser View Transitions where supported. */
-@view-transition {
-  navigation:auto;
-}
-::view-transition-old(root) {
-  animation:f2wPageFadeOut .18s ease-out both;
-}
-::view-transition-new(root) {
-  animation:f2wPageFadeIn .88s cubic-bezier(.22,.61,.36,1) both;
-}
-
-/* Header participates only in opacity; never changes geometry. */
-::view-transition-group(f2w-header) {
-  animation-duration:.88s;
-  animation-timing-function:cubic-bezier(.22,.61,.36,1);
-}
-::view-transition-old(f2w-header) {
-  animation:f2wHeaderFadeOut .12s ease-out both;
-}
-::view-transition-new(f2w-header) {
-  animation:f2wHeaderFadeIn .72s ease-out both;
-}
-
-@keyframes f2wPageFadeIn {
-  from { opacity:0; }
-  to { opacity:1; }
-}
-@keyframes f2wPageFadeOut {
-  from { opacity:1; }
-  to { opacity:.92; }
-}
-@keyframes f2wHeaderFadeIn {
-  from { opacity:0; }
-  to { opacity:1; }
-}
-@keyframes f2wHeaderFadeOut {
-  from { opacity:1; }
-  to { opacity:.96; }
-}
-
-/* Fade major page regions independently but without transforms/reflow. */
-html.f2w-page-ready body.f2w-main-page > main,
-html.f2w-page-ready body.f2w-main-page > .page,
-html.f2w-page-ready body.f2w-main-page > .container,
-html.f2w-page-ready body.f2w-main-page > footer {
-  animation:f2wContentReveal .94s cubic-bezier(.22,.61,.36,1) both;
-}
-
-@keyframes f2wContentReveal {
-  0% { opacity:0; }
-  100% { opacity:1; }
-}
-
-/* Never animate dimensions/position as part of the page transition. */
-html.f2w-page-ready body,
-html.f2w-page-ready body * {
-  will-change:auto;
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion:reduce) {
-  html.f2w-page-enter body,
-  html.f2w-page-ready body {
-    opacity:1!important;
-    transition:none!important;
-  }
-  html.f2w-page-ready body.f2w-main-page > main,
-  html.f2w-page-ready body.f2w-main-page > .page,
-  html.f2w-page-ready body.f2w-main-page > .container,
-  html.f2w-page-ready body.f2w-main-page > footer {
-    animation:none!important;
-  }
-  ::view-transition-old(root),
-  ::view-transition-new(root),
-  ::view-transition-old(f2w-header),
-  ::view-transition-new(f2w-header) {
-    animation-duration:0s!important;
-  }
-}
-
-/* f2w-force-save:sitewide-fade-v26:1788216027 */
  
 
 /* F2W v27 — user-search result geometry lock */
@@ -1595,4 +1501,127 @@ body.f2w-main-page .chat-status:not(.connected):not(.error) .chat-status-dot {
 }
 
 /* f2w-force-save:static-status-lights-v32:1788217362 */
+ 
+
+/* ============================================================
+   F2W v33 — SMOOTH 1.35s SITEWIDE FADE
+   One compositor-friendly opacity transition only.
+   ============================================================ */
+
+/* The page starts transparent and fades as one layer. */
+html.f2w-page-enter body {
+  opacity:0!important;
+}
+html.f2w-page-ready body {
+  opacity:1!important;
+  transition:opacity 1.35s cubic-bezier(.22,.61,.36,1)!important;
+}
+
+/* Native same-origin navigation transitions where supported.
+   Root-only opacity is cheaper than animating multiple page sections. */
+@view-transition {
+  navigation:auto;
+}
+::view-transition-old(root) {
+  animation:f2wV33FadeOut .10s linear both!important;
+}
+::view-transition-new(root) {
+  animation:f2wV33FadeIn 1.35s cubic-bezier(.22,.61,.36,1) both!important;
+}
+::view-transition-group(root) {
+  animation-duration:1.35s!important;
+  animation-timing-function:cubic-bezier(.22,.61,.36,1)!important;
+}
+
+/* Keep the header geometry frozen while the page opacity changes. */
+::view-transition-group(f2w-header) {
+  animation-duration:0s!important;
+}
+::view-transition-old(f2w-header),
+::view-transition-new(f2w-header) {
+  animation:none!important;
+}
+
+/* Retire old child/section reveal animations. */
+html.f2w-page-ready body.f2w-main-page > main,
+html.f2w-page-ready body.f2w-main-page > .page,
+html.f2w-page-ready body.f2w-main-page > .container,
+html.f2w-page-ready body.f2w-main-page > footer {
+  animation:none!important;
+}
+
+/* During the initial fade, avoid expensive blur/filter repaint work. */
+html.f2w-page-enter body * {
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Promote only the one layer actually animating. */
+html.f2w-page-enter body,
+html.f2w-page-ready body {
+  will-change:opacity;
+}
+html.f2w-page-ready body {
+  contain:paint;
+}
+@keyframes f2wV33FadeIn {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@keyframes f2wV33FadeOut {
+  from { opacity:1; }
+  to { opacity:.98; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  html.f2w-page-enter body,
+  html.f2w-page-ready body {
+    opacity:1!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation:none!important;
+  }
+}
+
+/* f2w-force-save:smooth-page-fade-v33:1788217440 */
+
+
+/* ============================================================
+   F2W v33 — SITEWIDE MOTION PERFORMANCE LOCK
+   Keep only role-name Particles.gif animation.
+   ============================================================ */
+body.f2w-main-page *:not(.f2w-role-name):not(.f2w-role-name *) {
+  animation-duration:0s!important;
+  animation-delay:0s!important;
+  animation-iteration-count:1!important;
+}
+
+/* Controls can still have instant color feedback, but never geometry animation. */
+body.f2w-main-page a,
+body.f2w-main-page button,
+body.f2w-main-page input,
+body.f2w-main-page select,
+body.f2w-main-page textarea {
+  transition-property:color,background-color,border-color,box-shadow,opacity!important;
+  transition-duration:.08s!important;
+  transform:none!important;
+}
+
+/* Avoid expensive backdrop blur on persistent menus/panels sitewide. */
+body.f2w-main-page > header,
+body.f2w-main-page .dropdown-menu,
+body.f2w-main-page .v17-notification-menu {
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Don't reserve compositor layers for static UI. */
+body.f2w-main-page * {
+  will-change:auto;
+}
+
+/* f2w-force-save:motion-performance-lock-v33:1788217440 */
  

@@ -1,15 +1,14 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script id="f2w-page-fade-boot-v26">
+<script id="f2w-page-fade-boot-v33">
 (function(){
   try{
-    document.documentElement.classList.add('f2w-page-enter');
+    var root=document.documentElement;
+    root.classList.add('f2w-page-enter');
     requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        document.documentElement.classList.remove('f2w-page-enter');
-        document.documentElement.classList.add('f2w-page-ready');
-      });
+      root.classList.remove('f2w-page-enter');
+      root.classList.add('f2w-page-ready');
     });
   }catch(e){}
 })();
@@ -167,4 +166,5 @@ body.f2w-main-page>header *{transition-property:color,background-color,border-co
 <!-- f2w-force-save:v30-page:1788216738:index.html -->
 <!-- f2w-force-save:v31-cache:1788217048:index.html -->
 <!-- f2w-force-save:v32-cache:1788217362:index.html -->
+<!-- f2w-force-save:v33-performance-cache:1788217440:index.html -->
  

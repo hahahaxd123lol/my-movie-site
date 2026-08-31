@@ -1002,3 +1002,29 @@ body.f2w-authenticated .f2w-guest-rail{display:none!important}
 
 /* f2w-force-save:profile-layout-role-v32:1788217362 */
  
+
+/* ============================================================
+   F2W v33 — RENDERING PERFORMANCE
+   ============================================================ */
+
+/* Off-screen sections can skip paint/layout until approached. */
+body.f2w-main-page main > section,
+body.f2w-main-page .profile-section,
+body.f2w-main-page .forum-v30-panel,
+body.f2w-main-page .forum-v30-feed-card {
+  content-visibility:auto;
+  contain-intrinsic-size:auto 420px;
+}
+
+/* Images shouldn't block surrounding layout. */
+body.f2w-main-page img {
+  content-visibility:auto;
+}
+
+/* Keep role-name Particles.gif as the only intentional animation. */
+.f2w-role-name {
+  animation:none!important;
+  transition:none!important;
+}
+/* f2w-force-save:rendering-performance-v33:1788217440 */
+ 
