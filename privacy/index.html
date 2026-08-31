@@ -1,1 +1,198 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Privacy Policy • Flix2Watch</title><meta name="description" content="Flix2Watch privacy policy."><link rel="icon" href="/favicon-v16.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link rel="stylesheet" href="/approved-ui-v12.css"><link rel="stylesheet" href="/final-v34.css"><link rel="stylesheet" href="/final-v35.css"></head><body class="theme-red f2w-main-page"><header><a href="/home/" class="logo"><img class="logo-image" src="/flix2watch-logo-red-v34.png" alt="Flix2Watch"></a><div class="header-tools"><nav class="f2w-primary-nav"><a class="f2w-nav-link" href="/home/"><i class="fa-solid fa-house"></i> Home</a><a class="f2w-nav-link" href="/leaderboard/"><i class="fa-solid fa-trophy"></i> Leaderboard</a><a class="f2w-nav-link" href="/forum/"><i class="fa-solid fa-comments"></i> Community</a><a class="f2w-nav-link" href="/support/"><i class="fa-solid fa-life-ring"></i> Support</a></nav></div></header><main class="f2w-policy-page"><article class="f2w-policy-card"><div class="f2w-policy-updated">LAST UPDATED 31 AUGUST 2026</div><h1>Privacy Policy</h1><p>This policy explains the information Flix2Watch uses to operate accounts, profiles, social features, moderation, support and site activity.</p><h2>Account information</h2><p>Account authentication is handled through Supabase. Flix2Watch uses your account identifier, username, profile information and authentication session so you can sign in and use account-only features. The site does not need to store your password in its public website files.</p><h2>Public profile and community data</h2><p>Your username and any profile information you choose to make public can appear on profiles, user search, community discussions and the leaderboard. Public profiles may show recent titles opened, favorites, ratings, role badges and online/offline presence. Private profiles restrict private-profile activity from other users.</p><h2>Presence and activity</h2><p>When signed in, the site can record a recent presence timestamp for online/offline status. Opening a title can be recorded once per title on your profile, with later opens updating the same record rather than creating duplicates. Active watch-page time can be aggregated for leaderboard statistics.</p><h2>Messages and support</h2><p>Public chat and community posts are visible to other users. Direct messages are private to participants and are stored by the site backend; they should not be treated as end-to-end encrypted unless the service is specifically upgraded to provide that. Support tickets and reports are available to authorized staff.</p><h2>Moderation and safety</h2><p>Flix2Watch stores moderation information such as warnings, chat restrictions, site suspensions, account bans and staff audit records when needed to operate the community and enforce site rules. Account restrictions can be delivered in realtime.</p><h2>Third-party services</h2><p>Flix2Watch uses services such as Supabase for backend functionality and TMDB data/artwork for title information. Embedded playback providers are third-party services with their own policies and technical behavior.</p><h2>Your choices</h2><p>You can edit supported profile fields, choose profile visibility, remove profile content where controls are provided, and contact Support for account or privacy questions.</p><h2>Contact</h2><p>For privacy or account questions, use the <a href="/support/">Flix2Watch Support page</a>.</p></article></main><script src="/final-v35.js" defer></script></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Privacy Policy • Flix2Watch</title><meta name="description" content="Flix2Watch privacy policy."><link rel="icon" href="/favicon-v16.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link rel="stylesheet" href="/approved-ui-v12.css"><link rel="stylesheet" href="/final-v34.css"><link rel="stylesheet" href="/final-v35.css">  <!-- Unified Watch-page header + preloaded chat -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/responsive-v7.css">
+  <link rel="stylesheet" href="/final-v9.css">
+  <link rel="stylesheet" href="/final-fixes-v13.css">
+  <link rel="stylesheet" href="/final-v14.css">
+  <link rel="stylesheet" href="/final-v15.css">
+  <link rel="stylesheet" href="/final-v16.css">
+  <link rel="stylesheet" href="/final-v17.css">
+  <link rel="stylesheet" href="/final-v18.css">
+  <link rel="stylesheet" href="/final-v19.css">
+  <link rel="stylesheet" href="/final-v20.css">
+  <link rel="stylesheet" href="/final-v22.css">
+  <link rel="stylesheet" href="/final-v26.css">
+  <link rel="stylesheet" href="/final-v27.css">
+  <link rel="stylesheet" href="/final-v28.css">
+  <link rel="stylesheet" href="/final-v32.css">
+  <link rel="stylesheet" href="/final-v33.css">
+  <link rel="stylesheet" href="/global-header-v1.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/silent-account-v16.js" defer></script>
+  <script src="/account-guard-v16.js" defer></script>
+  <script src="/approved-ui-v12.js" defer></script>
+  <script src="/final-fixes-v13.js" defer></script>
+  <script src="/final-v14.js" defer></script>
+  <script src="/final-v15.js" defer></script>
+  <script src="/final-v16.js" defer></script>
+  <script src="/final-v17.js" defer></script>
+  <script src="/final-v18.js" defer></script>
+  <script src="/final-v19.js" defer></script>
+  <script src="/final-v20.js" defer></script>
+  <script src="/final-v22.js" defer></script>
+  <script src="/seo-v17.js" defer></script>
+  <script src="/chat-safety-v33.js" defer></script>
+  <script src="/social-v34.js" defer></script>
+  <script src="/interaction-v7.js" defer></script>
+  <script src="/realtime-v7.js" defer></script>
+  <script src="/global-header-chat-v1.js" defer></script>
+</head><body class="theme-red f2w-main-page"><header>
+    <a href="/home/" class="logo" aria-label="Flix2Watch home">
+      <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
+    </a>
+
+    <button class="f2w-mobile-nav-toggle" type="button" aria-label="Open navigation" onclick="toggleF2WMobileMenu()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="header-tools">
+      <nav class="f2w-primary-nav" aria-label="Main navigation">
+        <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
+        <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
+        <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
+        <a class="f2w-nav-link" id="f2w-nav-forum" href="/forum/"><i class="fa-solid fa-comments"></i> Community</a>
+
+          <div class="f2w-genre-wrap">
+            <button class="f2w-nav-button" id="f2w-nav-genres" type="button" onclick="toggleF2WGenreMenu(event)">
+              <i class="fa-solid fa-location-dot"></i> Genres <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i>
+            </button>
+            <div class="f2w-genre-menu" id="f2w-genre-menu">
+              <a href="/home/?genre=28&page=1">Action</a>
+              <a href="/home/?genre=35&page=1">Comedy</a>
+              <a href="/home/?genre=27&page=1">Horror</a>
+              <a href="/home/?genre=878&page=1">Sci-Fi</a>
+              <a href="/home/?genre=53&page=1">Thriller</a>
+              <a href="/home/?genre=80&page=1">Crime</a>
+              <a href="/home/?genre=10749&page=1">Romance</a>
+              <a href="/home/?genre=16&page=1">Animation</a>
+              <a href="/home/?genre=99&page=1">Documentary</a>
+              <a href="/home/?genre=14&page=1">Fantasy</a>
+              <a href="/home/?genre=12&page=1">Adventure</a>
+              <a href="/home/?genre=18&page=1">Drama</a>
+              <a href="/home/?genre=10751&page=1">Family</a>
+              <a href="/home/?genre=9648&page=1">Mystery</a>
+              <a href="/home/?genre=36&page=1">History</a>
+              <a href="/home/?genre=10402&page=1">Music</a>
+              <a href="/home/?genre=10752&page=1">War</a>
+              <a href="/home/?genre=37&page=1">Western</a>
+            </div>
+          </div>
+
+      </nav>
+
+      <div class="f2w-search-pair">
+        <div class="search-container" role="search">
+          <i class="fa-solid fa-search"></i>
+          <input
+            id="movie-search"
+            name="flix2watch_title_lookup_query"
+            class="search-bar"
+            type="search"
+            placeholder="Search movies..."
+            autocomplete="one-time-code"
+            inputmode="search"
+            enterkeyhint="search"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Search movies and TV shows"
+            aria-autocomplete="none"
+            data-form-type="search"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-protonpass-ignore="true"
+            data-keeper-ignore="true"
+            readonly
+            oninput="v18HeaderMovieSearch(this.value)"
+            onfocus="protectMovieSearchField(this)">
+        </div>
+
+        <div class="user-search-container" role="search">
+          <i class="fa-solid fa-user"></i>
+          <input
+            type="search"
+            id="user-search"
+            name="flix2watch_people_search_query"
+            class="user-search-bar"
+            placeholder="Search users..."
+            autocomplete="one-time-code"
+            inputmode="search"
+            enterkeyhint="search"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Search Flix2Watch users"
+            aria-autocomplete="none"
+            data-form-type="search"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-protonpass-ignore="true"
+            data-keeper-ignore="true"
+            readonly
+            oninput="handleUserSearchInput(this)"
+            onfocus="protectUserSearchField(this)"
+          >
+          <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <div class="user-search-results" id="user-search-results"></div>
+        </div>
+      </div>
+
+      <div class="f2w-action-cluster">
+        <button class="tool-btn chat-button" onclick="openChat()">
+          <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
+        </button>
+
+        <div class="dropdown-wrapper">
+          <button class="tool-btn" id="theme-menu-button" type="button" aria-haspopup="menu" aria-expanded="false" onclick="toggleDropdown('theme-menu')"><i class="fa-solid fa-sun"></i> Theme <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i></button>
+          <div class="dropdown-menu" id="theme-menu" hidden aria-hidden="true">
+            <div class="dropdown-item" onclick="setTheme('red','theme-red')"><span class="dot red"></span> Netflix Red</div>
+            <div class="dropdown-item" onclick="setTheme('blue','theme-blue')"><span class="dot blue"></span> Cyber Blue</div>
+            <div class="dropdown-item" onclick="setTheme('green','theme-green')"><span class="dot green"></span> Emerald Green</div>
+            <div class="dropdown-item" onclick="setTheme('purple','theme-purple')"><span class="dot purple"></span> Neon Purple</div>
+            <div class="dropdown-item" onclick="setTheme('amber','theme-amber')"><span class="dot amber"></span> Amber Terminal</div>
+            <div class="dropdown-item" onclick="setTheme('matrix','theme-matrix')"><span class="dot matrix"></span> Matrix Green</div>
+            <div class="dropdown-item" onclick="setTheme('cyan','theme-cyan')"><span class="dot cyan"></span> Electric Cyan</div>
+            <div class="dropdown-item" onclick="setTheme('pink','theme-pink')"><span class="dot pink"></span> Hot Pink</div>
+            <div class="dropdown-item" onclick="setTheme('orange','theme-orange')"><span class="dot orange"></span> Cinema Orange</div>
+            <div class="dropdown-item" onclick="setTheme('ice','theme-ice')"><span class="dot ice"></span> Ice Blue</div>
+            <div class="dropdown-item" onclick="setTheme('gold','theme-gold')"><span class="dot gold"></span> Premiere Gold</div>
+            <div class="dropdown-item" onclick="setTheme('midnight','theme-midnight')"><span class="dot midnight"></span> Midnight Indigo</div>
+          </div>
+        </div>
+
+        <button class="f2w-auth-top-btn login" id="header-login-btn" type="button" style="display:none" onclick="openHeaderAuth('login')">Login</button>
+        <button class="f2w-auth-top-btn signup" id="header-signup-btn" type="button" style="display:none" onclick="openHeaderAuth('signup')">Sign Up</button>
+
+        <button class="tool-btn" id="favorites-nav-btn" onclick="window.location.href='/favorites/'" style="display:none"><i class="fa-regular fa-heart"></i> Favorites</button>
+        <button class="tool-btn" id="profile-nav-btn" onclick="openMyProfile()" style="display:none"><i class="fa-regular fa-id-card"></i> Profile</button>
+        <button class="tool-btn f2w-hide-tablet" id="support-nav-btn" onclick="window.location.href='/support/'" style="display:none"><i class="fa-regular fa-life-ring"></i> Support</button>
+        <button class="tool-btn" id="account-btn" onclick="openAccountModal()" style="display:none"><i class="fa-regular fa-user"></i> Account</button>
+
+
+        <div class="v17-notification-wrap" id="notification-wrap" style="display:none">
+          <button class="tool-btn v17-notification-btn" id="notification-btn" type="button" onclick="toggleNotifications(event)" aria-label="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span>Notifications</span>
+            <b class="v17-notification-count" id="notification-count" hidden>0</b>
+          </button>
+          <div class="v17-notification-menu" id="notification-menu" hidden>
+            <div class="v17-notification-head">
+              <strong>Notifications</strong>
+              <button type="button" onclick="markAllNotificationsRead()">Mark all read</button>
+            </div>
+            <div class="v17-notification-list" id="notification-list">
+              <div class="v17-notification-empty">No notifications yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="tool-btn" id="staff-control-nav" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1">
+          <i class="fa-solid fa-shield-halved"></i> Staff Control Panel
+        </button>
+      </div>
+    </div>
+  </header><main class="f2w-policy-page"><article class="f2w-policy-card"><div class="f2w-policy-updated">LAST UPDATED 31 AUGUST 2026</div><h1>Privacy Policy</h1><p>This policy explains the information Flix2Watch uses to operate accounts, profiles, social features, moderation, support and site activity.</p><h2>Account information</h2><p>Account authentication is handled through Supabase. Flix2Watch uses your account identifier, username, profile information and authentication session so you can sign in and use account-only features. The site does not need to store your password in its public website files.</p><h2>Public profile and community data</h2><p>Your username and any profile information you choose to make public can appear on profiles, user search, community discussions and the leaderboard. Public profiles may show recent titles opened, favorites, ratings, role badges and online/offline presence. Private profiles restrict private-profile activity from other users.</p><h2>Presence and activity</h2><p>When signed in, the site can record a recent presence timestamp for online/offline status. Opening a title can be recorded once per title on your profile, with later opens updating the same record rather than creating duplicates. Active watch-page time can be aggregated for leaderboard statistics.</p><h2>Messages and support</h2><p>Public chat and community posts are visible to other users. Direct messages are private to participants and are stored by the site backend; they should not be treated as end-to-end encrypted unless the service is specifically upgraded to provide that. Support tickets and reports are available to authorized staff.</p><h2>Moderation and safety</h2><p>Flix2Watch stores moderation information such as warnings, chat restrictions, site suspensions, account bans and staff audit records when needed to operate the community and enforce site rules. Account restrictions can be delivered in realtime.</p><h2>Third-party services</h2><p>Flix2Watch uses services such as Supabase for backend functionality and TMDB data/artwork for title information. Embedded playback providers are third-party services with their own policies and technical behavior.</p><h2>Your choices</h2><p>You can edit supported profile fields, choose profile visibility, remove profile content where controls are provided, and contact Support for account or privacy questions.</p><h2>Contact</h2><p>For privacy or account questions, use the <a href="/support/">Flix2Watch Support page</a>.</p></article></main><script src="/final-v35.js" defer></script></body></html>
