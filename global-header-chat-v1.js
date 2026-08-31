@@ -79,3 +79,4 @@
   window.addEventListener('keydown',e=>{if(e.key==='Escape' && overlay?.classList.contains('open')) closeGlobalChat();});
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',build,{once:true}); else build();
 })();
+ 

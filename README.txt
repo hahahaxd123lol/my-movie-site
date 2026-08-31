@@ -12,3 +12,4 @@ Upload:
 3. Hard refresh after GitHub Pages updates.
 
 SQL: NONE required for this header/chat update.
+ 
