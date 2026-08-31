@@ -2340,7 +2340,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/final-v35.css?v=43-1788219527">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=44-1788219651">
+  <link rel="stylesheet" href="/global-header-v1.css?v=50-1788220357">
 
   <style id="f2w-dedicated-chat-page">
     /* /chat/ is a dedicated chat route, not a disguised Home page. */
@@ -2423,6 +2423,122 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 /* f2w-force-save:header-button-fit-inline-v35:1788217735 */
 /* f2w-force-save:header-gorilla-lock-v30:1788216738 */
 </style>
+
+
+<style id="f2w-guest-dm-lock-v50">
+/* Guest DMs stay clickable. The lock lives in the RIGHT thread pane only. */
+.f2w-guest-dm-lock-v50 {
+  min-height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+.f2w-guest-dm-lock-card-v50 {
+  width:min(430px,100%);
+  padding:24px 22px;
+  border:1px solid #4a2030;
+  border-radius:16px;
+  background:#071522;
+  text-align:center;
+  color:#fff;
+}
+.f2w-guest-dm-lock-icon-v50 {
+  width:52px;height:52px;margin:0 auto 13px;
+  display:grid;place-items:center;border-radius:14px;
+  background:rgba(229,9,20,.12);
+  border:1px solid rgba(255,53,68,.35);
+  color:#ff3040;font-size:1.15rem;
+}
+.f2w-guest-dm-lock-card-v50 h3{margin:0 0 7px;font-size:1.08rem}
+.f2w-guest-dm-lock-card-v50 p{margin:0;color:#8196ad;font-size:.76rem;line-height:1.55}
+.f2w-guest-dm-lock-actions-v50{display:flex;gap:8px;justify-content:center;margin-top:15px;flex-wrap:wrap}
+.f2w-guest-dm-lock-actions-v50 button{
+  min-height:38px;padding:0 14px;border-radius:9px;font-size:.74rem;font-weight:800;cursor:pointer
+}
+.f2w-guest-dm-lock-actions-v50 .primary{border:1px solid #ff3444;background:#e50914;color:#fff}
+.f2w-guest-dm-lock-actions-v50 .secondary{border:1px solid #2b435c;background:#0a1927;color:#dbe6f3}
+/* f2w-force-save:guest-dm-lock-v50:1788220357 */
+</style>
+<script id="f2w-guest-dm-lock-v50-js">
+(() => {
+  'use strict';
+
+  function rightPane(){
+    return document.querySelector(
+      '#dm-thread-pane,#chat-thread-pane,.dm-thread-pane,.chat-thread-pane,.v17-chat-thread,.thread-pane,.chat-thread'
+    );
+  }
+
+  async function currentSession(){
+    try{
+      const client=window.chatSupabase||window.supabaseClient||window.f2wSupabase;
+      if(client?.auth?.getSession){
+        const {data}=await client.auth.getSession();
+        return data?.session||null;
+      }
+    }catch{}
+    return null;
+  }
+
+  function renderGuestLock(){
+    const pane=rightPane();
+    if(!pane)return;
+    pane.innerHTML=`<div class="f2w-guest-dm-lock-v50">
+      <div class="f2w-guest-dm-lock-card-v50">
+        <div class="f2w-guest-dm-lock-icon-v50"><i class="fa-solid fa-lock"></i></div>
+        <h3>Direct Messages are locked</h3>
+        <p>Log in or create an account to use private messages. Public Chat is still available.</p>
+        <div class="f2w-guest-dm-lock-actions-v50">
+          <button class="primary" type="button" data-f2w-dm-login>Log In</button>
+          <button class="secondary" type="button" data-f2w-dm-signup>Create Account</button>
+        </div>
+      </div>
+    </div>`;
+    pane.querySelector('[data-f2w-dm-login]')?.addEventListener('click',()=>window.openHeaderAuth?.('login'));
+    pane.querySelector('[data-f2w-dm-signup]')?.addEventListener('click',()=>window.openHeaderAuth?.('signup'));
+  }
+
+  function dmTab(){
+    return document.querySelector(
+      '[data-chat-mode="dm"],#dm-tab,.dm-tab,[data-mode="dm"],button[onclick*="switchChatMode"][onclick*="dm"]'
+    );
+  }
+
+  function publicTab(){
+    return document.querySelector(
+      '[data-chat-mode="public"],#public-tab,.public-tab,[data-mode="public"],button[onclick*="switchChatMode"][onclick*="public"]'
+    );
+  }
+
+  async function openDmAsGuestAware(e){
+    const session=await currentSession();
+    if(session?.user)return; // let the original logged-in handler work
+    e?.preventDefault?.();
+    e?.stopImmediatePropagation?.();
+
+    // Keep both tabs usable; switch visible active state without hiding the left rail.
+    const dm=dmTab(),pub=publicTab();
+    dm?.classList.add('active');
+    pub?.classList.remove('active');
+    document.body.dataset.chatMode='dm';
+    renderGuestLock();
+  }
+
+  function bind(){
+    const dm=dmTab();
+    if(dm && !dm.dataset.f2wGuestDmV50){
+      dm.dataset.f2wGuestDmV50='1';
+      dm.addEventListener('click',openDmAsGuestAware,true);
+    }
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
+
+  new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 
 </head>
 
@@ -6747,4 +6863,6 @@ if(currentUser){
 <!-- f2w-force-save:chat-button-final-width-v42:1788219270:chat/index.html -->
 <!-- f2w-force-save:v43-watch-auth-cache:1788219527:chat/index.html -->
 <!-- f2w-force-save:v44-header-cache:1788219651:chat/index.html -->
+<!-- f2w-force-save:chat-guest-dm-v50:1788220357 -->
+<!-- f2w-force-save:v50-cache:1788220357:chat/index.html -->
  

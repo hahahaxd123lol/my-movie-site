@@ -1958,3 +1958,10 @@ body.f2w-main-page * {
 
 /* f2w-force-save:guest-header-chat-fit-v44:1788219651 */
  
+
+/* F2W v50 — keep chat button stable while route is prewarmed */
+body.f2w-main-page > header .chat-button {
+  contain:layout style!important;
+}
+/* f2w-force-save:chat-preload-style-v50:1788220357 */
+ 

@@ -399,3 +399,61 @@
 })();
 // f2w-force-save:guest-header-actions-v44:1788219651
  
+
+/* ============================================================
+   F2W v50 — SITEWIDE CHAT PRELOAD / CONNECTION WARMUP
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wChatWarmupV50)return;
+  window.__f2wChatWarmupV50=true;
+
+  const addLink=(rel,href,extra={})=>{
+    try{
+      if(document.head.querySelector(`link[rel="${rel}"][href="${href}"]`))return;
+      const l=document.createElement('link');
+      l.rel=rel;l.href=href;
+      Object.assign(l,extra);
+      document.head.appendChild(l);
+    }catch{}
+  };
+
+  function warmChat(){
+    // Warm the chat page HTML + shared same-origin resources.
+    addLink('prefetch','/chat/');
+    addLink('prefetch','/chat/index.html');
+
+    // Warm Supabase DNS/TLS early.
+    addLink('preconnect','https://viqufxlcxwgboyxbdhjb.supabase.co',{crossOrigin:'anonymous'});
+    addLink('dns-prefetch','//viqufxlcxwgboyxbdhjb.supabase.co');
+
+    // Resolve auth session early so /chat/ doesn't spend the first seconds discovering auth.
+    try{
+      const client=window.chatSupabase||window.supabaseClient||window.f2wSupabase;
+      client?.auth?.getSession?.().catch?.(()=>{});
+    }catch{}
+
+    // Lightweight network warmup to Supabase REST endpoint.
+    fetch('https://viqufxlcxwgboyxbdhjb.supabase.co/rest/v1/',{
+      method:'HEAD',
+      mode:'cors',
+      cache:'no-store',
+      credentials:'omit',
+      headers:{apikey:'sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge'}
+    }).catch(()=>{});
+  }
+
+  if('requestIdleCallback' in window)requestIdleCallback(warmChat,{timeout:700});
+  else setTimeout(warmChat,120);
+
+  // Hover/touch on Chat forces another warm pass immediately.
+  document.addEventListener('pointerover',e=>{
+    if(e.target.closest?.('.chat-button,[href="/chat/"],[href="/chat"]'))warmChat();
+  },{passive:true});
+
+  document.addEventListener('pointerdown',e=>{
+    if(e.target.closest?.('.chat-button,[href="/chat/"],[href="/chat"]'))warmChat();
+  },{capture:true,passive:true});
+})();
+// f2w-force-save:chat-preload-v50:1788220357
+ 
