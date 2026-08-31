@@ -723,78 +723,120 @@ main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-ban
 
 /* f2w-force-save:1788210997:global-header */
  
-/* ================= F2W ACCOUNT MODAL HEADER GAP + NO INNER SCROLL v12 ================= */
-/* Keep the account card clear of the fixed site header and avoid a scrollbar inside the card. */
+
+/* ============================================================
+   F2W v13 — compact account modal + header clearance, sitewide
+   Additive override. Does not remove auth modes or swipe behavior.
+   ============================================================ */
+:root {
+  --f2w-fixed-header-clearance: 82px;
+  --f2w-modal-bottom-gap: 18px;
+}
+
+/* Keep the overlay below the fixed site header and let the overlay itself
+   handle short-screen overflow. The CARD never gets its own scrollbar. */
 .account-modal,
 #account-modal,
 .auth-modal,
-.login-modal{
-  inset:72px 0 0 0 !important;
-  padding:24px clamp(16px,3vw,34px) 28px !important;
-  overflow-y:auto !important;
-  overflow-x:hidden !important;
-  align-items:center !important;
-  justify-content:center !important;
-  box-sizing:border-box !important;
+.login-modal {
+  position: fixed !important;
+  top: var(--f2w-fixed-header-clearance) !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  inset: var(--f2w-fixed-header-clearance) 0 0 0 !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding: 18px 14px var(--f2w-modal-bottom-gap) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  overscroll-behavior: contain !important;
 }
+.account-modal::-webkit-scrollbar,
+#account-modal::-webkit-scrollbar,
+.auth-modal::-webkit-scrollbar,
+.login-modal::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
 .account-modal > .account-card,
 #account-modal > .account-card,
 .auth-modal > .account-card,
-.login-modal > .account-card{
-  width:min(92vw,540px) !important;
-  max-width:540px !important;
-  max-height:none !important;
-  overflow:visible !important;
-  flex:0 0 auto !important;
+.login-modal > .account-card {
+  width: min(92vw, 540px) !important;
+  max-width: 540px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 auto !important;
+  overflow: visible !important;
+  border-radius: 18px !important;
+  flex: 0 0 auto !important;
 }
+
 .account-modal .account-body,
-#account-modal .account-body{
-  max-height:none !important;
-  overflow:visible !important;
+#account-modal .account-body,
+.auth-modal .account-body,
+.login-modal .account-body {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
-/* Create-account form is a touch tighter so the full card fits desktop/laptop heights without its own scrollbar. */
-.account-modal #account-signup-form,
-#account-modal #account-signup-form{
-  margin-top:0 !important;
+
+/* Create-account can be taller, but it stays compact and never touches header. */
+.account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])),
+#account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])) {
+  width: min(92vw, 520px) !important;
+  max-width: 520px !important;
 }
-.account-modal #account-signup-form .account-label,
-#account-modal #account-signup-form .account-label{
-  margin-top:9px !important;
-  margin-bottom:5px !important;
+
+/* Avoid hidden horizontal overflow from full-width form rows/buttons. */
+.account-modal *,
+#account-modal * {
+  box-sizing: border-box;
+  max-width: 100%;
 }
-.account-modal #account-signup-form .account-input,
-#account-modal #account-signup-form .account-input{
-  padding-top:9px !important;
-  padding-bottom:9px !important;
-}
-@media (max-width:900px){
+
+/* Mobile/tablet: account panel starts below the actual compact header,
+   remains easy to reach, and has no visible scrollbar. */
+@media (max-width: 1180px) {
+  :root { --f2w-fixed-header-clearance: 72px; }
   .account-modal,
   #account-modal,
   .auth-modal,
-  .login-modal{
-    inset:64px 0 0 0 !important;
-    padding:18px 12px 22px !important;
-    align-items:flex-start !important;
+  .login-modal {
+    padding: 14px 12px 18px !important;
   }
   .account-modal > .account-card,
-  #account-modal > .account-card{
-    width:min(94vw,520px) !important;
-    max-width:520px !important;
-    margin:0 auto !important;
+  #account-modal > .account-card,
+  .auth-modal > .account-card,
+  .login-modal > .account-card {
+    width: min(94vw, 520px) !important;
+    max-width: 520px !important;
   }
 }
-@media (max-height:760px) and (min-width:701px){
+
+@media (max-width: 700px) {
+  :root { --f2w-fixed-header-clearance: 66px; }
   .account-modal,
-  #account-modal{
-    inset:64px 0 0 0 !important;
-    padding-top:14px !important;
-    padding-bottom:18px !important;
-    align-items:flex-start !important;
+  #account-modal,
+  .auth-modal,
+  .login-modal {
+    padding: 12px 10px 18px !important;
   }
   .account-modal > .account-card,
-  #account-modal > .account-card{
-    margin:0 auto !important;
+  #account-modal > .account-card,
+  .auth-modal > .account-card,
+  .login-modal > .account-card {
+    width: min(96vw, 500px) !important;
+    max-width: 500px !important;
   }
 }
-/* f2w-force-save:account-gap-no-inner-scroll-v12 */
+
+/* f2w-force-save:account-gap-no-card-scroll-v13:1788211530 */
  

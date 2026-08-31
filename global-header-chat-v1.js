@@ -121,3 +121,41 @@
 
 // f2w-force-save:device-stability-v9:20260831-205349
  
+
+/* F2W v13 — mobile auth handoff
+   Close hamburger dropdown immediately before the site's existing auth handler runs. */
+(() => {
+  'use strict';
+
+  function isAuthTrigger(el) {
+    if (!el) return false;
+    if (el.matches('#header-login-btn,#header-signup-btn')) return true;
+    const oc = el.getAttribute?.('onclick') || '';
+    return /openHeaderAuth\s*\(\s*['"](?:login|signup)['"]\s*\)/i.test(oc);
+  }
+
+  function closeMenuNow() {
+    try {
+      if (typeof window.closeF2WMobileMenu === 'function') {
+        window.closeF2WMobileMenu();
+      } else {
+        document.querySelectorAll('.header-tools.mobile-open').forEach(el => el.classList.remove('mobile-open'));
+        document.querySelectorAll('.f2w-mobile-nav-toggle').forEach(btn => btn.setAttribute('aria-expanded','false'));
+      }
+    } catch (_) {}
+  }
+
+  // Capture phase = dropdown disappears before the existing button onclick opens the modal.
+  document.addEventListener('pointerdown', e => {
+    const trigger = e.target.closest?.('button,a');
+    if (isAuthTrigger(trigger)) closeMenuNow();
+  }, true);
+
+  document.addEventListener('click', e => {
+    const trigger = e.target.closest?.('button,a');
+    if (isAuthTrigger(trigger)) closeMenuNow();
+  }, true);
+})();
+
+// f2w-force-save:mobile-auth-handoff-v13:1788211530
+ 
