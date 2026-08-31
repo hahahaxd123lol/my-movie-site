@@ -1461,3 +1461,27 @@ html.f2w-page-ready body * {
 
 /* f2w-force-save:sitewide-fade-v26:1788216027 */
  
+
+/* F2W v27 — user-search result geometry lock */
+body.f2w-main-page > header .user-search-wrap,
+body.f2w-main-page > header .search-users-wrap {
+  position:relative!important;
+  min-width:0!important;
+}
+body.f2w-main-page > header #user-search-results {
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:calc(100% + 6px)!important;
+  width:100%!important;
+  min-width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  transform:none!important;
+  contain:layout paint!important;
+}
+body.f2w-main-page > header #user-search-results.show {
+  display:block!important;
+}
+/* f2w-force-save:user-search-geometry-v27:1788216279 */
+ 

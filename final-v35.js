@@ -375,59 +375,112 @@
     el.classList.add('f2w-role-name',roleClass(role));
     el.dataset.f2wRole=role;
   }
-  async function decorateNames(){
-    const nodes=[...document.querySelectorAll('[data-username],.chat-user,.chat-username,.comment-author,.leaderboard-username,.profile-username,.user-name,.display-name')]
-      .filter(el=>el && !el.dataset.f2wRoleDecorated);
+  function paintRoleName(el,role,username){
+    if(!el||!role)return;
+    role=String(role||'').trim().toLowerCase();
+    const allowed=['owner','staff','moderator','support','developer','verified','contributor','curator'];
+    if(!allowed.includes(role))return;
 
+    const previous=el.querySelector?.('.f2w-role-name-text')?.textContent;
+    const currentText=String(el.dataset.f2wPlainText||previous||el.textContent||'').trim();
+    if(!currentText)return;
+
+    el.dataset.f2wPlainText=currentText;
+    el.dataset.f2wRoleDecorated='1';
+    el.dataset.f2wRole=role;
+    if(username)el.dataset.username=username;
+
+    el.textContent='';
+    const wrap=document.createElement('span');
+    wrap.className=`f2w-role-name f2w-role-${role}`;
+    wrap.dataset.role=role;
+    wrap.style.setProperty('--f2w-particles-url','url("https://i.ibb.co/HC3GW9B/Particles.gif")');
+
+    const text=document.createElement('span');
+    text.className='f2w-role-name-text';
+    text.textContent=currentText;
+
+    const dust=document.createElement('span');
+    dust.className='f2w-role-fairy-dust';
+    dust.setAttribute('aria-hidden','true');
+    dust.innerHTML='<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>';
+
+    wrap.append(text,dust);
+    el.appendChild(wrap);
+  }
+  window.f2wPaintRoleName=paintRoleName;
+  async function decorateNames(){
+    const selector=[
+      '#profile-name',
+      '#account-user-username',
+      '[data-username]',
+      '[data-f2w-username]',
+      '.chat-user',
+      '.chat-username',
+      '.comment-author',
+      '.leaderboard-username',
+      '.profile-username',
+      '.user-name',
+      '.display-name',
+      '.forum-v30-author',
+      '.forum-v30-rank-name'
+    ].join(',');
+
+    const nodes=[...document.querySelectorAll(selector)].filter(Boolean);
     if(!nodes.length)return;
 
-    const usernames=[...new Set(nodes.map(el=>String(el.dataset.username||el.getAttribute('data-user')||el.textContent||'').trim().replace(/^@/,'')).filter(Boolean))];
-    if(!usernames.length)return;
-
-    let effects={};
-    try{
-      const {data,error}=await chatSupabase.rpc('get_public_name_effects',{p_usernames:usernames});
-      if(!error && Array.isArray(data)){
-        data.forEach(row=>{
-          const key=String(row.username||'').trim().toLowerCase();
-          if(key)effects[key]=String(row.top_role||'').trim().toLowerCase();
-        });
+    // Current account modal does NOT need to wait for the public-role RPC.
+    // Its role is already resolved by the existing auth/staff system.
+    const accountName=document.getElementById('account-user-username');
+    const accountRole=String(document.getElementById('account-user-role')?.textContent||'').trim().toLowerCase();
+    if(accountName && ['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(accountRole)){
+      const username=String(accountName.dataset.username||accountName.textContent||'').trim().replace(/^@/,'');
+      if(!accountName.dataset.f2wRoleDecorated || accountName.dataset.f2wRole!==accountRole){
+        accountName.dataset.f2wPlainText=accountName.querySelector('.f2w-role-name-text')?.textContent||accountName.textContent;
+        paintRoleName(accountName,accountRole,username);
       }
-    }catch(error){
-      console.warn('Could not load name effects:',error);
     }
 
-    nodes.forEach(el=>{
-      const raw=String(el.dataset.username||el.getAttribute('data-user')||el.textContent||'').trim();
-      const clean=raw.replace(/^@/,'');
-      const role=effects[clean.toLowerCase()]||String(el.dataset.role||'').toLowerCase();
-      if(!role)return;
+    const pending=[...document.querySelectorAll(selector)].filter(el=>!el.dataset.f2wRoleDecorated);
+    if(!pending.length)return;
 
-      el.dataset.f2wRoleDecorated='1';
-      el.dataset.f2wRole=role;
+    const usernames=[...new Set(pending.map(el=>String(
+      el.dataset.username||
+      el.dataset.f2wUsername||
+      el.getAttribute('data-user')||
+      ''
+    ).trim().replace(/^@/,'')).filter(Boolean))];
 
-      // Keep the effect strictly around the actual word/characters.
-      if(el.classList.contains('f2w-role-name'))return;
+    let effects={};
+    if(usernames.length){
+      try{
+        const client=db();
+        if(client){
+          const {data,error}=await client.rpc('get_public_name_effects',{p_usernames:usernames});
+          if(error)throw error;
+          if(Array.isArray(data)){
+            data.forEach(row=>{
+              const key=String(row.username||'').trim().toLowerCase();
+              if(key)effects[key]=String(row.top_role||'').trim().toLowerCase();
+            });
+          }
+        }
+      }catch(error){
+        console.warn('Could not load public name effects:',error);
+      }
+    }
 
-      const originalText=el.textContent;
-      if(!originalText.trim())return;
+    pending.forEach(el=>{
+      const username=String(
+        el.dataset.username||
+        el.dataset.f2wUsername||
+        el.getAttribute('data-user')||
+        ''
+      ).trim().replace(/^@/,'');
+      let role=String(el.dataset.role||effects[username.toLowerCase()]||'').trim().toLowerCase();
 
-      el.textContent='';
-      const span=document.createElement('span');
-      span.className=`f2w-role-name f2w-role-${role}`;
-      span.dataset.role=role;
-
-      const text=document.createElement('span');
-      text.className='f2w-role-name-text';
-      text.textContent=originalText;
-
-      const dust=document.createElement('span');
-      dust.className='f2w-role-fairy-dust';
-      dust.setAttribute('aria-hidden','true');
-      dust.innerHTML='<i></i><i></i><i></i><i></i><i></i><i></i>';
-
-      span.append(text,dust);
-      el.appendChild(span);
+      if(String(el.dataset.userId||el.getAttribute('data-user-id')||'')==='f5454804-a2a6-4602-9086-51cf51f11c77')role='owner';
+      if(role)paintRoleName(el,role,username);
     });
   }
 
@@ -1267,6 +1320,27 @@
     if(videasy)host.prepend(videasy);if(vidfast){if(videasy?.nextSibling)host.insertBefore(vidfast,videasy.nextSibling);else host.appendChild(vidfast)}
   }
 
+
+  function installRoleNameWatcher(){
+    if(window.__f2wRoleNameWatcherInstalled)return;
+    window.__f2wRoleNameWatcherInstalled=true;
+
+    let timer=null;
+    const refresh=()=>{
+      clearTimeout(timer);
+      timer=setTimeout(()=>decorateNames(),25);
+    };
+
+    const observer=new MutationObserver(mutations=>{
+      if(mutations.some(m=>{
+        const node=m.target?.nodeType===1?m.target:m.target?.parentElement;
+        return node?.closest?.('#account-user-role,#account-user-username,#profile-name,[data-username],[data-f2w-username]');
+      }))refresh();
+    });
+    observer.observe(document.body,{childList:true,subtree:true,characterData:true});
+    refresh();
+  }
+
   /* ---------- boot ---------- */
   async function boot(){
     forceRedLogo();addLeaderboardNav();hardenRouting();installDmSearch();reorderSourceButtons();
@@ -1275,13 +1349,22 @@
     registerCurrentAbuseSignals();
     prewarmChat();
     setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();bootProfileRealtime();enrichForum();bootLeaderboard();decorateNames();installStaffQuickModeration()},350);
-    roleDecorateTimer=setInterval(()=>{forceRedLogo();decorateNames();installDmSearch();installProfileEditor();renderProfileExtras(viewedProfileObject());installStaffQuickModeration()},5000);
+    roleDecorateTimer=null;
     const client=db();
     try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{installAuthAbuseGuard();syncAuthUI();registerCurrentAbuseSignals();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments();enrichForum()},0))}catch{}
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchPresence();recordWatchOpen();}else{leavePresence();}});
     window.addEventListener('pagehide',()=>{leavePresence()});
-    const observer=new MutationObserver(()=>{forceRedLogo();addLeaderboardNav();hardenRouting()});
-    observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['src','hidden','style']});
+    let f2wDomRefreshTimer=null;
+    const observer=new MutationObserver(()=>{
+      clearTimeout(f2wDomRefreshTimer);
+      f2wDomRefreshTimer=setTimeout(()=>{
+        forceRedLogo();
+        addLeaderboardNav();
+        hardenRouting();
+        decorateNames();
+      },80);
+    });
+    observer.observe(document.documentElement,{childList:true,subtree:true});
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
@@ -1290,4 +1373,6 @@
 // f2w-force-save:realtime-profile-leaderboard-v17:1788213599
 // f2w-force-save:profile-editor-v22:1788214990
 // f2w-force-save:role-name-fairy-dust-v25:1788215879
+// f2w-force-save:role-sparkle-stability-v27:1788216279
+// f2w-force-save:role-name-effects-v30:1788216738
  

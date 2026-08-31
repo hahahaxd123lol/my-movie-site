@@ -119,7 +119,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
     })();
   </script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Support & Help | Flix2Watch</title>
+<title>Community Forum | Flix2Watch</title>
 <link rel="icon" href="/favicon-v16.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-v16.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16-v16.png">
@@ -426,14 +426,87 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=25-1788215879">
+  <link rel="stylesheet" href="/final-v35.css?v=30-1788216738">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=26-1788216027">
+  <link rel="stylesheet" href="/global-header-v1.css?v=30-1788216738">
   <script src="/global-header-chat-v1.js?v=26-1788216027" defer></script>
+
+<style id="forum-v30-design">
+.f2w-forum-page{background:radial-gradient(circle at 88% 7%,rgba(229,9,20,.075),transparent 30%),#020b14!important}
+.f2w-forum-v30{width:min(1510px,calc(100% - 44px));margin:0 auto;padding:24px 0 68px;font-family:Inter,system-ui,sans-serif}
+.forum-v30-hero{min-height:176px;display:flex;align-items:center;justify-content:space-between;gap:28px;padding:28px 30px;border:1px solid #20364a;border-radius:20px;background:linear-gradient(110deg,#08192a 0%,#091725 58%,rgba(76,16,30,.42) 100%)}
+.forum-v30-kicker{color:#ff2637;font-size:.7rem;font-weight:900;letter-spacing:.13em}
+.forum-v30-hero h1{margin:10px 0 8px;font-size:2.35rem;line-height:1.05;letter-spacing:-.035em;color:#fff}
+.forum-v30-hero p{max-width:770px;margin:0;color:#a5bdd8;font-size:.9rem;line-height:1.55}
+.forum-v30-hero-actions{display:flex;gap:10px;flex:0 0 auto}
+.forum-v30-primary,.forum-v30-secondary,.forum-v30-outline{min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:11px;padding:0 16px;text-decoration:none;font-weight:850;font-size:.75rem;cursor:pointer}
+.forum-v30-primary{border:1px solid #ff4050;background:linear-gradient(180deg,#ff172a,#db0717);color:#fff}
+.forum-v30-secondary{border:1px solid #2b435c;background:#0b1b2b;color:#dce7f6}
+.forum-v30-outline{border:1px solid rgba(236,34,54,.5);background:rgba(91,12,28,.22);color:#fff}
+.forum-v30-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 16px}
+.forum-v30-metrics article{min-height:76px;display:flex;align-items:center;gap:13px;padding:12px 14px;background:#071522;border:1px solid #20364a;border-radius:14px}
+.forum-v30-metrics article>i{width:38px;height:38px;display:grid;place-items:center;flex:0 0 38px;border:1px solid rgba(255,49,67,.27);border-radius:10px;color:#ff3041;background:rgba(229,9,20,.12)}
+.forum-v30-metrics strong{display:block;font-size:1rem;color:#fff}.forum-v30-metrics small{display:block;margin-top:4px;color:#6f8baa;font-size:.7rem}
+.forum-v30-layout{display:grid;grid-template-columns:220px minmax(0,1fr) 290px;gap:14px;align-items:start}
+.forum-v30-left,.forum-v30-right{display:grid;gap:12px}
+.forum-v30-panel,.forum-v30-feed-card,.forum-v30-toolbar{border:1px solid #20364a;border-radius:16px;background:#071522}
+.forum-v30-panel{padding:14px}.forum-v30-side-title{margin:0 0 9px 4px;color:#7288a3;font-size:.64rem;font-weight:900;letter-spacing:.12em}
+.forum-v30-nav{width:100%;height:40px;display:flex;align-items:center;gap:10px;margin:2px 0;padding:0 10px;border:1px solid transparent;border-radius:9px;background:transparent;color:#8ea3bb;text-decoration:none;font-weight:750;font-size:.76rem;text-align:left;cursor:pointer}
+.forum-v30-nav i{width:16px;text-align:center}.forum-v30-nav:hover{color:#fff;background:#0c1e2f}.forum-v30-nav.active{color:#fff;border-color:rgba(229,47,65,.42);background:linear-gradient(90deg,rgba(111,18,36,.45),rgba(83,21,55,.34))}.forum-v30-nav.active i{color:#ff2637}
+.forum-v30-center{min-width:0;display:grid;gap:12px}
+.forum-v30-toolbar{min-height:62px;display:grid;grid-template-columns:minmax(0,1fr) 165px 148px;gap:8px;padding:10px}
+.forum-v30-toolbar label{position:relative;margin:0!important}.forum-v30-toolbar label i{position:absolute;left:13px;top:50%;translate:0 -50%;color:#65809c;font-size:.7rem}
+.forum-v30-toolbar input,.forum-v30-toolbar select{width:100%;height:40px;border:1px solid #2a435d;border-radius:9px;background:#071522;color:#d9e6f5;outline:0}
+.forum-v30-toolbar input{padding:0 12px 0 38px}.forum-v30-toolbar select{padding:0 10px;font-weight:700}
+.forum-v30-sort{display:grid;grid-template-columns:1fr 1fr;border:1px solid #2a435d;border-radius:9px;padding:3px;background:#06111d}.forum-v30-sort button{border:0;border-radius:7px;background:transparent;color:#6f88a4;font-weight:800;font-size:.7rem;cursor:pointer;margin:0}.forum-v30-sort button.active{background:#142b43;color:#fff}
+.forum-v30-feed-card{padding:16px}.forum-v30-feed-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.06)}.forum-v30-feed-head h2{margin:6px 0 2px;font-size:1.45rem}.forum-v30-feed-head p{margin:0;color:#66809e}
+.forum-v30-feed{display:grid;gap:8px;padding-top:12px}.forum-v30-empty{min-height:96px;display:grid;place-items:center;text-align:center;color:#7189a6;border:1px dashed #29435e;border-radius:12px;padding:20px}
+.forum-v30-thread{border:1px solid #193047;border-radius:12px;background:#06131f;overflow:hidden}.forum-v30-thread-main{width:100%;display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px;border:0;background:transparent;color:#fff;text-align:left;cursor:pointer;margin:0}.forum-v30-thread-main:hover{background:#0a1b2b}
+.forum-v30-thread-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:rgba(229,9,20,.1);color:#ff3040}.forum-v30-thread-copy{min-width:0}.forum-v30-thread-copy strong{display:block;margin:4px 0;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.forum-v30-thread-copy small{color:#6e88a6;font-size:.67rem}.forum-v30-category{color:#ff5360;font-size:.58rem;font-weight:850;letter-spacing:.08em}.forum-v30-spoiler{margin-left:6px;color:#ffd065;font-size:.55rem;font-weight:900}.forum-v30-thread-stats{display:flex;gap:12px;color:#6d86a3;font-size:.65rem}.forum-v30-thread-stats span{display:flex;align-items:center;gap:5px}
+.forum-v30-right h3{margin:4px 0 6px;font-size:1.08rem}.forum-v30-right p{color:#6f86a1;font-size:.68rem}.forum-v30-rankings{display:grid;margin-top:10px;border-top:1px solid rgba(255,255,255,.07)}.forum-v30-rank-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.055);color:#dce7f5;text-decoration:none;font-size:.7rem}.forum-v30-rank-row b{color:#ff3345}.forum-v30-rank-more{display:block;padding-top:10px;color:#ff3345;text-decoration:none;font-size:.68rem}
+.forum-v30-rules{list-style:none;padding:0;margin:8px 0 14px;display:grid;gap:10px;color:#8299b4;font-size:.68rem}.forum-v30-rules i{width:16px;color:#7894b4}.forum-v30-help{display:block;border-top:1px solid rgba(255,255,255,.06);padding-top:12px;color:#a4b6cb;text-decoration:none;font-size:.68rem}.forum-v30-cta{text-align:center}.forum-v30-cta>span{width:42px;height:42px;display:grid;place-items:center;margin:0 auto 10px;border-radius:12px;background:rgba(229,9,20,.13);color:#ff2637}.forum-v30-cta strong{display:block}.forum-v30-cta button{width:100%;margin-top:9px;border:1px solid #7a1c2c;background:#3a101c;color:#fff}
+.forum-v30-modal{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,5,11,.78);backdrop-filter:blur(7px)}.forum-v30-modal[hidden]{display:none!important}.forum-v30-modal-card{width:min(720px,96vw);max-height:90dvh;overflow:auto;border:1px solid #29445f;border-radius:18px;background:#071522;box-shadow:0 26px 80px rgba(0,0,0,.55)}.forum-v30-thread-card{width:min(880px,96vw)}.forum-v30-modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.07)}.forum-v30-modal-head h2{margin:5px 0 0}.forum-v30-modal-head>button{width:34px;height:34px;margin:0;padding:0;border:1px solid #29445f;background:#091a29;color:#8ea4bd}.forum-v30-form{display:grid;gap:13px;padding:20px}.forum-v30-form label{margin:0;color:#8ea4bd;font-size:.65rem;font-weight:800}.forum-v30-form input,.forum-v30-form select,.forum-v30-form textarea,.forum-v30-reply-box textarea{width:100%;margin-top:6px;border:1px solid #29445f;border-radius:9px;background:#06111d;color:#fff;padding:10px;outline:0}.forum-v30-form textarea{min-height:150px}.forum-v30-check{display:flex!important;align-items:center;gap:8px}.forum-v30-check input{width:auto!important;margin:0!important}.forum-v30-modal-actions{display:flex;justify-content:flex-end;gap:8px}.forum-v30-secondary-button{border:1px solid #29445f;background:#0a1927;color:#a7b8cb}.forum-v30-status{min-height:18px;color:#ff7884;font-size:.68rem}
+.forum-v30-thread-full,.forum-v30-replies{padding:18px 20px}.forum-v30-thread-full{border-bottom:1px solid rgba(255,255,255,.07)}.forum-v30-thread-full-meta{display:flex;gap:8px;color:#7890aa;font-size:.65rem}.forum-v30-thread-full h3{margin:10px 0 4px;font-size:1.35rem}.forum-v30-thread-authorline{color:#7188a3;font-size:.68rem}.forum-v30-thread-authorline a{color:#fff;text-decoration:none}.forum-v30-thread-body{margin-top:16px;color:#d7e2ef;line-height:1.65;font-size:.82rem}.forum-v30-reply-list{display:grid;gap:8px;margin-top:10px}.forum-v30-reply{padding:12px;border:1px solid #1d344b;border-radius:10px;background:#06111d;color:#cbd9e7;font-size:.76rem;line-height:1.55}.forum-v30-reply-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;color:#718aa6;font-size:.64rem}.forum-v30-reply-head a{color:#fff;text-decoration:none}.forum-v30-reply-box{margin-top:12px}.forum-v30-reply-box>div{display:flex;align-items:center;justify-content:space-between;gap:10px}.forum-v30-reply-box button{background:#e50914;color:#fff;border-color:#ff3848}.forum-v30-toast{position:fixed;right:18px;bottom:18px;z-index:2147483000;padding:11px 14px;border:1px solid #344c65;border-radius:10px;background:#071522;color:#fff;opacity:0;translate:0 8px;transition:.18s}.forum-v30-toast.show{opacity:1;translate:0 0}
+@media(max-width:1100px){.forum-v30-layout{grid-template-columns:190px minmax(0,1fr)}.forum-v30-right{grid-column:1/-1;grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.f2w-forum-v30{width:calc(100% - 20px);padding-top:12px}.forum-v30-hero{min-height:0;display:block;padding:20px}.forum-v30-hero h1{font-size:1.75rem}.forum-v30-hero-actions{margin-top:16px;flex-wrap:wrap}.forum-v30-metrics{grid-template-columns:1fr 1fr}.forum-v30-layout{grid-template-columns:1fr}.forum-v30-left{grid-template-columns:1fr 1fr}.forum-v30-right{grid-column:auto;grid-template-columns:1fr}.forum-v30-toolbar{grid-template-columns:1fr}}
+@media(max-width:500px){.forum-v30-left{grid-template-columns:1fr}.forum-v30-metrics{grid-template-columns:1fr}.forum-v30-thread-main{grid-template-columns:34px minmax(0,1fr)}.forum-v30-thread-stats{grid-column:2}}
+/* f2w-force-save:forum-design-v30:1788216738 */
+</style>
+
+
+<style id="f2w-header-gorilla-lock-v30">
+@media(min-width:1181px){
+body.f2w-main-page>header{position:sticky!important;top:0!important;z-index:2147480000!important;display:flex!important;flex-flow:row nowrap!important;align-items:center!important;width:100%!important;max-width:100%!important;height:82px!important;min-height:82px!important;max-height:82px!important;margin:0!important;padding:10px 12px!important;gap:10px!important;overflow:visible!important;transform:none!important;translate:none!important}
+body.f2w-main-page>header>.logo{flex:0 0 126px!important;width:126px!important;min-width:126px!important;max-width:126px!important}
+body.f2w-main-page>header>.logo .logo-image{width:126px!important;max-width:126px!important}
+body.f2w-main-page>header>.header-tools{position:static!important;display:flex!important;flex:1 1 auto!important;align-items:center!important;flex-wrap:nowrap!important;min-width:0!important;width:auto!important;height:42px!important;gap:6px!important;transform:none!important}
+body.f2w-main-page>header .f2w-primary-nav{display:flex!important;flex:0 1 auto!important;align-items:center!important;flex-wrap:nowrap!important;min-width:455px!important;height:42px!important;gap:0!important}
+body.f2w-main-page>header .f2w-search-pair{display:grid!important;grid-template-columns:minmax(150px,1fr) minmax(150px,1fr)!important;flex:1 1 430px!important;min-width:300px!important;max-width:560px!important;height:40px!important;gap:7px!important;margin:0 2px!important}
+body.f2w-main-page>header .f2w-action-cluster{display:grid!important;grid-template-columns:58px 82px 72px 76px 78px 112px 116px!important;grid-template-rows:40px!important;flex:0 0 630px!important;width:630px!important;min-width:630px!important;max-width:630px!important;height:40px!important;gap:6px!important;margin-left:auto!important;align-items:stretch!important;overflow:visible!important}
+body.f2w-main-page>header .chat-button{grid-column:1!important}
+body.f2w-main-page>header #header-login-btn,body.f2w-main-page>header #favorites-nav-btn{grid-column:2!important}
+body.f2w-main-page>header #header-signup-btn,body.f2w-main-page>header #profile-nav-btn{grid-column:3!important}
+body.f2w-main-page>header #support-nav-btn{grid-column:4!important}
+body.f2w-main-page>header #account-btn{grid-column:5!important}
+body.f2w-main-page>header #notification-wrap{grid-column:6!important;width:112px!important}
+body.f2w-main-page>header #staff-control-nav{grid-column:7!important}
+body.f2w-main-page>header a,body.f2w-main-page>header button,body.f2w-main-page>header input,body.f2w-main-page>header .v17-notification-wrap{transform:none!important;translate:none!important;margin-top:0!important;margin-bottom:0!important;box-sizing:border-box!important}
+body.f2w-main-page>header #staff-control-nav[hidden]{display:flex!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+}
+@media(min-width:1181px) and (max-width:1650px){
+body.f2w-main-page>header .f2w-primary-nav{min-width:410px!important}
+body.f2w-main-page>header .f2w-search-pair{min-width:240px!important;max-width:420px!important}
+body.f2w-main-page>header .f2w-action-cluster{grid-template-columns:54px 74px 66px 68px 70px 100px 104px!important;flex-basis:572px!important;width:572px!important;min-width:572px!important;max-width:572px!important}
+body.f2w-main-page>header .f2w-nav-link,body.f2w-main-page>header .f2w-nav-button{font-size:9px!important;padding-left:5px!important;padding-right:5px!important}
+}
+body.f2w-main-page>header *{transition-property:color,background-color,border-color,box-shadow,opacity!important}
+/* f2w-force-save:header-gorilla-lock-v30:1788216738 */
+</style>
+
 </head>
-<body class="f2w-main-page f2w-forum-page">
+<body class="f2w-main-page f2w-forum-page f2w-forum-page">
 <header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
       <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
@@ -579,24 +652,120 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
     </div>
   </header>
 
-<main class="f2w-v34-forum-main">
-  <section class="f2w-v34-forum-hero">
-    <div><div class="f2w-ultra-kicker">FLIX2WATCH COMMUNITY</div><h1>Threads, reviews & movie talk</h1><p>Start discussions, reply to other viewers and build a public film profile.</p></div>
-    <button class="f2w-v34-new-thread" id="f2w-v34-new-thread" type="button"><i class="fa-solid fa-plus"></i> New thread</button>
+
+<main class="f2w-forum-v30" id="forum-app">
+  <section class="forum-v30-hero">
+    <div>
+      <div class="forum-v30-kicker"><i class="fa-solid fa-comments"></i> FLIX2WATCH COMMUNITY</div>
+      <h1>The place to talk movies &amp; TV.</h1>
+      <p>Reviews, recommendations, theories, hot takes and proper discussions — organised like a real forum instead of one giant page.</p>
+    </div>
+    <div class="forum-v30-hero-actions">
+      <button type="button" class="forum-v30-primary" data-new-thread><i class="fa-solid fa-pen-to-square"></i> New Discussion</button>
+      <a class="forum-v30-secondary" href="/home/"><i class="fa-solid fa-clapperboard"></i> Browse Titles</a>
+    </div>
   </section>
-  <section class="f2w-v34-thread-composer" id="f2w-v34-thread-composer" hidden>
-    <input id="f2w-v34-thread-title" maxlength="120" placeholder="Thread title">
-    <textarea id="f2w-v34-thread-body" maxlength="5000" placeholder="What do you want to talk about?"></textarea>
-    <div><button type="button" id="f2w-v34-thread-submit">Post thread</button><button type="button" id="f2w-v34-thread-cancel">Cancel</button></div>
+
+  <section class="forum-v30-metrics">
+    <article><i class="fa-solid fa-message"></i><div><strong id="forum-thread-count">0</strong><small>Discussions</small></div></article>
+    <article><i class="fa-solid fa-star"></i><div><strong>½–5★</strong><small>Rating scale</small></div></article>
+    <article><i class="fa-solid fa-earth-americas"></i><div><strong>Public</strong><small>Anyone can read</small></div></article>
+    <article><i class="fa-solid fa-circle-user"></i><div><strong id="forum-account-state">Guest</strong><small>Your account</small></div></article>
   </section>
-  <div class="f2w-v34-forum-layout">
-    <section class="f2w-v34-thread-feed" id="f2w-v34-thread-feed"><div class="f2w-v34-forum-state">Loading community…</div></section>
-    <aside class="f2w-v34-forum-side">
-      <div class="f2w-v34-forum-card"><strong>Community rules</strong><p>Keep it about movies/TV. Public-chat safety rules also apply here: no addresses, hate speech or harassment.</p></div>
-      <div class="f2w-v34-forum-card"><strong>Your film identity</strong><p>Your ratings, reviews and community activity appear on your public profile.</p></div>
+
+  <div class="forum-v30-layout">
+    <aside class="forum-v30-left">
+      <section class="forum-v30-panel">
+        <div class="forum-v30-side-title">FORUM</div>
+        <button class="forum-v30-nav active" type="button"><i class="fa-solid fa-house"></i> Discussions</button>
+        <button class="forum-v30-nav" type="button" data-new-thread><i class="fa-solid fa-square-plus"></i> Start a thread</button>
+        <a class="forum-v30-nav" href="/leaderboard/"><i class="fa-solid fa-trophy"></i> Rankings</a>
+        <button class="forum-v30-nav" type="button" id="forum-my-profile"><i class="fa-solid fa-user"></i> My profile</button>
+      </section>
+
+      <section class="forum-v30-panel">
+        <div class="forum-v30-side-title">CATEGORIES</div>
+        <button class="forum-v30-nav category active" type="button" data-category="all"><i class="fa-solid fa-layer-group"></i> All discussions</button>
+        <button class="forum-v30-nav category" type="button" data-category="general"><i class="fa-solid fa-comments"></i> General</button>
+        <button class="forum-v30-nav category" type="button" data-category="movies"><i class="fa-solid fa-film"></i> Movies</button>
+        <button class="forum-v30-nav category" type="button" data-category="tv"><i class="fa-solid fa-tv"></i> TV Shows</button>
+        <button class="forum-v30-nav category" type="button" data-category="reviews"><i class="fa-solid fa-star"></i> Reviews</button>
+        <button class="forum-v30-nav category" type="button" data-category="recommendations"><i class="fa-solid fa-wand-magic-sparkles"></i> Recommendations</button>
+        <button class="forum-v30-nav category" type="button" data-category="off-topic"><i class="fa-solid fa-mug-hot"></i> Off-topic</button>
+      </section>
+    </aside>
+
+    <section class="forum-v30-center">
+      <div class="forum-v30-toolbar">
+        <label><i class="fa-solid fa-magnifying-glass"></i><input id="forum-search" type="search" placeholder="Search discussions..." autocomplete="off"></label>
+        <select id="forum-category-select">
+          <option value="all">All categories</option><option value="general">General</option><option value="movies">Movies</option>
+          <option value="tv">TV Shows</option><option value="reviews">Reviews</option><option value="recommendations">Recommendations</option><option value="off-topic">Off-topic</option>
+        </select>
+        <div class="forum-v30-sort">
+          <button type="button" class="active" data-sort="hot"><i class="fa-solid fa-fire"></i> Hot</button>
+          <button type="button" data-sort="new"><i class="fa-regular fa-clock"></i> New</button>
+        </div>
+      </div>
+
+      <section class="forum-v30-feed-card">
+        <div class="forum-v30-feed-head">
+          <div><span class="forum-v30-kicker">COMMUNITY FEED</span><h2>Discussions</h2><p>Jump into a conversation or start your own.</p></div>
+          <button type="button" class="forum-v30-outline" data-new-thread><i class="fa-solid fa-plus"></i> New thread</button>
+        </div>
+        <div id="forum-thread-feed" class="forum-v30-feed"><div class="forum-v30-empty">Loading discussions…</div></div>
+      </section>
+    </section>
+
+    <aside class="forum-v30-right">
+      <section class="forum-v30-panel">
+        <div class="forum-v30-kicker">TRENDING</div>
+        <h3><i class="fa-solid fa-trophy"></i> Rankings</h3>
+        <p>Top community members right now.</p>
+        <div id="forum-rankings" class="forum-v30-rankings"><div class="forum-v30-empty">Loading rankings…</div></div>
+      </section>
+
+      <section class="forum-v30-panel">
+        <div class="forum-v30-side-title">COMMUNITY BASICS</div>
+        <ul class="forum-v30-rules">
+          <li><i class="fa-solid fa-check"></i> Keep titles clear and useful.</li>
+          <li><i class="fa-solid fa-eye-slash"></i> Mark spoilers before posting.</li>
+          <li><i class="fa-solid fa-user-group"></i> Disagree without making it personal.</li>
+          <li><i class="fa-solid fa-lock"></i> Never post private information.</li>
+        </ul>
+        <a class="forum-v30-help" href="/support/"><i class="fa-solid fa-arrow-right"></i> Help &amp; support</a>
+      </section>
+
+      <section class="forum-v30-panel forum-v30-cta">
+        <span><i class="fa-solid fa-bolt"></i></span><strong>Got something to say?</strong>
+        <p>Start a thread and get the conversation moving.</p>
+        <button type="button" data-new-thread>Start discussion</button>
+      </section>
     </aside>
   </div>
+
+  <div class="forum-v30-modal" id="forum-composer" hidden>
+    <div class="forum-v30-modal-card">
+      <div class="forum-v30-modal-head"><div><span class="forum-v30-kicker">NEW DISCUSSION</span><h2>Start a thread</h2></div><button type="button" data-close-composer><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="forum-v30-form">
+        <label>Category<select id="forum-compose-category"><option value="general">General</option><option value="movies">Movies</option><option value="tv">TV Shows</option><option value="reviews">Reviews</option><option value="recommendations">Recommendations</option><option value="off-topic">Off-topic</option></select></label>
+        <label>Title<input id="forum-compose-title" maxlength="120" placeholder="Give the discussion a clear title"></label>
+        <label>Post<textarea id="forum-compose-body" maxlength="5000" placeholder="What do you want to talk about?"></textarea></label>
+        <label class="forum-v30-check"><input id="forum-compose-spoiler" type="checkbox"> Contains spoilers</label>
+        <div id="forum-compose-status" class="forum-v30-status"></div>
+        <div class="forum-v30-modal-actions"><button type="button" class="forum-v30-secondary-button" data-close-composer>Cancel</button><button type="button" class="forum-v30-primary" id="forum-compose-submit">Post discussion</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="forum-v30-modal" id="forum-thread-modal" hidden>
+    <div class="forum-v30-modal-card forum-v30-thread-card">
+      <div class="forum-v30-modal-head"><div><span class="forum-v30-kicker">DISCUSSION</span><h2 id="forum-thread-title">Thread</h2></div><button type="button" data-close-thread><i class="fa-solid fa-xmark"></i></button></div>
+      <div id="forum-thread-detail"></div>
+    </div>
+  </div>
 </main>
+
 
 
 <script>
@@ -772,7 +941,105 @@ boot();
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=25-1788215879" defer></script>
+  <script src="/final-v35.js?v=30-1788216738" defer></script>
+
+<script id="forum-v30-runtime">
+(() => {
+  'use strict';
+  const db=window.supabase.createClient('https://viqufxlcxwgboyxbdhjb.supabase.co','sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge');
+  const S={user:null,threads:[],category:'all',sort:'hot',search:'',channel:null};
+  const $=id=>document.getElementById(id);
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const ago=v=>{const d=Date.now()-new Date(v).getTime(),s=Math.max(0,Math.floor(d/1000));if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';if(s<604800)return Math.floor(s/86400)+'d ago';return new Date(v).toLocaleDateString()};
+  const cat=v=>({general:'General',movies:'Movies',tv:'TV Shows',reviews:'Reviews',recommendations:'Recommendations','off-topic':'Off-topic'}[v]||'General');
+  async function rpc(name,args={}){const {data,error}=await db.rpc(name,args);if(error)throw error;return data}
+  function toast(msg){let e=$('forum-v30-toast');if(!e){e=document.createElement('div');e.id='forum-v30-toast';e.className='forum-v30-toast';document.body.appendChild(e)}e.textContent=msg;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200)}
+
+  function rows(){
+    let a=[...S.threads];
+    if(S.category!=='all')a=a.filter(x=>x.category===S.category);
+    const q=S.search.trim().toLowerCase();
+    if(q)a=a.filter(x=>[x.title,x.body,x.username,x.display_name].some(v=>String(v||'').toLowerCase().includes(q)));
+    a.sort((x,y)=>S.sort==='new'?new Date(y.created_at)-new Date(x.created_at):
+      (Number(y.reply_count||0)*5+Number(y.view_count||0)*.08+new Date(y.updated_at||y.created_at).getTime()/1e12)-
+      (Number(x.reply_count||0)*5+Number(x.view_count||0)*.08+new Date(x.updated_at||x.created_at).getTime()/1e12));
+    return a;
+  }
+  function render(){
+    const host=$('forum-thread-feed'),a=rows();
+    if(!a.length){host.innerHTML='<div class="forum-v30-empty">No discussions match this filter yet.</div>';return}
+    host.innerHTML=a.map(x=>`<article class="forum-v30-thread"><button class="forum-v30-thread-main" type="button" data-thread="${esc(x.id)}"><span class="forum-v30-thread-icon"><i class="fa-solid ${x.is_spoiler?'fa-eye-slash':'fa-message'}"></i></span><span class="forum-v30-thread-copy"><span><span class="forum-v30-category">${esc(cat(x.category))}</span>${x.is_spoiler?'<span class="forum-v30-spoiler">SPOILER</span>':''}</span><strong>${esc(x.title)}</strong><small>by <span class="forum-v30-author" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</span> · ${esc(ago(x.created_at))}</small></span><span class="forum-v30-thread-stats"><span><i class="fa-regular fa-comment"></i><b>${Number(x.reply_count||0)}</b></span><span><i class="fa-regular fa-eye"></i><b>${Number(x.view_count||0)}</b></span></span></button></article>`).join('');
+    host.querySelectorAll('[data-thread]').forEach(b=>b.onclick=()=>openThread(b.dataset.thread));
+    window.decorateNames?.();
+  }
+  async function loadThreads(quiet=false){
+    try{
+      const data=await rpc('get_forum_threads_v30',{p_limit:100});
+      S.threads=Array.isArray(data)?data:[];
+      $('forum-thread-count').textContent=String(S.threads.length);
+      render();
+    }catch(e){$('forum-thread-feed').innerHTML=`<div class="forum-v30-empty">${esc(e.message||'Could not load discussions.')}</div>`}
+  }
+  async function loadRanks(){
+    const host=$('forum-rankings');
+    try{
+      const data=await rpc('get_public_leaderboard',{p_page:1,p_page_size:5,p_sort:'overall'});
+      const a=Array.isArray(data)?data:[];
+      host.innerHTML=a.length?a.map((x,i)=>`<a class="forum-v30-rank-row" href="/profile/?user=${encodeURIComponent(x.username||'')}"><span>#${i+1}</span><span class="forum-v30-rank-name" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</span><b>${Number(x.score||0)}</b></a>`).join('')+'<a class="forum-v30-rank-more" href="/leaderboard/">View full leaderboard →</a>':'<div class="forum-v30-empty">Rankings appear as members get active.</div>';
+      window.decorateNames?.();
+    }catch{host.innerHTML='<div class="forum-v30-empty">Rankings unavailable.</div>'}
+  }
+  function setCategory(v){S.category=v||'all';document.querySelectorAll('.forum-v30-nav.category').forEach(b=>b.classList.toggle('active',b.dataset.category===S.category));$('forum-category-select').value=S.category;render()}
+  function openComposer(){if(!S.user){window.openHeaderAuth?.('login');return}$('forum-composer').hidden=false;setTimeout(()=>$('forum-compose-title').focus(),20)}
+  function closeComposer(){$('forum-composer').hidden=true;$('forum-compose-status').textContent=''}
+  async function submitThread(){
+    const title=$('forum-compose-title').value.trim(),body=$('forum-compose-body').value.trim(),status=$('forum-compose-status'),btn=$('forum-compose-submit');
+    if(!title||!body){status.textContent='Add a title and post first.';return}
+    btn.disabled=true;status.textContent='Posting…';
+    try{
+      const id=await rpc('create_forum_thread_v30',{p_title:title,p_body:body,p_category:$('forum-compose-category').value,p_is_spoiler:$('forum-compose-spoiler').checked});
+      $('forum-compose-title').value='';$('forum-compose-body').value='';$('forum-compose-spoiler').checked=false;closeComposer();await loadThreads(true);toast('Discussion posted.');if(id)openThread(id)
+    }catch(e){status.textContent=e.message||'Could not post.'}finally{btn.disabled=false}
+  }
+  async function openThread(id){
+    const modal=$('forum-thread-modal'),host=$('forum-thread-detail');modal.hidden=false;host.innerHTML='<div class="forum-v30-empty">Loading discussion…</div>';
+    try{
+      const x=await rpc('get_forum_thread_v30',{p_thread_id:id});if(!x)throw new Error('Thread not found');
+      $('forum-thread-title').textContent=x.title||'Discussion';
+      host.innerHTML=`<article class="forum-v30-thread-full"><div class="forum-v30-thread-full-meta"><span class="forum-v30-category">${esc(cat(x.category))}</span>${x.is_spoiler?'<span class="forum-v30-spoiler">SPOILER</span>':''}<span>${esc(ago(x.created_at))}</span></div><h3>${esc(x.title)}</h3><div class="forum-v30-thread-authorline">by <a href="/profile/?user=${encodeURIComponent(x.username||'')}" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</a></div><div class="forum-v30-thread-body">${esc(x.body).replace(/\n/g,'<br>')}</div></article><section class="forum-v30-replies"><strong>${Number(x.reply_count||0)} Replies</strong><div class="forum-v30-reply-list">${(x.replies||[]).map(r=>`<article class="forum-v30-reply"><div class="forum-v30-reply-head"><a href="/profile/?user=${encodeURIComponent(r.username||'')}" data-username="${esc(r.username||'')}" data-role="${esc(r.top_role||'')}">${esc(r.display_name||r.username||'Member')}</a><span>${esc(ago(r.created_at))}</span></div><div>${esc(r.body).replace(/\n/g,'<br>')}</div></article>`).join('')||'<div class="forum-v30-empty">No replies yet.</div>'}</div>${S.user?`<div class="forum-v30-reply-box"><textarea id="forum-reply-body" maxlength="3000" placeholder="Write a reply…"></textarea><div><span id="forum-reply-status"></span><button id="forum-reply-submit" type="button">Reply</button></div></div>`:'<div class="forum-v30-empty">Log in to join the discussion.</div>'}</section>`;
+      $('forum-reply-submit')?.addEventListener('click',()=>reply(id));window.decorateNames?.();loadThreads(true)
+    }catch(e){host.innerHTML=`<div class="forum-v30-empty">${esc(e.message||'Could not load discussion.')}</div>`}
+  }
+  async function reply(id){const input=$('forum-reply-body'),body=input?.value.trim()||'',status=$('forum-reply-status'),btn=$('forum-reply-submit');if(!body)return;btn.disabled=true;status.textContent='Sending…';try{await rpc('create_forum_reply_v30',{p_thread_id:id,p_body:body});await openThread(id);toast('Reply posted.')}catch(e){status.textContent=e.message||'Could not reply.'}finally{btn.disabled=false}}
+  function realtime(){
+    try{
+      let t=null;const refresh=()=>{clearTimeout(t);t=setTimeout(()=>{loadThreads(true);loadRanks()},70)};
+      S.channel=db.channel('forum-v30-live').on('postgres_changes',{event:'*',schema:'public',table:'forum_threads'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'forum_replies'},refresh).subscribe()
+    }catch(e){console.warn('Forum realtime unavailable',e)}
+  }
+  function bind(){
+    document.querySelectorAll('[data-new-thread]').forEach(b=>b.onclick=openComposer);
+    document.querySelectorAll('[data-close-composer]').forEach(b=>b.onclick=closeComposer);
+    document.querySelectorAll('[data-close-thread]').forEach(b=>b.onclick=()=>$('forum-thread-modal').hidden=true);
+    $('forum-compose-submit').onclick=submitThread;
+    $('forum-search').oninput=e=>{S.search=e.target.value;render()};
+    $('forum-category-select').onchange=e=>setCategory(e.target.value);
+    document.querySelectorAll('.forum-v30-nav.category').forEach(b=>b.onclick=()=>setCategory(b.dataset.category));
+    document.querySelectorAll('[data-sort]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-sort]').forEach(x=>x.classList.toggle('active',x===b));S.sort=b.dataset.sort;render()});
+    $('forum-my-profile').onclick=()=>window.openMyProfile?.();
+    $('forum-composer').onclick=e=>{if(e.target===e.currentTarget)closeComposer()};
+    $('forum-thread-modal').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.hidden=true};
+  }
+  async function boot(){
+    bind();
+    const {data:{session}}=await db.auth.getSession();S.user=session?.user||null;$('forum-account-state').textContent=S.user?'Member':'Guest';
+    await Promise.all([loadThreads(),loadRanks()]);realtime();
+    db.auth.onAuthStateChange((_e,s)=>{S.user=s?.user||null;$('forum-account-state').textContent=S.user?'Member':'Guest'})
+  }
+  boot();
+})();
+</script>
+
 </body></html>
 <!-- f2w-force-push-20260831-batch2:forum:16d129a193 -->
 <!-- f2w-update-marker: shared-chat-v7:forum -->
@@ -800,4 +1067,7 @@ boot();
 <!-- f2w-force-save:role-name-cache-v25:1788215879:forum/index.html -->
 <!-- f2w-force-save:sitewide-fade-page-v26:1788216027:forum/index.html -->
 <!-- f2w-force-save:fade-js-cache-v26:1788216027:forum/index.html -->
+<!-- f2w-force-save:v27-cache:1788216279:forum/index.html -->
+<!-- f2w-force-save:forum-v30:1788216738 -->
+<!-- f2w-force-save:v30-page:1788216738:forum/index.html -->
  

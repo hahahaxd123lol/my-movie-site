@@ -601,3 +601,202 @@ body.f2w-authenticated .f2w-guest-rail{display:none!important}
 
 /* f2w-force-save:role-fairy-dust-css-v25:1788215879 */
  
+
+/* ============================================================
+   F2W v27 — TRUE TEXT-BOUND ROLE COLOUR + MICRO FAIRY DUST
+   ============================================================ */
+#profile-name[data-f2w-role-decorated="1"],
+[data-f2w-role-decorated="1"] {
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  padding:0 1px!important;
+  overflow:visible!important;
+  vertical-align:baseline!important;
+  isolation:isolate!important;
+}
+
+.f2w-role-name-text {
+  position:relative!important;
+  z-index:2!important;
+  display:inline-block!important;
+  width:max-content!important;
+  color:var(--role-a)!important;
+  -webkit-text-fill-color:transparent!important;
+  background:linear-gradient(90deg,var(--role-a) 0%,var(--role-b) 35%,#fff 50%,var(--role-b) 65%,var(--role-a) 100%)!important;
+  background-size:220% 100%!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  text-shadow:0 0 2px var(--role-glow),0 0 6px var(--role-glow)!important;
+  animation:f2wRoleTextShimmer 2.7s linear infinite!important;
+}
+
+.f2w-role-owner {
+  --role-a:#ff182b!important;
+  --role-b:#ff5364!important;
+  --role-glow:rgba(255,24,43,.82)!important;
+}
+
+.f2w-role-fairy-dust {
+  position:absolute!important;
+  z-index:4!important;
+  inset:-3px -3px!important;
+  width:calc(100% + 6px)!important;
+  height:calc(100% + 6px)!important;
+  pointer-events:none!important;
+  overflow:visible!important;
+}
+
+.f2w-role-fairy-dust i {
+  position:absolute!important;
+  width:1.5px!important;
+  height:1.5px!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  opacity:0!important;
+  box-shadow:0 0 2px #fff,0 0 4px #fff,0 0 5px var(--role-glow)!important;
+  animation:f2wMicroFairy 1.85s ease-in-out infinite!important;
+}
+
+.f2w-role-fairy-dust i:nth-child(1){left:1%!important;top:8%!important;animation-delay:.05s!important}
+.f2w-role-fairy-dust i:nth-child(2){left:13%!important;bottom:2%!important;animation-delay:.38s!important}
+.f2w-role-fairy-dust i:nth-child(3){left:31%!important;top:-1%!important;animation-delay:.76s!important}
+.f2w-role-fairy-dust i:nth-child(4){left:47%!important;bottom:0!important;animation-delay:1.10s!important}
+.f2w-role-fairy-dust i:nth-child(5){left:63%!important;top:1%!important;animation-delay:.22s!important}
+.f2w-role-fairy-dust i:nth-child(6){left:78%!important;bottom:1%!important;animation-delay:.61s!important}
+.f2w-role-fairy-dust i:nth-child(7){right:8%!important;top:4%!important;animation-delay:.96s!important}
+.f2w-role-fairy-dust i:nth-child(8){right:0!important;bottom:7%!important;animation-delay:1.32s!important}
+
+@keyframes f2wMicroFairy {
+  0%,68%,100%{opacity:0;transform:scale(.2)}
+  77%{opacity:.8;transform:scale(.75)}
+  84%{opacity:1;transform:scale(1.15)}
+  92%{opacity:.35;transform:scale(.5)}
+}
+
+/* Kill every older wide particle layer. */
+.f2w-role-name::before,
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* f2w-force-save:true-role-micro-sparkles-v27:1788216279 */
+ 
+
+/* ============================================================
+   F2W v30 — TIGHT ROLE PARTICLE NAMES
+   User-supplied reference approach:
+   text-shadow + Particles.gif constrained to the exact word span.
+   ============================================================ */
+.f2w-role-name {
+  --role-main:#fff;
+  --role-soft:#fff;
+  --role-shadow:rgba(255,255,255,.7);
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1.08!important;
+  vertical-align:baseline!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:repeat-x!important;
+  background-position:center center!important;
+  background-size:6.657em auto!important;
+}
+
+.f2w-role-name-text {
+  position:relative!important;
+  z-index:2!important;
+  display:inline!important;
+  color:var(--role-main)!important;
+  -webkit-text-fill-color:var(--role-main)!important;
+  background:none!important;
+  font:inherit!important;
+  font-weight:inherit!important;
+  text-shadow:
+    0 2px 2px var(--role-shadow),
+    0 0 4px var(--role-shadow),
+    0 0 8px color-mix(in srgb,var(--role-main) 48%,transparent)!important;
+  animation:f2wRoleNamePulse 2.7s ease-in-out infinite!important;
+}
+
+.f2w-role-owner{--role-main:#ff2638!important;--role-soft:#ff7180!important;--role-shadow:rgba(255,0,28,.96)!important}
+.f2w-role-staff{--role-main:#c55cff!important;--role-soft:#e3a5ff!important;--role-shadow:rgba(166,51,255,.96)!important}
+.f2w-role-moderator{--role-main:#56a0ff!important;--role-soft:#9fc8ff!important;--role-shadow:rgba(52,128,255,.9)!important}
+.f2w-role-support{--role-main:#35cbff!important;--role-soft:#94e7ff!important;--role-shadow:rgba(32,183,255,.86)!important}
+.f2w-role-developer{--role-main:#35e0b4!important;--role-soft:#91f4dd!important;--role-shadow:rgba(33,205,166,.86)!important}
+.f2w-role-verified{--role-main:#5a9fff!important;--role-soft:#a9cfff!important;--role-shadow:rgba(60,139,255,.86)!important}
+.f2w-role-contributor{--role-main:#ffc043!important;--role-soft:#ffe39b!important;--role-shadow:rgba(241,169,25,.86)!important}
+.f2w-role-curator{--role-main:#ff70e5!important;--role-soft:#ffb4f2!important;--role-shadow:rgba(244,75,214,.86)!important}
+
+@keyframes f2wRoleNamePulse {
+  0%,100% {
+    color:var(--role-main);
+    -webkit-text-fill-color:var(--role-main);
+    text-shadow:0 2px 2px var(--role-shadow),0 0 4px var(--role-shadow);
+  }
+  50% {
+    color:var(--role-soft);
+    -webkit-text-fill-color:var(--role-soft);
+    text-shadow:0 2px 2px var(--role-shadow),0 0 7px var(--role-shadow),0 0 10px color-mix(in srgb,var(--role-main) 42%,transparent);
+  }
+}
+
+/* White micro fairy dust fallback if the remote GIF is blocked/unavailable. */
+.f2w-role-fairy-dust {
+  position:absolute!important;
+  inset:-3px!important;
+  z-index:5!important;
+  pointer-events:none!important;
+  overflow:visible!important;
+}
+.f2w-role-fairy-dust i {
+  position:absolute!important;
+  width:1.5px!important;height:1.5px!important;border-radius:50%!important;
+  background:#fff!important;opacity:0!important;
+  box-shadow:0 0 2px #fff,0 0 4px #fff,0 0 5px var(--role-shadow)!important;
+  animation:f2wRoleFairy 1.8s ease-in-out infinite!important;
+}
+.f2w-role-fairy-dust i:nth-child(1){left:0;top:8%;animation-delay:.05s!important}
+.f2w-role-fairy-dust i:nth-child(2){left:15%;bottom:0;animation-delay:.28s!important}
+.f2w-role-fairy-dust i:nth-child(3){left:31%;top:-1px;animation-delay:.55s!important}
+.f2w-role-fairy-dust i:nth-child(4){left:47%;bottom:0;animation-delay:.83s!important}
+.f2w-role-fairy-dust i:nth-child(5){left:63%;top:0;animation-delay:1.05s!important}
+.f2w-role-fairy-dust i:nth-child(6){left:78%;bottom:0;animation-delay:.44s!important}
+.f2w-role-fairy-dust i:nth-child(7){right:7%;top:3%;animation-delay:.72s!important}
+.f2w-role-fairy-dust i:nth-child(8){right:0;bottom:6%;animation-delay:1.24s!important}
+@keyframes f2wRoleFairy {
+  0%,68%,100%{opacity:0;transform:scale(.2)}
+  78%{opacity:.8;transform:scale(.75)}
+  85%{opacity:1;transform:scale(1.18)}
+  93%{opacity:.3;transform:scale(.5)}
+}
+
+#account-user-username[data-f2w-role-decorated="1"],
+#profile-name[data-f2w-role-decorated="1"],
+[data-f2w-role-decorated="1"] {
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+
+/* Old wide pseudo-particle implementations are retired. */
+.f2w-role-name::before,.f2w-role-name::after,.f2w-name-effect::before,.f2w-name-effect::after {
+  content:none!important;display:none!important;
+}
+/* f2w-force-save:tight-role-particles-v30:1788216738 */
+ 
