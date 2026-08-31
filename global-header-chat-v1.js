@@ -227,3 +227,55 @@
 })();
 // f2w-force-save:chat-dot-guard-v23:178821-v23-dot-guard
  
+
+/* F2W v24 — instant top-navigation prefetch */
+(() => {
+  'use strict';
+  const prefetched=new Set();
+
+  function prefetch(url) {
+    try {
+      const u=new URL(url,location.href);
+      if(u.origin!==location.origin||u.href===location.href||prefetched.has(u.href))return;
+      prefetched.add(u.href);
+      const link=document.createElement('link');
+      link.rel='prefetch';
+      link.href=u.href;
+      link.as='document';
+      document.head.appendChild(link);
+    } catch {}
+  }
+
+  function headerTargets() {
+    document.querySelectorAll('body.f2w-main-page > header a[href]').forEach(a=>prefetch(a.href));
+    ['/home/','/favorites/','/support/','/profile/','/chat/','/leaderboard/','/forum/'].forEach(prefetch);
+    try {
+      const username=localStorage.getItem('f2w_profile_username_v24');
+      if(username)prefetch(`/profile/?user=${encodeURIComponent(username)}`);
+    } catch {}
+  }
+
+  document.addEventListener('pointerover',e=>{
+    const link=e.target.closest?.('body.f2w-main-page > header a[href]');
+    if(link)prefetch(link.href);
+  },{passive:true});
+
+  document.addEventListener('pointerdown',e=>{
+    const btn=e.target.closest?.('#favorites-nav-btn,#support-nav-btn,#profile-nav-btn');
+    if(!btn)return;
+    if(btn.id==='favorites-nav-btn')prefetch('/favorites/');
+    if(btn.id==='support-nav-btn')prefetch('/support/');
+    if(btn.id==='profile-nav-btn'){
+      try {
+        const username=localStorage.getItem('f2w_profile_username_v24');
+        if(username)prefetch(`/profile/?user=${encodeURIComponent(username)}`);
+      } catch {}
+    }
+  },{passive:true,capture:true});
+
+  if('requestIdleCallback' in window)requestIdleCallback(headerTargets,{timeout:900});
+  else setTimeout(headerTargets,250);
+})();
+
+// f2w-force-save:fast-nav-prefetch-v24:1788215534
+ 

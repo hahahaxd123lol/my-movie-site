@@ -1,4 +1,89 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Community Leaderboard • Flix2Watch</title><meta name="description" content="Live Flix2Watch community rankings."><link rel="icon" href="/favicon-v16.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!doctype html><html lang="en"><head>
+
+<style id="f2w-critical-header-v24">
+html{overflow-y:scroll}
+@media (min-width:1181px){
+  body.f2w-main-page>header{
+    display:flex!important;align-items:center!important;flex-wrap:nowrap!important;
+    width:100%!important;height:82px!important;min-height:82px!important;max-height:82px!important;
+    padding:10px 12px!important;gap:10px!important;overflow:visible!important;
+    transform:none!important;font-family:Inter,Arial,sans-serif!important
+  }
+  body.f2w-main-page>header>.logo{flex:0 0 145px!important;width:145px!important;min-width:145px!important;max-width:145px!important}
+  body.f2w-main-page>header>.logo .logo-image{display:block!important;width:145px!important;height:auto!important}
+  body.f2w-main-page>header>.header-tools{
+    position:static!important;display:flex!important;flex:1 1 auto!important;align-items:center!important;
+    flex-wrap:nowrap!important;min-width:0!important;width:auto!important;height:42px!important;gap:7px!important;transform:none!important
+  }
+  body.f2w-main-page>header .f2w-primary-nav{
+    display:flex!important;align-items:center!important;flex:0 1 auto!important;flex-wrap:nowrap!important;
+    min-width:0!important;height:42px!important;gap:1px!important
+  }
+  body.f2w-main-page>header .f2w-search-pair{
+    display:grid!important;grid-template-columns:minmax(120px,1fr) minmax(120px,1fr)!important;
+    flex:1 1 320px!important;width:auto!important;min-width:240px!important;max-width:500px!important;
+    height:40px!important;gap:7px!important;margin:0 2px!important
+  }
+  body.f2w-main-page>header .f2w-action-cluster{
+    position:relative!important;display:grid!important;
+    grid-template-columns:62px 84px 74px 76px 78px 112px 122px!important;
+    grid-template-rows:40px!important;align-items:stretch!important;justify-content:start!important;
+    flex:0 0 644px!important;width:644px!important;min-width:644px!important;max-width:644px!important;
+    height:40px!important;gap:6px!important;margin-left:auto!important;overflow:visible!important
+  }
+  body.f2w-main-page>header .chat-button{grid-column:1!important;grid-row:1!important}
+  body.f2w-main-page>header #header-login-btn,body.f2w-main-page>header #favorites-nav-btn{grid-column:2!important;grid-row:1!important}
+  body.f2w-main-page>header #header-signup-btn,body.f2w-main-page>header #profile-nav-btn{grid-column:3!important;grid-row:1!important}
+  body.f2w-main-page>header #support-nav-btn{grid-column:4!important;grid-row:1!important}
+  body.f2w-main-page>header #account-btn{grid-column:5!important;grid-row:1!important}
+  body.f2w-main-page>header #notification-wrap{grid-column:6!important;grid-row:1!important;width:112px!important}
+  body.f2w-main-page>header #staff-control-nav{grid-column:7!important;grid-row:1!important}
+  body.f2w-main-page>header .f2w-action-cluster>button,
+  body.f2w-main-page>header .f2w-action-cluster>.v17-notification-wrap,
+  body.f2w-main-page>header .f2w-action-cluster>.v17-notification-wrap>button{
+    width:100%!important;min-width:0!important;max-width:100%!important;height:40px!important;
+    box-sizing:border-box!important;margin:0!important;transform:none!important;translate:none!important
+  }
+  body.f2w-main-page>header #header-login-btn[style*="display:none"],
+  body.f2w-main-page>header #header-login-btn[style*="display: none"],
+  body.f2w-main-page>header #header-signup-btn[style*="display:none"],
+  body.f2w-main-page>header #header-signup-btn[style*="display: none"],
+  body.f2w-main-page>header #favorites-nav-btn[style*="display:none"],
+  body.f2w-main-page>header #favorites-nav-btn[style*="display: none"],
+  body.f2w-main-page>header #profile-nav-btn[style*="display:none"],
+  body.f2w-main-page>header #profile-nav-btn[style*="display: none"],
+  body.f2w-main-page>header #support-nav-btn[style*="display:none"],
+  body.f2w-main-page>header #support-nav-btn[style*="display: none"],
+  body.f2w-main-page>header #account-btn[style*="display:none"],
+  body.f2w-main-page>header #account-btn[style*="display: none"],
+  body.f2w-main-page>header #notification-wrap[style*="display:none"],
+  body.f2w-main-page>header #notification-wrap[style*="display: none"],
+  body.f2w-main-page>header #staff-control-nav[hidden]{
+    display:flex!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important
+  }
+  body.f2w-main-page>header i[class*="fa-"]{display:inline-block!important;width:13px!important;min-width:13px!important;text-align:center!important}
+  body.f2w-main-page>header a,body.f2w-main-page>header button,body.f2w-main-page>header input{
+    transform:none!important;translate:none!important
+  }
+}
+@media (min-width:1181px) and (max-width:1550px){
+  body.f2w-main-page>header>.logo{flex-basis:126px!important;width:126px!important;min-width:126px!important;max-width:126px!important}
+  body.f2w-main-page>header>.logo .logo-image{width:126px!important}
+  body.f2w-main-page>header .f2w-search-pair{min-width:180px!important;max-width:300px!important}
+  body.f2w-main-page>header .f2w-action-cluster{
+    grid-template-columns:56px 76px 68px 68px 72px 102px 108px!important;
+    flex-basis:586px!important;width:586px!important;min-width:586px!important;max-width:586px!important
+  }
+}
+@view-transition{navigation:auto}
+::view-transition-group(f2w-header){animation-duration:0s!important}
+body.f2w-main-page>header{view-transition-name:f2w-header}
+</style>
+
+<link rel="preload" as="image" href="/flix2watch-logo-red-v34.png" fetchpriority="high">
+<link rel="dns-prefetch" href="//viqufxlcxwgboyxbdhjb.supabase.co">
+<link rel="preconnect" href="https://viqufxlcxwgboyxbdhjb.supabase.co" crossorigin>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Community Leaderboard • Flix2Watch</title><meta name="description" content="Live Flix2Watch community rankings."><link rel="icon" href="/favicon-v16.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/responsive-v7.css">
   <link rel="stylesheet" href="/final-v9.css">
   <link rel="stylesheet" href="/approved-ui-v12.css">
@@ -278,8 +363,8 @@ main{max-width:1420px;margin:auto;padding:28px 24px 70px}.hero{position:relative
 </style>
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=23-1788215130">
-  <script src="/global-header-chat-v1.js?v=23-178821-v23-dot-guard" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=24-1788215534">
+  <script src="/global-header-chat-v1.js?v=24-1788215534" defer></script>
 
 <style id="leaderboard-zoom-tune">
   @media (min-width: 901px){
@@ -510,7 +595,7 @@ window.openChat=()=>{
   frame.src='/home/';
 };
 window.openHeaderAuth=()=>location.href='/home/';window.openAccountModal=()=>location.href='/home/';
-let myUsername='';window.openMyProfile=()=>location.href=myUsername?'/profile/?user='+encodeURIComponent(myUsername):'/home/';
+let myUsername='';window.openMyProfile=()=>{if(myUsername){try{localStorage.setItem('f2w_profile_username_v24',myUsername)}catch{} location.href='/profile/?user='+encodeURIComponent(myUsername)}else location.href='/home/';};
 document.getElementById('movie-search')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim())location.href='/home/?q='+encodeURIComponent(e.target.value.trim())});
 document.getElementById('user-search')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitUserDirectorySearch()});
 
@@ -575,4 +660,7 @@ load();setInterval(loadStats,10000);setInterval(heartbeat,15000);setInterval(loa
 <!-- f2w-force-save:final-assets-v22:1788214990:leaderboard/index.html -->
 <!-- f2w-force-save:chat-green-dot-v23:1788215130:leaderboard/index.html -->
 <!-- f2w-force-save:chat-dot-js-cache-v23:178821-v23-dot-guard:leaderboard/index.html -->
+<!-- f2w-force-save:critical-header-v24:1788215534:leaderboard/index.html -->
+<!-- f2w-force-save:instant-profile-route-v24:1788215534:leaderboard/index.html -->
+<!-- f2w-force-save:performance-cache-v24:1788215534:leaderboard/index.html -->
  
