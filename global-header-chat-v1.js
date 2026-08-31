@@ -1,7 +1,8 @@
 (() => {
   'use strict';
   const params=new URLSearchParams(location.search);
-  const EMBED=params.get('f2w_chat_embed')==='1';
+  const CHAT_PAGE=location.pathname.replace(/\/+$/,'')==='/chat';
+  const EMBED=CHAT_PAGE || params.get('f2w_chat_embed')==='1';
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
   async function waitFor(test, timeout=15000){
@@ -48,7 +49,7 @@
     overlay=document.createElement('div');
     overlay.id='f2w-global-chat-overlay';
     overlay.setAttribute('aria-hidden','true');
-    overlay.innerHTML=`<div id="f2w-global-chat-panel" role="dialog" aria-modal="true" aria-label="Flix2Watch chat"><div id="f2w-global-chat-loading"><span><i class="fa-solid fa-comments"></i>&nbsp; Loading chat…</span></div><button id="f2w-global-chat-close" type="button" aria-label="Close chat"><i class="fa-solid fa-xmark"></i></button><iframe id="f2w-global-chat-frame" title="Flix2Watch chat" src="/home/?f2w_chat_embed=1" loading="eager"></iframe></div>`;
+    overlay.innerHTML=`<div id="f2w-global-chat-panel" role="dialog" aria-modal="true" aria-label="Flix2Watch chat"><div id="f2w-global-chat-loading"><span><i class="fa-solid fa-comments"></i>&nbsp; Loading chat…</span></div><button id="f2w-global-chat-close" type="button" aria-label="Close chat"><i class="fa-solid fa-xmark"></i></button><iframe id="f2w-global-chat-frame" title="Flix2Watch chat" src="/chat/?f2w_chat_embed=1" loading="eager"></iframe></div>`;
     document.body.appendChild(overlay);
     panel=overlay.querySelector('#f2w-global-chat-panel');
     frame=overlay.querySelector('#f2w-global-chat-frame');
