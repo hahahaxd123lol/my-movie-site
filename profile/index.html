@@ -3315,7 +3315,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=43-1788219527">
+  <link rel="stylesheet" href="/final-v35.css?v=52-1788220545">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=50-1788220357">
@@ -3361,6 +3361,127 @@ body.f2w-main-page>header .chat-button{font-size:10px!important;display:flex!imp
 body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-spacing:-.01em!important}
 /* f2w-force-save:header-button-fit-inline-v35:1788217735 */
 /* f2w-force-save:header-gorilla-lock-v30:1788216738 */
+</style>
+
+
+<style id="f2w-profile-edit-center-v52">
+/* ============================================================
+   F2W v52 — PROFILE EDIT MODAL CENTERING
+   Keep Edit Profile centered on every device and viewport height.
+   ============================================================ */
+
+/* Known cumulative profile editor overlays */
+#v17-profile-editor,
+#profile-editor-modal,
+#edit-profile-modal,
+.profile-edit-modal,
+.f2w-profile-editor-modal,
+.f2w-profile-edit-overlay {
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483000!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  margin:0!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  box-sizing:border-box!important;
+}
+
+#v17-profile-editor[hidden],
+#profile-editor-modal[hidden],
+#edit-profile-modal[hidden],
+.profile-edit-modal[hidden],
+.f2w-profile-editor-modal[hidden],
+.f2w-profile-edit-overlay[hidden] {
+  display:none!important;
+}
+
+/* Actual editor card stays centered and scrolls internally only when necessary. */
+#v17-profile-editor .profile-editor-card,
+#v17-profile-editor .f2w-profile-editor-card,
+#profile-editor-modal .profile-editor-card,
+#edit-profile-modal .profile-editor-card,
+.profile-edit-modal .profile-editor-card,
+.f2w-profile-editor-card {
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  margin:auto!important;
+  width:min(760px,calc(100vw - 36px))!important;
+  max-width:760px!important;
+  max-height:min(82dvh,760px)!important;
+  overflow:auto!important;
+  box-sizing:border-box!important;
+}
+
+/* Desktop keeps it visually centered, even on tall/short screens. */
+@media(min-width:761px) {
+  #v17-profile-editor,
+  #profile-editor-modal,
+  #edit-profile-modal,
+  .profile-edit-modal,
+  .f2w-profile-editor-modal,
+  .f2w-profile-edit-overlay {
+    align-items:center!important;
+  }
+}
+
+/* Mobile/tablet: centered with safe breathing room, never stuck to bottom. */
+@media(max-width:760px) {
+  #v17-profile-editor,
+  #profile-editor-modal,
+  #edit-profile-modal,
+  .profile-edit-modal,
+  .f2w-profile-editor-modal,
+  .f2w-profile-edit-overlay {
+    padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))!important;
+    align-items:center!important;
+  }
+
+  #v17-profile-editor .profile-editor-card,
+  #v17-profile-editor .f2w-profile-editor-card,
+  #profile-editor-modal .profile-editor-card,
+  #edit-profile-modal .profile-editor-card,
+  .profile-edit-modal .profile-editor-card,
+  .f2w-profile-editor-card {
+    width:min(96vw,680px)!important;
+    max-width:96vw!important;
+    max-height:86dvh!important;
+    margin:auto!important;
+    border-radius:15px!important;
+  }
+}
+
+/* Very short screens: remain centered but allow overlay scrolling rather than anchoring bottom. */
+@media(max-height:650px) {
+  #v17-profile-editor,
+  #profile-editor-modal,
+  #edit-profile-modal,
+  .profile-edit-modal,
+  .f2w-profile-editor-modal,
+  .f2w-profile-edit-overlay {
+    align-items:center!important;
+    padding-top:10px!important;
+    padding-bottom:10px!important;
+  }
+
+  #v17-profile-editor .profile-editor-card,
+  #v17-profile-editor .f2w-profile-editor-card,
+  #profile-editor-modal .profile-editor-card,
+  #edit-profile-modal .profile-editor-card,
+  .profile-edit-modal .profile-editor-card,
+  .f2w-profile-editor-card {
+    max-height:calc(100dvh - 20px)!important;
+  }
+}
+
+/* f2w-force-save:profile-edit-center-v52:1788220545 */
 </style>
 
 </head>
@@ -7984,4 +8105,6 @@ return true;
 <!-- f2w-force-save:v43-watch-auth-cache:1788219527:profile/index.html -->
 <!-- f2w-force-save:v44-header-cache:1788219651:profile/index.html -->
 <!-- f2w-force-save:v50-cache:1788220357:profile/index.html -->
+<!-- f2w-force-save:profile-edit-center-v52:1788220545 -->
+<!-- f2w-force-save:v52-profile-edit-cache:1788220545:profile/index.html -->
  

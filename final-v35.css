@@ -1213,3 +1213,21 @@ body.f2w-main-page .watch-auth-card {
 }
 /* f2w-force-save:watch-auth-compact-fallback-v43:1788219527 */
  
+
+/* F2W v52 — shared profile-edit modal centering fallback */
+.f2w-profile-edit-overlay,
+.f2w-profile-editor-modal,
+.profile-edit-modal {
+  position:fixed!important;
+  inset:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.f2w-profile-edit-overlay[hidden],
+.f2w-profile-editor-modal[hidden],
+.profile-edit-modal[hidden] {
+  display:none!important;
+}
+/* f2w-force-save:profile-edit-center-fallback-v52:1788220545 */
+ 
