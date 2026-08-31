@@ -5,10 +5,15 @@
   const SUPABASE_KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
   const CHAT_API_URL=`${SUPABASE_URL}/functions/v1/rapid-worker`;
   const RED_LOGO='/flix2watch-logo-red-v34.png';
-  const ROLE_PRIORITY=['owner','admin','staff','moderator','support','developer','verified','contributor','curator'];
+  const ROLE_PRIORITY=['owner','staff','moderator','support','developer','verified','contributor','curator'];
   let fallbackClient=null;
   let authUser=null;
   let presenceTimer=null;
+  let presenceSessionId='';
+  let watchTimeTimer=null;
+  let watchOpenRecordedKey='';
+  let profileRealtimeChannel=null;
+  let profileUiTimer=null;
   let accountBanChannel=null;
   let activityChannel=null;
   let roleDecorateTimer=null;
@@ -297,14 +302,37 @@
   /* ---------- presence ---------- */
   async function touchPresence(){
     if(!authUser||document.visibilityState==='hidden')return;
-    try{ await rpc('touch_presence'); }catch{}
+    const client=db();if(!client)return;
+    if(!presenceSessionId){
+      try{
+        presenceSessionId=sessionStorage.getItem('f2w_presence_session_v17')||'';
+        if(!presenceSessionId){
+          presenceSessionId=crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`;
+          sessionStorage.setItem('f2w_presence_session_v17',presenceSessionId);
+        }
+      }catch{
+        presenceSessionId=`${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      }
+    }
+    try{await client.rpc('touch_presence_v17',{p_session_id:presenceSessionId});}
+    catch{try{await client.rpc('touch_presence');}catch{}}
   }
   function startPresence(){
     if(presenceTimer)return;
     touchPresence();
-    presenceTimer=setInterval(touchPresence,25000);
+    presenceTimer=setInterval(touchPresence,15000);
   }
-  function stopPresence(){ if(presenceTimer){clearInterval(presenceTimer);presenceTimer=null;} }
+  function stopPresence(){
+    if(presenceTimer){clearInterval(presenceTimer);presenceTimer=null;}
+  }
+
+  async function leavePresence(){
+    if(!authUser||!presenceSessionId)return;
+    const client=db();if(!client)return;
+    try{
+      await client.rpc('leave_presence_v17',{p_session_id:presenceSessionId});
+    }catch{}
+  }
 
   /* ---------- account login ban realtime ---------- */
   function subscribeAccountLoginBan(){
@@ -335,8 +363,15 @@
 
   /* ---------- role name effects ---------- */
   function roleClass(role){return ROLE_PRIORITY.includes(role)?`f2w-role-${role}`:'';}
+  function clearRoleEffect(el){
+    if(!el)return;
+    el.classList.remove('f2w-role-name',...ROLE_PRIORITY.map(role=>`f2w-role-${role}`));
+    delete el.dataset.f2wRole;
+  }
   function applyRoleEffect(el,role){
-    if(!el||!role)return;
+    if(!el)return;
+    clearRoleEffect(el);
+    if(!role)return;
     el.classList.add('f2w-role-name',roleClass(role));
     el.dataset.f2wRole=role;
   }
@@ -406,29 +441,69 @@
     const mediaId=Number(params.get('id'));
     const mediaType=params.get('type')==='tv'?'tv':'movie';
     if(!mediaId)return;
-    let title='';let poster='';
-    for(let i=0;i<30&&!title;i++){
-      title=String(document.getElementById('detail-title')?.textContent||document.querySelector('h1')?.textContent||'').trim();
+
+    const key=`${authUser.id}:${mediaType}:${mediaId}`;
+    if(watchOpenRecordedKey===key)return;
+
+    let title='',poster='';
+    for(let i=0;i<40&&!title;i++){
+      title=String(document.getElementById('detail-title')?.textContent||'').trim();
       const img=document.querySelector('#detail-poster img,.detail-poster img,.poster img,img[alt*="poster" i]');
       poster=String(img?.getAttribute('src')||'');
-      if(!title)await new Promise(resolve=>setTimeout(resolve,300));
+      if(!title||/loading title|loading\.\.\./i.test(title)){
+        title='';
+        await new Promise(resolve=>setTimeout(resolve,250));
+      }
     }
-    if(!title||/loading/i.test(title))title=`${mediaType==='tv'?'TV':'Movie'} #${mediaId}`;
+    if(!title)title=`${mediaType==='tv'?'TV':'Movie'} #${mediaId}`;
+
     let posterPath=null;
-    const match=poster.match(/image\.tmdb\.org\/t\/p\/[^/]+(\/[^?]+)/i);if(match)posterPath=match[1];
+    const match=poster.match(/image\.tmdb\.org\/t\/p\/[^/]+(\/[^?]+)/i);
+    if(match)posterPath=match[1];
+
     try{
-      await rpc('record_title_open',{p_media_type:mediaType,p_media_id:mediaId,p_title:title.slice(0,250),p_poster_path:posterPath});
-    }catch{}
+      await rpc('record_title_open',{
+        p_media_type:mediaType,
+        p_media_id:mediaId,
+        p_title:title.slice(0,250),
+        p_poster_path:posterPath
+      });
+      watchOpenRecordedKey=key;
+    }catch(error){
+      console.warn('Title-open tracking unavailable:',error?.message||error);
+    }
   }
 
   function startWatchTime(){
-    if(!authUser||!location.pathname.startsWith('/watch'))return;
-    const params=new URLSearchParams(location.search);const mediaId=Number(params.get('id'));const mediaType=params.get('type')==='tv'?'tv':'movie';if(!mediaId)return;
-    setInterval(async()=>{
-      if(document.visibilityState!=='visible'||!authUser)return;
-      const frame=document.querySelector('iframe[src]');if(!frame)return;
-      try{await rpc('add_watch_seconds',{p_media_type:mediaType,p_media_id:mediaId,p_seconds:30});}catch{}
-    },30000);
+    if(!location.pathname.startsWith('/watch'))return;
+    if(watchTimeTimer)return;
+
+    const params=new URLSearchParams(location.search);
+    const mediaId=Number(params.get('id'));
+    const mediaType=params.get('type')==='tv'?'tv':'movie';
+    if(!mediaId)return;
+
+    let lastTick=Date.now();
+    watchTimeTimer=setInterval(async()=>{
+      const now=Date.now();
+      const elapsed=Math.max(1,Math.min(15,Math.round((now-lastTick)/1000)));
+      lastTick=now;
+
+      if(!authUser||document.visibilityState!=='visible'||!document.hasFocus())return;
+
+      const frame=document.querySelector('#player-frame,iframe[src]');
+      if(!frame||!String(frame.getAttribute('src')||'').trim())return;
+
+      try{
+        await rpc('add_watch_seconds',{
+          p_media_type:mediaType,
+          p_media_id:mediaId,
+          p_seconds:elapsed
+        });
+      }catch(error){
+        console.warn('Watch-time tracking unavailable:',error?.message||error);
+      }
+    },15000);
   }
 
   /* ---------- profile activity + richer profile editor ---------- */
@@ -438,16 +513,37 @@
   async function renderProfileActivity(){
     if(!location.pathname.startsWith('/profile'))return;
     const profile=viewedProfileObject();if(!profile?.user_id)return;
-    const hosts=[document.getElementById('v16-profile-activity'),document.getElementById('f2w-profile-activity')].filter(Boolean);
-    if(!hosts.length)return;
+    const host=document.getElementById('v17-profile-recently-watched');if(!host)return;
     const client=db();if(!client)return;
+
+    if(profile.is_private&&!isOwnProfile(profile)){
+      host.innerHTML='<div class="f2w-profile-empty">Recently watched is private.</div>';
+      return;
+    }
+
     try{
-      const {data,error}=await client.from('profile_title_activity').select('media_type,media_id,title,poster_path,last_opened_at,open_count').eq('user_id',profile.user_id).order('last_opened_at',{ascending:false}).limit(18);
+      const {data,error}=await client
+        .from('profile_title_activity')
+        .select('media_type,media_id,title,poster_path,last_opened_at,open_count')
+        .eq('user_id',profile.user_id)
+        .order('last_opened_at',{ascending:false})
+        .limit(12);
       if(error)throw error;
-      const html=(data||[]).length?`<div class="f2w-title-activity-grid">${data.map(row=>`<a class="f2w-title-activity-card" href="/watch/?id=${encodeURIComponent(row.media_id)}&type=${encodeURIComponent(row.media_type)}"><img src="${row.poster_path?`https://image.tmdb.org/t/p/w342${esc(row.poster_path)}`:RED_LOGO}" alt="" loading="lazy" onerror="this.src='${RED_LOGO}'"><div class="f2w-title-activity-copy"><strong>${esc(row.title)}</strong><small>${row.media_type==='tv'?'TV series':'Movie'} · opened ${formatRelative(row.last_opened_at)}</small></div></a>`).join('')}</div>`:'<div class="empty">No title activity yet.</div>';
-      hosts.forEach(host=>{host.innerHTML=html});
-      subscribeProfileActivity(profile.user_id);
-    }catch(error){console.warn('Recent title activity unavailable:',error?.message||error);}
+
+      host.innerHTML=(data||[]).length
+        ? `<div class="f2w-recently-watched-grid">${data.map(row=>`
+            <a class="f2w-recent-watch-card" href="/watch/?id=${encodeURIComponent(row.media_id)}&type=${encodeURIComponent(row.media_type)}">
+              <img src="${row.poster_path?`https://image.tmdb.org/t/p/w342${esc(row.poster_path)}`:RED_LOGO}" alt="" loading="lazy" onerror="this.src='${RED_LOGO}'">
+              <div>
+                <strong>${esc(row.title)}</strong>
+                <span>${row.media_type==='tv'?'TV':'Movie'} · ${formatRelative(row.last_opened_at)}</span>
+              </div>
+            </a>`).join('')}</div>`
+        : '<div class="f2w-profile-empty">No titles opened yet.</div>';
+    }catch(error){
+      host.innerHTML='<div class="f2w-profile-empty">Recently watched is unavailable right now.</div>';
+      console.warn('Recently watched unavailable:',error?.message||error);
+    }
   }
 
   function subscribeProfileActivity(userId){
@@ -457,9 +553,16 @@
   }
 
   function formatRelative(value){
-    if(!value)return 'recently';const d=new Date(value);const diff=Math.max(0,Date.now()-d.getTime());
-    if(diff<60000)return 'just now';if(diff<3600000)return `${Math.floor(diff/60000)}m ago`;if(diff<86400000)return `${Math.floor(diff/3600000)}h ago`;if(diff<604800000)return `${Math.floor(diff/86400000)}d ago`;
-    return d.toLocaleDateString();
+    if(!value)return 'never';
+    const diff=Math.max(0,Date.now()-new Date(value).getTime());
+    const minute=60000,hour=3600000,day=86400000,week=604800000,month=2629800000,year=31557600000;
+    if(diff<minute)return 'just now';
+    if(diff<hour){const n=Math.floor(diff/minute);return `${n} minute${n===1?'':'s'} ago`;}
+    if(diff<day){const n=Math.floor(diff/hour);return `${n} hour${n===1?'':'s'} ago`;}
+    if(diff<week){const n=Math.floor(diff/day);return `${n} day${n===1?'':'s'} ago`;}
+    if(diff<month){const n=Math.floor(diff/week);return `${n} week${n===1?'':'s'} ago`;}
+    if(diff<year){const n=Math.floor(diff/month);return `${n} month${n===1?'':'s'} ago`;}
+    const n=Math.floor(diff/year);return `${n} year${n===1?'':'s'} ago`;
   }
 
   function installProfileEditor(){
@@ -473,23 +576,125 @@
   }
 
   function renderProfileExtras(profile){
-    if(!profile)return;
-    let host=document.getElementById('v35-profile-extra');
-    const anchor=document.querySelector('.profile-bio,.profile-identity,.profile-header-copy');
+    if(!profile||!location.pathname.startsWith('/profile'))return;
+    const anchor=document.querySelector('#profile-hero > div:last-child,.profile-bio,.profile-identity,.profile-header-copy');
     if(!anchor)return;
-    if(!host){host=document.createElement('div');host.id='v35-profile-extra';anchor.appendChild(host);}
+
+    let host=document.getElementById('v17-profile-extra');
+    if(!host){
+      host=document.createElement('div');
+      host.id='v17-profile-extra';
+      anchor.appendChild(host);
+    }
+
     const genres=Array.isArray(profile.favorite_genres)?profile.favorite_genres:[];
-    host.innerHTML=`<div class="f2w-profile-extra">${profile.location?`<span class="f2w-profile-chip"><i class="fa-solid fa-location-dot"></i>${esc(profile.location)}</span>`:''}${genres.slice(0,5).map(g=>`<span class="f2w-profile-chip">${esc(g)}</span>`).join('')}</div><div class="f2w-profile-socials">${profile.website_url?`<a href="${esc(profile.website_url)}" target="_blank" rel="noopener"><i class="fa-solid fa-link"></i> Website</a>`:''}${profile.instagram_username?`<a href="https://instagram.com/${encodeURIComponent(profile.instagram_username)}" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i> ${esc(profile.instagram_username)}</a>`:''}${profile.discord_username?`<span class="f2w-profile-chip"><i class="fa-brands fa-discord"></i>${esc(profile.discord_username)}</span>`:''}</div>`;
+    const status=String(profile.status_text||'').trim();
+    const pronouns=String(profile.pronouns||'').trim();
+    const quote=String(profile.profile_quote||'').trim();
+
+    host.innerHTML=`
+      ${status?`<div class="f2w-profile-status-text"><i class="fa-solid fa-message"></i>${esc(status)}</div>`:''}
+      <div class="f2w-profile-extra">
+        ${pronouns?`<span class="f2w-profile-chip"><i class="fa-solid fa-id-card"></i>${esc(pronouns)}</span>`:''}
+        ${profile.location?`<span class="f2w-profile-chip"><i class="fa-solid fa-location-dot"></i>${esc(profile.location)}</span>`:''}
+        ${genres.slice(0,6).map(g=>`<span class="f2w-profile-chip">${esc(g)}</span>`).join('')}
+        ${profile.favorite_movie_text?`<span class="f2w-profile-chip"><i class="fa-solid fa-film"></i>${esc(profile.favorite_movie_text)}</span>`:''}
+        ${profile.favorite_tv_text?`<span class="f2w-profile-chip"><i class="fa-solid fa-tv"></i>${esc(profile.favorite_tv_text)}</span>`:''}
+      </div>
+      ${quote?`<blockquote class="f2w-profile-quote">“${esc(quote)}”</blockquote>`:''}
+      <div class="f2w-profile-socials">
+        ${profile.website_url?`<a href="${esc(profile.website_url)}" target="_blank" rel="noopener"><i class="fa-solid fa-link"></i> Website</a>`:''}
+        ${profile.instagram_username?`<a href="https://instagram.com/${encodeURIComponent(profile.instagram_username)}" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i> ${esc(profile.instagram_username)}</a>`:''}
+        ${profile.discord_username?`<span class="f2w-profile-chip"><i class="fa-brands fa-discord"></i>${esc(profile.discord_username)}</span>`:''}
+      </div>`;
+
+    const hero=document.getElementById('profile-hero');
+    if(hero){
+      if(profile.profile_banner_url){
+        hero.style.setProperty('--f2w-profile-banner',`url("${String(profile.profile_banner_url).replace(/["\\]/g,'')}")`);
+        hero.classList.add('f2w-has-profile-banner');
+      }else{
+        hero.classList.remove('f2w-has-profile-banner');
+        hero.style.removeProperty('--f2w-profile-banner');
+      }
+    }
   }
 
   function openProfileEditor(){
     const profile=viewedProfileObject();if(!isOwnProfile(profile))return;
     let modal=document.getElementById('v35-profile-modal');
     if(!modal){
-      modal=document.createElement('div');modal.id='v35-profile-modal';modal.className='f2w-profile-modal';modal.onclick=e=>{if(e.target===modal)modal.hidden=true};document.body.appendChild(modal);
+      modal=document.createElement('div');
+      modal.id='v35-profile-modal';
+      modal.className='f2w-profile-modal';
+      modal.onclick=e=>{if(e.target===modal)modal.hidden=true};
+      document.body.appendChild(modal);
     }
+
     const genres=Array.isArray(profile.favorite_genres)?profile.favorite_genres.join(', '):'';
-    modal.innerHTML=`<div class="f2w-profile-editor"><aside class="f2w-profile-editor-nav"><h3>Edit Profile</h3><button class="f2w-edit-nav active" data-tab="general">General</button><button class="f2w-edit-nav" data-tab="social">Social</button><button class="f2w-edit-nav" data-tab="preferences">Preferences</button><button class="f2w-edit-nav" data-tab="privacy">Privacy</button></aside><div class="f2w-profile-editor-body"><div class="f2w-editor-head"><div><h2 style="margin:0">Profile settings</h2><small style="color:#7186a4">Updates appear without a page refresh.</small></div><button class="f2w-editor-close" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><section class="f2w-editor-section active" data-section="general"><div class="f2w-editor-grid"><div class="f2w-editor-field"><label>DISPLAY NAME</label><input id="v35-edit-display" maxlength="50" value="${esc(profile.display_name||'')}"></div><div class="f2w-editor-field"><label>LOCATION</label><input id="v35-edit-location" maxlength="80" value="${esc(profile.location||'')}"></div><div class="f2w-editor-field full"><label>BIO</label><textarea id="v35-edit-bio" maxlength="500">${esc(profile.bio||'')}</textarea></div><div class="f2w-editor-field full"><label>AVATAR URL</label><input id="v35-edit-avatar" maxlength="2048" value="${esc(profile.avatar_url||'')}"></div></div></section><section class="f2w-editor-section" data-section="social"><div class="f2w-editor-grid"><div class="f2w-editor-field full"><label>WEBSITE</label><input id="v35-edit-website" maxlength="2048" value="${esc(profile.website_url||'')}"></div><div class="f2w-editor-field"><label>INSTAGRAM</label><input id="v35-edit-instagram" maxlength="80" value="${esc(profile.instagram_username||'')}"></div><div class="f2w-editor-field"><label>DISCORD</label><input id="v35-edit-discord" maxlength="80" value="${esc(profile.discord_username||'')}"></div></div></section><section class="f2w-editor-section" data-section="preferences"><div class="f2w-editor-grid"><div class="f2w-editor-field full"><label>FAVORITE GENRES (comma separated)</label><input id="v35-edit-genres" maxlength="250" value="${esc(genres)}"></div><div class="f2w-editor-field"><label>PROFILE ACCENT</label><select id="v35-edit-accent"><option value="red">Netflix Red</option><option value="purple">Purple</option><option value="blue">Blue</option><option value="green">Green</option><option value="gold">Gold</option></select></div></div></section><section class="f2w-editor-section" data-section="privacy"><div class="f2w-editor-grid"><div class="f2w-editor-field"><label>PROFILE VISIBILITY</label><select id="v35-edit-private"><option value="false">Public</option><option value="true">Private</option></select></div></div><p style="color:#788da9">Private profiles keep favorites and recent title activity private from other users.</p></section><div class="f2w-editor-actions"><button class="f2w-editor-save" type="button" id="v35-profile-save">Save changes</button></div></div></div>`;
+    modal.innerHTML=`<div class="f2w-profile-editor f2w-profile-editor-v17">
+      <aside class="f2w-profile-editor-nav">
+        <h3>Edit Profile</h3>
+        <button class="f2w-edit-nav active" data-tab="identity"><i class="fa-solid fa-user"></i> Identity</button>
+        <button class="f2w-edit-nav" data-tab="style"><i class="fa-solid fa-wand-magic-sparkles"></i> Style</button>
+        <button class="f2w-edit-nav" data-tab="favorites"><i class="fa-solid fa-heart"></i> Favorites</button>
+        <button class="f2w-edit-nav" data-tab="social"><i class="fa-solid fa-link"></i> Social</button>
+        <button class="f2w-edit-nav" data-tab="privacy"><i class="fa-solid fa-shield-halved"></i> Privacy</button>
+      </aside>
+      <div class="f2w-profile-editor-body">
+        <div class="f2w-editor-head">
+          <div><h2>Customize your profile</h2><small>Changes update publicly in realtime.</small></div>
+          <button class="f2w-editor-close" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <section class="f2w-editor-section active" data-section="identity">
+          <div class="f2w-editor-grid">
+            <div class="f2w-editor-field"><label>DISPLAY NAME</label><input id="v35-edit-display" maxlength="50" value="${esc(profile.display_name||'')}"></div>
+            <div class="f2w-editor-field"><label>PRONOUNS</label><input id="v17-edit-pronouns" maxlength="40" placeholder="Optional" value="${esc(profile.pronouns||'')}"></div>
+            <div class="f2w-editor-field full"><label>STATUS</label><input id="v17-edit-status" maxlength="80" placeholder="What are you watching?" value="${esc(profile.status_text||'')}"></div>
+            <div class="f2w-editor-field full"><label>BIO</label><textarea id="v35-edit-bio" maxlength="500">${esc(profile.bio||'')}</textarea></div>
+            <div class="f2w-editor-field"><label>LOCATION</label><input id="v35-edit-location" maxlength="80" value="${esc(profile.location||'')}"></div>
+            <div class="f2w-editor-field"><label>PROFILE QUOTE</label><input id="v17-edit-quote" maxlength="180" value="${esc(profile.profile_quote||'')}"></div>
+          </div>
+        </section>
+
+        <section class="f2w-editor-section" data-section="style">
+          <div class="f2w-editor-grid">
+            <div class="f2w-editor-field full"><label>AVATAR URL</label><input id="v35-edit-avatar" maxlength="2048" value="${esc(profile.avatar_url||'')}"></div>
+            <div class="f2w-editor-field full"><label>BANNER IMAGE URL</label><input id="v17-edit-banner" maxlength="2048" placeholder="https://..." value="${esc(profile.profile_banner_url||'')}"></div>
+            <div class="f2w-editor-field"><label>PROFILE ACCENT</label><select id="v35-edit-accent"><option value="red">Red</option><option value="purple">Purple</option><option value="blue">Blue</option><option value="green">Green</option><option value="gold">Gold</option></select></div>
+          </div>
+        </section>
+
+        <section class="f2w-editor-section" data-section="favorites">
+          <div class="f2w-editor-grid">
+            <div class="f2w-editor-field full"><label>FAVORITE GENRES</label><input id="v35-edit-genres" maxlength="250" placeholder="Action, Anime, Sci-Fi..." value="${esc(genres)}"></div>
+            <div class="f2w-editor-field"><label>FAVORITE MOVIE</label><input id="v17-edit-favorite-movie" maxlength="100" value="${esc(profile.favorite_movie_text||'')}"></div>
+            <div class="f2w-editor-field"><label>FAVORITE TV / ANIME</label><input id="v17-edit-favorite-tv" maxlength="100" value="${esc(profile.favorite_tv_text||'')}"></div>
+          </div>
+        </section>
+
+        <section class="f2w-editor-section" data-section="social">
+          <div class="f2w-editor-grid">
+            <div class="f2w-editor-field full"><label>WEBSITE</label><input id="v35-edit-website" maxlength="2048" value="${esc(profile.website_url||'')}"></div>
+            <div class="f2w-editor-field"><label>INSTAGRAM</label><input id="v35-edit-instagram" maxlength="80" value="${esc(profile.instagram_username||'')}"></div>
+            <div class="f2w-editor-field"><label>DISCORD</label><input id="v35-edit-discord" maxlength="80" value="${esc(profile.discord_username||'')}"></div>
+          </div>
+        </section>
+
+        <section class="f2w-editor-section" data-section="privacy">
+          <div class="f2w-editor-grid">
+            <div class="f2w-editor-field"><label>PROFILE VISIBILITY</label><select id="v35-edit-private"><option value="false">Public</option><option value="true">Private</option></select></div>
+          </div>
+          <div class="f2w-editor-help"><i class="fa-solid fa-circle-info"></i> Private profiles hide favorites and recently watched from other users.</div>
+        </section>
+
+        <div class="f2w-editor-actions">
+          <button class="f2w-editor-save" type="button" id="v35-profile-save"><i class="fa-solid fa-floppy-disk"></i> Save profile</button>
+        </div>
+      </div>
+    </div>`;
+
     modal.hidden=false;
     modal.querySelector('#v35-edit-private').value=String(Boolean(profile.is_private));
     modal.querySelector('#v35-edit-accent').value=profile.profile_accent||'red';
@@ -505,7 +710,7 @@
     const button=document.getElementById('v35-profile-save');if(button)button.disabled=true;
     try{
       const genres=String(document.getElementById('v35-edit-genres')?.value||'').split(',').map(v=>v.trim()).filter(Boolean).slice(0,12);
-      const result=await rpc('update_my_profile_v35',{
+      const result=await rpc('update_my_profile_v17',{
         p_display_name:String(document.getElementById('v35-edit-display')?.value||'').trim(),
         p_bio:String(document.getElementById('v35-edit-bio')?.value||'').trim(),
         p_avatar_url:String(document.getElementById('v35-edit-avatar')?.value||'').trim()||null,
@@ -513,17 +718,209 @@
         p_location:String(document.getElementById('v35-edit-location')?.value||'').trim()||null,
         p_favorite_genres:genres,
         p_website_url:String(document.getElementById('v35-edit-website')?.value||'').trim()||null,
-        p_instagram_username:String(document.getElementById('v35-edit-instagram')?.value||'').trim().replace(/^@/,'')||null,
+        p_instagram_username:String(document.getElementById('v35-edit-instagram')?.value||'').trim()||null,
         p_discord_username:String(document.getElementById('v35-edit-discord')?.value||'').trim()||null,
-        p_profile_accent:String(document.getElementById('v35-edit-accent')?.value||'red')
+        p_profile_accent:String(document.getElementById('v35-edit-accent')?.value||'red'),
+        p_status_text:String(document.getElementById('v17-edit-status')?.value||'').trim()||null,
+        p_pronouns:String(document.getElementById('v17-edit-pronouns')?.value||'').trim()||null,
+        p_profile_banner_url:String(document.getElementById('v17-edit-banner')?.value||'').trim()||null,
+        p_favorite_movie_text:String(document.getElementById('v17-edit-favorite-movie')?.value||'').trim()||null,
+        p_favorite_tv_text:String(document.getElementById('v17-edit-favorite-tv')?.value||'').trim()||null,
+        p_profile_quote:String(document.getElementById('v17-edit-quote')?.value||'').trim()||null
       });
-      try{ if(typeof viewedProfile!=='undefined'&&result)Object.assign(viewedProfile,result); }catch{}
+
+      try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile=Object.assign(viewedProfile,result||{});}catch{}
       document.getElementById('v35-profile-modal').hidden=true;
       toast('Profile updated');
-      try{if(typeof renderProfile==='function')renderProfile()}catch{}
-      setTimeout(()=>{installProfileEditor();renderProfileExtras(viewedProfileObject());decorateNames()},100);
-    }catch(error){toast(error.message||'Could not update profile.');}
-    finally{if(button)button.disabled=false;}
+      setTimeout(()=>{
+        try{renderViewedProfile?.();}catch{}
+        renderProfileExtras(viewedProfileObject());
+        decorateNames();
+      },100);
+    }catch(error){
+      toast(error.message||'Could not update profile.');
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
+
+  /* ---------- profile realtime presence + comments ---------- */
+  function ensureProfileRealtimePanels(){
+    if(!location.pathname.startsWith('/profile'))return;
+    const profile=viewedProfileObject();if(!profile?.user_id)return;
+
+    const nameRow=document.querySelector('#profile-hero .profile-name-row');
+    if(nameRow&&!document.getElementById('v17-profile-presence')){
+      const badge=document.createElement('span');
+      badge.id='v17-profile-presence';
+      badge.className='f2w-profile-presence offline';
+      badge.innerHTML='<i class="f2w-profile-presence-dot"></i><span>Checking status…</span>';
+      nameRow.appendChild(badge);
+    }
+
+    const badges=document.getElementById('v16-profile-badges-panel');
+    if(badges&&!document.getElementById('v17-profile-recent-panel')){
+      const section=document.createElement('section');
+      section.className='profile-v16-panel';
+      section.id='v17-profile-recent-panel';
+      section.innerHTML=`<div class="profile-v16-panel-head">
+        <h2><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent)"></i> Recently Watched</h2>
+        <span>Titles opened on Flix2Watch · no duplicates</span>
+      </div>
+      <div id="v17-profile-recently-watched"><div class="f2w-profile-empty">Loading recent titles…</div></div>`;
+      badges.after(section);
+    }
+
+    const main=document.getElementById('profile-root')||document.querySelector('main');
+    if(main&&!document.getElementById('v17-profile-comments-panel')){
+      const section=document.createElement('section');
+      section.className='profile-v16-panel f2w-profile-comments-panel';
+      section.id='v17-profile-comments-panel';
+      section.innerHTML=`<div class="profile-v16-panel-head">
+        <h2><i class="fa-solid fa-comments" style="color:var(--accent)"></i> Profile Comments</h2>
+        <span>Public wall</span>
+      </div>
+      <div class="f2w-profile-comment-compose" id="v17-profile-comment-compose"></div>
+      <div class="f2w-profile-comments" id="v17-profile-comments"><div class="f2w-profile-empty">Loading comments…</div></div>`;
+      main.appendChild(section);
+    }
+  }
+
+  async function renderProfilePresence(){
+    if(!location.pathname.startsWith('/profile'))return;
+    const profile=viewedProfileObject();if(!profile?.user_id)return;
+    ensureProfileRealtimePanels();
+
+    const badge=document.getElementById('v17-profile-presence');if(!badge)return;
+    try{
+      const rows=await rpc('get_public_profile_presence',{p_user_id:profile.user_id});
+      const row=Array.isArray(rows)?rows[0]:rows;
+      const online=Boolean(row?.online);
+      badge.classList.toggle('online',online);
+      badge.classList.toggle('offline',!online);
+      badge.querySelector('span').textContent=online?'Online':row?.last_seen_at?`Last online ${formatRelative(row.last_seen_at)}`:'Offline';
+    }catch{
+      badge.classList.remove('online');
+      badge.classList.add('offline');
+      badge.querySelector('span').textContent='Offline';
+    }
+  }
+
+  async function renderProfileComments(){
+    if(!location.pathname.startsWith('/profile'))return;
+    const profile=viewedProfileObject();if(!profile?.user_id)return;
+    ensureProfileRealtimePanels();
+
+    const compose=document.getElementById('v17-profile-comment-compose');
+    const host=document.getElementById('v17-profile-comments');
+    if(!compose||!host)return;
+
+    if(authUser){
+      compose.innerHTML=`<textarea id="v17-profile-comment-input" maxlength="500" placeholder="Leave a comment on @${esc(profile.username)}'s profile…"></textarea>
+        <div><span id="v17-profile-comment-status"></span><button type="button" id="v17-profile-comment-send"><i class="fa-solid fa-paper-plane"></i> Post comment</button></div>`;
+      compose.querySelector('#v17-profile-comment-send').onclick=postProfileComment;
+    }else{
+      compose.innerHTML='<div class="f2w-comment-login"><i class="fa-solid fa-lock"></i><span>Sign in to leave a profile comment.</span><button type="button">Sign In</button></div>';
+      compose.querySelector('button').onclick=()=>{try{window.openHeaderAuth?.('login')}catch{}};
+    }
+
+    try{
+      const rows=await rpc('get_profile_comments_v17',{p_profile_user_id:profile.user_id,p_limit:60});
+      const list=Array.isArray(rows)?rows:[];
+      host.innerHTML=list.length?list.map(row=>`
+        <article class="f2w-profile-comment">
+          <img src="${esc(row.avatar_url||RED_LOGO)}" alt="" onerror="this.src='${RED_LOGO}'">
+          <div class="f2w-profile-comment-main">
+            <div class="f2w-profile-comment-head">
+              <a href="/profile/?user=${encodeURIComponent(row.username)}" data-f2w-username="${esc(row.username)}" class="${roleClass(row.top_role)}">${esc(row.display_name||`@${row.username}`)}</a>
+              <span>${formatRelative(row.created_at)}</span>
+              ${row.can_delete?`<button type="button" data-delete-comment="${esc(row.id)}" title="Delete comment"><i class="fa-solid fa-trash"></i></button>`:''}
+            </div>
+            <p>${esc(row.body)}</p>
+          </div>
+        </article>`).join(''):'<div class="f2w-profile-empty">No comments yet. Be the first.</div>';
+
+      host.querySelectorAll('[data-delete-comment]').forEach(btn=>btn.onclick=()=>deleteProfileComment(btn.dataset.deleteComment));
+      decorateNames();
+    }catch(error){
+      host.innerHTML='<div class="f2w-profile-empty">Comments are unavailable right now.</div>';
+      console.warn('Profile comments unavailable:',error?.message||error);
+    }
+  }
+
+  async function postProfileComment(){
+    const profile=viewedProfileObject();if(!profile?.user_id||!authUser)return;
+    const input=document.getElementById('v17-profile-comment-input');
+    const button=document.getElementById('v17-profile-comment-send');
+    const status=document.getElementById('v17-profile-comment-status');
+    const body=String(input?.value||'').trim();
+    if(!body)return;
+    if(button)button.disabled=true;
+    try{
+      await rpc('add_profile_comment_v17',{p_profile_user_id:profile.user_id,p_body:body});
+      if(input)input.value='';
+      if(status)status.textContent='Posted';
+      await renderProfileComments();
+    }catch(error){
+      if(status)status.textContent=error.message||'Could not post comment';
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
+  async function deleteProfileComment(id){
+    if(!id)return;
+    try{
+      await rpc('delete_profile_comment_v17',{p_comment_id:id});
+      await renderProfileComments();
+    }catch(error){toast(error.message||'Could not delete comment.');}
+  }
+
+  function subscribeProfileRealtime(){
+    if(!location.pathname.startsWith('/profile'))return;
+    const profile=viewedProfileObject();if(!profile?.user_id)return;
+    const client=db();if(!client)return;
+
+    try{if(profileRealtimeChannel)client.removeChannel(profileRealtimeChannel);}catch{}
+    try{
+      profileRealtimeChannel=client.channel(`v17-profile-live-${profile.user_id}`)
+        .on('postgres_changes',{event:'*',schema:'public',table:'user_presence',filter:`user_id=eq.${profile.user_id}`},()=>renderProfilePresence())
+        .on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity',filter:`user_id=eq.${profile.user_id}`},()=>renderProfileActivity())
+        .on('postgres_changes',{event:'*',schema:'public',table:'profile_comments',filter:`profile_user_id=eq.${profile.user_id}`},()=>renderProfileComments())
+        .on('postgres_changes',{event:'*',schema:'public',table:'profiles',filter:`user_id=eq.${profile.user_id}`},()=>setTimeout(()=>location.reload(),180))
+        .on('postgres_changes',{event:'*',schema:'public',table:'profile_role_assignments',filter:`user_id=eq.${profile.user_id}`},()=>{
+          document.querySelectorAll('[data-f2w-role-checked]').forEach(el=>delete el.dataset.f2wRoleChecked);
+          decorateNames();
+        })
+        .subscribe();
+    }catch{}
+
+    if(profileUiTimer)clearInterval(profileUiTimer);
+    profileUiTimer=setInterval(()=>{
+      renderProfilePresence();
+      renderProfileActivity();
+    },15000);
+  }
+
+  function bootProfileRealtime(){
+    if(!location.pathname.startsWith('/profile'))return;
+    ensureProfileRealtimePanels();
+    renderProfilePresence();
+    renderProfileActivity();
+    renderProfileComments();
+    subscribeProfileRealtime();
+    renderProfileExtras(viewedProfileObject());
+
+    const profile=viewedProfileObject();
+    if(profile?.username){
+      const name=document.getElementById('profile-name');
+      if(name){
+        name.dataset.f2wUsername=profile.username;
+        delete name.dataset.f2wRoleChecked;
+      }
+      decorateNames();
+    }
   }
 
   /* ---------- leaderboard ---------- */
@@ -563,7 +960,22 @@
       loadLeaderboard(1,btn.dataset.sort||'overall');
     });
     loadLeaderboard(1,'overall');
-    const client=db();if(client){try{client.channel('v35-leader-live').on('postgres_changes',{event:'*',schema:'public',table:'user_presence'},()=>loadLeaderboard(leaderboardPage,leaderboardSort)).on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity'},()=>loadLeaderboard(leaderboardPage,leaderboardSort)).subscribe()}catch{}}
+
+    const refresh=()=>loadLeaderboard(leaderboardPage,leaderboardSort);
+    const client=db();
+    if(client){
+      try{
+        client.channel('v17-leader-live')
+          .on('postgres_changes',{event:'*',schema:'public',table:'user_presence'},refresh)
+          .on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity'},refresh)
+          .on('postgres_changes',{event:'*',schema:'public',table:'profile_watch_time'},refresh)
+          .on('postgres_changes',{event:'*',schema:'public',table:'user_ratings'},refresh)
+          .on('postgres_changes',{event:'*',schema:'public',table:'profile_role_assignments'},refresh)
+          .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},refresh)
+          .subscribe();
+      }catch{}
+    }
+    setInterval(refresh,20000);
   }
 
   /* ---------- community/forum additions ---------- */
@@ -675,11 +1087,12 @@
     await syncAuthUI();
     registerCurrentAbuseSignals();
     prewarmChat();
-    setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();enrichForum();bootLeaderboard();decorateNames();installStaffQuickModeration()},350);
-    roleDecorateTimer=setInterval(()=>{forceRedLogo();decorateNames();installDmSearch();installProfileEditor();renderProfileExtras(viewedProfileObject());installStaffQuickModeration()},2200);
+    setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();bootProfileRealtime();enrichForum();bootLeaderboard();decorateNames();installStaffQuickModeration()},350);
+    roleDecorateTimer=setInterval(()=>{forceRedLogo();decorateNames();installDmSearch();installProfileEditor();renderProfileExtras(viewedProfileObject());installStaffQuickModeration()},5000);
     const client=db();
-    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{installAuthAbuseGuard();syncAuthUI();registerCurrentAbuseSignals();installProfileEditor();enrichForum()},0))}catch{}
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')touchPresence()});
+    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{installAuthAbuseGuard();syncAuthUI();registerCurrentAbuseSignals();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments();enrichForum()},0))}catch{}
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchPresence();recordWatchOpen();}else{leavePresence();}});
+    window.addEventListener('pagehide',()=>{leavePresence()});
     const observer=new MutationObserver(()=>{forceRedLogo();addLeaderboardNav();hardenRouting()});
     observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['src','hidden','style']});
   }
@@ -687,4 +1100,5 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 // f2w-force-save:ban-evasion-final-v35-v1:1788212206
+// f2w-force-save:realtime-profile-leaderboard-v17:1788213599
  

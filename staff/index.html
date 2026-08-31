@@ -699,7 +699,7 @@
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css">
+  <link rel="stylesheet" href="/final-v35.css?v=17-1788213599">
 
 <style id="staff-v36-support-tickets">
   #panel-support .card{overflow:hidden}
@@ -1017,7 +1017,7 @@
 
     <section class="panel" id="panel-profiles">
       <div class="help-inline">
-        <strong>Profile management:</strong> Staff with profile permissions can correct usernames, display names, bios, privacy state and profile pictures. Public role badges are separate from Staff access: adding “Moderator” or “Admin” here changes the public profile badge, not backend permissions.
+        <strong>Profile management:</strong> Staff with profile permissions can correct usernames, display names, bios, privacy state and profile pictures. Public role badges are separate from Staff access: public roles change profile identity only and do not grant Staff Control permissions.
       </div>
 
       <div class="card">
@@ -1094,7 +1094,6 @@
         <div>
           <label>PUBLIC PROFILE ROLES</label>
           <div class="staff-role-picker" id="staff-profile-role-picker">
-            <button class="staff-role-toggle" data-role="admin" type="button" onclick="toggleManagedRole('admin')"><i class="fa-solid fa-crown"></i> Admin</button>
             <button class="staff-role-toggle" data-role="moderator" type="button" onclick="toggleManagedRole('moderator')"><i class="fa-solid fa-gavel"></i> Moderator</button>
             <button class="staff-role-toggle" data-role="curator" type="button" onclick="toggleManagedRole('curator')"><i class="fa-solid fa-clapperboard"></i> Curator</button>
             <button class="staff-role-toggle" data-role="support" type="button" onclick="toggleManagedRole('support')"><i class="fa-solid fa-headset"></i> Support</button>
@@ -2523,7 +2522,7 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js" defer>
+  <script src="/final-v35.js?v=17-1788213599" defer>
 document.getElementById('staff-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='staff-ticket-modal')closeStaffTicketModal()});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('staff-ticket-modal')?.hidden)closeStaffTicketModal()});
 document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendStaffTicketReply()}});
@@ -2560,4 +2559,5 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 <!-- f2w-force-save:remove-nettools-v14:1788211808:staff/index.html -->
 <!-- f2w-force-save:sitewide-footer-v15:1788212347:staff/index.html -->
 <!-- f2w-force-save:chat-route-cache-v16:1788212934:staff/index.html -->
+<!-- f2w-force-save:staff-no-admin-v17:1788213599 -->
  

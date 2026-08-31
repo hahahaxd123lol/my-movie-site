@@ -21,7 +21,6 @@ body.f2w-authenticated .f2w-guest-rail{display:none!important}
 .f2w-role-name::before,.f2w-role-name::after{content:"✦";position:absolute;font-size:.52em;line-height:1;color:var(--f2w-role-color);opacity:.85;pointer-events:none;filter:drop-shadow(0 0 4px var(--f2w-role-color));animation:f2wSpark 2.2s ease-in-out infinite}
 .f2w-role-name::before{left:-.78em;top:-.22em}.f2w-role-name::after{right:-.82em;bottom:-.2em;animation-delay:1.05s}
 .f2w-role-owner{--f2w-role-color:#ff2634;--f2w-role-soft:rgba(255,38,52,.65)}
-.f2w-role-admin{--f2w-role-color:#ff9f1c;--f2w-role-soft:rgba(255,159,28,.58)}
 .f2w-role-staff{--f2w-role-color:#c084fc;--f2w-role-soft:rgba(192,132,252,.58)}
 .f2w-role-moderator{--f2w-role-color:#38bdf8;--f2w-role-soft:rgba(56,189,248,.58)}
 .f2w-role-support{--f2w-role-color:#22d3ee;--f2w-role-soft:rgba(34,211,238,.55)}
@@ -72,3 +71,271 @@ body.f2w-authenticated .f2w-guest-rail{display:none!important}
 
 /* Toast used by V35 on non-staff pages */
 .f2w-toast{position:fixed;right:16px;bottom:16px;z-index:100300;max-width:min(390px,calc(100vw - 32px));border:1px solid #263a53;border-left:3px solid var(--f2w-red);border-radius:11px;background:#07111d;color:#eaf0f8;padding:12px 14px;box-shadow:0 20px 50px rgba(0,0,0,.5);font-size:.82rem}
+
+
+/* ============================================================
+   Flix2Watch v17 — realtime profile / role / comments polish
+   ============================================================ */
+
+/* Highest-role display names: animated gradient + moving sparkle layer. */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  isolation:isolate;
+  font-weight:850!important;
+  color:var(--f2w-role-color)!important;
+  background:
+    linear-gradient(100deg,
+      var(--f2w-role-color) 0%,
+      #ffffff 28%,
+      var(--f2w-role-color) 52%,
+      #ffffff 72%,
+      var(--f2w-role-color) 100%);
+  background-size:240% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:f2wRoleShimmer 3.2s linear infinite,f2wNamePulse 2.2s ease-in-out infinite;
+  text-shadow:none!important;
+  filter:drop-shadow(0 0 7px var(--f2w-role-soft));
+}
+.f2w-role-name::before,.f2w-role-name::after {
+  content:"✦";
+  -webkit-text-fill-color:var(--f2w-role-color);
+  color:var(--f2w-role-color);
+}
+@keyframes f2wRoleShimmer {
+  0%{background-position:180% 0}
+  100%{background-position:-60% 0}
+}
+
+#profile-hero.f2w-has-profile-banner {
+  position:relative;
+  overflow:hidden;
+}
+#profile-hero.f2w-has-profile-banner::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(3,7,13,.92),rgba(3,7,13,.70)),
+    var(--f2w-profile-banner) center/cover no-repeat;
+  z-index:0;
+  pointer-events:none;
+}
+#profile-hero.f2w-has-profile-banner>*{position:relative;z-index:1}
+
+.f2w-profile-presence {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-left:10px;
+  padding:6px 10px;
+  border:1px solid #263a52;
+  border-radius:999px;
+  background:rgba(5,12,20,.75);
+  color:#9fb0c6;
+  font-size:.72rem;
+  font-weight:800;
+  white-space:nowrap;
+}
+.f2w-profile-presence-dot {
+  width:9px;height:9px;border-radius:50%;
+  background:#ef3340;
+  box-shadow:0 0 10px rgba(239,51,64,.65);
+  animation:f2wPresenceBlink 1.45s ease-in-out infinite;
+}
+.f2w-profile-presence.online {
+  color:#79f0ad;border-color:rgba(33,216,121,.35);
+}
+.f2w-profile-presence.online .f2w-profile-presence-dot {
+  background:#21d879;box-shadow:0 0 12px rgba(33,216,121,.8);
+}
+@keyframes f2wPresenceBlink{0%,100%{opacity:.35}50%{opacity:1}}
+
+.f2w-profile-status-text {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-top:10px;
+  color:#dce6f4;
+  font-weight:750;
+}
+.f2w-profile-quote {
+  margin:11px 0 0;
+  padding:10px 13px;
+  border-left:3px solid var(--f2w-red);
+  background:rgba(4,11,18,.5);
+  color:#9db0c8;
+  border-radius:0 10px 10px 0;
+  font-style:italic;
+}
+
+.f2w-recently-watched-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(135px,1fr));
+  gap:12px;
+}
+.f2w-recent-watch-card {
+  display:block;
+  overflow:hidden;
+  border:1px solid #20354d;
+  border-radius:14px;
+  background:#071321;
+  text-decoration:none;
+  color:#fff;
+  transition:.18s ease;
+}
+.f2w-recent-watch-card:hover {
+  transform:translateY(-3px);
+  border-color:#516b8b;
+}
+.f2w-recent-watch-card img {
+  width:100%;
+  aspect-ratio:2/3;
+  object-fit:cover;
+  display:block;
+  background:#0d1927;
+}
+.f2w-recent-watch-card>div{padding:9px 10px}
+.f2w-recent-watch-card strong {
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:.86rem;
+}
+.f2w-recent-watch-card span {
+  display:block;
+  margin-top:4px;
+  color:#7088a6;
+  font-size:.68rem;
+}
+.f2w-profile-empty {
+  padding:18px;
+  border:1px dashed #263b53;
+  border-radius:12px;
+  color:#788da7;
+  background:rgba(5,12,20,.5);
+}
+
+.f2w-profile-comments-panel{margin-top:18px}
+.f2w-profile-comment-compose {
+  border:1px solid #20344c;
+  border-radius:14px;
+  padding:12px;
+  background:#06111d;
+  margin-bottom:12px;
+}
+.f2w-profile-comment-compose textarea {
+  width:100%;
+  min-height:88px;
+  resize:vertical;
+  box-sizing:border-box;
+  border:1px solid #273b54;
+  border-radius:10px;
+  background:#040d17;
+  color:#fff;
+  padding:11px 12px;
+  font:inherit;
+  outline:none;
+}
+.f2w-profile-comment-compose>div {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-top:9px;
+}
+.f2w-profile-comment-compose button {
+  border:0;
+  border-radius:9px;
+  padding:9px 13px;
+  background:var(--f2w-red);
+  color:#fff;
+  font-weight:850;
+  cursor:pointer;
+}
+.f2w-comment-login {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-wrap:wrap;
+  gap:10px!important;
+  color:#92a5bf;
+}
+.f2w-profile-comments{display:grid;gap:9px}
+.f2w-profile-comment {
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr);
+  gap:11px;
+  padding:12px;
+  border:1px solid #1e3147;
+  border-radius:13px;
+  background:linear-gradient(110deg,#07131f,#081522);
+}
+.f2w-profile-comment>img {
+  width:44px;height:44px;border-radius:50%;object-fit:cover;background:#101d2e;
+}
+.f2w-profile-comment-head {
+  display:flex;align-items:center;gap:8px;min-width:0;
+}
+.f2w-profile-comment-head>a {
+  font-weight:850;color:#fff;text-decoration:none;
+}
+.f2w-profile-comment-head>span {
+  color:#627997;font-size:.68rem;margin-left:auto;
+}
+.f2w-profile-comment-head>button {
+  width:28px;height:28px;border:1px solid #2a3d55;border-radius:8px;background:#07101a;color:#899bb2;cursor:pointer;
+}
+.f2w-profile-comment p {
+  margin:6px 0 0;color:#c3cfdf;line-height:1.5;white-space:pre-wrap;word-break:break-word;
+}
+
+/* Profile owner editing is now centralized in the Edit Profile modal. */
+.profile-authenticated-owner .profile-edit-panel,
+.profile-authenticated-owner .profile-private-control {
+  display:none!important;
+}
+.f2w-profile-editor-v17 {
+  width:min(980px,96vw)!important;
+  grid-template-columns:210px minmax(0,1fr)!important;
+}
+.f2w-profile-editor-v17 .f2w-profile-editor-nav {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.f2w-profile-editor-v17 .f2w-edit-nav {
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.f2w-profile-editor-v17 .f2w-editor-head h2 {
+  margin:0;font-size:1.45rem;
+}
+.f2w-profile-editor-v17 .f2w-editor-head small {
+  display:block;margin-top:4px;color:#7186a4;
+}
+.f2w-editor-help {
+  margin-top:12px;
+  padding:11px 12px;
+  border:1px solid #20334a;
+  border-radius:10px;
+  color:#8194ae;
+  background:#06111c;
+}
+@media(max-width:720px){
+  .f2w-profile-editor-v17{grid-template-columns:1fr!important;max-height:94vh!important}
+  .f2w-profile-editor-v17 .f2w-profile-editor-nav{flex-direction:row;overflow:auto}
+  .f2w-profile-presence{margin-left:0;margin-top:8px}
+  #profile-hero .profile-name-row{flex-wrap:wrap}
+  .f2w-recently-watched-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:460px){
+  .f2w-recently-watched-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* f2w-force-save:realtime-profile-leaderboard-css-v17:1788213599 */
+ 

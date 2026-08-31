@@ -1,43 +1,53 @@
-FLIX2WATCH BAN-EVASION GUARD v1
+FLIX2WATCH REALTIME LEADERBOARD + PROFILE v17
 
-FILES
-1) ban-evasion-guard.sql
-2) rapid-worker.ts
-3) final-v35.js
+IMPORTANT: THIS UPDATE REQUIRES SQL.
 
-INSTALL
-1. Supabase -> SQL Editor -> run ban-evasion-guard.sql ONCE.
-2. Replace/redeploy the rapid-worker Edge Function with rapid-worker.ts.
-3. Replace /final-v35.js in the GitHub repo.
-4. Wait for GitHub Pages deployment to finish, then hard refresh.
+INSTALL ORDER
+1. Supabase -> SQL Editor:
+   run realtime-profile-leaderboard-v17.sql once.
 
-OPTIONAL
-For stronger separation of secrets, add an Edge Function secret named:
-ABUSE_SIGNAL_SECRET
-with a long random value.
-If omitted, the worker safely falls back to CHAT_TOKEN_SECRET for hashing.
+2. GitHub repo:
+   upload the contents of this ZIP, preserving folders.
+   Important shared files:
+   /final-v35.js
+   /final-v35.css
+   /profile/index.html
+   /leaderboard/index.html
+   /watch/index.html
+   /staff/index.html
 
-HOW IT WORKS
-- The browser gets a random first-party device ID stored locally.
-- A coarse browser fingerprint is generated from browser/device characteristics.
-- The Edge Function sees the connecting IP and User-Agent.
-- Raw device IDs, fingerprints and IPs are NEVER stored in the database.
-  They are salted+hashed in the Edge Function first.
-- When Staff/Owner bans an account, the SQL trigger copies that account's
-  known device/fingerprint/network hashes into the evasion block list.
-- Exact device-ID or browser-fingerprint matches are hard-blocked.
-- IP + User-Agent matches are logged as lower-confidence evidence rather than
-  hard-blocking by themselves, reducing the risk of banning a whole household.
-- Email/password signup is checked before account creation.
-- Google/Discord OAuth is checked before OAuth starts, then checked again
-  immediately after authentication; a matching new account is auto-suspended.
-- Existing password login is also checked.
+3. Rapid Worker:
+   No NEW Edge Function logic is required specifically for leaderboard/profile/comments.
+   rapid-worker.ts is included as the cumulative ban-evasion Worker from the previous update.
+   If you already deployed that version, you do NOT need to redeploy it just for this batch.
+   If you have not deployed the ban-evasion Worker yet, deploy the included rapid-worker.ts.
 
-IMPORTANT
-No normal website can make ban evasion literally impossible. Users can change
-devices, clear storage, spoof browser properties, use VPNs/proxies, or use
-another network. This is a layered abuse-control system, not an unforgeable
-hardware identity.
+WHAT CHANGED
+- Watch title opens are recorded once per title/account and deduplicated by database primary key.
+- Active Watch-page time is flushed every ~15 seconds while a logged-in user has a player loaded,
+  the tab is visible, and the window has focus. This covers every source because the tracker is
+  source-agnostic. Cross-origin players do not expose exact play/pause state to the parent page.
+- Ratings already stored in user_ratings now push leaderboard refreshes in realtime.
+- Leaderboard listens to profiles, presence, title activity, watch time, ratings and role changes,
+  plus a 15-second fallback refresh.
+- Presence uses a per-tab session heartbeat. Closing a tab sends an immediate leave when possible;
+  if a browser crashes, the online state expires automatically after about 45 seconds.
+- Profile names get animated highest-role effects.
+- Admin public role is deleted from every account and removed from the allowed role constraint.
+- Role priority: Owner > Staff > Moderator > Support > Developer > Verified > Contributor > Curator.
+- Profile editor is one modal with a left-side section list.
+- Added status, pronouns, banner, favorite movie/TV, quote, social links and accent settings.
+- Recently Watched is based on titles opened while logged in and has no duplicate titles.
+- Removed the old Recent Profile Activity / Recent Saves blocks.
+- Added realtime profile comments with profile-owner / comment-author deletion.
+- Online/offline status is shown on every profile with last-online relative time.
 
-f2w-force-save:1788212206
+TRACKING NOTE
+For third-party cross-origin iframe sources, the parent website cannot reliably know the provider's
+internal play/pause state. Watch time therefore measures active player-page time while the player is
+loaded, visible and focused. Flix2Watch API player events can still save player progress separately.
+
+Every edited code file ends with a literal trailing space.
+
+f2w-force-save:1788213599
  

@@ -3218,7 +3218,7 @@
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css">
+  <link rel="stylesheet" href="/final-v35.css?v=17-1788213599">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=15-1788212347">
@@ -3735,15 +3735,7 @@
     </div>
   </section>
 
-  <section class="profile-v16-panel">
-    <div class="profile-v16-panel-head">
-      <h2><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent)"></i> Recent Profile Activity</h2>
-      <span>Based on public saves</span>
-    </div>
-    <div class="profile-v16-activity" id="v16-profile-activity">
-      <div class="profile-v16-none">No recent public activity yet.</div>
-    </div>
-  </section>
+  
 
 
   <section class="profile-v16-panel f2w-v34-profile-social">
@@ -3790,10 +3782,7 @@
         <div class="f2w-chip-grid" id="f2w-profile-achievements"></div>
       </div>
 
-      <div style="margin-top:20px">
-        <div class="f2w-ultra-kicker" style="margin-bottom:9px">RECENT SAVES</div>
-        <div class="f2w-horizontal" id="f2w-profile-activity"></div>
-      </div>
+      
     </section>
 
 </main>
@@ -5815,7 +5804,7 @@ setTimeout(loadLibraryFavorites,0);
       {
         const result=await chatSupabase
           .from('profiles')
-          .select('user_id,username,display_name,bio,avatar_url,is_private,created_at,updated_at')
+          .select('user_id,username,display_name,bio,avatar_url,is_private,location,favorite_genres,website_url,instagram_username,discord_username,profile_accent,status_text,pronouns,profile_banner_url,favorite_movie_text,favorite_tv_text,profile_quote,created_at,updated_at')
           .ilike('username',username)
           .limit(1)
           .maybeSingle();
@@ -7078,7 +7067,7 @@ renderViewedProfile();
     const userId=String(viewedProfile.user_id||'');
 
     function insertRoleBadge(role){
-      if(role!=='owner'&&role!=='staff')return;
+      if(!['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(role))return;
 
       clearViewedProfileRoleBadge();
 
@@ -7088,13 +7077,13 @@ renderViewedProfile();
       const badge=document.createElement('span');
       badge.id='profile-role-badge';
       badge.className=`profile-role-badge show ${role}`;
-      badge.title=role==='owner'?'Flix2Watch Owner':'Flix2Watch Staff';
+      badge.title=`Flix2Watch ${role.charAt(0).toUpperCase()+role.slice(1)}`;
 
       const icon=document.createElement('i');
       icon.className='fa-solid fa-shield-halved';
 
       const label=document.createElement('span');
-      label.textContent=role==='owner'?'Owner':'Staff';
+      label.textContent=role.charAt(0).toUpperCase()+role.slice(1);
 
       // Force exact role colours at render time so theme CSS cannot override them.
       const roleColor=role==='owner'?'#ff2b3d':'#a855f7';
@@ -7134,8 +7123,8 @@ renderViewedProfile();
       if(error)throw error;
 
       // Only an exact Staff permission result creates the Staff badge.
-      if(data==='staff'){
-        insertRoleBadge('staff');
+      if(['staff','moderator','support','developer','verified','contributor','curator'].includes(data)){
+        insertRoleBadge(data);
       }
     }catch(error){
       console.warn('Public role badge lookup failed:',error);
@@ -7359,11 +7348,11 @@ return true;
     icon.className='fa-solid fa-shield-halved';
 
     const label=document.createElement('span');
-    label.textContent=role==='owner'?'Owner':'Staff';
+    label.textContent=role.charAt(0).toUpperCase()+role.slice(1);
 
     badge.append(icon,label);
     badge.className=`topbar-role-badge show ${role}`;
-    badge.title=role==='owner'?'Flix2Watch Owner':'Flix2Watch Staff';
+    badge.title=`Flix2Watch ${role.charAt(0).toUpperCase()+role.slice(1)}`;
     badge.hidden=false;
   }
 
@@ -7752,7 +7741,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js" defer></script>
+  <script src="/final-v35.js?v=17-1788213599" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
@@ -7766,4 +7755,6 @@ return true;
 <!-- f2w-force-save:remove-nettools-v14:1788211808:profile/index.html -->
 <!-- f2w-force-save:sitewide-footer-v15:1788212347:profile/index.html -->
 <!-- f2w-force-save:chat-route-cache-v16:1788212934:profile/index.html -->
+<!-- f2w-force-save:profile-v17:1788213599 -->
+<!-- f2w-force-save:profile-clean-recent-v17 -->
  

@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="/final-v32.css">
   <link rel="stylesheet" href="/final-v33.css">
   <link rel="stylesheet" href="/final-v34.css">
-  <link rel="stylesheet" href="/final-v35.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="/final-v35.css?v=17-1788213599"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--lb-accent:#ff1727;--lb-bg:#020914;--lb-panel:rgba(7,18,31,.82);--lb-line:#18334d;--lb-muted:#8ca0b8;--lb-text:#f6f8fb}.theme-blue{--lb-accent:#19a7ff}.theme-green{--lb-accent:#35e88d}.theme-purple{--lb-accent:#a855f7}.theme-gold{--lb-accent:#f6c84c}.theme-cyan{--lb-accent:#20e0e8}.theme-pink{--lb-accent:#ff4ca3}.theme-orange{--lb-accent:#ff8a2b}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,color-mix(in srgb,var(--lb-accent) 13%,transparent),transparent 34%),#020914;color:var(--lb-text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
@@ -465,7 +465,7 @@ function row(r){return `<article class="rank-row"><div class="rank-no">#${fmt(r.
 function bindProfiles(){document.querySelectorAll('[data-user]').forEach(x=>x.onclick=()=>profile(x.dataset.user))}
 function pager(total){const pages=Math.max(1,Math.ceil(total/25));$('#pageStat').textContent=`${page} / ${pages}`;let h=`<button class="pagebtn" data-p="${page-1}" ${page===1?'disabled':''}><i class="fa-solid fa-chevron-left"></i></button>`;for(let p=Math.max(1,page-2);p<=Math.min(pages,page+2);p++)h+=`<button class="pagebtn ${p===page?'active':''}" data-p="${p}">${p}</button>`;h+=`<button class="pagebtn" data-p="${page+1}" ${page===pages?'disabled':''}><i class="fa-solid fa-chevron-right"></i></button>`;$('#pager').innerHTML=h;$('#pager').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{page=+b.dataset.p;load()})}
 async function loadStats(){try{const {data,error}=await db.rpc('get_public_leaderboard_stats');if(error)throw error;const r=Array.isArray(data)?data[0]:data;if(!r)return;$('#count').textContent=fmt(r.registered_players);$('#online').textContent=fmt(r.online_now);$('#watch').textContent=time(r.combined_watch_minutes);}catch(e){console.warn('Leaderboard stats unavailable:',e?.message||e)}}
-async function load(){if(busy)return;busy=true;$('#updated').textContent='Refreshing live rankings…';try{const [{data,error}]=await Promise.all([db.rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:sort}),loadStats()]);if(error)throw error;const rows=data||[],total=Number(rows[0]?.total_count||0);$('#list').innerHTML=rows.map(row).join('')||'<div class="empty">No ranked profiles yet.</div>';pager(total);bindProfiles();if(page===1){const top=rows.slice(0,3);$('#podium').innerHTML=pod(top[1],2)+pod(top[0],1)+pod(top[2],3);bindProfiles()}$('#updated').textContent='Live · updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}catch(e){$('#list').innerHTML=`<div class="empty error"><b>Leaderboard backend needs one quick update.</b><br><br>${esc(e.message)}<br><br>Run <b>leaderboard-realtime-stats.sql</b> in Supabase SQL Editor, then refresh this page.</div>`;$('#podium').innerHTML='';$('#updated').textContent='Backend update required';}finally{busy=false}}
+async function load(){if(busy)return;busy=true;$('#updated').textContent='Refreshing live rankings…';try{const [{data,error}]=await Promise.all([db.rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:sort}),loadStats()]);if(error)throw error;const rows=data||[],total=Number(rows[0]?.total_count||0);$('#list').innerHTML=rows.map(row).join('')||'<div class="empty">No ranked profiles yet.</div>';pager(total);bindProfiles();if(page===1){const top=rows.slice(0,3);$('#podium').innerHTML=pod(top[1],2)+pod(top[0],1)+pod(top[2],3);bindProfiles()}$('#updated').textContent='Live · updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}catch(e){$('#list').innerHTML=`<div class="empty error"><b>Leaderboard backend needs one quick update.</b><br><br>${esc(e.message)}<br><br>Run <b>realtime-profile-leaderboard-v17.sql</b> in Supabase SQL Editor, then refresh this page.</div>`;$('#podium').innerHTML='';$('#updated').textContent='Backend update required';}finally{busy=false}}
 $('#tabs').onclick=e=>{const b=e.target.closest('[data-sort]');if(!b)return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));sort=b.dataset.sort;page=1;load()};
 const themes=['theme-red','theme-blue','theme-green','theme-purple','theme-cyan','theme-pink','theme-orange','theme-gold','theme-amber','theme-matrix','theme-ice','theme-midnight'];let currentTheme=localStorage.getItem('flix2watch-theme')||'theme-red';document.body.classList.add(currentTheme);
 window.setTheme=(name,cls)=>{document.body.classList.remove(...themes);document.body.classList.add(cls);currentTheme=cls;localStorage.setItem('flix2watch-theme',cls);const m=document.getElementById('theme-menu');if(m){m.hidden=true;m.setAttribute('aria-hidden','true')}};
@@ -534,10 +534,22 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){const shell=documen
 document.addEventListener('click',e=>{if(!e.target.closest('.f2w-genre-wrap'))document.getElementById('f2w-genre-menu')?.classList.remove('open');if(!e.target.closest('.dropdown-wrapper')){const m=document.getElementById('theme-menu');if(m){m.hidden=true;m.setAttribute('aria-hidden','true')}}});
 db.auth.getUser().then(async({data})=>{const logged=!!data?.user;for(const id of ['favorites-nav-btn','profile-nav-btn','support-nav-btn','account-btn']){const el=document.getElementById(id);if(el)el.style.display=logged?'':'none'}const li=document.getElementById('header-login-btn'),su=document.getElementById('header-signup-btn');if(li)li.style.display=logged?'none':'';if(su)su.style.display=logged?'none':'';if(logged){const {data:p}=await db.from('profiles').select('username').eq('user_id',data.user.id).maybeSingle();myUsername=p?.username||''}});
 let timer;const refresh=()=>{clearTimeout(timer);timer=setTimeout(()=>{load();loadStats()},180)};
-async function heartbeat(){try{const {data:{session}}=await db.auth.getSession();if(session?.user&&document.visibilityState!=='hidden')await db.rpc('touch_presence')}catch{}}
-try{db.channel('leaderboard-v3-live').on('postgres_changes',{event:'*',schema:'public',table:'profiles'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'user_presence'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_watch_time'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'user_ratings'},refresh).subscribe(s=>{if(s==='SUBSCRIBED')$('#updated').textContent='Realtime connected'})}catch{}
+let lbPresenceSession='';
+async function heartbeat(){
+  try{
+    const {data:{session}}=await db.auth.getSession();
+    if(!session?.user||document.visibilityState==='hidden')return;
+    if(!lbPresenceSession){
+      lbPresenceSession=sessionStorage.getItem('f2w_presence_session_v17')||crypto.randomUUID();
+      sessionStorage.setItem('f2w_presence_session_v17',lbPresenceSession);
+    }
+    const {error}=await db.rpc('touch_presence_v17',{p_session_id:lbPresenceSession});
+    if(error)await db.rpc('touch_presence');
+  }catch{}
+}
+try{db.channel('leaderboard-v3-live').on('postgres_changes',{event:'*',schema:'public',table:'profiles'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'user_presence'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_watch_time'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'user_ratings'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_role_assignments'},refresh).subscribe(s=>{if(s==='SUBSCRIBED')$('#updated').textContent='Realtime connected'})}catch{}
 heartbeat();document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();loadStats()}});db.auth.onAuthStateChange(()=>{setTimeout(()=>{heartbeat();loadStats()},50)});
-load();setInterval(loadStats,5000);setInterval(heartbeat,20000);setInterval(load,30000);
+load();setInterval(loadStats,10000);setInterval(heartbeat,15000);setInterval(load,15000);
 })();
 </script>
 <script src="/silent-account-v16.js"></script>
@@ -557,7 +569,7 @@ load();setInterval(loadStats,5000);setInterval(heartbeat,20000);setInterval(load
 <script src="/social-v34.js" defer></script>
 <script src="/interaction-v7.js" defer></script>
 <script src="/realtime-v7.js" defer></script>
-<script src="/final-v35.js" defer></script>
+<script src="/final-v35.js?v=17-1788213599" defer></script>
 </body></html>
 <!-- f2w-force-push-20260831-batch2:leaderboard:c5fd546dc2 -->
 <!-- f2w-update-marker: shared-chat-v7:leaderboard -->
@@ -569,4 +581,5 @@ load();setInterval(loadStats,5000);setInterval(heartbeat,20000);setInterval(load
 <!-- f2w-force-save:remove-nettools-v14:1788211808:leaderboard/index.html -->
 <!-- f2w-force-save:sitewide-footer-v15:1788212347:leaderboard/index.html -->
 <!-- f2w-force-save:chat-route-cache-v16:1788212934:leaderboard/index.html -->
+<!-- f2w-force-save:leaderboard-live-v17:1788213599 -->
  
