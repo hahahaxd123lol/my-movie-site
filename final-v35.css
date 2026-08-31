@@ -1197,3 +1197,19 @@ html.f2w-username-gated body{overflow:hidden!important}
 
 /* f2w-force-save:sitewide-carousel-arrow-safety-v41:1788219230 */
  
+
+/* F2W v43 — compact Watch auth fallback */
+body.f2w-main-page .login-to-watch-card,
+body.f2w-main-page .watch-login-card,
+body.f2w-main-page .watch-auth-card {
+  max-width:430px!important;
+}
+@media(max-width:600px){
+  body.f2w-main-page .login-to-watch-card,
+  body.f2w-main-page .watch-login-card,
+  body.f2w-main-page .watch-auth-card {
+    max-width:360px!important;
+  }
+}
+/* f2w-force-save:watch-auth-compact-fallback-v43:1788219527 */
+ 

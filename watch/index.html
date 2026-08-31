@@ -2937,7 +2937,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=41-1788219230">
+  <link rel="stylesheet" href="/final-v35.css?v=43-1788219527">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/global-header-v1.css?v=42-1788219270">
   <script src="/global-header-chat-v1.js?v=36-1788217803" defer></script>
@@ -3187,6 +3187,139 @@ body.f2w-main-page>header .chat-button{font-size:10px!important;display:flex!imp
 body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-spacing:-.01em!important}
 /* f2w-force-save:header-button-fit-inline-v35:1788217735 */
 /* f2w-force-save:header-gorilla-lock-v30:1788216738 */
+</style>
+
+
+<style id="f2w-watch-login-compact-v43">
+/* ============================================================
+   F2W v43 — LOGIN TO WATCH COMPACT BOX
+   Smaller on desktop and mobile, without crushing text/buttons.
+   ============================================================ */
+
+/* Common overlay/card selectors used by cumulative Watch builds. */
+#login-to-watch-overlay .login-card,
+#login-required-overlay .login-card,
+#watch-login-overlay .login-card,
+#login-to-watch-overlay .auth-card,
+#login-required-overlay .auth-card,
+#watch-login-overlay .auth-card,
+.login-to-watch-card,
+.watch-login-card,
+.watch-auth-card {
+  width:min(430px,calc(100vw - 32px))!important;
+  max-width:430px!important;
+  padding:20px 20px 18px!important;
+  border-radius:16px!important;
+  box-sizing:border-box!important;
+}
+
+#login-to-watch-overlay h2,
+#login-required-overlay h2,
+#watch-login-overlay h2,
+.login-to-watch-card h2,
+.watch-login-card h2,
+.watch-auth-card h2 {
+  margin:8px 0 6px!important;
+  font-size:1.24rem!important;
+  line-height:1.15!important;
+}
+
+#login-to-watch-overlay p,
+#login-required-overlay p,
+#watch-login-overlay p,
+.login-to-watch-card p,
+.watch-login-card p,
+.watch-auth-card p {
+  margin:0 0 14px!important;
+  font-size:.78rem!important;
+  line-height:1.45!important;
+}
+
+#login-to-watch-overlay .auth-actions,
+#login-required-overlay .auth-actions,
+#watch-login-overlay .auth-actions,
+.login-to-watch-card .auth-actions,
+.watch-login-card .auth-actions,
+.watch-auth-card .auth-actions {
+  gap:8px!important;
+  margin-top:12px!important;
+}
+
+#login-to-watch-overlay button,
+#login-required-overlay button,
+#watch-login-overlay button,
+.login-to-watch-card button,
+.watch-login-card button,
+.watch-auth-card button {
+  min-height:40px!important;
+  padding:0 14px!important;
+}
+
+/* Mobile: noticeably smaller than before but still easy to read/tap. */
+@media(max-width:600px) {
+  #login-to-watch-overlay .login-card,
+  #login-required-overlay .login-card,
+  #watch-login-overlay .login-card,
+  #login-to-watch-overlay .auth-card,
+  #login-required-overlay .auth-card,
+  #watch-login-overlay .auth-card,
+  .login-to-watch-card,
+  .watch-login-card,
+  .watch-auth-card {
+    width:min(360px,calc(100vw - 24px))!important;
+    max-width:360px!important;
+    padding:16px 16px 15px!important;
+    border-radius:14px!important;
+  }
+
+  #login-to-watch-overlay h2,
+  #login-required-overlay h2,
+  #watch-login-overlay h2,
+  .login-to-watch-card h2,
+  .watch-login-card h2,
+  .watch-auth-card h2 {
+    font-size:1.08rem!important;
+    margin-top:6px!important;
+  }
+
+  #login-to-watch-overlay p,
+  #login-required-overlay p,
+  #watch-login-overlay p,
+  .login-to-watch-card p,
+  .watch-login-card p,
+  .watch-auth-card p {
+    font-size:.73rem!important;
+    margin-bottom:11px!important;
+  }
+
+  #login-to-watch-overlay button,
+  #login-required-overlay button,
+  #watch-login-overlay button,
+  .login-to-watch-card button,
+  .watch-login-card button,
+  .watch-auth-card button {
+    min-height:38px!important;
+    font-size:.78rem!important;
+  }
+}
+
+/* Extra-tight phones */
+@media(max-width:390px) {
+  #login-to-watch-overlay .login-card,
+  #login-required-overlay .login-card,
+  #watch-login-overlay .login-card,
+  #login-to-watch-overlay .auth-card,
+  #login-required-overlay .auth-card,
+  #watch-login-overlay .auth-card,
+  .login-to-watch-card,
+  .watch-login-card,
+  .watch-auth-card {
+    width:calc(100vw - 20px)!important;
+    padding:14px!important;
+  }
+}
+
+/* f2w-force-save:watch-login-compact-v43:1788219527 */
 </style>
 
 </head>
@@ -7575,4 +7708,6 @@ if(currentUser){
 <!-- f2w-force-save:v40-cache:1788218691:watch/index.html -->
 <!-- f2w-force-save:v41-arrow-cache:1788219230:watch/index.html -->
 <!-- f2w-force-save:chat-button-final-width-v42:1788219270:watch/index.html -->
+<!-- f2w-force-save:watch-login-box-v43:1788219527 -->
+<!-- f2w-force-save:v43-watch-auth-cache:1788219527:watch/index.html -->
  
