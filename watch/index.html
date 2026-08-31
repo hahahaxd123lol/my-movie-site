@@ -5735,15 +5735,12 @@ if(currentUser){
           break;
       }
 
-      // Only Flix2Watch API is sandboxed. It keeps the permissions needed for
-      // playback but deliberately omits allow-popups / allow-popups-to-escape-sandbox,
-      // which blocks the provider from opening advertising tabs/windows. Every
-      // other source remains completely unsandboxed.
-      if(currentServer === 'flix2watchapi') {
-        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-downloads');
-      } else {
-        iframe.removeAttribute('sandbox');
-      }
+      // Keep every provider unsandboxed. Flix2Watch API / VidSrcMe uses a
+      // provider-side first-click gate on some sessions; blocking that popup can
+      // make the Play button repeat the same action forever instead of advancing
+      // to playback. The parent page also never changes source just because a
+      // provider opens/closes a separate tab.
+      iframe.removeAttribute('sandbox');
 
       iframe.src = embedUrl;
       const targetLabel = mediaType === 'tv' ? `S${seasonNum}E${episodeNum}` : 'Movie';
