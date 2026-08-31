@@ -3001,11 +3001,6 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
             <h3>Theme Controls</h3>
             <p>Switch the whole interface between red, blue, green, purple, amber and matrix themes.</p>
           </div>
-          <div class="feature-card">
-            <i class="fa-solid fa-shield-halved"></i>
-            <h3>NetTools</h3>
-            <p>View connection information and latency while keeping your public IP masked until you choose to reveal it.</p>
-          </div>
         </div>
       </section>
 
@@ -3087,7 +3082,6 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
         <div class="footer-links">
           <button type="button" onclick="openGlobalChat(); return false;">Open Chat</button>
           <button type="button" onclick="openAccountModal()">Account</button>
-          <button type="button" onclick="openNetModal()">NetTools</button>
           <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
         </div>
       </div>
@@ -3134,25 +3128,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
       <div class="f2w-horizontal" id="f2w-upcoming-row"><div class="f2w-empty-loader"><i class="fa-solid fa-circle-notch fa-spin"></i>Loading on demand…</div></div>
     </section>
 </main>
-<div class="modal-overlay" id="net-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title"><i class="fa-solid fa-shield-halved"></i> Network & IP Inspector</div>
-        <button class="close-modal" onclick="closeNetModal()"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="net-stat-row">
-        <span class="net-stat-label">Public IP Address:</span>
-        <div class="ip-stat-controls">
-          <span class="net-stat-value" id="ip-display">•••.•••.•••.•••</span>
-          <button class="ip-toggle-btn" id="ip-toggle-btn" type="button" onclick="toggleIPVisibility()">Show</button>
-        </div>
-      </div>
-      <div class="net-stat-row"><span class="net-stat-label">Connection Status:</span><span id="net-status-badge" class="status-badge online">Checking...</span></div>
-      <div class="net-stat-row"><span class="net-stat-label">Latency Ping Test:</span><span class="net-stat-value" id="ping-display">-- ms</span></div>
-      <div class="net-stat-row"><span class="net-stat-label">Browser Client Signature:</span><span class="net-stat-value" id="browser-display" style="font-size:.7rem;max-width:220px;overflow:hidden;text-overflow:ellipsis;">Analyzing...</span></div>
-      <button class="action-btn" onclick="runPingTest()"><i class="fa-solid fa-rotate"></i> Run Full Telemetry Diagnostics</button>
-    </div>
-  </div>
+
 
   <div class="site-announcement" id="site-announcement" role="status" aria-live="polite">
     <i class="fa-solid fa-bullhorn site-announcement-icon" aria-hidden="true"></i>
@@ -4831,96 +4807,6 @@ if(currentUser){
       .forEach(m=>m.classList.remove('show'));
   }
 
-  /* ================= NETWORK ================= */
-
-  function openNetModal(){
-    ipVisible=false;
-    renderClientIP();
-    document.getElementById('net-modal').classList.add('open');
-    checkNetworkStatus();
-  }
-
-  function closeNetModal(){
-    document.getElementById('net-modal').classList.remove('open');
-  }
-
-  let clientPublicIP='';
-  let ipVisible=false;
-
-  function renderClientIP(){
-    const display=document.getElementById('ip-display');
-    const button=document.getElementById('ip-toggle-btn');
-    if(!display||!button)return;
-
-    if(!clientPublicIP){
-      display.textContent='Masked / Protected';
-      button.textContent='Show';
-      button.disabled=true;
-      return;
-    }
-
-    display.textContent=ipVisible?clientPublicIP:'•••.•••.•••.•••';
-    button.textContent=ipVisible?'Hide':'Show';
-    button.disabled=false;
-  }
-
-  function toggleIPVisibility(){
-    if(!clientPublicIP)return;
-    ipVisible=!ipVisible;
-    renderClientIP();
-  }
-
-  function fetchClientIP(){
-    const display=document.getElementById('ip-display');
-    const button=document.getElementById('ip-toggle-btn');
-
-    if(display)display.textContent='•••.•••.•••.•••';
-    if(button){
-      button.textContent='Show';
-      button.disabled=true;
-    }
-
-    fetch('https://api.ipify.org?format=json')
-      .then(r=>r.json())
-      .then(d=>{
-        clientPublicIP=String(d.ip||'').trim();
-        ipVisible=false;
-        renderClientIP();
-      })
-      .catch(()=>{
-        clientPublicIP='';
-        ipVisible=false;
-        renderClientIP();
-      });
-  }
-
-  function checkNetworkStatus(){
-    const b=document.getElementById('net-status-badge');
-    b.textContent=navigator.onLine?'Operational':'Disconnected';
-    b.className=`status-badge ${navigator.onLine?'online':'offline'}`;
-  }
-
-  function runPingTest(){
-    const p=document.getElementById('ping-display');
-    const t=document.getElementById('telemetry-ping');
-    p.textContent='Analyzing...';
-
-    const start=performance.now();
-
-    fetch(
-      'https://image.tmdb.org/t/p/w45/wwemzKWzjKYJFfCeiB57q3r4Bcm.jpg?'+Date.now(),
-      {mode:'no-cors'}
-    )
-      .then(()=>{
-        const ms=Math.round(performance.now()-start);
-        p.textContent=`${ms} ms`;
-        t.textContent=`${ms} ms`;
-        logTerminal(`Network diagnostics passed. Latency: ${ms}ms`,'success');
-      })
-      .catch(()=>{
-        p.textContent='Timeout';
-      });
-  }
 
   /* ================= TMDB ================= */
 
@@ -6460,4 +6346,5 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 <!-- f2w-force-save:compact-modal-v11:1788210997:home -->
 <!-- f2w-force-save:home-remove-login-required:1788211424 -->
 <!-- f2w-force-save:sitewide-auth-v13:1788211530:home/index.html -->
+<!-- f2w-force-save:remove-nettools-v14:1788211808:home/index.html -->
  
