@@ -1534,23 +1534,11 @@ async function handleCommand(
     }
 
     if (command === "/slowmode") {
-      const seconds = Math.max(0, Math.min(3600, Number(argument) || 0));
-      await setSiteSetting("chat_slow_mode_seconds", seconds);
-      await auditAlias(
-        payload.owner ? "josh" : payload.alias,
-        "chat_slow_mode",
-        "chat",
-        null,
-        { seconds },
-      );
-
       return {
         success: true,
         command: true,
         visible_to_sender_only: true,
-        message: seconds
-          ? `Slow mode set to ${seconds} seconds.`
-          : "Slow mode disabled.",
+        message: "Public chat slow mode is permanently locked to 5 seconds.",
       };
     }
 
@@ -1943,6 +1931,29 @@ async function activeAccountLoginBan(userId: string) {
     return null;
   }
   return data;
+}
+
+
+async function enforcePublicChatSlowMode(userId: string | null): Promise<void> {
+  if (!userId) throw new Error("Authentication required");
+
+  const { data, error } = await supabase.rpc("enforce_public_chat_slowmode_v37", {
+    p_user_id: userId,
+  });
+
+  if (error) {
+    throw new Error(error.message || "Slow mode check failed");
+  }
+
+  const result = Array.isArray(data) ? data[0] : data;
+  const allowed = result?.allowed !== false;
+  const retryAfter = Number(result?.retry_after_seconds || 0);
+
+  if (!allowed) {
+    const err = new Error(`Slow mode: wait ${Math.max(1, retryAfter)} seconds before sending another public message.`);
+    (err as any).status = 429;
+    throw err;
+  }
 }
 
 Deno.serve(async (request: Request) => {
@@ -2571,22 +2582,9 @@ Deno.serve(async (request: Request) => {
         );
       }
 
-      if (!payload.owner && !moderator && config.chat_slow_mode_seconds > 0) {
-        const remaining = await enforceSlowMode(
-          alias,
-          config.chat_slow_mode_seconds,
-        );
-
-        if (remaining > 0) {
-          return json(
-            {
-              success: false,
-              error: `Slow mode: wait ${remaining} second${remaining === 1 ? "" : "s"}.`,
-            },
-            429,
-          );
-        }
-      }
+      // Permanent public-chat slow mode: EVERY account, including Owner/Staff/Mods.
+      // DMs do not pass through this public-chat insert path and are not rate-limited.
+      await enforcePublicChatSlowMode(payload.sub);
 
       const tokenHash = await sha256Hex(token);
 
@@ -2790,4 +2788,5 @@ Deno.serve(async (request: Request) => {
 // f2w-force-save:cumulative-worker-v17:1788213599
 // f2w-force-save:hard-chat24-cleanup-v31:1788217048
 // f2w-force-save:worker-fast-request-path-v34:1788217565
+// f2w-force-save:public-chat-slowmode-v37:1788218042
  

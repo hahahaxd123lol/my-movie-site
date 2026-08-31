@@ -6601,6 +6601,97 @@ if(currentUser){
 })();
 </script>
 
+
+<style id="f2w-chat-slowmode-v37">
+  .f2w-chat-slowmode-note {
+    display:inline-flex;align-items:center;gap:6px;
+    margin-left:8px;color:#7188a3;font-size:.66rem;font-weight:750;
+  }
+  .f2w-chat-slowmode-note i { color:#ff3948; }
+  .f2w-chat-slowmode-note.active { color:#ff7a85; }
+</style>
+
+<!-- f2w-force-save:chat-slowmode-ui-v37:1788218042 -->
+
+<script id="f2w-chat-slowmode-v37-js">
+(() => {
+  'use strict';
+  const WAIT_MS=5000;
+  let publicChatLastSent=0;
+  let tick=null;
+
+  function inDmMode(){
+    const active=document.querySelector('[data-chat-mode="dm"].active,.dm-tab.active,#dm-tab.active,.chat-tab[data-mode="dm"].active');
+    return !!active;
+  }
+
+  function findSend(){
+    return document.querySelector('#send-button,#send-btn,.chat-send-button,.send-btn,button[onclick*="sendMessage"]');
+  }
+
+  function ensureNote(){
+    let el=document.getElementById('f2w-chat-slowmode-note');
+    if(el)return el;
+    const send=findSend();
+    if(!send)return null;
+    el=document.createElement('span');
+    el.id='f2w-chat-slowmode-note';
+    el.className='f2w-chat-slowmode-note';
+    send.parentElement?.appendChild(el);
+    return el;
+  }
+
+  function update(){
+    const send=findSend(),el=ensureNote();
+    if(!send||!el)return;
+    if(inDmMode()){
+      el.classList.remove('active');
+      el.innerHTML='<i class="fa-solid fa-envelope"></i><span>DMs: no slow mode · delete after 24h</span>';
+      return;
+    }
+    const left=Math.max(0,WAIT_MS-(Date.now()-publicChatLastSent));
+    if(left>0){
+      el.classList.add('active');
+      el.innerHTML=`<i class="fa-solid fa-clock"></i><span>Slow mode: ${Math.ceil(left/1000)}s</span>`;
+    }else{
+      el.classList.remove('active');
+      el.innerHTML='<i class="fa-solid fa-clock"></i><span>Public slow mode: 5s</span>';
+    }
+  }
+
+  function startCooldown(){
+    publicChatLastSent=Date.now();
+    update();
+    clearInterval(tick);
+    tick=setInterval(()=>{
+      update();
+      if(Date.now()-publicChatLastSent>=WAIT_MS){clearInterval(tick);tick=null;}
+    },250);
+  }
+
+  // Observe successful public-chat worker POSTs. DMs use separate Supabase paths.
+  const rawFetch=window.fetch.bind(window);
+  window.fetch=async(...args)=>{
+    const response=await rawFetch(...args);
+    try{
+      const request=args[0];
+      const init=args[1]||{};
+      const url=typeof request==='string'?request:request?.url||'';
+      if(!inDmMode() && String(init.method||'GET').toUpperCase()==='POST' && /rapid-worker/i.test(url)){
+        const copy=response.clone();
+        const payload=await copy.json().catch(()=>null);
+        if(response.ok && payload?.success && !payload?.command)startCooldown();
+      }
+    }catch{}
+    return response;
+  };
+
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(update,120));
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('[data-chat-mode],.chat-tab,.dm-tab'))setTimeout(update,0);
+  },{passive:true});
+})();
+</script>
 </body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
@@ -6648,4 +6739,5 @@ if(currentUser){
 <!-- f2w-force-save:header-button-fit-v35:1788217735:chat/index.html -->
 <!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:chat/index.html -->
 <!-- f2w-force-save:footer-cache-v36:1788217803:chat/index.html -->
+<!-- f2w-force-save:chat-slowmode-page-v37:1788218042 -->
  
