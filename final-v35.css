@@ -1163,3 +1163,37 @@ body.f2w-main-page img {
 html.f2w-username-gated body{overflow:hidden!important}
 /* f2w-force-save:mandatory-username-gate-css-v40:1788218691 */
  
+
+/* ============================================================
+   F2W v41 — SITEWIDE CAROUSEL ARROW SAFETY
+   Navigation arrows must not sit over titles or body text.
+   ============================================================ */
+.f2w-carousel,
+.carousel,
+.slider,
+.hero-carousel {
+  position:relative;
+}
+
+.f2w-carousel-arrow,
+.carousel-arrow,
+.slider-arrow,
+.hero-arrow {
+  flex:0 0 auto!important;
+  box-sizing:border-box!important;
+  line-height:1!important;
+  z-index:8!important;
+}
+
+/* Never allow generic arrow controls to inherit huge title/button dimensions. */
+.f2w-carousel-arrow i,
+.carousel-arrow i,
+.slider-arrow i,
+.hero-arrow i,
+.v19-hero-arrow i {
+  pointer-events:none!important;
+  line-height:1!important;
+}
+
+/* f2w-force-save:sitewide-carousel-arrow-safety-v41:1788219230 */
+ 
