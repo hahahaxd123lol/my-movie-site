@@ -329,6 +329,38 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
   <link rel="stylesheet" href="/final-v35.css">
+
+<style id="support-v36-ticket-ui">
+  /* Support V36: larger typography + horizontal ticket rail + chat modal */
+  .f2w-support-page main{max-width:1280px!important;padding:34px 26px 56px!important}
+  .f2w-support-page .support-v16-hero{padding:28px!important}
+  .f2w-support-page .support-v16-hero h1{font-size:clamp(2.6rem,5vw,4.6rem)!important;line-height:.98!important}
+  .f2w-support-page .support-v16-hero p{font-size:1rem!important;line-height:1.7!important;max-width:850px!important}
+  .f2w-support-page .support-v16-kicker{font-size:.78rem!important;letter-spacing:.13em!important}
+  .f2w-support-page .support-v16-grid{gap:14px!important;margin-top:18px!important}
+  .f2w-support-page .support-v16-quick{padding:20px!important;min-height:150px!important;text-align:left!important}
+  .f2w-support-page .support-v16-quick i{font-size:1.35rem!important}
+  .f2w-support-page .support-v16-quick strong{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;font-size:1.08rem!important;line-height:1.25!important;letter-spacing:0!important;text-transform:none!important;font-weight:850!important}
+  .f2w-support-page .support-v16-quick span{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;font-size:.88rem!important;line-height:1.55!important;font-weight:500!important;letter-spacing:0!important}
+  .f2w-support-page .support-v16-layout{grid-template-columns:minmax(320px,.72fr) minmax(0,1.28fr)!important;gap:16px!important;margin-top:18px!important}
+  .f2w-support-page .support-v16-card{padding:21px!important}
+  .f2w-support-page .support-v16-card-head strong{font-size:1rem!important}.f2w-support-page .support-v16-card-head span{font-size:.78rem!important}
+  .f2w-support-page label{font-size:.72rem!important}.f2w-support-page input,.f2w-support-page textarea,.f2w-support-page select{font-size:.92rem!important;padding:12px 13px!important}
+  .support-v36-ticket-rail{display:flex;gap:11px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin}
+  .support-v36-ticket-pill{appearance:none;flex:0 0 min(310px,85vw);scroll-snap-align:start;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;margin:0!important;padding:14px 15px!important;border:1px solid rgba(255,255,255,.09)!important;border-radius:12px!important;background:#08111c!important;color:#fff!important;text-align:left!important;cursor:pointer!important}
+  .support-v36-ticket-pill:hover,.support-v36-ticket-pill:focus-visible{border-color:color-mix(in srgb,var(--accent) 55%,#2a3b51)!important;background:#0b1724!important;outline:none!important}
+  .support-v36-ticket-pill strong{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.support-v36-ticket-pill small{display:block;color:#8292a8;font-size:.72rem;margin-top:4px}.support-v36-ticket-pill .status{font-size:.66rem;text-transform:uppercase;white-space:nowrap}
+  .support-v36-staff-moved{padding:24px;border:1px solid rgba(229,9,20,.20);border-radius:13px;background:rgba(229,9,20,.045);text-align:center}.support-v36-staff-moved i{font-size:1.5rem;color:var(--accent)}.support-v36-staff-moved strong{display:block;font-size:1rem;margin-top:9px}.support-v36-staff-moved p{font-size:.84rem!important;margin:6px auto 12px!important;max-width:520px!important}
+  .support-v36-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.78);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}.support-v36-modal[hidden]{display:none!important}
+  .support-v36-chat{width:min(760px,100%);max-height:min(820px,calc(100vh - 36px));display:grid;grid-template-rows:auto minmax(220px,1fr) auto;border:1px solid #29394e;border-radius:18px;overflow:hidden;background:#07101a;box-shadow:0 30px 100px rgba(0,0,0,.72)}
+  .support-v36-chat-head{display:flex;gap:12px;align-items:center;padding:16px 17px;border-bottom:1px solid #1c2a3a;background:#091522}.support-v36-chat-title{min-width:0;flex:1}.support-v36-chat-title strong{display:block;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.support-v36-chat-title span{display:block;color:#8393a9;font-size:.73rem;margin-top:3px}.support-v36-close{margin:0!important;width:40px;height:40px;padding:0!important;display:grid!important;place-items:center;border:1px solid #25364a!important;border-radius:10px!important;background:#0d1926!important;color:#fff!important}
+  .support-v36-messages{overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#07101a,#060c14)}
+  .support-v36-bubble{max-width:78%;padding:10px 12px;border:1px solid #243447;border-radius:13px;background:#0c1723;align-self:flex-start}.support-v36-bubble.mine{align-self:flex-end;background:rgba(229,9,20,.10);border-color:rgba(229,9,20,.28)}.support-v36-bubble.staff,.support-v36-bubble.owner{border-color:rgba(168,85,247,.32)}.support-v36-bubble small{display:block;color:#8090a7;font-size:.67rem;margin-bottom:5px}.support-v36-bubble .body{font-size:.88rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.support-v36-bubble img{display:block;max-width:min(420px,100%);max-height:360px;object-fit:contain;border-radius:10px;margin-top:8px;border:1px solid rgba(255,255,255,.09);background:#03070c}
+  .support-v36-compose{padding:13px;border-top:1px solid #1c2a3a;background:#091522}.support-v36-compose textarea{min-height:78px!important;max-height:170px!important;resize:vertical}.support-v36-compose-row{display:flex;gap:8px;align-items:center;margin-top:8px}.support-v36-compose-row button{margin:0!important}.support-v36-attach{background:#101c29!important;color:#fff!important;border-color:#293a4f!important}.support-v36-file-name{min-width:0;flex:1;color:#8393a9;font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.support-v36-send{margin-left:auto!important}.support-v36-chat-status{min-height:18px;margin-top:6px;color:#8fa0b5;font-size:.7rem}.support-v36-chat-status.error{color:#fca5a5}
+  @media(max-width:850px){.f2w-support-page .support-v16-layout{grid-template-columns:1fr!important}.support-v36-chat{max-height:calc(100vh - 24px)}.support-v36-bubble{max-width:90%}}
+  @media(max-width:600px){.f2w-support-page main{padding:20px 12px 40px!important}.f2w-support-page .support-v16-grid{grid-template-columns:1fr!important}.support-v36-modal{padding:8px}.support-v36-chat{border-radius:13px;max-height:calc(100vh - 16px)}.support-v36-messages{padding:12px}}
+</style>
+
 </head>
 <body class="f2w-main-page f2w-support-page">
 <header>
@@ -565,6 +597,27 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   </section>
 </main>
 
+<div class="support-v36-modal" id="support-ticket-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="support-ticket-modal-title">
+  <div class="support-v36-chat">
+    <div class="support-v36-chat-head">
+      <div class="support-v36-chat-title"><strong id="support-ticket-modal-title">Support ticket</strong><span id="support-ticket-modal-meta"></span></div>
+      <button class="support-v36-close" type="button" onclick="closeTicketModal()" aria-label="Close ticket"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="support-v36-messages" id="support-ticket-modal-messages"></div>
+    <div class="support-v36-compose">
+      <textarea id="support-ticket-modal-reply" maxlength="4000" placeholder="Write a reply…"></textarea>
+      <div class="support-v36-compose-row">
+        <input id="support-ticket-image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="selectSupportImage(this.files?.[0])">
+        <button class="support-v16-secondary support-v36-attach" type="button" onclick="document.getElementById('support-ticket-image').click()"><i class="fa-regular fa-image"></i> Image</button>
+        <span class="support-v36-file-name" id="support-ticket-file-name">No image selected</span>
+        <button class="support-v16-primary support-v36-send" id="support-ticket-send" type="button" onclick="sendTicketModalReply()"><i class="fa-solid fa-paper-plane"></i> Send</button>
+      </div>
+      <div class="support-v36-chat-status" id="support-ticket-chat-status"></div>
+    </div>
+  </div>
+</div>
+
+
 
 <script>
 const db=window.supabase.createClient(
@@ -657,72 +710,154 @@ async function createTicket(){
   }
 }
 
-function renderTicket(ticket){
-  const messages=[...(ticket.support_ticket_messages||[])]
-    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+let supportTickets=[];
+let activeSupportTicketId=null;
+let pendingSupportImage=null;
+let currentSupportUser=null;
+let currentSupportRole='member';
 
+function ticketStatusLabel(value='open'){
+  return String(value||'open').replaceAll('_',' ');
+}
+
+function parseSupportMessage(raw=''){
+  const text=String(raw||'');
+  const match=text.match(/\[\[support-image:(https:\/\/[^\]]+)\]\]/i);
+  const imageUrl=match?.[1]||'';
+  const body=match?text.replace(match[0],'').trim():text;
+  return {body,imageUrl};
+}
+
+function safeSupportImageUrl(url=''){
+  try{
+    const u=new URL(url);
+    return u.protocol==='https:' && u.hostname==='viqufxlcxwgboyxbdhjb.supabase.co' && u.pathname.includes('/storage/v1/object/public/chat-media/') ? u.href : '';
+  }catch{return ''}
+}
+
+function renderTicket(ticket){
   return `
-    <article class="support-v16-ticket">
-      <div class="support-v16-ticket-head">
-        <div>
-          <strong>${esc(ticket.subject)}</strong>
-          <div class="support-v16-ticket-user"><i class="fa-solid fa-user"></i> Created by @${esc(ticket.username||'user')}</div>
-          <div class="support-v16-ticket-meta">Updated ${esc(fmt(ticket.updated_at))} · ${esc(ticket.priority||'normal')} priority</div>
-        </div>
-        <span class="support-v16-ticket-status">${esc(ticket.status||'open')}</span>
-      </div>
-      <div class="support-v16-messages">
-        ${messages.map(message=>`
-          <div class="support-v16-msg ${esc(message.sender_role)}">
-            <small>${esc(message.sender_role)} · ${esc(fmt(message.created_at))}</small>
-            <div>${esc(message.message)}</div>
-          </div>`).join('')}
-      </div>
-      <div class="support-v16-reply">
-        <textarea id="reply-${ticket.id}" maxlength="4000" placeholder="Reply to this ticket…"></textarea>
-        <button type="button" onclick="reply('${ticket.id}')"><i class="fa-solid fa-paper-plane"></i> Send</button>
-      </div>
-    </article>`;
+    <button class="support-v36-ticket-pill" type="button" onclick="openTicketModal('${ticket.id}')">
+      <span><strong>${esc(ticket.subject)}</strong><small>Updated ${esc(fmt(ticket.updated_at))} · ${esc(ticket.priority||'normal')} priority</small></span>
+      <span class="status">${esc(ticketStatusLabel(ticket.status))}</span>
+    </button>`;
+}
+
+function renderTicketModal(ticket){
+  const messages=[...(ticket?.support_ticket_messages||[])].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  document.getElementById('support-ticket-modal-title').textContent=ticket?.subject||'Support ticket';
+  document.getElementById('support-ticket-modal-meta').textContent=`${ticketStatusLabel(ticket?.status)} · ${ticket?.priority||'normal'} priority · updated ${fmt(ticket?.updated_at)}`;
+  const host=document.getElementById('support-ticket-modal-messages');
+  host.innerHTML=messages.map(message=>{
+    const parsed=parseSupportMessage(message.message);
+    const img=safeSupportImageUrl(parsed.imageUrl);
+    const mine=message.sender_user_id && currentSupportUser?.id===message.sender_user_id;
+    return `<div class="support-v36-bubble ${mine?'mine':''} ${esc(message.sender_role||'member')}">
+      <small>${esc(mine?'You':message.sender_role||'member')} · ${esc(fmt(message.created_at))}</small>
+      ${parsed.body?`<div class="body">${esc(parsed.body)}</div>`:''}
+      ${img?`<a href="${esc(img)}" target="_blank" rel="noopener"><img src="${esc(img)}" alt="Support attachment"></a>`:''}
+    </div>`;
+  }).join('')||'<div class="support-v16-empty">No messages yet.</div>';
+  requestAnimationFrame(()=>{host.scrollTop=host.scrollHeight});
+}
+
+function openTicketModal(id){
+  const ticket=supportTickets.find(t=>String(t.id)===String(id));
+  if(!ticket)return;
+  activeSupportTicketId=ticket.id;
+  pendingSupportImage=null;
+  const input=document.getElementById('support-ticket-image'); if(input)input.value='';
+  document.getElementById('support-ticket-file-name').textContent='No image selected';
+  document.getElementById('support-ticket-modal-reply').value='';
+  setSupportChatStatus('');
+  renderTicketModal(ticket);
+  const modal=document.getElementById('support-ticket-modal');
+  modal.hidden=false;modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('support-ticket-modal-reply')?.focus(),30);
+}
+
+function closeTicketModal(){
+  const modal=document.getElementById('support-ticket-modal');
+  modal.hidden=true;modal.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  activeSupportTicketId=null;pendingSupportImage=null;
+}
+
+function selectSupportImage(file){
+  pendingSupportImage=null;
+  const name=document.getElementById('support-ticket-file-name');
+  if(!file){if(name)name.textContent='No image selected';return}
+  const allowed=new Set(['image/jpeg','image/png','image/webp','image/gif']);
+  if(!allowed.has(file.type)){setSupportChatStatus('Use JPG, PNG, WEBP or GIF.',true);return}
+  if(file.size>5*1024*1024){setSupportChatStatus('Image must be 5 MB or smaller.',true);return}
+  pendingSupportImage=file;if(name)name.textContent=file.name;setSupportChatStatus('Image ready to send.');
+}
+
+function setSupportChatStatus(message,error=false){
+  const el=document.getElementById('support-ticket-chat-status');if(!el)return;
+  el.textContent=message||'';el.classList.toggle('error',Boolean(error));
+}
+
+async function uploadSupportImage(ticketId){
+  if(!pendingSupportImage)return '';
+  const {data:userData}=await db.auth.getUser();
+  const user=userData?.user;if(!user)throw new Error('Sign in again before uploading.');
+  const ext=(pendingSupportImage.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+  const objectPath=`${user.id}/support/${ticketId}/${Date.now()}-${crypto.randomUUID?.()||Math.random().toString(36).slice(2)}.${ext}`;
+  const {error}=await db.storage.from('chat-media').upload(objectPath,pendingSupportImage,{upsert:false,contentType:pendingSupportImage.type,cacheControl:'3600'});
+  if(error)throw error;
+  const {data}=db.storage.from('chat-media').getPublicUrl(objectPath);
+  return data?.publicUrl||'';
 }
 
 async function loadTickets(){
   const host=document.getElementById('tickets');
   if(!host)return;
-
   host.innerHTML='<div class="support-v16-empty">Loading tickets…</div>';
-
   try{
-    const {data,error}=await db
-      .from('support_tickets')
-      .select('*,support_ticket_messages(*)')
-      .order('updated_at',{ascending:false});
-
+    const {data:userData,error:userError}=await db.auth.getUser();
+    if(userError||!userData?.user)throw userError||new Error('Sign in to view tickets.');
+    currentSupportUser=userData.user;
+    try{
+      const state=await rpc('get_staff_context');
+      currentSupportRole=String(state?.role||'member').toLowerCase();
+    }catch{currentSupportRole='member'}
+    if(['owner','staff'].includes(currentSupportRole)){
+      supportTickets=[];
+      host.innerHTML=`<div class="support-v36-staff-moved"><i class="fa-solid fa-headset"></i><strong>Staff ticket queue moved</strong><p>Owner and Staff ticket management now lives in the Staff Control Center so this page stays clean for normal support requests.</p><a class="support-v16-primary" href="/staff/?tab=support" style="display:inline-flex;text-decoration:none"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Support Tickets</a></div>`;
+      return;
+    }
+    const {data,error}=await db.from('support_tickets').select('*,support_ticket_messages(*)').eq('user_id',currentSupportUser.id).order('updated_at',{ascending:false});
     if(error)throw error;
-
-    host.innerHTML=(data||[]).map(renderTicket).join('')
-      ||'<div class="support-v16-empty">No tickets yet. Use the form to start one.</div>';
-  }catch(error){
-    host.innerHTML=`<div class="support-v16-empty">${esc(error.message||'Could not load tickets.')}</div>`;
-  }
+    supportTickets=data||[];
+    host.innerHTML=supportTickets.length?`<div class="support-v36-ticket-rail">${supportTickets.map(renderTicket).join('')}</div>`:'<div class="support-v16-empty">No tickets yet. Use the form to start one.</div>';
+    if(activeSupportTicketId){const active=supportTickets.find(t=>String(t.id)===String(activeSupportTicketId));if(active)renderTicketModal(active)}
+  }catch(error){host.innerHTML=`<div class="support-v16-empty">${esc(error?.message||'Could not load tickets.')}</div>`}
 }
 
-async function reply(id){
-  const input=document.getElementById(`reply-${id}`);
+async function sendTicketModalReply(){
+  if(!activeSupportTicketId)return;
+  const input=document.getElementById('support-ticket-modal-reply');
+  const button=document.getElementById('support-ticket-send');
   const message=input?.value.trim()||'';
-  if(!message)return;
-
+  if(!message&&!pendingSupportImage){setSupportChatStatus('Write a message or choose an image.',true);return}
+  button.disabled=true;setSupportChatStatus(pendingSupportImage?'Uploading image…':'Sending…');
   try{
-    await rpc('add_support_ticket_message',{
-      p_ticket_id:id,
-      p_message:message
-    });
-    await loadTickets();
-  }catch(error){
-    setTicketStatus(error.message||'Could not send reply.',true);
-  }
+    const imageUrl=await uploadSupportImage(activeSupportTicketId);
+    const payload=`${message}${message&&imageUrl?'\n':''}${imageUrl?`[[support-image:${imageUrl}]]`:''}`.slice(0,4000);
+    await rpc('add_support_ticket_message',{p_ticket_id:activeSupportTicketId,p_message:payload});
+    input.value='';pendingSupportImage=null;document.getElementById('support-ticket-image').value='';document.getElementById('support-ticket-file-name').textContent='No image selected';
+    setSupportChatStatus('Sent.');await loadTickets();
+  }catch(error){setSupportChatStatus(error?.message||'Could not send reply.',true)}finally{button.disabled=false}
 }
+
+async function reply(id){activeSupportTicketId=id;await sendTicketModalReply()}
 
 document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('support-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='support-ticket-modal')closeTicketModal()});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('support-ticket-modal')?.hidden)closeTicketModal()});
+  document.getElementById('support-ticket-modal-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendTicketModalReply()}});
   const message=document.getElementById('ticket-message');
   if(message){
     message.addEventListener('keydown',event=>{
