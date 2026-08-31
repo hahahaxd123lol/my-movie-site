@@ -378,35 +378,30 @@
   function paintRoleName(el,role,username){
     if(!el||!role)return;
     role=String(role||'').trim().toLowerCase();
+
+    const aliases={
+      'website owner':'owner','site owner':'owner','owner':'owner',
+      'staff':'staff','moderator':'moderator','mod':'moderator',
+      'support':'support','developer':'developer','verified':'verified',
+      'contributor':'contributor','curator':'curator'
+    };
+    role=aliases[role]||role;
+
     const allowed=['owner','staff','moderator','support','developer','verified','contributor','curator'];
     if(!allowed.includes(role))return;
 
-    const previous=el.querySelector?.('.f2w-role-name-text')?.textContent;
-    const currentText=String(el.dataset.f2wPlainText||previous||el.textContent||'').trim();
-    if(!currentText)return;
+    // Undo older wrapper-based versions once, then never rebuild the text again.
+    const oldText=el.querySelector?.('.f2w-role-name-text')?.textContent;
+    if(oldText){
+      el.textContent=oldText;
+    }
 
-    el.dataset.f2wPlainText=currentText;
+    allowed.forEach(r=>el.classList.remove(`f2w-role-${r}`));
+    el.classList.add('f2w-role-name',`f2w-role-${role}`);
     el.dataset.f2wRoleDecorated='1';
     el.dataset.f2wRole=role;
-    if(username)el.dataset.username=username;
-
-    el.textContent='';
-    const wrap=document.createElement('span');
-    wrap.className=`f2w-role-name f2w-role-${role}`;
-    wrap.dataset.role=role;
-    wrap.style.setProperty('--f2w-particles-url','url("https://i.ibb.co/HC3GW9B/Particles.gif")');
-
-    const text=document.createElement('span');
-    text.className='f2w-role-name-text';
-    text.textContent=currentText;
-
-    const dust=document.createElement('span');
-    dust.className='f2w-role-fairy-dust';
-    dust.setAttribute('aria-hidden','true');
-    dust.innerHTML='<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>';
-
-    wrap.append(text,dust);
-    el.appendChild(wrap);
+    if(username)el.dataset.username=String(username).replace(/^@/,'');
+    el.style.setProperty('--f2w-particles-url','url("https://i.ibb.co/HC3GW9B/Particles.gif")');
   }
   window.f2wPaintRoleName=paintRoleName;
   async function decorateNames(){
@@ -483,6 +478,7 @@
       if(role)paintRoleName(el,role,username);
     });
   }
+  window.decorateNames=decorateNames;
 
   /* ---------- direct-message search ---------- */
   function installDmSearch(){
@@ -1375,4 +1371,5 @@
 // f2w-force-save:role-name-fairy-dust-v25:1788215879
 // f2w-force-save:role-sparkle-stability-v27:1788216279
 // f2w-force-save:role-name-effects-v30:1788216738
+// f2w-force-save:stable-role-name-v31:1788217048
  

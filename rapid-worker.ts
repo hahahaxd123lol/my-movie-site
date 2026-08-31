@@ -371,7 +371,7 @@ async function cleanupOldMessages() {
   // Process in bounded batches so cleanup stays fast even after a quiet period.
   // Every deleted row is removed from public.chat_messages, and any chat-media
   // URL embedded in the message is deleted from Storage as well.
-  for (let batch = 0; batch < 8; batch += 1) {
+  for (let batch = 0; batch < 20; batch += 1) {
     const { data: oldMessages, error: readError } = await supabase
       .from("chat_messages")
       .select("id, message")
@@ -2786,4 +2786,5 @@ Deno.serve(async (request: Request) => {
 });
 // f2w-force-save:ban-evasion-worker-v1:1788212206
 // f2w-force-save:cumulative-worker-v17:1788213599
+// f2w-force-save:hard-chat24-cleanup-v31:1788217048
  

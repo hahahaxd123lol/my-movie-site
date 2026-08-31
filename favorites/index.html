@@ -2527,10 +2527,10 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=30-1788216738">
+  <link rel="stylesheet" href="/final-v35.css?v=31-1788217048">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=30-1788216738">
+  <link rel="stylesheet" href="/global-header-v1.css?v=31-1788217048">
   <script src="/global-header-chat-v1.js?v=26-1788216027" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
@@ -2775,7 +2775,7 @@ body.f2w-main-page>header *{transition-property:color,background-color,border-co
           <div class="v17-dm-thread-head" id="v17-dm-thread-head">
             <div>
               <strong>Select a conversation</strong>
-              <span>Your direct messages stay until the sender deletes them.</span>
+              <span>Direct messages automatically delete after 24 hours.</span>
             </div>
           </div>
 
@@ -3777,8 +3777,16 @@ body.f2w-main-page>header *{transition-property:color,background-color,border-co
         usernameEl.dataset.f2wPlainText=usernameEl.textContent;
         usernameEl.dataset.username=String(usernameEl.textContent||'').replace(/^@/,'');
         delete usernameEl.dataset.f2wRoleDecorated;
-        const effectRole=String(roleText||'').toLowerCase();
-        if(['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(effectRole) && typeof window.f2wPaintRoleName==='function'){
+        const roleLabel=String(roleText||'').trim().toLowerCase();
+        const effectRole=roleLabel.includes('owner')?'owner':
+          roleLabel.includes('staff')?'staff':
+          roleLabel.includes('moderator')?'moderator':
+          roleLabel.includes('support')?'support':
+          roleLabel.includes('developer')?'developer':
+          roleLabel.includes('verified')?'verified':
+          roleLabel.includes('contributor')?'contributor':
+          roleLabel.includes('curator')?'curator':'';
+        if(effectRole && typeof window.f2wPaintRoleName==='function'){
           window.f2wPaintRoleName(usernameEl,effectRole,usernameEl.dataset.username);
         }
       }
@@ -5571,7 +5579,7 @@ setTimeout(loadLibraryFavorites,0);
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=30-1788216738" defer></script>
+  <script src="/final-v35.js?v=31-1788217048" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:favorites:86de6ac719 -->
@@ -5604,4 +5612,5 @@ setTimeout(loadLibraryFavorites,0);
 <!-- f2w-force-save:fade-js-cache-v26:1788216027:favorites/index.html -->
 <!-- f2w-force-save:v27-cache:1788216279:favorites/index.html -->
 <!-- f2w-force-save:v30-page:1788216738:favorites/index.html -->
+<!-- f2w-force-save:v31-cache:1788217048:favorites/index.html -->
  

@@ -1485,3 +1485,72 @@ body.f2w-main-page > header #user-search-results.show {
 }
 /* f2w-force-save:user-search-geometry-v27:1788216279 */
  
+
+/* ============================================================
+   F2W v31 — NOTIFICATION READABILITY
+   Bigger dropdown and text; header button geometry stays fixed.
+   ============================================================ */
+body.f2w-main-page > header .v17-notification-menu {
+  width:430px!important;
+  min-width:430px!important;
+  max-width:min(430px,calc(100vw - 20px))!important;
+  max-height:570px!important;
+  border-radius:13px!important;
+}
+
+body.f2w-main-page > header .v17-notification-head {
+  min-height:58px!important;
+  padding:14px 15px!important;
+  font-size:13px!important;
+}
+
+body.f2w-main-page > header .v17-notification-head strong {
+  font-size:13px!important;
+  font-weight:850!important;
+}
+
+body.f2w-main-page > header .v17-notification-head button,
+body.f2w-main-page > header .v17-notification-head a {
+  font-size:10px!important;
+}
+
+body.f2w-main-page > header .v17-notification-list {
+  max-height:500px!important;
+  overflow-y:auto!important;
+  scrollbar-width:auto!important;
+}
+
+body.f2w-main-page > header .v17-notification-list > * {
+  min-height:62px!important;
+  padding:11px 12px!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+}
+
+body.f2w-main-page > header .v17-notification-list strong,
+body.f2w-main-page > header .v17-notification-list b {
+  font-size:11px!important;
+  line-height:1.3!important;
+}
+
+body.f2w-main-page > header .v17-notification-list p,
+body.f2w-main-page > header .v17-notification-list span,
+body.f2w-main-page > header .v17-notification-list small {
+  font-size:9.5px!important;
+  line-height:1.4!important;
+}
+
+body.f2w-main-page > header .v17-notification-list img,
+body.f2w-main-page > header .v17-notification-list [class*="icon"] {
+  flex-shrink:0!important;
+}
+
+@media(max-width:600px){
+  body.f2w-main-page > header .v17-notification-menu {
+    width:min(94vw,430px)!important;
+    min-width:0!important;
+    right:0!important;
+  }
+}
+/* f2w-force-save:notification-readability-v31:1788217048 */
+ 

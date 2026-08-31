@@ -800,3 +800,50 @@ body.f2w-authenticated .f2w-guest-rail{display:none!important}
 }
 /* f2w-force-save:tight-role-particles-v30:1788216738 */
  
+
+/* ============================================================
+   F2W v31 — FINAL STABLE ROLE NAME EFFECT
+   The name element itself owns the colour + particle GIF.
+   No wrapper swapping = no red/white/red flicker.
+   ============================================================ */
+.f2w-role-name {
+  --role-main:#fff;
+  --role-shadow:rgba(255,255,255,.8);
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  position:relative!important;
+  color:var(--role-main)!important;
+  -webkit-text-fill-color:var(--role-main)!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:repeat-x!important;
+  background-position:center!important;
+  background-size:6.657em auto!important;
+  background-color:transparent!important;
+  text-shadow:0 2px 2px var(--role-shadow),0 0 4px var(--role-shadow)!important;
+  overflow:visible!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+.f2w-role-owner{--role-main:#ff2638!important;--role-shadow:#ff001c!important}
+.f2w-role-staff{--role-main:#c05cff!important;--role-shadow:#9b2cff!important}
+.f2w-role-moderator{--role-main:#4f9cff!important;--role-shadow:#287cff!important}
+.f2w-role-support{--role-main:#32c8ff!important;--role-shadow:#00a9e8!important}
+.f2w-role-developer{--role-main:#31d9ad!important;--role-shadow:#12b98f!important}
+.f2w-role-verified{--role-main:#579dff!important;--role-shadow:#2f7ee8!important}
+.f2w-role-contributor{--role-main:#ffc13d!important;--role-shadow:#e79c00!important}
+.f2w-role-curator{--role-main:#ff6be1!important;--role-shadow:#da36ba!important}
+
+/* Retire every older nested shimmer/fairy layer. */
+.f2w-role-name > .f2w-role-name-text,
+.f2w-role-name > .f2w-role-fairy-dust {
+  all:unset!important;
+}
+.f2w-role-name::before,.f2w-role-name::after,
+.f2w-name-effect::before,.f2w-name-effect::after {
+  content:none!important;display:none!important;
+}
+
+/* f2w-force-save:direct-role-name-css-v31:1788217048 */
+ 
