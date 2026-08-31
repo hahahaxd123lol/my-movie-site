@@ -2363,7 +2363,7 @@
       </div>
 
       <div class="f2w-action-cluster">
-        <button class="tool-btn chat-button" onclick="window.location.href='/chat/'">
+        <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
           <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
         </button>
 
@@ -2979,7 +2979,7 @@
       <div class="footer-col">
         <h4>TOOLS</h4>
         <div class="footer-links">
-          <button type="button" onclick="window.location.href='/chat/'">Open Chat</button>
+          <button type="button" onclick="openGlobalChat(); return false;">Open Chat</button>
           <button type="button" onclick="openAccountModal()">Account</button>
           <button type="button" onclick="openNetModal()">NetTools</button>
           <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
@@ -6269,4 +6269,7 @@ if(currentUser){
   <script src="/final-v35.js" defer></script>
 </body>
 </html>
-<!-- f2w-force-push-20260831-batch2:home:19860bcde4 --> 
+<!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
+<!-- f2w-update-marker: shared-chat-v7:home -->
+<!-- f2w-force-save: 20260831-2110 -->
+ 

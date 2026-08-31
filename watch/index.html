@@ -2952,7 +2952,7 @@
       </div>
 
       <div class="f2w-action-cluster">
-        <button class="tool-btn chat-button" onclick="window.location.href='/chat/'">
+        <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
           <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
         </button>
 
@@ -3529,7 +3529,7 @@
       <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="watch-footer-logo">
       <div class="watch-footer-links">
         <a href="/home/">Home</a>
-        <button type="button" onclick="window.location.href='/chat/'">Chat</button>
+        <button type="button" onclick="openGlobalChat(); return false;">Chat</button>
         <button type="button" onclick="openAccountModal()">Account</button>
         <button type="button" onclick="openNetModal()">NetTools</button>
         <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
@@ -7298,4 +7298,7 @@ if(currentUser){
   <script src="/final-v35.js" defer></script>
 </body>
 </html>
-<!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 --> 
+<!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
+<!-- f2w-update-marker: shared-chat-v7:watch -->
+<!-- f2w-force-save: 20260831-2110 -->
+ 

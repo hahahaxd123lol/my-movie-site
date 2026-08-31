@@ -253,4 +253,11 @@
 #f2w-global-chat-panel.ready #f2w-global-chat-loading{display:none}
 body.f2w-global-chat-open{overflow:hidden!important}
 @media(max-width:760px){#f2w-global-chat-overlay{padding:0}#f2w-global-chat-panel{width:100vw;height:100dvh;border-radius:0;border:0}#f2w-global-chat-close{right:8px;top:8px}}
-/* f2w-force-push-20260831-batch2:global-header-v1.css:a396d17080 */ 
+
+/* F2W chat v7: live silent preload. Runtime JS owns final visibility. */
+#f2w-global-chat-overlay{display:flex;visibility:hidden;opacity:0;pointer-events:none}
+#f2w-global-chat-overlay.open{visibility:visible;opacity:1;pointer-events:auto}
+body.f2w-global-chat-open{overflow:initial!important}
+/* f2w-update-marker: global-header-css-chat-v7 */
+/* f2w-force-save: 20260831-2110 */
+ 
