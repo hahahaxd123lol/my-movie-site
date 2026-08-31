@@ -351,3 +351,51 @@
 })();
 // f2w-force-save:service-worker-register-v34:1788217565
  
+
+/* F2W v44 — useful logged-out header buttons */
+(() => {
+  'use strict';
+
+  function guestHeaderActions(){
+    const body=document.body;
+    if(!body||body.classList.contains('f2w-authenticated'))return;
+
+    const fav=document.getElementById('favorites-nav-btn');
+    const profile=document.getElementById('profile-nav-btn');
+    const support=document.getElementById('support-nav-btn');
+
+    if(fav){
+      fav.style.removeProperty('display');
+      fav.hidden=false;
+      fav.onclick=(event)=>{
+        event.preventDefault();
+        if(typeof window.openHeaderAuth==='function')window.openHeaderAuth('login');
+      };
+    }
+
+    if(profile){
+      profile.style.removeProperty('display');
+      profile.hidden=false;
+      profile.onclick=(event)=>{
+        event.preventDefault();
+        if(typeof window.openHeaderAuth==='function')window.openHeaderAuth('login');
+      };
+    }
+
+    if(support){
+      support.style.removeProperty('display');
+      support.hidden=false;
+      support.onclick=()=>{ location.href='/support/'; };
+    }
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',guestHeaderActions,{once:true});
+  }else{
+    guestHeaderActions();
+  }
+
+  window.addEventListener('pageshow',guestHeaderActions,{passive:true});
+})();
+// f2w-force-save:guest-header-actions-v44:1788219651
+ 

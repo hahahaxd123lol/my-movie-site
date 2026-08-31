@@ -285,6 +285,14 @@ function f2wDebounce(fn,wait=140){
     if(!authUser){
       setStaffNav(false);
       stopPresence();
+
+      // v44: logged-out header still exposes useful navigation.
+      const fav=document.getElementById('favorites-nav-btn');
+      const profile=document.getElementById('profile-nav-btn');
+      const support=document.getElementById('support-nav-btn');
+      if(fav){fav.style.removeProperty('display');fav.hidden=false;}
+      if(profile){profile.style.removeProperty('display');profile.hidden=false;}
+      if(support){support.style.removeProperty('display');support.hidden=false;}
       return;
     }
     startPresence();
@@ -1569,4 +1577,5 @@ function f2wDebounce(fn,wait=140){
 })();
 // f2w-force-save:debounce-role-decorate-v33:1788217440
 // f2w-force-save:mandatory-username-v40:1788218691
+// f2w-force-save:guest-header-sync-v44:1788219651
  

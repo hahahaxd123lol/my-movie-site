@@ -1790,3 +1790,171 @@ body.f2w-main-page * {
 
 /* f2w-force-save:chat-button-final-width-v42:1788219270 */
  
+
+/* ============================================================
+   F2W v44 — GUEST HEADER RESTORE + PROPER CHAT WIDTH
+   ============================================================ */
+
+/* Logged-in desktop: make Chat generously wide. */
+@media (min-width:1181px) {
+  body.f2w-main-page.f2w-authenticated > header .f2w-action-cluster {
+    grid-template-columns:118px 84px 76px 78px 82px 116px 144px !important;
+    flex:0 0 734px !important;
+    width:734px !important;
+    min-width:734px !important;
+    max-width:734px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px !important;
+    padding:0 14px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+    font-size:10px !important; /* unchanged */
+  }
+
+  body.f2w-main-page > header .chat-button > i {
+    flex:0 0 13px !important;
+    width:13px !important;
+    min-width:13px !important;
+    text-align:center !important;
+  }
+
+  body.f2w-main-page > header .chat-button .chat-online-dot {
+    position:static !important;
+    display:block !important;
+    flex:0 0 7px !important;
+    width:7px !important;
+    height:7px !important;
+    min-width:7px !important;
+    min-height:7px !important;
+    margin:0 !important;
+    translate:none !important;
+    transform:none !important;
+  }
+
+  /*
+   * Logged out:
+   * keep the useful navigation buttons instead of collapsing the whole right side.
+   * Layout = Chat | Favorites | Profile | Support | Login | Sign Up
+   */
+  body.f2w-main-page:not(.f2w-authenticated) > header .f2w-action-cluster {
+    display:grid !important;
+    grid-template-columns:118px 92px 82px 84px 82px 88px !important;
+    grid-template-rows:40px !important;
+    flex:0 0 576px !important;
+    width:576px !important;
+    min-width:576px !important;
+    max-width:576px !important;
+    gap:6px !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header .chat-button {
+    grid-column:1 !important;
+    grid-row:1 !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn {
+    grid-column:2 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn {
+    grid-column:3 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn {
+    grid-column:4 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn {
+    grid-column:5 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn {
+    grid-column:6 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  /* Logged-out-only: user-only controls stay out of the visible row. */
+  body.f2w-main-page:not(.f2w-authenticated) > header #account-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #notification-wrap,
+  body.f2w-main-page:not(.f2w-authenticated) > header #staff-control-nav {
+    display:none !important;
+  }
+
+  /* Center every guest action label/icon without shrinking text. */
+  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn {
+    align-items:center !important;
+    justify-content:center !important;
+    white-space:nowrap !important;
+    min-width:0 !important;
+    width:100% !important;
+    height:40px !important;
+    margin:0 !important;
+    padding-left:8px !important;
+    padding-right:8px !important;
+    box-sizing:border-box !important;
+  }
+}
+
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page.f2w-authenticated > header .f2w-action-cluster {
+    grid-template-columns:110px 76px 70px 70px 76px 104px 132px !important;
+    flex:0 0 664px !important;
+    width:664px !important;
+    min-width:664px !important;
+    max-width:664px !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header .f2w-action-cluster {
+    grid-template-columns:110px 84px 76px 78px 76px 82px !important;
+    flex:0 0 536px !important;
+    width:536px !important;
+    min-width:536px !important;
+    max-width:536px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    font-size:10px !important; /* still unchanged */
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+}
+
+/* f2w-force-save:guest-header-chat-fit-v44:1788219651 */
+ 
