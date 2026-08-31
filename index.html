@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script id="v18-force-https">
+    (() => {
+      const localHosts=new Set(['localhost','127.0.0.1','::1']);
+      if(localHosts.has(location.hostname))return;
+
+      const canonicalHost=
+        location.hostname.toLowerCase()==='www.flix2watch.com'
+          ? 'flix2watch.com'
+          : location.host;
+
+      if(location.protocol!=='https:' || location.hostname.toLowerCase()==='www.flix2watch.com'){
+        location.replace(
+          'https://'+canonicalHost+location.pathname+location.search+location.hash
+        );
+      }
+    })();
+  </script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Flix2Watch — Movies, TV & Community</title>
+  <meta name="description" content="Flix2Watch is a free-to-use movie and TV discovery and community site with public title details, profiles and account-gated playback where available.">
+  <link rel="icon" href="/favicon-v16.ico" sizes="any">
+  <meta name="theme-color" content="#09090f">
+  <meta http-equiv="refresh" content="0; url=/home/">
+  <link rel="canonical" href="https://flix2watch.com/home/">
+  <script>
+    window.location.replace('/home/' + window.location.search + window.location.hash);
+  </script>
+  <link rel="stylesheet" href="/final-v35.css">
+</head>
+<body style="background:#09090f;color:white;font-family:Arial,sans-serif">
+  <p>Opening <a href="/home/" style="color:white">Flix2Watch</a>…</p>
+  <script src="/final-v35.js" defer></script>
+</body>
+</html>
