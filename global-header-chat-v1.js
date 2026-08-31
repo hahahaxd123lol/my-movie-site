@@ -48,16 +48,16 @@
     forceHidden();
   }
   function openGlobalChat(){
-    build();userOpened=true;
-    overlay.style.removeProperty('visibility');overlay.style.removeProperty('opacity');overlay.style.removeProperty('pointer-events');
-    overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
-    if(ready){try{frame.contentWindow?.focus();}catch{}}
+    if(location.pathname==='/chat/'||location.pathname==='/chat')return true;
+    location.assign('/chat/');
+    return true;
   }
   function closeGlobalChat(){if(!overlay)return;userOpened=false;forceHidden();}
   function guardedLegacyOpen(){
     const active=!!(navigator.userActivation&&navigator.userActivation.isActive);
     if(!active)return false;
-    openGlobalChat();return true;
+    if(location.pathname!=='/chat/'&&location.pathname!=='/chat')location.assign('/chat/');
+    return true;
   }
   function installLegacyGuards(){
     try{window.openChat=guardedLegacyOpen;}catch{}
@@ -69,7 +69,7 @@
     root.querySelectorAll('.chat-button,[data-open-chat],a[href="/chat/"],a[href="/chat"]').forEach(el=>{
       if(el.dataset.f2wChatBound==='1')return;
       el.dataset.f2wChatBound='1';
-      el.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();openGlobalChat();},true);
+      el.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();location.assign('/chat/');},true);
     });
   }
   function boot(){
@@ -192,4 +192,5 @@
   else mountLegalFooter();
 })();
 // f2w-force-save:universal-legal-footer-v15:1788212347
+// f2w-force-save:chat-route-v16:1788212934
  

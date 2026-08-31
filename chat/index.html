@@ -1748,16 +1748,7 @@
     }
     .chat-pin-banner i{margin-right:6px;color:#a855f7}
 
-    .report-chat-btn{
-      margin-left:5px;
-      border:0;
-      background:transparent;
-      color:var(--text-muted);
-      cursor:pointer;
-      font-size:.62rem;
-      padding:2px 4px;
-    }
-    .report-chat-btn:hover{color:#f59e0b}
+
 
     .report-modal{
       position:fixed;
@@ -4237,20 +4228,7 @@
       right.appendChild(button);
     }
 
-    if(currentUser&&!ownAlias){
-      const reportButton=document.createElement('button');
-      reportButton.className='report-chat-btn';
-      reportButton.type='button';
-      reportButton.innerHTML='<i class="fa-solid fa-flag"></i>';
-      reportButton.title='Report message to Staff';
-      reportButton.onclick=()=>openModerationReport(
-        'chat',
-        String(item.id),
-        itemAlias,
-        {message_preview:String(item.message||'').slice(0,300)}
-      );
-      right.appendChild(reportButton);
-    }
+
 
     top.appendChild(left);
     top.appendChild(right);
@@ -6332,7 +6310,8 @@ if(currentUser){
 
 
 <style id="f2w-guest-dm-lock-style">
-  .f2w-guest-dm-lock{height:100%;min-height:360px;display:flex;align-items:center;justify-content:center;padding:28px;text-align:center}
+  .f2w-guest-dm-lock{position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;padding:28px;text-align:center;background:rgba(5,10,18,.96);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+  .v17-dm-thread{position:relative!important;min-width:0}
   .f2w-guest-dm-lock-card{width:min(520px,100%);border:1px solid rgba(239,68,68,.28);background:linear-gradient(180deg,rgba(127,29,29,.16),rgba(9,14,24,.88));border-radius:22px;padding:34px 26px;box-shadow:0 24px 70px rgba(0,0,0,.28)}
   .f2w-guest-dm-lock-icon{width:74px;height:74px;border-radius:20px;margin:0 auto 18px;display:grid;place-items:center;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.28);color:#ef4444;font-size:31px}
   .f2w-guest-dm-lock-card h3{margin:0 0 9px;font-size:22px;font-weight:800;color:#fff}
@@ -6341,6 +6320,9 @@ if(currentUser){
   .f2w-guest-dm-lock-actions button{min-width:150px;border-radius:12px;padding:12px 16px;font:800 14px/1 Inter,system-ui,sans-serif;cursor:pointer}
   .f2w-guest-dm-login{border:1px solid rgba(239,68,68,.6);background:#e50914;color:#fff}
   .f2w-guest-dm-signup{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff}
+  .v17-dm-sidebar.f2w-dm-sidebar-guest{opacity:.55;filter:saturate(.55)}
+  .v17-dm-sidebar.f2w-dm-sidebar-guest .v17-dm-conversations,
+  .v17-dm-sidebar.f2w-dm-sidebar-guest button{pointer-events:none!important}
 </style>
 <script id="f2w-guest-dm-lock-patch">
 (()=>{
@@ -6354,8 +6336,10 @@ if(currentUser){
 
   function renderGuestDmLock(){
     const panel=document.getElementById('v17-dm-panel');
-    if(!panel) return;
-    let lock=panel.querySelector('.f2w-guest-dm-lock');
+    const thread=panel?.querySelector('.v17-dm-thread');
+    if(!panel||!thread)return;
+
+    let lock=thread.querySelector('.f2w-guest-dm-lock');
     if(!lock){
       lock=document.createElement('div');
       lock.className='f2w-guest-dm-lock';
@@ -6370,18 +6354,22 @@ if(currentUser){
       </div>`;
       lock.querySelector('.f2w-guest-dm-login').addEventListener('click',()=>openAuth('login'));
       lock.querySelector('.f2w-guest-dm-signup').addEventListener('click',()=>openAuth('signup'));
-      panel.appendChild(lock);
+      thread.appendChild(lock);
     }
-    [...panel.children].forEach(child=>{ if(child!==lock) child.style.display='none'; });
     lock.style.display='flex';
+
+    const sidebar=panel.querySelector('.v17-dm-sidebar');
+    if(sidebar){
+      sidebar.classList.add('f2w-dm-sidebar-guest');
+    }
   }
 
   function restoreDmPanel(){
     const panel=document.getElementById('v17-dm-panel');
-    if(!panel) return;
+    if(!panel)return;
     const lock=panel.querySelector('.f2w-guest-dm-lock');
-    if(lock) lock.style.display='none';
-    [...panel.children].forEach(child=>{ if(child!==lock) child.style.removeProperty('display'); });
+    if(lock)lock.style.display='none';
+    panel.querySelector('.v17-dm-sidebar')?.classList.remove('f2w-dm-sidebar-guest');
   }
 
   function fallbackSwitch(mode){
@@ -6435,4 +6423,6 @@ if(currentUser){
 <!-- f2w-force-save:sitewide-auth-v13:1788211530:chat/index.html -->
 <!-- f2w-force-save:remove-nettools-v14:1788211808:chat/index.html -->
 <!-- f2w-force-save:sitewide-footer-v15:1788212347:chat/index.html -->
+<!-- f2w-force-save:chat-dm-lock-report-v16:1788212934 -->
+<!-- f2w-force-save:chat-route-cache-v16:1788212934:chat/index.html -->
  
