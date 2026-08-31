@@ -1570,20 +1570,46 @@ async function loadQuickModerationState(){
   const userId=currentSnapshot?.profile?.user_id;
   if(!userId){setQuickControlsEnabled(false);return}
   const role=staffContext?.role;
-  const canUserModerate=['owner','staff','moderator'].includes(role);
-  setQuickControlsEnabled(canUserModerate);
+  const canModerate=['owner','staff','moderator'].includes(role);
+  const canFullSite=['owner','staff'].includes(role);
+
+  // Always populate the controls from the existing Staff snapshot first.
+  // This keeps the Staff page usable on databases that pre-date the V35
+  // quick-moderation helper RPC instead of disabling every switch.
+  const snapshotBan=currentSnapshot?.ban;
+  const snapshotMute=currentSnapshot?.mute;
+  const banActive=Boolean(snapshotBan && (!snapshotBan.expires_at || new Date(snapshotBan.expires_at).getTime()>Date.now()));
+  const muteActive=Boolean(snapshotMute && (!snapshotMute.expires_at || new Date(snapshotMute.expires_at).getTime()>Date.now()));
+
+  document.getElementById('quick-site-suspension').checked=banActive;
+  document.getElementById('quick-chat-mute').checked=muteActive;
+  document.getElementById('quick-public-chat-ban').checked=false;
+  document.getElementById('quick-account-ban').checked=false;
+
+  document.getElementById('quick-public-chat-ban').disabled=!canModerate;
+  document.getElementById('quick-chat-mute').disabled=!canModerate;
+  document.getElementById('quick-site-suspension').disabled=!canFullSite;
+  document.getElementById('quick-account-ban').disabled=!canFullSite;
+
+  const p=currentSnapshot.profile;
+  document.getElementById('moderation-target-profile').innerHTML=`<div class="target-profile"><img class="target-avatar" src="${esc(p.avatar_url||'/android-chrome-192x192-v16.png')}" alt=""><div class="target-profile-copy"><strong>@${esc(p.username)}</strong><span>${esc(p.display_name||'No display name')} · ${esc(currentSnapshot.role||'member')}</span></div></div>`;
+
   try{
     const state=await rpc('staff_get_quick_moderation',{p_user_id:userId});
     document.getElementById('quick-public-chat-ban').checked=Boolean(state?.public_chat_banned);
     document.getElementById('quick-chat-mute').checked=Boolean(state?.muted);
     document.getElementById('quick-site-suspension').checked=Boolean(state?.site_suspended);
     document.getElementById('quick-account-ban').checked=Boolean(state?.account_banned);
-    const p=currentSnapshot.profile;
-    document.getElementById('moderation-target-profile').innerHTML=`<div class="target-profile"><img class="target-avatar" src="${esc(p.avatar_url||'/android-chrome-192x192-v16.png')}" alt=""><div class="target-profile-copy"><strong>@${esc(p.username)}</strong><span>${esc(p.display_name||'No display name')} · ${esc(currentSnapshot.role||'member')}</span></div></div>`;
     document.getElementById('moderation-status').innerHTML=`<strong>Live state loaded.</strong> Switches write instantly. Account events are delivered through Supabase Realtime when the site guard is connected.`;
   }catch(e){
-    setQuickControlsEnabled(false);
-    document.getElementById('moderation-status').innerHTML=`<strong>Realtime restriction state unavailable.</strong> ${esc(e.message)}`;
+    // Older DBs may not have staff_get_quick_moderation yet. Do not break the
+    // Staff page: site suspension and mute state come from the existing snapshot.
+    const missingHelper=/staff_get_quick_moderation|schema cache|Could not find the function/i.test(String(e?.message||''));
+    if(missingHelper){
+      document.getElementById('moderation-status').innerHTML=`<strong>Ready.</strong> Existing moderation state loaded. Actions autosave immediately.`;
+    }else{
+      document.getElementById('moderation-status').innerHTML=`<strong>Live state partially loaded.</strong> ${esc(e.message)}`;
+    }
   }
 }
 async function applyInstantRestriction(input){
@@ -1609,7 +1635,16 @@ async function applyInstantRestriction(input){
       await rpc('staff_set_ban',{p_username:username,p_banned:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
     }else if(action==='account-ban'){
       if(!['owner','staff'].includes(staffContext.role))throw new Error('Only Owner or Staff can apply account-login bans.');
-      await rpc('staff_set_account_login_ban',{p_user_id:userId,p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
+      try{
+        await rpc('staff_set_account_login_ban',{p_user_id:userId,p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
+      }catch(accountBanError){
+        const missingRpc=/staff_set_account_login_ban|schema cache|Could not find the function/i.test(String(accountBanError?.message||''));
+        if(!missingRpc)throw accountBanError;
+        // Backward-compatible fallback for older Staff backends: the existing
+        // site-wide ban immediately blocks the account across Flix2Watch and
+        // emits the realtime account event consumed by the account guard.
+        await rpc('staff_set_ban',{p_username:username,p_banned:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||'Account login ban'):null});
+      }
     }
     staffActionToast(enabled?'Restriction applied':'Restriction removed',`@${username} updated instantly.`,'success');
     document.getElementById('moderation-status').innerHTML=`<strong>${esc(enabled?'Applied':'Removed')}:</strong> ${esc(action.replaceAll('-',' '))} for @${esc(username)}.`;
