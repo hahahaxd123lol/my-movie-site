@@ -2328,6 +2328,68 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
     .f2w-guest-check{font-size:13.5px !important;}
   }
 </style>
+
+<style id="f2w-mobile-hero-controls-fix-v1">
+/* Mobile/tablet featured carousel controls: reserve their own bottom row so they never cover titles or action buttons. */
+@media (max-width: 900px){
+  #hero-banner.hero-banner{
+    position:relative!important;
+    padding-bottom:86px!important;
+    overflow:hidden!important;
+  }
+  #hero-banner .hero-content{
+    width:100%!important;
+    max-width:100%!important;
+    padding-inline:0!important;
+  }
+  #hero-banner .hero-actions{
+    margin-bottom:4px!important;
+  }
+  #hero-banner .v19-hero-arrow{
+    top:auto!important;
+    bottom:20px!important;
+    transform:none!important;
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+    min-height:38px!important;
+    border-radius:10px!important;
+    z-index:5!important;
+  }
+  #hero-banner .v19-hero-arrow.prev{left:16px!important;}
+  #hero-banner .v19-hero-arrow.next{right:16px!important;}
+  #hero-banner .hero-carousel-dots{
+    position:absolute!important;
+    left:50%!important;
+    right:auto!important;
+    bottom:32px!important;
+    top:auto!important;
+    transform:translateX(-50%)!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    z-index:5!important;
+    pointer-events:auto!important;
+  }
+  #hero-banner .hero-carousel-dots button,
+  #hero-banner .hero-carousel-dots .dot,
+  #hero-banner .hero-carousel-dots > *{
+    margin:0!important;
+  }
+}
+@media (max-width: 900px) and (orientation: landscape){
+  #hero-banner.hero-banner{
+    min-height:340px!important;
+    height:auto!important;
+    padding-bottom:76px!important;
+  }
+  #hero-banner .v19-hero-arrow{bottom:14px!important;}
+  #hero-banner .hero-carousel-dots{bottom:26px!important;}
+}
+</style>
+
 </head>
 
 <body class="theme-red f2w-main-page f2w-home-page">
@@ -6433,4 +6495,5 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 <!-- f2w-force-save:fixed-theme-login-card:1788209019:index.html -->
 <!-- f2w-update-marker:home-login-card-bigger-swipe-preserved:1788209349 -->
 <!-- f2w-force-save:device-v9:20260831-205349:home -->
+<!-- f2w-force-save:mobile-hero-controls:1788210595 -->
  
