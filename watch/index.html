@@ -5532,6 +5532,76 @@ if(currentUser){
     }
 
 
+    // Best-effort anti-popup hardening for the host page. This deliberately
+    // does NOT sandbox providers. Same-origin rules mean a cross-origin iframe can
+    // still create its own popup window, but we can prevent host-page popups,
+    // neutralise _blank links created in our document, and aggressively recover
+    // focus when a provider tries to throw the viewer into another tab.
+    (function installWatchPopupHardening(){
+      if(window.__f2wPopupHardeningInstalled)return;
+      window.__f2wPopupHardeningInstalled=true;
+
+      const nativeOpen=window.open;
+      window.__f2wNativeOpen=nativeOpen;
+      window.open=function(url,target,features){
+        // Flix2Watch itself never needs a popup for playback. Keep navigation in
+        // the current tab when possible and reject explicit new-window requests.
+        const t=String(target||'').toLowerCase();
+        if(!t || t==='_blank' || t==='blank' || /^popup/i.test(String(features||''))){
+          console.warn('[Flix2Watch] blocked host-page popup:',url||'about:blank');
+          return null;
+        }
+        try{return nativeOpen.call(window,url,target,features);}catch(_){return null;}
+      };
+
+      document.addEventListener('click',function(event){
+        const a=event.target && event.target.closest ? event.target.closest('a[target="_blank"]') : null;
+        if(!a)return;
+        // Do not spawn new tabs from links belonging to the Flix2Watch document.
+        a.removeAttribute('target');
+        a.setAttribute('rel','noopener noreferrer');
+      },true);
+
+      let overPlayer=false;
+      let lastPlayerHover=0;
+      let recovering=false;
+      const frame=()=>document.getElementById('video-frame');
+
+      function markPlayerOver(){overPlayer=true;lastPlayerHover=Date.now();}
+      function markPlayerOut(){overPlayer=false;}
+      function bindFrame(){
+        const f=frame();
+        if(!f || f.__f2wPopupBound)return;
+        f.__f2wPopupBound=true;
+        f.addEventListener('mouseenter',markPlayerOver,{passive:true});
+        f.addEventListener('mouseleave',markPlayerOut,{passive:true});
+        f.addEventListener('focus',markPlayerOver,{passive:true});
+      }
+
+      function recoverFocus(){
+        if(recovering)return;
+        recovering=true;
+        // Browsers may ignore one focus() call after a popup. A short retry burst
+        // gives us the best legal client-side chance of keeping Flix2Watch active.
+        [0,40,120,260,520,900].forEach((delay,index)=>{
+          setTimeout(()=>{
+            try{window.focus();}catch(_){}
+            if(index===5)recovering=false;
+          },delay);
+        });
+      }
+
+      window.addEventListener('blur',()=>{
+        if(overPlayer || Date.now()-lastPlayerHover<1800)recoverFocus();
+      },true);
+      document.addEventListener('visibilitychange',()=>{
+        if(document.hidden && (overPlayer || Date.now()-lastPlayerHover<1800))recoverFocus();
+      },true);
+      window.addEventListener('pageshow',bindFrame,{passive:true});
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindFrame,{once:true});
+      else bindFrame();
+    })();
+
     let serverQueue = [
       'flix2watchapi', 'vidcore', 'ezvidapi', 'vidlink', 'moviesrc', 'vidsrchair', 'vidsrcio', 'vidsrcfyi',
       'frembed', 'uembed', 'vidsrcsu', 'embedsu',
