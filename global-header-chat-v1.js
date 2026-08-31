@@ -84,4 +84,40 @@
 })();
 // f2w-update-marker: global-chat-v8-never-auto-open
 // f2w-force-save:1788208311
+
+/* F2W responsive navigation stability v9 */
+(()=>{
+  'use strict';
+  function tools(){return document.querySelector('body.f2w-main-page > header > .header-tools')||document.querySelector('header > .header-tools');}
+  function toggle(){
+    const el=tools(); if(!el)return;
+    const on=!el.classList.contains('mobile-open');
+    el.classList.toggle('mobile-open',on);
+    const b=document.querySelector('.f2w-mobile-nav-toggle');
+    if(b)b.setAttribute('aria-expanded',on?'true':'false');
+  }
+  function close(){
+    const el=tools(); if(el)el.classList.remove('mobile-open');
+    const b=document.querySelector('.f2w-mobile-nav-toggle');
+    if(b)b.setAttribute('aria-expanded','false');
+  }
+  window.toggleF2WMobileMenu=toggle;
+  window.closeF2WMobileMenu=close;
+  let lastWide=innerWidth>1180;
+  const settle=()=>{
+    const wide=innerWidth>1180;
+    if(wide!==lastWide || wide) close();
+    lastWide=wide;
+  };
+  addEventListener('orientationchange',()=>{close();setTimeout(settle,80);setTimeout(settle,350);},{passive:true});
+  addEventListener('resize',settle,{passive:true});
+  document.addEventListener('click',e=>{
+    if(innerWidth>1180)return;
+    const el=tools(); if(!el?.classList.contains('mobile-open'))return;
+    if(e.target.closest('.f2w-mobile-nav-toggle'))return;
+    if(e.target.closest('.header-tools a')) close();
+  },true);
+})();
+
+// f2w-force-save:device-stability-v9:20260831-205349
  

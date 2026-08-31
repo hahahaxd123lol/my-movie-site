@@ -260,7 +260,235 @@ body.f2w-global-chat-open{overflow:hidden!important}
 body.f2w-global-chat-open{overflow:initial!important}
 /* f2w-update-marker: global-header-css-chat-v7 */
 /* f2w-force-save: 20260831-2110 */
-/* Flix2Watch fixed-theme cleanup: theme switching retired. */
-#theme-menu-button,#theme-menu{display:none!important;}
-/* f2w-force-save:fixed-theme:1788209019 */
+
+/* =========================================================
+   F2W DEVICE STABILITY v9 — iPhone/iPad/Android/Tablet/TV
+   Prevents landscape horizontal oscillation and layout jumps.
+   ========================================================= */
+html{
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:clip !important;
+  -webkit-text-size-adjust:100% !important;
+  text-size-adjust:100% !important;
+}
+body{
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:clip !important;
+  overscroll-behavior-x:none !important;
+}
+*,*::before,*::after{box-sizing:border-box}
+img,video,canvas,svg,iframe{max-width:100%}
+
+/* Theme switching was removed site-wide. Keep stale markup inert. */
+#theme-menu-button,#theme-menu,.theme-dropdown,[data-theme-menu]{display:none !important}
+
+/* Full-width announcement without 100vw/translateX iOS viewport jitter. */
+.site-announcement{
+  left:0 !important;
+  right:0 !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  transform:none !important;
+  margin-inline:0 !important;
+}
+
+/* Shared header: stable tablet/mobile layout. It becomes an overlay menu
+   instead of changing document width/height when opened. */
+@media (max-width:1180px){
+  body.f2w-main-page > header{
+    position:sticky !important;
+    top:0 !important;
+    z-index:2147480000 !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    height:64px !important;
+    min-height:64px !important;
+    margin:0 !important;
+    padding:6px max(12px,env(safe-area-inset-right)) 6px max(12px,env(safe-area-inset-left)) !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:10px !important;
+    overflow:visible !important;
+    transform:none !important;
+    background:rgba(2,8,19,.985) !important;
+    border-bottom:1px solid rgba(95,125,155,.28) !important;
+  }
+  body.f2w-main-page > header > .logo{
+    position:static !important;
+    flex:0 0 auto !important;
+    width:136px !important;
+    min-width:0 !important;
+    max-width:42vw !important;
+    height:50px !important;
+    margin:0 !important;
+    padding:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    transform:none !important;
+  }
+  body.f2w-main-page > header > .logo .logo-image{
+    display:block !important;
+    width:136px !important;
+    max-width:100% !important;
+    height:auto !important;
+    max-height:50px !important;
+    object-fit:contain !important;
+    transform:none !important;
+  }
+  body.f2w-main-page > header > .f2w-mobile-nav-toggle{
+    display:inline-flex !important;
+    flex:0 0 44px !important;
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    margin-left:auto !important;
+    border:1px solid rgba(120,150,180,.35) !important;
+    border-radius:10px !important;
+    background:#071322 !important;
+    color:#fff !important;
+    font-size:18px !important;
+  }
+  body.f2w-main-page > header > .header-tools{
+    position:fixed !important;
+    top:64px !important;
+    left:0 !important;
+    right:0 !important;
+    z-index:2147479999 !important;
+    display:none !important;
+    width:auto !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    height:auto !important;
+    max-height:calc(100dvh - 64px) !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding:12px max(12px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)) !important;
+    margin:0 !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:10px !important;
+    background:rgba(2,8,19,.995) !important;
+    border-bottom:1px solid rgba(120,150,180,.3) !important;
+    box-shadow:0 18px 44px rgba(0,0,0,.5) !important;
+    transform:none !important;
+  }
+  body.f2w-main-page > header > .header-tools.mobile-open{display:flex !important}
+  body.f2w-main-page > header .f2w-primary-nav,
+  body.f2w-main-page > header .f2w-action-cluster{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:auto !important;
+    flex-flow:row wrap !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:7px !important;
+    margin:0 !important;
+  }
+  body.f2w-main-page > header .f2w-search-pair{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:auto !important;
+    gap:8px !important;
+    margin:0 !important;
+  }
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container{
+    width:100% !important;
+    min-width:0 !important;
+    height:42px !important;
+    margin:0 !important;
+  }
+  body.f2w-main-page > header .search-bar,
+  body.f2w-main-page > header .user-search-bar{
+    width:100% !important;
+    min-width:0 !important;
+    height:42px !important;
+    font-size:16px !important; /* prevents iOS input auto-zoom */
+  }
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn,
+  body.f2w-main-page > header #staff-control-nav{
+    min-height:40px !important;
+    height:40px !important;
+    max-width:100% !important;
+    padding:7px 10px !important;
+    font-size:12px !important;
+    white-space:nowrap !important;
+    transform:none !important;
+  }
+  body.f2w-main-page > header .dropdown-menu,
+  body.f2w-main-page > header .f2w-genre-menu,
+  body.f2w-main-page > header .user-search-results{
+    max-width:calc(100vw - 24px) !important;
+  }
+}
+
+/* iPhone/Android landscape: compact fixed-height header and scrollable menu.
+   Avoid vw transforms and viewport-height animations while browser chrome moves. */
+@media (orientation:landscape) and (max-width:1180px) and (max-height:560px){
+  body.f2w-main-page > header{
+    height:54px !important;
+    min-height:54px !important;
+    padding-top:4px !important;
+    padding-bottom:4px !important;
+  }
+  body.f2w-main-page > header > .logo{width:116px !important;height:44px !important}
+  body.f2w-main-page > header > .logo .logo-image{width:116px !important;max-height:44px !important}
+  body.f2w-main-page > header > .f2w-mobile-nav-toggle{width:40px !important;height:40px !important;min-width:40px !important}
+  body.f2w-main-page > header > .header-tools{
+    top:54px !important;
+    max-height:calc(100dvh - 54px) !important;
+    padding-top:8px !important;
+    gap:8px !important;
+  }
+  body.f2w-main-page > header .f2w-search-pair{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important}
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn{height:36px !important;min-height:36px !important;font-size:11px !important}
+}
+
+@media (max-width:620px){
+  body.f2w-main-page > header .f2w-search-pair{grid-template-columns:1fr !important}
+  body.f2w-main-page > header .f2w-primary-nav,
+  body.f2w-main-page > header .f2w-action-cluster{gap:6px !important}
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn{flex:1 1 auto !important}
+}
+
+/* Chat shell: avoid 100vw on iOS, which can oscillate as the visual viewport changes. */
+@media(max-width:760px){
+  #f2w-global-chat-overlay{padding:0 !important}
+  #f2w-global-chat-panel{
+    width:100% !important;
+    max-width:100% !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    border-radius:0 !important;
+    border:0 !important;
+  }
+}
+
+/* Prevent common page containers from creating fractional horizontal overflow. */
+main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-banner,.modal-card,.account-card,.chat-card{
+  max-width:100% !important;
+}
+
+/* f2w-force-save:device-stability-v9:20260831-205349 */
  

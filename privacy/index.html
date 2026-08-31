@@ -1,9 +1,4 @@
-<!doctype html><html lang="en"><head>
-<script id="f2w-fixed-theme">
-try{localStorage.setItem('flix2watch_theme','theme-red');localStorage.setItem('josh_site_theme','theme-red');}catch(_e){}
-document.documentElement.dataset.flix2watchTheme='theme-red';
-</script>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Privacy Policy • Flix2Watch</title><meta name="description" content="Flix2Watch privacy policy."><link rel="icon" href="/favicon-v16.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link rel="stylesheet" href="/approved-ui-v12.css"><link rel="stylesheet" href="/final-v34.css"><link rel="stylesheet" href="/final-v35.css">  <!-- Unified Watch-page header + preloaded chat -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Privacy Policy • Flix2Watch</title><meta name="description" content="Flix2Watch privacy policy."><link rel="icon" href="/favicon-v16.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link rel="stylesheet" href="/approved-ui-v12.css"><link rel="stylesheet" href="/final-v34.css"><link rel="stylesheet" href="/final-v35.css">  <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/responsive-v7.css">
   <link rel="stylesheet" href="/final-v9.css">
@@ -21,7 +16,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <link rel="stylesheet" href="/final-v28.css">
   <link rel="stylesheet" href="/final-v32.css">
   <link rel="stylesheet" href="/final-v33.css">
-  <link rel="stylesheet" href="/global-header-v1.css">
+  <link rel="stylesheet" href="/global-header-v1.css?v=device-v9-20260831-205349">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="/silent-account-v16.js" defer></script>
   <script src="/account-guard-v16.js" defer></script>
@@ -40,7 +35,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <script src="/social-v34.js" defer></script>
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js" defer></script>
+  <script src="/global-header-chat-v1.js?v=device-v9-20260831-205349" defer></script>
 </head><body class="theme-red f2w-main-page"><header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
       <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
@@ -151,6 +146,24 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
           <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
         </button>
 
+        <div class="dropdown-wrapper">
+          <button class="tool-btn" id="theme-menu-button" type="button" aria-haspopup="menu" aria-expanded="false" onclick="toggleDropdown('theme-menu')"><i class="fa-solid fa-sun"></i> Theme <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i></button>
+          <div class="dropdown-menu" id="theme-menu" hidden aria-hidden="true">
+            <div class="dropdown-item" onclick="setTheme('red','theme-red')"><span class="dot red"></span> Netflix Red</div>
+            <div class="dropdown-item" onclick="setTheme('blue','theme-blue')"><span class="dot blue"></span> Cyber Blue</div>
+            <div class="dropdown-item" onclick="setTheme('green','theme-green')"><span class="dot green"></span> Emerald Green</div>
+            <div class="dropdown-item" onclick="setTheme('purple','theme-purple')"><span class="dot purple"></span> Neon Purple</div>
+            <div class="dropdown-item" onclick="setTheme('amber','theme-amber')"><span class="dot amber"></span> Amber Terminal</div>
+            <div class="dropdown-item" onclick="setTheme('matrix','theme-matrix')"><span class="dot matrix"></span> Matrix Green</div>
+            <div class="dropdown-item" onclick="setTheme('cyan','theme-cyan')"><span class="dot cyan"></span> Electric Cyan</div>
+            <div class="dropdown-item" onclick="setTheme('pink','theme-pink')"><span class="dot pink"></span> Hot Pink</div>
+            <div class="dropdown-item" onclick="setTheme('orange','theme-orange')"><span class="dot orange"></span> Cinema Orange</div>
+            <div class="dropdown-item" onclick="setTheme('ice','theme-ice')"><span class="dot ice"></span> Ice Blue</div>
+            <div class="dropdown-item" onclick="setTheme('gold','theme-gold')"><span class="dot gold"></span> Premiere Gold</div>
+            <div class="dropdown-item" onclick="setTheme('midnight','theme-midnight')"><span class="dot midnight"></span> Midnight Indigo</div>
+          </div>
+        </div>
+
         <button class="f2w-auth-top-btn login" id="header-login-btn" type="button" style="display:none" onclick="openHeaderAuth('login')">Login</button>
         <button class="f2w-auth-top-btn signup" id="header-signup-btn" type="button" style="display:none" onclick="openHeaderAuth('signup')">Sign Up</button>
 
@@ -187,5 +200,5 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
 <!-- f2w-update-marker: shared-chat-v7:privacy -->
 <!-- f2w-force-save: 20260831-2110 -->
 <!-- f2w-force-save:chat-v8-never-auto-open:1788208311:privacy -->
-<!-- f2w-force-save:fixed-theme-login-card:1788209019:privacy-index.html -->
+<!-- f2w-force-save:device-v9:20260831-205349:privacy -->
  
