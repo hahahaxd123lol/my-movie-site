@@ -1931,7 +1931,7 @@
     <meta property="og:title" content="Flix2Watch">
     <meta property="og:description" content="Discover movies and TV shows, save your favorites, build your profile, and see what other people are watching.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://flix2watch.com/home/">
+    <meta property="og:url" content="https://flix2watch.com/chat/">
     <meta property="og:image" content="https://flix2watch.com/og-image-v16.png">
     <meta property="og:image:secure_url" content="https://flix2watch.com/og-image-v16.png">
     <meta property="og:image:type" content="image/png">
@@ -1945,7 +1945,7 @@
     <meta name="twitter:description" content="Discover movies and TV shows, save your favorites, build your profile, and see what other people are watching.">
     <meta name="twitter:image" content="https://flix2watch.com/og-image-v16.png">
 
-  <link rel="canonical" href="https://flix2watch.com/home/">
+  <link rel="canonical" href="https://flix2watch.com/chat/">
 
   <!-- Flix2Watch Ultra performance hints -->
   <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
@@ -2253,9 +2253,23 @@
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css">
+
+  <style id="f2w-dedicated-chat-page">
+    /* /chat/ is a dedicated chat route, not a disguised Home page. */
+    body.f2w-chat-page > main,
+    body.f2w-chat-page > .home-extra,
+    body.f2w-chat-page > footer,
+    body.f2w-chat-page > .site-announcement { display:none !important; }
+    body.f2w-chat-page #chat-modal {
+      display:flex !important;
+      opacity:1 !important;
+      visibility:visible !important;
+      pointer-events:auto !important;
+    }
+  </style>
 </head>
 
-<body class="theme-red f2w-main-page f2w-home-page">
+<body class="theme-red f2w-main-page f2w-chat-page">
 <header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
       <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
@@ -6268,22 +6282,47 @@ if(currentUser){
   <script src="/final-v35.js" defer></script>
 
   <!-- F2W dedicated chat route bootstrap -->
-  <script>
+
+
+  <script id="f2w-chat-route-bootstrap">
   (()=>{
-    const openDedicatedChat=()=>{
+    const forceOpen=async()=>{
       const modal=document.getElementById('chat-modal');
-      try{ if(typeof window.openChat==='function') window.openChat(); }catch(e){ console.warn('Chat open retry:',e); }
-      if(modal){ modal.classList.add('open'); modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
+      if(modal){
+        modal.classList.add('open');
+        modal.style.setProperty('display','flex','important');
+        modal.setAttribute('aria-hidden','false');
+      }
+      try{
+        if(typeof window.openChat==='function') await window.openChat();
+      }catch(err){ console.warn('[Flix2Watch Chat] openChat retry:',err); }
+      if(modal){
+        modal.classList.add('open');
+        modal.style.setProperty('display','flex','important');
+      }
     };
-    let attempts=0;
-    const timer=setInterval(()=>{
-      attempts++; openDedicatedChat();
-      const modal=document.getElementById('chat-modal');
-      if((modal?.classList.contains('open') && typeof window.openChat==='function') || attempts>=60) clearInterval(timer);
-    },150);
-    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',openDedicatedChat,{once:true});
-    else openDedicatedChat();
-    window.addEventListener('load',openDedicatedChat,{once:true});
+
+    const boot=()=>{
+      forceOpen();
+      let tries=0;
+      const retry=setInterval(()=>{
+        forceOpen();
+        if(++tries>=40) clearInterval(retry);
+      },250);
+    };
+
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+    else boot();
+    window.addEventListener('load',forceOpen,{once:true});
+
+    // On the dedicated route, closing chat leaves the chat page instead of
+    // revealing the cloned Home content underneath it.
+    window.addEventListener('load',()=>{
+      window.closeChat=()=>{
+        if(history.length>1) history.back();
+        else location.href='/home/';
+      };
+    },{once:true});
   })();
   </script>
 
