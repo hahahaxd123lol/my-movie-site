@@ -681,6 +681,17 @@
     .staff-toast-stack{position:fixed;right:18px;bottom:18px;top:auto;z-index:10050;width:min(360px,calc(100vw - 36px));display:flex;flex-direction:column;gap:8px}.staff-toast{display:flex;gap:10px;align-items:flex-start;padding:13px 14px;border-radius:12px;border:1px solid #263549;background:#09121d;box-shadow:0 20px 55px rgba(0,0,0,.45);animation:staffToastIn .18s ease-out}.staff-toast.success{border-color:rgba(34,197,94,.32)}.staff-toast.error{border-color:rgba(229,9,20,.38)}.staff-toast i{margin-top:2px}.staff-toast.success i{color:#22c55e}.staff-toast.error i{color:#ff3b48}.staff-toast strong{display:block;font-size:.8rem}.staff-toast span{display:block;color:#8b9bb0;font-size:.7rem;margin-top:2px;line-height:1.4}@keyframes staffToastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     .role-access-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}.role-access-item{padding:10px;border:1px solid #1c2b3e;border-radius:10px;background:#07101b}.role-access-item strong{display:block;font-size:.72rem}.role-access-item span{display:block;color:#77889f;font-size:.64rem;line-height:1.45;margin-top:3px}
     .f2w-staff-page .role-chip.moderator,.f2w-staff-page .role-chip.support,.f2w-staff-page .role-chip.developer{display:inline-flex}.role-chip.moderator{color:#38bdf8;border:1px solid rgba(56,189,248,.4);background:rgba(56,189,248,.08)}.role-chip.support{color:#22d3ee;border:1px solid rgba(34,211,238,.4);background:rgba(34,211,238,.08)}.role-chip.developer{color:#4ade80;border:1px solid rgba(74,222,128,.4);background:rgba(74,222,128,.08)}
+    .user-autofind-wrap{position:relative}
+    .user-autofind-results{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:80;background:#08111b;border:1px solid #24364b;border-radius:12px;box-shadow:0 18px 38px rgba(0,0,0,.4);overflow:hidden;max-height:280px;overflow-y:auto}
+    .user-autofind-results[hidden]{display:none!important}
+    .user-autofind-item{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border:0;border-bottom:1px solid #152335;background:transparent;color:#fff;text-align:left;cursor:pointer}
+    .user-autofind-item:last-child{border-bottom:0}
+    .user-autofind-item:hover,.user-autofind-item.active{background:#101d2b}
+    .user-autofind-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#111d2a;flex:0 0 auto}
+    .user-autofind-copy{min-width:0;display:flex;flex-direction:column}
+    .user-autofind-copy strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem}
+    .user-autofind-copy span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#8393a8;font-size:.72rem;margin-top:2px}
+    .user-autofind-empty{padding:11px 12px;color:#8393a8;font-size:.75rem}
     @media(max-width:1050px){.moderation-shell{grid-template-columns:1fr}.role-access-grid{grid-template-columns:1fr 1fr}.hero{grid-template-columns:1fr}.staff-live-pill{justify-self:start}}
     @media(max-width:700px){.instant-controls{grid-template-columns:1fr}.moderation-meta{grid-template-columns:1fr}.role-access-grid{grid-template-columns:1fr}#staff-app-shell.shell{padding:12px}}
   </style>
@@ -958,7 +969,7 @@
         <div class="moderation-shell">
           <div class="card moderation-target-card">
             <div class="card-head"><strong>Target account</strong><span>Username lookup</span></div>
-            <div class="field"><label>USERNAME</label><input id="user-target" placeholder="username" autocomplete="off" onkeydown="if(event.key==='Enter')inspectUser()"></div>
+            <div class="field user-autofind-wrap"><label>USERNAME</label><input id="user-target" placeholder="Start typing a username…" autocomplete="off" aria-autocomplete="list" aria-controls="user-autofind-results"><div id="user-autofind-results" class="user-autofind-results" role="listbox" hidden></div></div>
             <div class="row" style="margin-top:9px"><button class="btn primary" onclick="inspectUser()"><i class="fa-solid fa-magnifying-glass"></i> Load account</button><button class="btn" onclick="clearModerationTarget()"><i class="fa-solid fa-xmark"></i> Clear</button></div>
             <div id="moderation-target-profile"></div>
           </div>
@@ -1485,6 +1496,66 @@ function staffActionToast(title,copy='',kind='success'){
 }
 function setQuickControlsEnabled(enabled){
   document.querySelectorAll('#panel-users .staff-switch input').forEach(el=>el.disabled=!enabled);
+}
+
+let userAutofindTimer=null;
+let userAutofindRows=[];
+let userAutofindActive=-1;
+function hideUserAutofind(){
+  const box=document.getElementById('user-autofind-results');
+  if(box){box.hidden=true;box.innerHTML=''}
+  userAutofindRows=[];userAutofindActive=-1;
+}
+function renderUserAutofind(rows){
+  const box=document.getElementById('user-autofind-results');
+  if(!box)return;
+  userAutofindRows=rows||[];userAutofindActive=-1;
+  if(!userAutofindRows.length){box.innerHTML='<div class="user-autofind-empty">No matching accounts.</div>';box.hidden=false;return}
+  box.innerHTML=userAutofindRows.map((p,i)=>`<button type="button" class="user-autofind-item" role="option" data-index="${i}"><img class="user-autofind-avatar" src="${esc(p.avatar_url||'/android-chrome-192x192-v16.png')}" alt=""><span class="user-autofind-copy"><strong>@${esc(p.username||'user')}</strong><span>${esc(p.display_name||'No display name')}</span></span></button>`).join('');
+  box.hidden=false;
+  box.querySelectorAll('.user-autofind-item').forEach(btn=>btn.addEventListener('mousedown',e=>e.preventDefault()));
+  box.querySelectorAll('.user-autofind-item').forEach(btn=>btn.addEventListener('click',()=>selectUserAutofind(Number(btn.dataset.index))));
+}
+async function runUserAutofind(){
+  const input=document.getElementById('user-target');
+  const q=input?.value.trim()||'';
+  if(q.length<1){hideUserAutofind();return}
+  try{
+    const {data,error}=await db.from('profiles').select('user_id,username,display_name,avatar_url').ilike('username',`${q}%`).order('username',{ascending:true}).limit(8);
+    if(error)throw error;
+    if((input?.value.trim()||'')!==q)return;
+    renderUserAutofind(data||[]);
+  }catch(_e){hideUserAutofind()}
+}
+function selectUserAutofind(index){
+  const row=userAutofindRows[index];if(!row)return;
+  const input=document.getElementById('user-target');
+  input.value=row.username||'';
+  hideUserAutofind();
+  inspectUser();
+}
+function moveUserAutofind(delta){
+  const box=document.getElementById('user-autofind-results');
+  if(!box||box.hidden||!userAutofindRows.length)return false;
+  userAutofindActive=(userAutofindActive+delta+userAutofindRows.length)%userAutofindRows.length;
+  box.querySelectorAll('.user-autofind-item').forEach((el,i)=>el.classList.toggle('active',i===userAutofindActive));
+  box.querySelector(`.user-autofind-item[data-index="${userAutofindActive}"]`)?.scrollIntoView({block:'nearest'});
+  return true;
+}
+function initUserAutofind(){
+  const input=document.getElementById('user-target');if(!input)return;
+  input.addEventListener('input',()=>{clearTimeout(userAutofindTimer);userAutofindTimer=setTimeout(runUserAutofind,120)});
+  input.addEventListener('focus',()=>{if(input.value.trim())runUserAutofind()});
+  input.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'){if(moveUserAutofind(1))e.preventDefault();return}
+    if(e.key==='ArrowUp'){if(moveUserAutofind(-1))e.preventDefault();return}
+    if(e.key==='Escape'){hideUserAutofind();return}
+    if(e.key==='Enter'){
+      if(userAutofindActive>=0&&!document.getElementById('user-autofind-results')?.hidden){e.preventDefault();selectUserAutofind(userAutofindActive)}
+      else{e.preventDefault();hideUserAutofind();inspectUser()}
+    }
+  });
+  document.addEventListener('click',e=>{if(!e.target.closest('.user-autofind-wrap'))hideUserAutofind()});
 }
 function clearModerationTarget(){
   currentSnapshot=null;
@@ -2279,6 +2350,7 @@ async function signOut(){await db.auth.signOut();window.location.href='/home/'}
 
 setQuickControlsEnabled(false);
 
+initUserAutofind();
 boot().catch(error=>{console.error(error);document.body.innerHTML=`<div class="empty" style="padding-top:20vh">${esc(error.message)}</div>`});
 
 
