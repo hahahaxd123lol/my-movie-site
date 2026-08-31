@@ -2669,10 +2669,10 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
           <div class="f2w-oauth-divider"><span>or continue with</span></div>
           <div class="f2w-oauth-grid">
             <button class="f2w-oauth-btn google" type="button" onclick="signInWithOAuthProvider('google')">
-              <i class="fa-brands fa-google"></i> Google
+              <i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span>
             </button>
             <button class="f2w-oauth-btn discord" type="button" onclick="signInWithOAuthProvider('discord')">
-              <i class="fa-brands fa-discord"></i> Discord
+              <i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span>
             </button>
           </div>
           <div class="f2w-oauth-note">Works for both Login and Create Account. If this is your first time, Flix2Watch creates your account and profile automatically.</div>
@@ -2815,8 +2815,8 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
               </label>
               <button class="f2w-quick-login-btn" id="home-quick-login-btn" type="button" onclick="quickHomeLogin()">Login <i class="fa-solid fa-chevron-right"></i></button>
               <div class="f2w-quick-oauth">
-                <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> Google</button>
-                <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> Discord</button>
+                <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span></button>
+                <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span></button>
               </div>
               <div class="f2w-quick-login-message" id="home-quick-login-message"></div>
               <div class="f2w-quick-signup-copy">No account? <button type="button" onclick="setHomeQuickAuthMode('signup')">Sign up instead</button></div>
@@ -2842,8 +2842,8 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
               <div class="f2w-inline-signup-rule">A-Z and 0-9 only for usernames. Passwords need at least 6 characters.</div>
               <button class="f2w-quick-login-btn" id="home-quick-signup-btn" type="button" onclick="quickHomeSignup()">Create Account <i class="fa-solid fa-chevron-right"></i></button>
               <div class="f2w-quick-oauth">
-                <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> Google</button>
-                <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> Discord</button>
+                <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign up with Google</span></button>
+                <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign up with Discord</span></button>
               </div>
               <div class="f2w-quick-login-message" id="home-quick-signup-message"></div>
               <div class="f2w-quick-signup-copy">Already have an account? <button type="button" onclick="setHomeQuickAuthMode('login')">Log in instead</button></div>
@@ -4022,6 +4022,9 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
     document.getElementById('account-confirm-wrap').style.display=mode==='signup'?'block':'none';
     document.getElementById('account-username-wrap').style.display=mode==='signup'?'block':'none';
     document.getElementById('account-submit').textContent=mode==='signup'?'Create Account':'Log In';
+    // f2w-oauth-label-dynamic-v1
+    document.querySelectorAll('.f2w-oauth-btn.google .f2w-oauth-label').forEach(el=>el.textContent=mode==='signup'?'Sign up with Google':'Sign in with Google');
+    document.querySelectorAll('.f2w-oauth-btn.discord .f2w-oauth-label').forEach(el=>el.textContent=mode==='signup'?'Sign up with Discord':'Sign in with Discord');
     document.getElementById('account-message').textContent='';
     const pw=document.getElementById('account-password');
     if(pw)pw.autocomplete=mode==='signup'?'new-password':'current-password';
@@ -6496,4 +6499,5 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 <!-- f2w-update-marker:home-login-card-bigger-swipe-preserved:1788209349 -->
 <!-- f2w-force-save:device-v9:20260831-205349:home -->
 <!-- f2w-force-save:mobile-hero-controls:1788210595 -->
+<!-- f2w-force-save:oauth-wording:1788210751:home -->
  

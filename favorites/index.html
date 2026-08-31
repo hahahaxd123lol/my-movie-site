@@ -2731,10 +2731,10 @@
           <div class="f2w-oauth-divider"><span>or continue with</span></div>
           <div class="f2w-oauth-grid">
             <button class="f2w-oauth-btn google" type="button" onclick="signInWithOAuthProvider('google')">
-              <i class="fa-brands fa-google"></i> Google
+              <i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span>
             </button>
             <button class="f2w-oauth-btn discord" type="button" onclick="signInWithOAuthProvider('discord')">
-              <i class="fa-brands fa-discord"></i> Discord
+              <i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span>
             </button>
           </div>
           <div class="f2w-oauth-note">Works for both Login and Create Account. If this is your first time, Flix2Watch creates your account and profile automatically.</div>
@@ -3633,6 +3633,9 @@
     document.getElementById('account-confirm-wrap').style.display=mode==='signup'?'block':'none';
     document.getElementById('account-username-wrap').style.display=mode==='signup'?'block':'none';
     document.getElementById('account-submit').textContent=mode==='signup'?'Create Account':'Log In';
+    // f2w-oauth-label-dynamic-v1
+    document.querySelectorAll('.f2w-oauth-btn.google .f2w-oauth-label').forEach(el=>el.textContent=mode==='signup'?'Sign up with Google':'Sign in with Google');
+    document.querySelectorAll('.f2w-oauth-btn.discord .f2w-oauth-label').forEach(el=>el.textContent=mode==='signup'?'Sign up with Discord':'Sign in with Discord');
     document.getElementById('account-message').textContent='';
     const pw=document.getElementById('account-password');
     if(pw)pw.autocomplete=mode==='signup'?'new-password':'current-password';
@@ -5571,4 +5574,5 @@ setTimeout(loadLibraryFavorites,0);
 <!-- f2w-force-save: 20260831-2110 -->
 <!-- f2w-force-save:chat-v8-never-auto-open:1788208311:favorites -->
 <!-- f2w-force-save:device-v9:20260831-205349:favorites -->
+<!-- f2w-force-save:oauth-wording:1788210751:favorites -->
  
