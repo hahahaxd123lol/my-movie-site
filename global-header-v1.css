@@ -634,4 +634,92 @@ main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-ban
 }
 
 /* f2w-force-save:auth-modal-v10:1788210514 */
+
+/* ================= F2W COMPACT MODAL WIDTH GUARD v11 ================= */
+/* Never let account/auth cards stretch across desktop or TV layouts. */
+.account-modal,
+#account-modal,
+.auth-modal,
+.login-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:clamp(16px,3vw,34px) !important;
+}
+.account-modal.open,
+#account-modal.open,
+.auth-modal.open,
+.login-modal.open{
+  display:flex !important;
+}
+.account-modal > .account-card,
+#account-modal > .account-card,
+.auth-modal > .account-card,
+.login-modal > .account-card{
+  width:min(92vw,620px) !important;
+  max-width:620px !important;
+  min-width:0 !important;
+  margin:auto !important;
+  max-height:min(88dvh,820px) !important;
+  overflow:hidden !important;
+  border-radius:18px !important;
+}
+.account-modal .account-body,
+#account-modal .account-body{
+  max-height:calc(min(88dvh,820px) - 62px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+/* Logged-out auth stays even tighter, matching the Home swipe card. */
+.account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])),
+#account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])){
+  width:min(92vw,520px) !important;
+  max-width:520px !important;
+}
+/* Logged-in account controls stay compact instead of becoming full-width rows. */
+.account-modal .account-user-box,
+.account-modal .account-username-change,
+.account-modal .account-favorites,
+.account-modal .account-warning-box,
+.account-modal .owner-chat-auth{
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+.account-modal .account-secondary,
+.account-modal .account-primary,
+.account-modal .account-input{
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+@media (min-width:1400px){
+  .account-modal > .account-card,
+  #account-modal > .account-card{
+    width:600px !important;
+    max-width:600px !important;
+  }
+  .account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])),
+  #account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])){
+    width:520px !important;
+    max-width:520px !important;
+  }
+}
+@media (max-width:700px){
+  .account-modal,
+  #account-modal{
+    padding:12px !important;
+  }
+  .account-modal > .account-card,
+  #account-modal > .account-card{
+    width:min(94vw,560px) !important;
+    max-width:560px !important;
+    max-height:92dvh !important;
+  }
+}
+/* f2w-force-save:compact-modal-v11 */
+
+/* f2w-force-save:1788210997:global-header */
  
