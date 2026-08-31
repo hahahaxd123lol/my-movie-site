@@ -6315,7 +6315,7 @@ if(currentUser){
     const params=new URLSearchParams(location.search);
     const embedded=params.get('f2w_chat_embed')==='1';
     let opened=false;
-    let warmTimer=null;
+    let dmWarmed=false;
 
     const showShell=()=>{
       const modal=document.getElementById('chat-modal');
@@ -6326,40 +6326,48 @@ if(currentUser){
       return true;
     };
 
+    const warmDm=async()=>{
+      if(dmWarmed&&typeof window.refreshDirectMessages!=='function')return;
+      if(typeof window.refreshDirectMessages==='function'){
+        try{
+          await window.refreshDirectMessages();
+          dmWarmed=true;
+        }catch(err){ console.warn('[Flix2Watch Chat] DM preload:',err); }
+      }
+    };
+
+    const announceReady=()=>{
+      if(embedded){
+        try{ parent.postMessage({type:'F2W_CHAT_READY'},location.origin); }catch{}
+      }
+    };
+
     const warmChat=async()=>{
-      // Do not keep calling openChat: final-v17 intentionally switches openChat
-      // back to Public, which used to make the Direct Messages tab impossible
-      // to stay on during the first several seconds of /chat/ loading.
-      if(opened)return;
-      if(typeof window.openChat!=='function')return;
+      if(opened||typeof window.openChat!=='function')return;
       opened=true;
       try{ await window.openChat(); }
       catch(err){ console.warn('[Flix2Watch Chat] initial open:',err); }
       showShell();
-
-      // Warm both halves of the chat hub in parallel. Public chat is loaded by
-      // openChat(); DMs are prefetched here as soon as auth/session is ready.
-      const warmDm=async()=>{
-        try{
-          if(typeof window.refreshDirectMessages==='function'){
-            await window.refreshDirectMessages();
-          }
-        }catch(err){ console.warn('[Flix2Watch Chat] DM preload:',err); }
-      };
-      warmDm();
-      setTimeout(warmDm,500);
-      setTimeout(warmDm,1500);
+      await warmDm();
+      announceReady();
     };
 
     const boot=()=>{
       showShell();
+      // Start both public chat and DM initialization as soon as /chat/ exists,
+      // including while it is preloaded invisibly by another page.
       let tries=0;
-      warmTimer=setInterval(()=>{
+      const timer=setInterval(async()=>{
         showShell();
-        warmChat();
-        if(opened||++tries>=80){ clearInterval(warmTimer); warmTimer=null; }
+        await warmChat();
+        await warmDm();
+        if((opened&&dmWarmed)||++tries>=120){
+          clearInterval(timer);
+          announceReady();
+        }
       },100);
       warmChat();
+      warmDm();
     };
 
     if(embedded){
@@ -6378,9 +6386,11 @@ if(currentUser){
 
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
     else boot();
-    window.addEventListener('load',()=>{ showShell(); warmChat(); },{once:true});
 
     window.addEventListener('load',()=>{
+      showShell();
+      warmChat();
+      warmDm();
       window.closeChat=()=>{
         if(embedded){
           parent.postMessage({type:'F2W_CHAT_CLOSE'},location.origin);
@@ -6398,4 +6408,5 @@ if(currentUser){
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
 <!-- f2w-force-push-20260831-batch2:chat:4cb2d50896 -->
 <!-- f2w-update-20260831-chat-instant-preload-dm-v3 -->
-<!-- f2w-force-update-chat-20260831 --> 
+<!-- f2w-force-update-chat-20260831 -->
+<!-- f2w-update-20260831-chat-eager-public-dm-v5 --> 
