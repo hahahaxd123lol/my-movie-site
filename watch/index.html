@@ -490,16 +490,17 @@
 
     /* ================= SITE ANNOUNCEMENT ================= */
     .site-announcement{
-      position:fixed;
-      left:0 !important;
+      position:fixed !important;
+      left:50% !important;
       right:auto !important;
-      bottom:0;
+      bottom:0 !important;
       width:100vw !important;
-      max-width:none !important;
+      max-width:100vw !important;
+      min-width:100vw !important;
       margin:0 !important;
       box-sizing:border-box;
       border-radius:0 !important;
-      transform:none !important;
+      transform:translateX(-50%) !important;
       z-index:5000;
       display:none;
       align-items:center;
