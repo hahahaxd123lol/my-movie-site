@@ -1364,3 +1364,100 @@ body.f2w-main-page > header .chat-button .chat-online-dot {
 
 /* f2w-force-save:chat-online-dot-v23:1788215130 */
  
+
+/* ============================================================
+   F2W v26 — SITEWIDE PAGE FADE / APP-LIKE NAVIGATION
+   Opacity-only transitions: smooth without shifting layout.
+   ============================================================ */
+
+/* Initial document paint */
+html.f2w-page-enter body {
+  opacity:0;
+}
+html.f2w-page-ready body {
+  opacity:1;
+  transition:opacity .88s cubic-bezier(.22,.61,.36,1);
+}
+
+/* Same-origin browser View Transitions where supported. */
+@view-transition {
+  navigation:auto;
+}
+::view-transition-old(root) {
+  animation:f2wPageFadeOut .18s ease-out both;
+}
+::view-transition-new(root) {
+  animation:f2wPageFadeIn .88s cubic-bezier(.22,.61,.36,1) both;
+}
+
+/* Header participates only in opacity; never changes geometry. */
+::view-transition-group(f2w-header) {
+  animation-duration:.88s;
+  animation-timing-function:cubic-bezier(.22,.61,.36,1);
+}
+::view-transition-old(f2w-header) {
+  animation:f2wHeaderFadeOut .12s ease-out both;
+}
+::view-transition-new(f2w-header) {
+  animation:f2wHeaderFadeIn .72s ease-out both;
+}
+
+@keyframes f2wPageFadeIn {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@keyframes f2wPageFadeOut {
+  from { opacity:1; }
+  to { opacity:.92; }
+}
+@keyframes f2wHeaderFadeIn {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@keyframes f2wHeaderFadeOut {
+  from { opacity:1; }
+  to { opacity:.96; }
+}
+
+/* Fade major page regions independently but without transforms/reflow. */
+html.f2w-page-ready body.f2w-main-page > main,
+html.f2w-page-ready body.f2w-main-page > .page,
+html.f2w-page-ready body.f2w-main-page > .container,
+html.f2w-page-ready body.f2w-main-page > footer {
+  animation:f2wContentReveal .94s cubic-bezier(.22,.61,.36,1) both;
+}
+
+@keyframes f2wContentReveal {
+  0% { opacity:0; }
+  100% { opacity:1; }
+}
+
+/* Never animate dimensions/position as part of the page transition. */
+html.f2w-page-ready body,
+html.f2w-page-ready body * {
+  will-change:auto;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion:reduce) {
+  html.f2w-page-enter body,
+  html.f2w-page-ready body {
+    opacity:1!important;
+    transition:none!important;
+  }
+  html.f2w-page-ready body.f2w-main-page > main,
+  html.f2w-page-ready body.f2w-main-page > .page,
+  html.f2w-page-ready body.f2w-main-page > .container,
+  html.f2w-page-ready body.f2w-main-page > footer {
+    animation:none!important;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-old(f2w-header),
+  ::view-transition-new(f2w-header) {
+    animation-duration:0s!important;
+  }
+}
+
+/* f2w-force-save:sitewide-fade-v26:1788216027 */
+ 

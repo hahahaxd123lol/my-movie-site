@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script id="f2w-page-fade-boot-v26">
+(function(){
+  try{
+    document.documentElement.classList.add('f2w-page-enter');
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        document.documentElement.classList.remove('f2w-page-enter');
+        document.documentElement.classList.add('f2w-page-ready');
+      });
+    });
+  }catch(e){}
+})();
+</script>
 
 <style id="f2w-critical-header-v24">
 html{overflow-y:scroll}
@@ -3306,8 +3319,8 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/final-v35.css?v=25-1788215879">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=24-1788215534">
-  <script src="/global-header-chat-v1.js?v=24-1788215534" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=26-1788216027">
+  <script src="/global-header-chat-v1.js?v=26-1788216027" defer></script>
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -7875,4 +7888,6 @@ return true;
 <!-- f2w-force-save:profile-cache-first-v24:1788215534 -->
 <!-- f2w-force-save:performance-cache-v24:1788215534:profile/index.html -->
 <!-- f2w-force-save:role-name-cache-v25:1788215879:profile/index.html -->
+<!-- f2w-force-save:sitewide-fade-page-v26:1788216027:profile/index.html -->
+<!-- f2w-force-save:fade-js-cache-v26:1788216027:profile/index.html -->
  

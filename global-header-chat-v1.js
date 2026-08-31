@@ -279,3 +279,17 @@
 
 // f2w-force-save:fast-nav-prefetch-v24:1788215534
  
+
+/* F2W v26 — page fade state recovery */
+(() => {
+  'use strict';
+  const ready=()=>{
+    const root=document.documentElement;
+    root.classList.remove('f2w-page-enter');
+    root.classList.add('f2w-page-ready');
+  };
+  window.addEventListener('pageshow',ready,{passive:true});
+  if(document.readyState!=='loading')ready();
+})();
+// f2w-force-save:fade-state-v26:1788216027
+ 
