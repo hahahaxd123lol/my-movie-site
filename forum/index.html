@@ -430,7 +430,7 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=35-1788217735">
-  <script src="/global-header-chat-v1.js?v=34-1788217565" defer></script>
+  <script src="/global-header-chat-v1.js?v=36-1788217803" defer></script>
 
 <style id="forum-v30-design">
 .f2w-forum-page{background:radial-gradient(circle at 88% 7%,rgba(229,9,20,.075),transparent 30%),#020b14!important}
@@ -620,13 +620,13 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <div class="user-search-results" id="user-search-results"></div>
+          
         </div>
       </div>
 
       <div class="f2w-action-cluster">
         <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
-          <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
+          <i class="fa-regular fa-message"></i> Chat 
         </button>
 
         
@@ -764,7 +764,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <label>Title<input id="forum-compose-title" maxlength="120" placeholder="Give the discussion a clear title"></label>
         <label>Post<textarea id="forum-compose-body" maxlength="5000" placeholder="What do you want to talk about?"></textarea></label>
         <label class="forum-v30-check"><input id="forum-compose-spoiler" type="checkbox"> Contains spoilers</label>
-        <div id="forum-compose-status" class="forum-v30-status"></div>
+        
         <div class="forum-v30-modal-actions"><button type="button" class="forum-v30-secondary-button" data-close-composer>Cancel</button><button type="button" class="forum-v30-primary" id="forum-compose-submit">Post discussion</button></div>
       </div>
     </div>
@@ -773,7 +773,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   <div class="forum-v30-modal" id="forum-thread-modal" hidden>
     <div class="forum-v30-modal-card forum-v30-thread-card">
       <div class="forum-v30-modal-head"><div><span class="forum-v30-kicker">DISCUSSION</span><h2 id="forum-thread-title">Thread</h2></div><button type="button" data-close-thread><i class="fa-solid fa-xmark"></i></button></div>
-      <div id="forum-thread-detail"></div>
+      
     </div>
   </div>
 </main>
@@ -1018,7 +1018,7 @@ boot();
     try{
       const x=await rpc('get_forum_thread_v30',{p_thread_id:id});if(!x)throw new Error('Thread not found');
       $('forum-thread-title').textContent=x.title||'Discussion';
-      host.innerHTML=`<article class="forum-v30-thread-full"><div class="forum-v30-thread-full-meta"><span class="forum-v30-category">${esc(cat(x.category))}</span>${x.is_spoiler?'<span class="forum-v30-spoiler">SPOILER</span>':''}<span>${esc(ago(x.created_at))}</span></div><h3>${esc(x.title)}</h3><div class="forum-v30-thread-authorline">by <a href="/profile/?user=${encodeURIComponent(x.username||'')}" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</a></div><div class="forum-v30-thread-body">${esc(x.body).replace(/\n/g,'<br>')}</div></article><section class="forum-v30-replies"><strong>${Number(x.reply_count||0)} Replies</strong><div class="forum-v30-reply-list">${(x.replies||[]).map(r=>`<article class="forum-v30-reply"><div class="forum-v30-reply-head"><a href="/profile/?user=${encodeURIComponent(r.username||'')}" data-username="${esc(r.username||'')}" data-role="${esc(r.top_role||'')}">${esc(r.display_name||r.username||'Member')}</a><span>${esc(ago(r.created_at))}</span></div><div>${esc(r.body).replace(/\n/g,'<br>')}</div></article>`).join('')||'<div class="forum-v30-empty">No replies yet.</div>'}</div>${S.user?`<div class="forum-v30-reply-box"><textarea id="forum-reply-body" maxlength="3000" placeholder="Write a reply…"></textarea><div><span id="forum-reply-status"></span><button id="forum-reply-submit" type="button">Reply</button></div></div>`:'<div class="forum-v30-empty">Log in to join the discussion.</div>'}</section>`;
+      host.innerHTML=`<article class="forum-v30-thread-full"><div class="forum-v30-thread-full-meta"><span class="forum-v30-category">${esc(cat(x.category))}</span>${x.is_spoiler?'<span class="forum-v30-spoiler">SPOILER</span>':''}<span>${esc(ago(x.created_at))}</span></div><h3>${esc(x.title)}</h3><div class="forum-v30-thread-authorline">by <a href="/profile/?user=${encodeURIComponent(x.username||'')}" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</a></div><div class="forum-v30-thread-body">${esc(x.body).replace(/\n/g,'<br>')}</div></article><section class="forum-v30-replies"><strong>${Number(x.reply_count||0)} Replies</strong><div class="forum-v30-reply-list">${(x.replies||[]).map(r=>`<article class="forum-v30-reply"><div class="forum-v30-reply-head"><a href="/profile/?user=${encodeURIComponent(r.username||'')}" data-username="${esc(r.username||'')}" data-role="${esc(r.top_role||'')}">${esc(r.display_name||r.username||'Member')}</a><span>${esc(ago(r.created_at))}</span></div><div>${esc(r.body).replace(/\n/g,'<br>')}</div></article>`).join('')||'<div class="forum-v30-empty">No replies yet.</div>'}</div>${S.user?`<div class="forum-v30-reply-box"><textarea id="forum-reply-body" maxlength="3000" placeholder="Write a reply…"></textarea><div><button id="forum-reply-submit" type="button">Reply</button></div></div>`:'<div class="forum-v30-empty">Log in to join the discussion.</div>'}</section>`;
       $('forum-reply-submit')?.addEventListener('click',()=>reply(id));window.decorateNames?.();loadThreads(true)
     }catch(e){host.innerHTML=`<div class="forum-v30-empty">${esc(e.message||'Could not load discussion.')}</div>`}
   }
@@ -1087,4 +1087,6 @@ boot();
 <!-- f2w-force-save:v33-performance-cache:1788217440:forum/index.html -->
 <!-- f2w-force-save:v34-performance:1788217565:forum/index.html -->
 <!-- f2w-force-save:header-button-fit-v35:1788217735:forum/index.html -->
+<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:forum/index.html -->
+<!-- f2w-force-save:footer-cache-v36:1788217803:forum/index.html -->
  

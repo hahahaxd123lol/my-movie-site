@@ -376,7 +376,7 @@ main{max-width:1420px;margin:auto;padding:28px 24px 70px}.hero{position:relative
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=35-1788217735">
-  <script src="/global-header-chat-v1.js?v=34-1788217565" defer></script>
+  <script src="/global-header-chat-v1.js?v=36-1788217803" defer></script>
 
 <style id="leaderboard-zoom-tune">
   @media (min-width: 901px){
@@ -531,13 +531,13 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <div class="user-search-results" id="user-search-results"></div>
+          
         </div>
       </div>
 
       <div class="f2w-action-cluster">
         <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
-          <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
+          <i class="fa-regular fa-message"></i> Chat 
         </button>
 
         
@@ -579,12 +579,12 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </div>
 <main><section class="hero"><div class="kicker"><i class="fa-solid fa-trophy"></i> Flix2Watch Competitive Rankings</div><h1>Community Leaderboard</h1><p>Every watch, rating and achievement pushes the rankings forward. See who is climbing, who is online and who owns the top of Flix2Watch right now.</p><div class="live-pill"><i class="fa-solid fa-circle"></i> LIVE RANKINGS</div></section>
 <section class="stats"><div class="stat"><span>Registered players</span><strong id="count">—</strong></div><div class="stat"><span>Online now</span><strong id="online">—</strong></div><div class="stat"><span>Combined watch time</span><strong id="watch">—</strong></div><div class="stat"><span>Current page</span><strong id="pageStat">1 / 1</strong></div></section>
-<section class="podium" id="podium"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></section>
+<section class="podium" id="podium"></section>
 <div class="toolbar"><div class="tabs" id="tabs"><button class="tab active" data-sort="overall"><i class="fa-solid fa-fire"></i> Overall</button><button class="tab" data-sort="titles">Titles Watched</button><button class="tab" data-sort="watch">Watch Time</button><button class="tab" data-sort="ratings">Ratings</button><button class="tab" data-sort="achievements">Achievements</button></div><div class="status-note" id="updated">Connecting to realtime…</div></div>
-<section class="rank-list" id="list"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></section><nav class="pager" id="pager"></nav></main>
+<section class="rank-list" id="list"></section></main>
 <script>
 (()=>{'use strict';const URL='https://viqufxlcxwgboyxbdhjb.supabase.co',KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge',LOGO='/flix2watch-logo-red-v34.png';const db=window.supabase.createClient(URL,KEY);let page=1,sort='overall',busy=false;const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const fmt=n=>Intl.NumberFormat().format(Number(n||0));const time=m=>{m=Number(m||0);if(m<60)return `${fmt(m)}m`;const h=Math.floor(m/60);return h<1000?`${fmt(h)}h ${m%60}m`:`${fmt(h)}h`};const role=r=>r?`<span class="role">${esc(r)}</span>`:'';const profile=u=>location.href='/profile/?user='+encodeURIComponent(u);
-function pod(r,place){if(!r)return '<div></div>';return `<article class="podium-card ${place===1?'first':''}" data-user="${esc(r.username)}"><div class="pod-rank">#${place}</div>${place===1?'<div class="crown"><i class="fa-solid fa-crown"></i></div>':''}<div class="avatar-wrap"><img class="avatar" src="${esc(r.avatar_url||LOGO)}" onerror="this.src='${LOGO}'"><i class="presence ${r.online?'on':''}"></i></div><h3>${esc(r.display_name||r.username)}</h3><div class="handle">@${esc(r.username)}</div>${role(r.top_role)}<div class="score">${fmt(r.score)} XP</div></article>`}
+function pod(r,place){if(!r)return '';return `<article class="podium-card ${place===1?'first':''}" data-user="${esc(r.username)}"><div class="pod-rank">#${place}</div>${place===1?'<div class="crown"><i class="fa-solid fa-crown"></i></div>':''}<div class="avatar-wrap"><img class="avatar" src="${esc(r.avatar_url||LOGO)}" onerror="this.src='${LOGO}'"><i class="presence ${r.online?'on':''}"></i></div><h3>${esc(r.display_name||r.username)}</h3><div class="handle">@${esc(r.username)}</div>${role(r.top_role)}<div class="score">${fmt(r.score)} XP</div></article>`}
 function row(r){return `<article class="rank-row"><div class="rank-no">#${fmt(r.rank_no)}</div><div class="user" data-user="${esc(r.username)}"><img src="${esc(r.avatar_url||LOGO)}" onerror="this.src='${LOGO}'"><div class="user-copy"><strong>${esc(r.display_name||r.username)} ${r.online?'<i class="fa-solid fa-circle" style="font-size:7px;color:#28e78d"></i>':''}</strong><small>@${esc(r.username)} ${r.top_role?'· '+esc(r.top_role):''}</small></div></div><div class="metric"><b>${fmt(r.titles_watched)}</b><span>Titles</span></div><div class="metric hide-md"><b>${time(r.watch_minutes)}</b><span>Watch time</span></div><div class="metric hide-md"><b>${fmt(r.ratings_count)}</b><span>Ratings</span></div><div class="metric"><b>${fmt(r.achievements)}</b><span>Badges</span></div><div class="row-score">${fmt(r.score)} XP</div><div class="chev"><i class="fa-solid fa-chevron-right"></i></div></article>`}
 function bindProfiles(){document.querySelectorAll('[data-user]').forEach(x=>x.onclick=()=>profile(x.dataset.user))}
 function pager(total){const pages=Math.max(1,Math.ceil(total/25));$('#pageStat').textContent=`${page} / ${pages}`;let h=`<button class="pagebtn" data-p="${page-1}" ${page===1?'disabled':''}><i class="fa-solid fa-chevron-left"></i></button>`;for(let p=Math.max(1,page-2);p<=Math.min(pages,page+2);p++)h+=`<button class="pagebtn ${p===page?'active':''}" data-p="${p}">${p}</button>`;h+=`<button class="pagebtn" data-p="${page+1}" ${page===pages?'disabled':''}><i class="fa-solid fa-chevron-right"></i></button>`;$('#pager').innerHTML=h;$('#pager').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{page=+b.dataset.p;load()})}
@@ -728,4 +728,6 @@ load();setInterval(loadStats,10000);setInterval(heartbeat,15000);setInterval(loa
 <!-- f2w-force-save:v33-performance-cache:1788217440:leaderboard/index.html -->
 <!-- f2w-force-save:v34-performance:1788217565:leaderboard/index.html -->
 <!-- f2w-force-save:header-button-fit-v35:1788217735:leaderboard/index.html -->
+<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:leaderboard/index.html -->
+<!-- f2w-force-save:footer-cache-v36:1788217803:leaderboard/index.html -->
  

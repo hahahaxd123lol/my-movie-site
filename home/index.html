@@ -2355,7 +2355,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=35-1788217735">
-  <script src="/global-header-chat-v1.js?v=34-1788217565" defer></script>
+  <script src="/global-header-chat-v1.js?v=36-1788217803" defer></script>
 
   <style id="f2w-mobile-login-above-featured">
     /* Mobile/tablet home layout: keep the login/signup card above Featured. */
@@ -2602,13 +2602,13 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <div class="user-search-results" id="user-search-results"></div>
+          
         </div>
       </div>
 
       <div class="f2w-action-cluster">
         <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
-          <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
+          <i class="fa-regular fa-message"></i> Chat 
         </button>
 
         
@@ -2645,7 +2645,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
     </div>
   </header>
-  <div class="site-ops-banner" id="site-ops-banner" hidden></div>
+  
 
 
   <div class="chat-modal" id="chat-modal">
@@ -2668,8 +2668,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
 
       <section class="v17-chat-mode-panel" id="v17-public-chat-panel">
-        <div class="chat-status" id="chat-status"><span class="chat-status-dot"></span><span id="chat-status-text">Connecting to chat...</span></div>
-        <div class="chat-pin-banner" id="chat-pin-banner" hidden></div>
+        <div class="chat-status" id="chat-status"><span id="chat-status-text">Connecting to chat...</span></div>
+        
         <div class="chat-messages" id="chat-messages"><div class="chat-empty">Connecting to the public chat...</div></div>
         <div class="chat-warning">Public messages expire after 24 hours.</div>
 
@@ -2787,15 +2787,15 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           </div>
           <div class="f2w-oauth-note">Works for both Login and Create Account. If this is your first time, Flix2Watch creates your account and profile automatically.</div>
         </div>
-        <div class="account-message" id="account-message"></div>
+        
       </div>
 
       <div id="account-logged-in" style="display:none;">
         <div class="account-user-box">
           <div class="account-avatar"><i class="fa-solid fa-user"></i></div>
           <div>
-            <div class="account-email" id="account-user-email"></div>
-            <div class="account-role" id="account-user-username"></div>
+            
+            
             <div class="account-role" id="account-user-role">MEMBER</div>
             <div class="account-owner-note" id="account-owner-note" style="display:none;"><i class="fa-solid fa-crown"></i> WEBSITE OWNER</div>
           </div>
@@ -2803,7 +2803,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
         <div class="account-warning-box" id="account-warning-box" hidden>
           <strong><i class="fa-solid fa-triangle-exclamation"></i> ACCOUNT WARNINGS</strong>
-          <div id="account-warning-list"></div>
+          
         </div>
 
         <div class="owner-chat-auth" id="owner-chat-auth">
@@ -2818,7 +2818,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             >
             <button class="owner-chat-auth-btn" id="owner-chat-auth-btn" onclick="activateOwnerChat()">Activate</button>
           </div>
-          <div class="account-message" id="owner-chat-auth-message"></div>
+          
         </div>
 
 
@@ -2849,12 +2849,12 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div class="account-username-change-note">
             2–30 English letters or numbers only. Your old usernames stay reserved to your account, and bans, mutes, warnings and Staff permissions follow your account automatically.
           </div>
-          <div class="f2w-username-change-status" id="account-change-username-status"></div>
+          
         </div>
 <button class="account-secondary" id="account-support-btn" hidden onclick="window.location.href='/support/'"><i class="fa-solid fa-life-ring"></i> Support</button>
         <button class="account-secondary" id="account-staff-control" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1"><i class="fa-solid fa-shield-halved"></i> Staff Control Center</button>
         <button class="account-secondary" onclick="signOutAccount()">Log Out</button>
-        <div class="account-message" id="account-account-message"></div>
+        
       </div>
       </div>
     </div>
@@ -2915,7 +2915,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
                 <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span></button>
                 <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span></button>
               </div>
-              <div class="f2w-quick-login-message" id="home-quick-login-message"></div>
+              
               <div class="f2w-quick-signup-copy">No account? <button type="button" onclick="setHomeQuickAuthMode('signup')">Sign up instead</button></div>
             </div>
 
@@ -2942,7 +2942,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
                 <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign up with Google</span></button>
                 <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign up with Discord</span></button>
               </div>
-              <div class="f2w-quick-login-message" id="home-quick-signup-message"></div>
+              
               <div class="f2w-quick-signup-copy">Already have an account? <button type="button" onclick="setHomeQuickAuthMode('login')">Log in instead</button></div>
             </div>
           </div>
@@ -2957,7 +2957,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <span>CURATED BY FLIX2WATCH STAFF</span>
         <h2>Staff Picks</h2>
       </div>
-      <div id="staff-curated-host"></div>
+      
     </section>
   </div>
 
@@ -2971,8 +2971,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <i class="fa-solid fa-xmark"></i> Clear
       </button>
     </div>
-    <div class="movie-grid" id="v15-movie-search-grid"></div>
-    <nav class="catalog-pagination" id="v15-movie-search-pagination" aria-label="Movie search result pages"></nav>
+    
+    
   </section>
 
 <main>
@@ -3005,8 +3005,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
     </div>
 
-    <div class="movie-grid" id="movie-grid"></div>
-    <nav class="catalog-pagination" id="catalog-pagination" aria-label="Movie catalogue pages"></nav>
+    
+    
 
     
   
@@ -3101,7 +3101,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
       <span class="glass-chip"><i class="fa-solid fa-clock-rotate-left"></i> Device history</span>
     </div>
-    <div class="recent-strip" id="recently-viewed-strip"></div>
+    
   </section>
 
 
@@ -3242,7 +3242,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     <i class="fa-solid fa-bullhorn site-announcement-icon" aria-hidden="true"></i>
     <div class="site-announcement-content">
       <span class="site-announcement-label">SITE ANNOUNCEMENT</span>
-      <span class="site-announcement-message" id="site-announcement-message"></span>
+      
     </div>
     <button class="site-announcement-close" type="button" aria-label="Close announcement" onclick="dismissSiteAnnouncement()">
       <i class="fa-solid fa-xmark"></i>
@@ -4659,7 +4659,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <span class="chat-alias">COMMAND</span>
         <span class="chat-time">PRIVATE</span>
       </div>
-      <div class="chat-text"></div>
+      
     `;
 
     const textEl=box.querySelector('.chat-text');
@@ -5698,7 +5698,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 
 </script>
 
-  <div class="f2w-scroll-progress" id="f2w-scroll-progress"></div>
+  
 
   <button class="f2w-back-top" id="f2w-back-top" type="button" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
     <i class="fa-solid fa-arrow-up"></i>
@@ -5711,7 +5711,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 <div class="f2w-command-overlay" id="f2w-command-overlay" onclick="if(event.target===this)closeUltraCommand()">
     <div class="f2w-command">
       <input id="f2w-command-search" class="f2w-command-search" type="search" placeholder="Search actions, genres, pages..." autocomplete="off">
-      <div class="f2w-command-results" id="f2w-command-results"></div>
+      
       <div class="f2w-command-foot">
         <span>↑ ↓ navigate · Enter open</span>
         <span>Esc close · Ctrl/⌘ K open</span>
@@ -5723,7 +5723,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
     <img id="chat-image-lightbox-img" alt="Chat attachment">
   </div>
 
-  <div class="f2w-toast-stack" id="f2w-toast-stack"></div>
+  
 
 
 <script>
@@ -6505,4 +6505,6 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 <!-- f2w-force-save:v33-performance-cache:1788217440:home/index.html -->
 <!-- f2w-force-save:v34-performance:1788217565:home/index.html -->
 <!-- f2w-force-save:header-button-fit-v35:1788217735:home/index.html -->
+<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:home/index.html -->
+<!-- f2w-force-save:footer-cache-v36:1788217803:home/index.html -->
  

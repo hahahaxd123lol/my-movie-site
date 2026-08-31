@@ -818,7 +818,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=35-1788217735">
   <script src="/seo-v17.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=34-1788217565" defer></script>
+  <script src="/global-header-chat-v1.js?v=36-1788217803" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -965,13 +965,13 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <div class="user-search-results" id="user-search-results"></div>
+          
         </div>
       </div>
 
       <div class="f2w-action-cluster">
         <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
-          <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
+          <i class="fa-regular fa-message"></i> Chat 
         </button>
 
         
@@ -1009,14 +1009,14 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     </div>
   </header>
 
-<div class="staff-access-screen" id="staff-access-screen" hidden></div>
+
 <div id="staff-app-header" class="staff-page-toolbar" hidden>
   <div class="top">
     <a class="logo" href="/home/" aria-label="Flix2Watch home"><img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch"></a>
     <div class="top-title"><strong>Staff Control Center</strong><span>MODERATION · CMS · SUPPORT · STREAM OPERATIONS</span></div>
     <div class="top-actions">
       <span class="ghost" id="staff-live-status" title="Supabase realtime connection"><i class="fa-solid fa-signal"></i> Live</span>
-      <span class="role-chip" id="role-chip"><i class="fa-solid fa-shield-halved"></i><span id="role-chip-text"></span></span>
+      <span class="role-chip" id="role-chip"><i class="fa-solid fa-shield-halved"></i></span>
       <a class="ghost" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
       <button class="ghost" type="button" onclick="signOut()"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
     </div>
@@ -1068,7 +1068,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
     </section>
 
-      <div class="grid" id="stats-grid"></div>
+      
       <div class="card">
         <div class="card-head"><strong>Quick actions</strong><span>Live controls</span></div>
         <div class="row">
@@ -1115,27 +1115,27 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <div class="moderation-shell">
           <div class="card moderation-target-card">
             <div class="card-head"><strong>Target account</strong><span>Username lookup</span></div>
-            <div class="field user-autofind-wrap"><label>USERNAME</label><input id="user-target" placeholder="Start typing a username…" autocomplete="off" aria-autocomplete="list" aria-controls="user-autofind-results"><div id="user-autofind-results" class="user-autofind-results" role="listbox" hidden></div></div>
+            <div class="field user-autofind-wrap"><label>USERNAME</label><input id="user-target" placeholder="Start typing a username…" autocomplete="off" aria-autocomplete="list" aria-controls="user-autofind-results"></div>
             <div class="row" style="margin-top:9px"><button class="btn primary" onclick="inspectUser()"><i class="fa-solid fa-magnifying-glass"></i> Load account</button><button class="btn" onclick="clearModerationTarget()"><i class="fa-solid fa-xmark"></i> Clear</button></div>
-            <div id="moderation-target-profile"></div>
+            
           </div>
           <div class="card moderation-action-card">
             <div class="card-head"><strong>Instant restrictions</strong><span>Realtime / autosave</span></div>
             <div class="instant-controls">
-              <div class="instant-row"><div class="instant-copy"><strong>Public chat ban</strong><span>Blocks public chat sending only.</span></div><label class="staff-switch"><input id="quick-public-chat-ban" type="checkbox" data-action="public-chat-ban" onchange="applyInstantRestriction(this)"><span></span></label></div>
-              <div class="instant-row"><div class="instant-copy"><strong>Chat mute</strong><span>Temporarily stops chat messages.</span></div><label class="staff-switch"><input id="quick-chat-mute" type="checkbox" data-action="chat-mute" onchange="applyInstantRestriction(this)"><span></span></label></div>
-              <div class="instant-row danger"><div class="instant-copy"><strong>Site suspension</strong><span>Locks the website immediately while the user remains signed in.</span></div><label class="staff-switch"><input id="quick-site-suspension" type="checkbox" data-action="site-suspension" onchange="applyInstantRestriction(this)"><span></span></label></div>
-              <div class="instant-row danger"><div class="instant-copy"><strong>Account login ban</strong><span>Signs the account out and blocks future password login.</span></div><label class="staff-switch"><input id="quick-account-ban" type="checkbox" data-action="account-ban" onchange="applyInstantRestriction(this)"><span></span></label></div>
+              <div class="instant-row"><div class="instant-copy"><strong>Public chat ban</strong><span>Blocks public chat sending only.</span></div><label class="staff-switch"><input id="quick-public-chat-ban" type="checkbox" data-action="public-chat-ban" onchange="applyInstantRestriction(this)"></label></div>
+              <div class="instant-row"><div class="instant-copy"><strong>Chat mute</strong><span>Temporarily stops chat messages.</span></div><label class="staff-switch"><input id="quick-chat-mute" type="checkbox" data-action="chat-mute" onchange="applyInstantRestriction(this)"></label></div>
+              <div class="instant-row danger"><div class="instant-copy"><strong>Site suspension</strong><span>Locks the website immediately while the user remains signed in.</span></div><label class="staff-switch"><input id="quick-site-suspension" type="checkbox" data-action="site-suspension" onchange="applyInstantRestriction(this)"></label></div>
+              <div class="instant-row danger"><div class="instant-copy"><strong>Account login ban</strong><span>Signs the account out and blocks future password login.</span></div><label class="staff-switch"><input id="quick-account-ban" type="checkbox" data-action="account-ban" onchange="applyInstantRestriction(this)"></label></div>
             </div>
             <div class="moderation-meta"><div class="field"><label>REASON SHOWN TO USER / AUDIT</label><input id="quick-restriction-reason" maxlength="500" placeholder="Optional reason"></div><div class="field"><label>EXPIRY</label><select id="quick-restriction-expiry"><option value="0">No expiry</option><option value="10">10 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option></select></div></div>
             <div class="moderation-status" id="moderation-status"><strong>No account selected.</strong> Search a username to load live restriction state.</div>
           </div>
         </div>
       </div>
-      <div id="user-snapshot" style="margin-top:14px"></div>
+      
       <div class="card" id="permission-card" hidden>
         <div class="card-head"><strong>Staff permission overrides</strong><span>Owner-only backend overrides.</span></div>
-        <div class="perm-grid" id="permission-grid"></div>
+        
       </div>
     </section>
 
@@ -1163,7 +1163,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       <div class="card staff-profile-manager" id="staff-profile-manager-card" hidden>
         <div class="card-head">
           <strong id="staff-profile-manager-title">Profile editor</strong>
-          <span id="staff-profile-manager-id"></span>
+          
         </div>
 
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
@@ -1279,7 +1279,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div class="field"><label>SORT ORDER — LOWER NUMBER APPEARS FIRST</label><input id="collection-order" type="number" value="100" title="10 appears before 100. Lower numbers are earlier."></div>
           <button class="btn primary" onclick="createCollection()">Create</button>
         </div>
-        <div id="collections-list" style="margin-top:12px"></div>
+        
       </div>
       <div class="card">
         <div class="card-head"><strong>Block a title</strong><span>Hides it from catalogue results and blocks watch-page playback.</span></div>
@@ -1315,7 +1315,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <div class="card-head"><strong>Public site settings</strong><span>Only approved keys are writable by Staff.</span></div>
         <div class="field"><label>MAINTENANCE / STATUS MESSAGE</label><textarea id="maintenance-message" placeholder="Leave blank for no banner"></textarea></div>
         <div class="row" style="margin-top:10px"><button class="btn primary" onclick="saveMaintenance()">Save status message</button><button class="btn" onclick="loadSettings()">Reload</button></div>
-        <div id="settings-view" class="notice"></div>
+        
       </div>
     </section>
 
@@ -1332,11 +1332,11 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
 <div class="staff-dialog" id="staff-dialog" hidden>
   <div class="staff-dialog-card" role="dialog" aria-modal="true" aria-labelledby="staff-dialog-title">
-    <div class="staff-dialog-accent"></div>
+    
     <div class="staff-dialog-body">
       <div class="staff-dialog-title" id="staff-dialog-title">Staff action</div>
-      <div class="staff-dialog-copy" id="staff-dialog-copy"></div>
-      <div id="staff-dialog-input-host"></div>
+      
+      
       <div class="staff-dialog-actions">
         <button class="btn" id="staff-dialog-cancel" type="button">Cancel</button>
         <button class="btn primary" id="staff-dialog-ok" type="button">Continue</button>
@@ -1345,7 +1345,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   </div>
 </div>
 
-<div class="toast-stack" id="toast-stack"></div><div class="staff-toast-stack" id="staff-toast-stack"></div>
+
 
 <script>
 const SUPABASE_URL="https://viqufxlcxwgboyxbdhjb.supabase.co";
@@ -2654,8 +2654,8 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 
 <div class="staff-ticket-modal" id="staff-ticket-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="staff-ticket-modal-title">
   <div class="staff-ticket-chat">
-    <div class="staff-ticket-head"><div class="staff-ticket-head-copy"><strong id="staff-ticket-modal-title">Support ticket</strong><span id="staff-ticket-modal-meta"></span></div><button class="btn staff-ticket-close" type="button" onclick="closeStaffTicketModal()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="staff-ticket-messages" id="staff-ticket-modal-messages"></div>
+    <div class="staff-ticket-head"><div class="staff-ticket-head-copy"><strong id="staff-ticket-modal-title">Support ticket</strong></div><button class="btn staff-ticket-close" type="button" onclick="closeStaffTicketModal()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    
     <div class="staff-ticket-compose">
       <textarea id="staff-ticket-reply" maxlength="4000" placeholder="Reply to this ticket…"></textarea>
       <div class="staff-ticket-compose-actions">
@@ -2666,7 +2666,7 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
         <button class="btn" type="button" onclick="setActiveTicketStatus('resolved')"><i class="fa-solid fa-check"></i> Resolve</button>
         <button class="btn purple" id="staff-ticket-send" type="button" onclick="sendStaffTicketReply()"><i class="fa-solid fa-paper-plane"></i> Send</button>
       </div>
-      <div class="staff-ticket-statusline" id="staff-ticket-statusline"></div>
+      
     </div>
   </div>
 </div>
@@ -2706,4 +2706,6 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 <!-- f2w-force-save:v33-performance-cache:1788217440:staff/index.html -->
 <!-- f2w-force-save:v34-performance:1788217565:staff/index.html -->
 <!-- f2w-force-save:header-button-fit-v35:1788217735:staff/index.html -->
+<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:staff/index.html -->
+<!-- f2w-force-save:footer-cache-v36:1788217803:staff/index.html -->
  

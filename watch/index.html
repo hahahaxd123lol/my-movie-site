@@ -2940,7 +2940,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/final-v35.css?v=33-1788217440">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/global-header-v1.css?v=35-1788217735">
-  <script src="/global-header-chat-v1.js?v=34-1788217565" defer></script>
+  <script src="/global-header-chat-v1.js?v=36-1788217803" defer></script>
 
 
 
@@ -3292,13 +3292,13 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <div class="user-search-results" id="user-search-results"></div>
+          
         </div>
       </div>
 
       <div class="f2w-action-cluster">
         <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
-          <i class="fa-regular fa-message"></i> Chat <span class="chat-online-dot"></span>
+          <i class="fa-regular fa-message"></i> Chat 
         </button>
 
         
@@ -3335,7 +3335,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
     </div>
   </header>
-  <div class="site-ops-banner" id="site-ops-banner" hidden></div>
+  
 
 
   <div class="chat-modal" id="chat-modal">
@@ -3358,8 +3358,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
 
       <section class="v17-chat-mode-panel" id="v17-public-chat-panel">
-        <div class="chat-status" id="chat-status"><span class="chat-status-dot"></span><span id="chat-status-text">Connecting to chat...</span></div>
-        <div class="chat-pin-banner" id="chat-pin-banner" hidden></div>
+        <div class="chat-status" id="chat-status"><span id="chat-status-text">Connecting to chat...</span></div>
+        
         <div class="chat-messages" id="chat-messages"><div class="chat-empty">Connecting to the public chat...</div></div>
         <div class="chat-warning">Public messages expire after 24 hours.</div>
 
@@ -3477,15 +3477,15 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           </div>
           <div class="f2w-oauth-note">Works for both Login and Create Account. If this is your first time, Flix2Watch creates your account and profile automatically.</div>
         </div>
-        <div class="account-message" id="account-message"></div>
+        
       </div>
 
       <div id="account-logged-in" style="display:none;">
         <div class="account-user-box">
           <div class="account-avatar"><i class="fa-solid fa-user"></i></div>
           <div>
-            <div class="account-email" id="account-user-email"></div>
-            <div class="account-role" id="account-user-username"></div>
+            
+            
             <div class="account-role" id="account-user-role">MEMBER</div>
             <div class="account-owner-note" id="account-owner-note" style="display:none;"><i class="fa-solid fa-crown"></i> WEBSITE OWNER</div>
           </div>
@@ -3493,7 +3493,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
         <div class="account-warning-box" id="account-warning-box" hidden>
           <strong><i class="fa-solid fa-triangle-exclamation"></i> ACCOUNT WARNINGS</strong>
-          <div id="account-warning-list"></div>
+          
         </div>
 
         <div class="owner-chat-auth" id="owner-chat-auth">
@@ -3508,7 +3508,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             >
             <button class="owner-chat-auth-btn" id="owner-chat-auth-btn" onclick="activateOwnerChat()">Activate</button>
           </div>
-          <div class="account-message" id="owner-chat-auth-message"></div>
+          
         </div>
 
 
@@ -3539,12 +3539,12 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div class="account-username-change-note">
             2–30 English letters or numbers only. Your old usernames stay reserved to your account, and bans, mutes, warnings and Staff permissions follow your account automatically.
           </div>
-          <div class="f2w-username-change-status" id="account-change-username-status"></div>
+          
         </div>
 <button class="account-secondary" id="account-support-btn" hidden onclick="window.location.href='/support/'"><i class="fa-solid fa-life-ring"></i> Support</button>
         <button class="account-secondary" id="account-staff-control" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1"><i class="fa-solid fa-shield-halved"></i> Staff Control Center</button>
         <button class="account-secondary" onclick="signOutAccount()">Log Out</button>
-        <div class="account-message" id="account-account-message"></div>
+        
       </div>
       </div>
     </div>
@@ -3555,7 +3555,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     <i class="fa-solid fa-bullhorn site-announcement-icon" aria-hidden="true"></i>
     <div class="site-announcement-content">
       <span class="site-announcement-label">SITE ANNOUNCEMENT</span>
-      <span class="site-announcement-message" id="site-announcement-message"></span>
+      
     </div>
     <button class="site-announcement-close" type="button" aria-label="Close announcement" onclick="dismissSiteAnnouncement()">
       <i class="fa-solid fa-xmark"></i>
@@ -3658,7 +3658,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <button class="server-btn" data-server="vidsrccx" onclick="switchServer('vidsrccx', this)">VidSrcCX</button>
       </div>
 
-      <div class="stream-source-notice" id="stream-source-notice"></div>
+      
     </div>
 
     <div class="media-details-box">
@@ -3683,7 +3683,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <h2>Rate this title</h2>
         <p>Score it from ½ to 5 stars. Your rating appears publicly on your profile.</p>
       </div>
-      <div class="f2w-v34-rating-stars" id="f2w-v34-rating-stars" aria-label="Rate this title"></div>
+      
       <div class="f2w-v34-rating-summary"><strong id="f2w-v34-your-rating">—</strong><span>Your score</span><strong id="f2w-v34-community-rating">—</strong><span>Community</span></div>
       <textarea id="f2w-v34-rating-review" maxlength="600" placeholder="Optional short review..."></textarea>
       <div class="f2w-v34-rating-actions"><button type="button" id="f2w-v34-save-rating"><i class="fa-solid fa-star"></i> Save rating</button><button type="button" id="f2w-v34-clear-rating">Clear</button></div>
@@ -3707,7 +3707,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <div class="f2w-mini-stat"><strong id="f2w-watch-runtime">—</strong><span>RUNTIME</span></div>
         <div class="f2w-mini-stat"><strong id="f2w-watch-status">—</strong><span>STATUS</span></div>
       </div>
-      <div id="f2w-watch-extra" style="margin-top:16px"></div>
+      
     </section>
 
   
@@ -5136,7 +5136,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <span class="chat-alias">COMMAND</span>
         <span class="chat-time">PRIVATE</span>
       </div>
-      <div class="chat-text"></div>
+      
     `;
 
     const textEl=box.querySelector('.chat-text');
@@ -6469,7 +6469,7 @@ if(currentUser){
   </div>
 
 
-  <div class="f2w-scroll-progress" id="f2w-scroll-progress"></div>
+  
 
   <button class="f2w-back-top" id="f2w-back-top" type="button" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
     <i class="fa-solid fa-arrow-up"></i>
@@ -6482,7 +6482,7 @@ if(currentUser){
 <div class="f2w-command-overlay" id="f2w-command-overlay" onclick="if(event.target===this)closeUltraCommand()">
     <div class="f2w-command">
       <input id="f2w-command-search" class="f2w-command-search" type="search" placeholder="Search actions, genres, pages..." autocomplete="off">
-      <div class="f2w-command-results" id="f2w-command-results"></div>
+      
       <div class="f2w-command-foot">
         <span>↑ ↓ navigate · Enter open</span>
         <span>Esc close · Ctrl/⌘ K open</span>
@@ -6494,7 +6494,7 @@ if(currentUser){
     <img id="chat-image-lightbox-img" alt="Chat attachment">
   </div>
 
-  <div class="f2w-toast-stack" id="f2w-toast-stack"></div>
+  
 
 
 <script>
@@ -7568,4 +7568,6 @@ if(currentUser){
 <!-- f2w-force-save:v33-performance-cache:1788217440:watch/index.html -->
 <!-- f2w-force-save:v34-performance:1788217565:watch/index.html -->
 <!-- f2w-force-save:header-button-fit-v35:1788217735:watch/index.html -->
+<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:watch/index.html -->
+<!-- f2w-force-save:footer-cache-v36:1788217803:watch/index.html -->
  
