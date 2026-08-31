@@ -1689,3 +1689,44 @@ body.f2w-main-page * {
 
 /* f2w-force-save:header-button-fit-v35:1788217735 */
  
+
+/* ============================================================
+   F2W v38 — CHAT BUTTON WIDTH
+   Gives Chat + green status dot enough fixed room.
+   ============================================================ */
+@media (min-width:1181px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:82px 84px 76px 78px 82px 116px 144px !important;
+    flex:0 0 698px !important;
+    width:698px !important;
+    min-width:698px !important;
+    max-width:698px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    padding-left:8px !important;
+    padding-right:8px !important;
+    overflow:visible !important;
+    white-space:nowrap !important;
+  }
+
+  body.f2w-main-page > header .chat-button .chat-online-dot {
+    flex:0 0 7px !important;
+    width:7px !important;
+    min-width:7px !important;
+    margin-left:2px !important;
+  }
+}
+
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:76px 76px 70px 70px 76px 104px 132px !important;
+    flex:0 0 640px !important;
+    width:640px !important;
+    min-width:640px !important;
+    max-width:640px !important;
+  }
+}
+
+/* f2w-force-save:chat-button-width-v38:1788218284 */
+ 
