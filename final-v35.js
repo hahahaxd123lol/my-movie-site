@@ -57,19 +57,132 @@
     return data;
   }
 
-  async function worker(action,payload={}){
+  async function worker(action,payload={},accessToken=''){
+    const headers={'Content-Type':'application/json'};
+    if(accessToken)headers.Authorization=`Bearer ${accessToken}`;
     const response=await fetch(CHAT_API_URL,{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers,
       cache:'no-store',
       body:JSON.stringify({action,...payload})
     });
     const result=await response.json().catch(()=>({success:false,error:`HTTP ${response.status}`}));
     if(!response.ok||result?.success===false){
-      throw new Error(result?.error||`Worker returned HTTP ${response.status}`);
+      const error=new Error(result?.error||`Worker returned HTTP ${response.status}`);
+      error.code=result?.code||'';
+      error.status=response.status;
+      throw error;
     }
     return result;
   }
+
+
+  /* ---------- BAN-EVASION / DEVICE SIGNAL GUARD ---------- */
+  function f2wDeviceId(){
+    const key='f2w_device_id_v1';
+    try{
+      let value=localStorage.getItem(key);
+      if(!value){
+        value=(crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`);
+        localStorage.setItem(key,value);
+      }
+      return value;
+    }catch{
+      return 'storage-unavailable';
+    }
+  }
+
+  function f2wBrowserFingerprint(){
+    const s=window.screen||{};
+    const n=window.navigator||{};
+    const parts=[
+      n.userAgent||'',
+      n.platform||'',
+      n.language||'',
+      Array.isArray(n.languages)?n.languages.join(','):'',
+      String(n.hardwareConcurrency||''),
+      String(n.deviceMemory||''),
+      String(n.maxTouchPoints||''),
+      `${s.width||0}x${s.height||0}x${s.colorDepth||0}`,
+      Intl.DateTimeFormat().resolvedOptions().timeZone||'',
+      String(window.devicePixelRatio||1)
+    ];
+    return parts.join('|');
+  }
+
+  function abusePayload(){
+    return {
+      device_id:f2wDeviceId(),
+      fingerprint:f2wBrowserFingerprint()
+    };
+  }
+
+  async function abusePreflight(){
+    return worker('abuse_preflight',abusePayload());
+  }
+
+  async function registerCurrentAbuseSignals(){
+    const client=db();
+    if(!client)return;
+    const {data:{session}}=await client.auth.getSession();
+    if(!session?.access_token)return;
+    try{
+      await worker('abuse_register',abusePayload(),session.access_token);
+    }catch(error){
+      if(error?.code==='BAN_EVASION_BLOCKED'){
+        try{await client.auth.signOut()}catch{}
+        try{toast(error.message||'This device is blocked from creating another account.')}catch{}
+        try{window.openHeaderAuth?.('login')}catch{}
+      }
+    }
+  }
+
+  let abuseGuardInstalled=false;
+  function installAuthAbuseGuard(){
+    if(abuseGuardInstalled)return;
+    const client=db();
+    if(!client?.auth)return;
+
+    abuseGuardInstalled=true;
+
+    if(typeof client.auth.signUp==='function'&&!client.auth.signUp.__f2wGuarded){
+      const originalSignUp=client.auth.signUp.bind(client.auth);
+      const guarded=async(credentials)=>{
+        try{
+          await abusePreflight();
+        }catch(error){
+          return {data:{user:null,session:null},error};
+        }
+        const result=await originalSignUp(credentials);
+        if(!result?.error)setTimeout(registerCurrentAbuseSignals,250);
+        return result;
+      };
+      guarded.__f2wGuarded=true;
+      client.auth.signUp=guarded;
+    }
+
+    if(typeof client.auth.signInWithOAuth==='function'&&!client.auth.signInWithOAuth.__f2wGuarded){
+      const originalOAuth=client.auth.signInWithOAuth.bind(client.auth);
+      const guardedOAuth=async(options)=>{
+        try{
+          await abusePreflight();
+        }catch(error){
+          return {data:{provider:null,url:null},error};
+        }
+        try{sessionStorage.setItem('f2w_abuse_oauth_pending','1')}catch{}
+        return originalOAuth(options);
+      };
+      guardedOAuth.__f2wGuarded=true;
+      client.auth.signInWithOAuth=guardedOAuth;
+    }
+  }
+
+  window.__f2wAbuseGuard={
+    deviceId:f2wDeviceId,
+    fingerprint:f2wBrowserFingerprint,
+    preflight:abusePreflight,
+    register:registerCurrentAbuseSignals
+  };
 
   /* ---------- LOGIN: preserve existing signup/session flow, add username ---------- */
   window.f2wLoginIdentifier=async function(identifier,password){
@@ -77,7 +190,7 @@
     if(!client)return {data:null,error:new Error('Authentication is not ready.')};
     const clean=String(identifier||'').trim();
     try{
-      const result=await worker('login_identifier',{identifier:clean,password:String(password||'')});
+      const result=await worker('login_identifier',{identifier:clean,password:String(password||''),...abusePayload()});
       const {data,error}=await client.auth.setSession({
         access_token:String(result.access_token||''),
         refresh_token:String(result.refresh_token||'')
@@ -85,10 +198,22 @@
       if(error)throw error;
       return {data:{user:data?.user||result.user,session:data?.session||null},error:null};
     }catch(error){
-      /* Email logins keep the old direct path as a deployment-safe fallback. */
+      /* Never bypass a deliberate moderation / ban-evasion decision. */
+      if(error?.code==='BAN_EVASION_BLOCKED'||error?.code==='ACCOUNT_BANNED'||error?.status===403){
+        return {data:null,error};
+      }
+      /* Email logins keep the old direct path only for genuine deployment/network failures. */
       if(clean.includes('@')){
-        const direct=await client.auth.signInWithPassword({email:clean,password:String(password||'')});
-        if(!direct.error)return direct;
+        try{
+          await abusePreflight();
+          const direct=await client.auth.signInWithPassword({email:clean,password:String(password||'')});
+          if(!direct.error){
+            setTimeout(registerCurrentAbuseSignals,250);
+            return direct;
+          }
+        }catch(policyError){
+          return {data:null,error:policyError};
+        }
       }
       return {data:null,error};
     }
@@ -546,12 +671,14 @@
   /* ---------- boot ---------- */
   async function boot(){
     forceRedLogo();addLeaderboardNav();hardenRouting();installDmSearch();reorderSourceButtons();
+    installAuthAbuseGuard();
     await syncAuthUI();
+    registerCurrentAbuseSignals();
     prewarmChat();
     setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();enrichForum();bootLeaderboard();decorateNames();installStaffQuickModeration()},350);
     roleDecorateTimer=setInterval(()=>{forceRedLogo();decorateNames();installDmSearch();installProfileEditor();renderProfileExtras(viewedProfileObject());installStaffQuickModeration()},2200);
     const client=db();
-    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{syncAuthUI();installProfileEditor();enrichForum()},0))}catch{}
+    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{installAuthAbuseGuard();syncAuthUI();registerCurrentAbuseSignals();installProfileEditor();enrichForum()},0))}catch{}
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')touchPresence()});
     const observer=new MutationObserver(()=>{forceRedLogo();addLeaderboardNav();hardenRouting()});
     observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['src','hidden','style']});
@@ -559,3 +686,5 @@
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+// f2w-force-save:ban-evasion-final-v35-v1:1788212206
+ 

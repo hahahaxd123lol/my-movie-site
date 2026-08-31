@@ -5,6 +5,7 @@ const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const CHAT_OWNER_PASSWORD = Deno.env.get("CHAT_OWNER_PASSWORD") ?? "";
 const CHAT_TOKEN_SECRET = Deno.env.get("CHAT_TOKEN_SECRET") ?? "";
+const ABUSE_SIGNAL_SECRET = Deno.env.get("ABUSE_SIGNAL_SECRET") ?? CHAT_TOKEN_SECRET;
 
 const OWNER_UUID = "f5454804-a2a6-4602-9086-51cf51f11c77";
 
@@ -18,7 +19,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-f2w-device",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
@@ -1733,6 +1734,216 @@ async function handleCommand(
   };
 }
 
+
+/* ---------- BAN-EVASION / DEVICE SIGNAL GUARD ---------- */
+function getRequestIp(request: Request) {
+  const cf = String(request.headers.get("cf-connecting-ip") ?? "").trim();
+  if (cf) return cf;
+  const forwarded = String(request.headers.get("x-forwarded-for") ?? "").split(",")[0]?.trim();
+  if (forwarded) return forwarded;
+  return "";
+}
+
+function cleanSignal(value: unknown, max = 2048) {
+  return String(value ?? "").trim().slice(0, max);
+}
+
+async function hashAbuseSignal(kind: string, value: string) {
+  if (!value) return "";
+  return sha256Hex(`${ABUSE_SIGNAL_SECRET}|${kind}|${value}`);
+}
+
+async function buildAbuseSignals(request: Request, body: Record<string, unknown>) {
+  const deviceId = cleanSignal(body.device_id, 200);
+  const fingerprint = cleanSignal(body.fingerprint, 3000);
+  const ua = cleanSignal(request.headers.get("user-agent"), 1200);
+  const ip = cleanSignal(getRequestIp(request), 200);
+
+  const [device_hash, fingerprint_hash, ua_hash, ip_hash, ip_ua_hash] =
+    await Promise.all([
+      hashAbuseSignal("device", deviceId),
+      hashAbuseSignal("fingerprint", fingerprint),
+      hashAbuseSignal("ua", ua),
+      hashAbuseSignal("ip", ip),
+      ip && ua ? hashAbuseSignal("ip_ua", `${ip}|${ua}`) : Promise.resolve(""),
+    ]);
+
+  const signal_key = await hashAbuseSignal(
+    "signal_key",
+    [device_hash, fingerprint_hash, ua_hash, ip_hash].join("|"),
+  );
+
+  return {
+    signal_key,
+    device_hash,
+    fingerprint_hash,
+    ua_hash,
+    ip_hash,
+    ip_ua_hash,
+  };
+}
+
+async function checkBanEvasion(signals: {
+  device_hash: string;
+  fingerprint_hash: string;
+  ip_ua_hash: string;
+}) {
+  const hashes = [
+    signals.device_hash,
+    signals.fingerprint_hash,
+    signals.ip_ua_hash,
+  ].filter(Boolean);
+
+  if (!hashes.length) {
+    return { blocked: false, networkMatch: false, match: null as any };
+  }
+
+  const { data, error } = await supabase
+    .from("ban_evasion_blocks")
+    .select("source_user_id,signal_type,signal_hash,reason,expires_at,created_at")
+    .in("signal_hash", hashes)
+    .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`);
+
+  if (error) {
+    console.error("ban_evasion_blocks lookup failed:", error.message);
+    return { blocked: false, networkMatch: false, match: null as any };
+  }
+
+  const rows = Array.isArray(data) ? data : [];
+  const hard =
+    rows.find((row: any) =>
+      row.signal_type === "device" &&
+      row.signal_hash === signals.device_hash
+    ) ??
+    rows.find((row: any) =>
+      row.signal_type === "fingerprint" &&
+      row.signal_hash === signals.fingerprint_hash
+    );
+
+  const network = rows.find((row: any) =>
+    row.signal_type === "ip_ua" &&
+    row.signal_hash === signals.ip_ua_hash
+  );
+
+  return {
+    blocked: Boolean(hard),
+    networkMatch: Boolean(network),
+    match: hard ?? network ?? null,
+  };
+}
+
+async function recordAccountSignals(
+  userId: string,
+  signals: {
+    signal_key: string;
+    device_hash: string;
+    fingerprint_hash: string;
+    ua_hash: string;
+    ip_hash: string;
+    ip_ua_hash: string;
+  },
+) {
+  if (!userId || !signals.signal_key) return;
+
+  const row = {
+    user_id: userId,
+    signal_key: signals.signal_key,
+    device_hash: signals.device_hash || null,
+    fingerprint_hash: signals.fingerprint_hash || null,
+    ua_hash: signals.ua_hash || null,
+    ip_hash: signals.ip_hash || null,
+    ip_ua_hash: signals.ip_ua_hash || null,
+    last_seen_at: new Date().toISOString(),
+  };
+
+  const { error } = await supabase
+    .from("account_device_signals")
+    .upsert(row, { onConflict: "user_id,signal_key" });
+
+  if (error) {
+    console.error("account_device_signals upsert failed:", error.message);
+  }
+}
+
+async function logBanEvasionHit(
+  attemptedUserId: string | null,
+  match: any,
+  signals: {
+    device_hash: string;
+    fingerprint_hash: string;
+    ip_ua_hash: string;
+  },
+  outcome = "blocked",
+) {
+  const { error } = await supabase.from("ban_evasion_hits").insert({
+    attempted_user_id: attemptedUserId || null,
+    source_user_id: match?.source_user_id || null,
+    matched_signal_type: match?.signal_type || null,
+    matched_signal_hash: match?.signal_hash || null,
+    device_hash: signals.device_hash || null,
+    fingerprint_hash: signals.fingerprint_hash || null,
+    ip_ua_hash: signals.ip_ua_hash || null,
+    outcome,
+  });
+
+  if (error) {
+    console.error("ban_evasion_hits insert failed:", error.message);
+  }
+}
+
+async function suspendEvasionAccount(
+  userId: string,
+  reason = "Ban evasion detected",
+) {
+  if (!userId || userId === OWNER_UUID) return;
+
+  const now = new Date().toISOString();
+
+  await supabase.from("account_login_bans").upsert({
+    user_id: userId,
+    reason,
+    expires_at: null,
+    updated_at: now,
+  }, { onConflict: "user_id" }).catch(() => null);
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (profile?.username) {
+    await supabase.from("chat_bans").upsert({
+      alias: String(profile.username).toLowerCase(),
+      reason,
+      expires_at: null,
+    }, { onConflict: "alias" }).catch(() => null);
+  }
+}
+
+async function getBearerUser(request: Request) {
+  const token = getBearerToken(request);
+  if (!token) return null;
+
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data?.user?.id) return null;
+  return data.user;
+}
+
+async function activeAccountLoginBan(userId: string) {
+  const { data, error } = await supabase
+    .from("account_login_bans")
+    .select("reason,expires_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  if (data.expires_at && new Date(data.expires_at).getTime() <= Date.now()) {
+    return null;
+  }
+  return data;
+}
+
 Deno.serve(async (request: Request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: CORS_HEADERS });
@@ -1805,6 +2016,59 @@ Deno.serve(async (request: Request) => {
       return json({ success: true, messages, announcement, config, pinned_message: pinnedMessage });
     }
 
+
+    if (action === "abuse_preflight") {
+      const signals = await buildAbuseSignals(request, body);
+      const decision = await checkBanEvasion(signals);
+
+      if (decision.blocked) {
+        await logBanEvasionHit(null, decision.match, signals, "preflight_blocked");
+        return json({
+          success: false,
+          code: "BAN_EVASION_BLOCKED",
+          error: "This device cannot create or access another Flix2Watch account.",
+        }, 403);
+      }
+
+      return json({
+        success: true,
+        allowed: true,
+        network_match: decision.networkMatch,
+      });
+    }
+
+    if (action === "abuse_register") {
+      const user = await getBearerUser(request);
+      if (!user?.id) {
+        return json({
+          success: false,
+          code: "AUTH_REQUIRED",
+          error: "Authentication required.",
+        }, 401);
+      }
+
+      const signals = await buildAbuseSignals(request, body);
+      const decision = await checkBanEvasion(signals);
+
+      await recordAccountSignals(String(user.id), signals);
+
+      if (decision.blocked && String(user.id) !== String(decision.match?.source_user_id || "")) {
+        await suspendEvasionAccount(String(user.id), "Ban evasion detected");
+        await logBanEvasionHit(String(user.id), decision.match, signals, "account_suspended");
+        return json({
+          success: false,
+          code: "BAN_EVASION_BLOCKED",
+          error: "This account has been suspended because it matches a previously banned device.",
+        }, 403);
+      }
+
+      if (decision.networkMatch) {
+        await logBanEvasionHit(String(user.id), decision.match, signals, "network_match_only");
+      }
+
+      return json({ success: true, registered: true });
+    }
+
     if (action === "login_identifier") {
       const identifier = String(body.identifier ?? "").trim();
       const password = String(body.password ?? "");
@@ -1817,6 +2081,18 @@ Deno.serve(async (request: Request) => {
           },
           400,
         );
+      }
+
+      const abuseSignals = await buildAbuseSignals(request, body);
+      const abuseDecision = await checkBanEvasion(abuseSignals);
+
+      if (abuseDecision.blocked) {
+        await logBanEvasionHit(null, abuseDecision.match, abuseSignals, "login_blocked");
+        return json({
+          success: false,
+          code: "BAN_EVASION_BLOCKED",
+          error: "This device cannot access another Flix2Watch account.",
+        }, 403);
       }
 
       let email = identifier;
@@ -1893,6 +2169,24 @@ Deno.serve(async (request: Request) => {
           },
           401,
         );
+      }
+
+      const tokenUserId = String(tokenBody?.user?.id || "");
+      if (tokenUserId) {
+        const loginBan = await activeAccountLoginBan(tokenUserId);
+        if (loginBan) {
+          return json({
+            success: false,
+            code: "ACCOUNT_BANNED",
+            error: loginBan.reason || "This account is suspended.",
+          }, 403);
+        }
+
+        await recordAccountSignals(tokenUserId, abuseSignals);
+
+        if (abuseDecision.networkMatch) {
+          await logBanEvasionHit(tokenUserId, abuseDecision.match, abuseSignals, "network_match_only");
+        }
       }
 
       return json({
@@ -2490,3 +2784,5 @@ Deno.serve(async (request: Request) => {
     );
   }
 });
+// f2w-force-save:ban-evasion-worker-v1:1788212206
+ 
