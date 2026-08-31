@@ -99,4 +99,5 @@
     if(open)closeChatOverlay();
   });
 })();
-/* f2w-update-20260831-global-chat-preload-dm-v3 */ 
+/* f2w-update-20260831-global-chat-preload-dm-v3 */
+/* f2w-force-update-chat-20260831 */ 

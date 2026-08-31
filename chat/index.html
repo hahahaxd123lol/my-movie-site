@@ -6312,39 +6312,80 @@ if(currentUser){
 
   <script id="f2w-chat-route-bootstrap">
   (()=>{
-    const forceOpen=async()=>{
+    const params=new URLSearchParams(location.search);
+    const embedded=params.get('f2w_chat_embed')==='1';
+    let opened=false;
+    let warmTimer=null;
+
+    const showShell=()=>{
       const modal=document.getElementById('chat-modal');
-      if(modal){
-        modal.classList.add('open');
-        modal.style.setProperty('display','flex','important');
-        modal.setAttribute('aria-hidden','false');
-      }
-      try{
-        if(typeof window.openChat==='function') await window.openChat();
-      }catch(err){ console.warn('[Flix2Watch Chat] openChat retry:',err); }
-      if(modal){
-        modal.classList.add('open');
-        modal.style.setProperty('display','flex','important');
-      }
+      if(!modal)return false;
+      modal.classList.add('open');
+      modal.style.setProperty('display','flex','important');
+      modal.setAttribute('aria-hidden','false');
+      return true;
+    };
+
+    const warmChat=async()=>{
+      // Do not keep calling openChat: final-v17 intentionally switches openChat
+      // back to Public, which used to make the Direct Messages tab impossible
+      // to stay on during the first several seconds of /chat/ loading.
+      if(opened)return;
+      if(typeof window.openChat!=='function')return;
+      opened=true;
+      try{ await window.openChat(); }
+      catch(err){ console.warn('[Flix2Watch Chat] initial open:',err); }
+      showShell();
+
+      // Warm both halves of the chat hub in parallel. Public chat is loaded by
+      // openChat(); DMs are prefetched here as soon as auth/session is ready.
+      const warmDm=async()=>{
+        try{
+          if(typeof window.refreshDirectMessages==='function'){
+            await window.refreshDirectMessages();
+          }
+        }catch(err){ console.warn('[Flix2Watch Chat] DM preload:',err); }
+      };
+      warmDm();
+      setTimeout(warmDm,500);
+      setTimeout(warmDm,1500);
     };
 
     const boot=()=>{
-      forceOpen();
+      showShell();
       let tries=0;
-      const retry=setInterval(()=>{
-        forceOpen();
-        if(++tries>=40) clearInterval(retry);
-      },250);
+      warmTimer=setInterval(()=>{
+        showShell();
+        warmChat();
+        if(opened||++tries>=80){ clearInterval(warmTimer); warmTimer=null; }
+      },100);
+      warmChat();
     };
+
+    if(embedded){
+      document.documentElement.classList.add('f2w-chat-embedded');
+      document.body?.classList.add('f2w-chat-embedded');
+      const style=document.createElement('style');
+      style.textContent=`
+        html.f2w-chat-embedded,body.f2w-chat-embedded{background:transparent!important;overflow:hidden!important}
+        body.f2w-chat-embedded>header,body.f2w-chat-embedded>main,body.f2w-chat-embedded>footer,
+        body.f2w-chat-embedded>.site-announcement{display:none!important}
+        body.f2w-chat-embedded #chat-modal{padding:0!important;background:transparent!important;backdrop-filter:none!important}
+        body.f2w-chat-embedded #chat-modal .chat-card{height:100vh!important;max-height:100vh!important;width:100%!important;max-width:none!important;border-radius:0!important}
+      `;
+      document.head.appendChild(style);
+    }
 
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
     else boot();
-    window.addEventListener('load',forceOpen,{once:true});
+    window.addEventListener('load',()=>{ showShell(); warmChat(); },{once:true});
 
-    // On the dedicated route, closing chat leaves the chat page instead of
-    // revealing the cloned Home content underneath it.
     window.addEventListener('load',()=>{
       window.closeChat=()=>{
+        if(embedded){
+          parent.postMessage({type:'F2W_CHAT_CLOSE'},location.origin);
+          return;
+        }
         if(history.length>1) history.back();
         else location.href='/home/';
       };
@@ -6355,4 +6396,6 @@ if(currentUser){
 </body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
-<!-- f2w-force-push-20260831-batch2:chat:4cb2d50896 --> 
+<!-- f2w-force-push-20260831-batch2:chat:4cb2d50896 -->
+<!-- f2w-update-20260831-chat-instant-preload-dm-v3 -->
+<!-- f2w-force-update-chat-20260831 --> 
