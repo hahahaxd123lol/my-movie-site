@@ -195,60 +195,16 @@
 // f2w-force-save:chat-route-v16:1788212934
  
 
-/* F2W v18 — header interaction stability */
+ 
+
+/* F2W v19 — non-mutating header stability */
 (() => {
   'use strict';
-
-  let lastInteraction=0;
-
-  function freezeHeaderFrame() {
-    const header=document.querySelector('body.f2w-main-page > header');
-    if(!header)return;
-    header.classList.add('f2w-header-interacting');
-    clearTimeout(window.__f2wHeaderSettle);
-    window.__f2wHeaderSettle=setTimeout(()=>header.classList.remove('f2w-header-interacting'),160);
-  }
-
   document.addEventListener('pointerdown',e=>{
-    if(!e.target.closest?.('body.f2w-main-page > header'))return;
-    lastInteraction=performance.now();
-    freezeHeaderFrame();
+    const control=e.target.closest?.('body.f2w-main-page > header a, body.f2w-main-page > header button');
+    if(!control)return;
+    control.style.transform='none';
   },true);
-
-  document.addEventListener('click',e=>{
-    const header=e.target.closest?.('body.f2w-main-page > header');
-    if(!header)return;
-
-    /* Keep dropdowns mutually exclusive without rebuilding header markup. */
-    const clicked=e.target.closest('button,a');
-    if(!clicked)return;
-
-    document.querySelectorAll('body.f2w-main-page > header .dropdown-menu.open').forEach(menu=>{
-      if(!clicked.closest('.dropdown'))menu.classList.remove('open');
-    });
-
-    freezeHeaderFrame();
-  },true);
-
-  /* Auth state should alter visibility only; never inject/remove header nodes. */
-  const mo=new MutationObserver(mutations=>{
-    let headerChanged=false;
-    for(const m of mutations){
-      if(m.target?.closest?.('body.f2w-main-page > header')){
-        headerChanged=true;
-        break;
-      }
-    }
-    if(headerChanged&&performance.now()-lastInteraction<400)freezeHeaderFrame();
-  });
-
-  const boot=()=>{
-    const header=document.querySelector('body.f2w-main-page > header');
-    if(header)mo.observe(header,{subtree:true,childList:true,attributes:true,attributeFilter:['style','hidden','class']});
-  };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
-  else boot();
 })();
-
-// f2w-force-save:header-interaction-stability-v18:1788213893
+// f2w-force-save:header-stability-v19:1788214305
  

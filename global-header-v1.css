@@ -918,129 +918,171 @@ main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-ban
 /* f2w-force-save:universal-legal-footer-v15:1788212347 */
  
 
+
+
 /* ============================================================
-   F2W v18 — STATIC HEADER GEOMETRY / NO JITTER
-   Keeps the header footprint fixed while auth/session data hydrates.
+   F2W v19 — HEADER LAYOUT REPAIR / STATIC INTERACTION
+   Keeps the proven one-row flex layout. No hidden-slot reservation.
    ============================================================ */
 
-/* No header element is allowed to animate width/position/transform. */
-body.f2w-main-page > header,
-body.f2w-main-page > header *,
-body.f2w-main-page > header *::before,
-body.f2w-main-page > header *::after {
-  transition-property: color,background-color,border-color,opacity,box-shadow !important;
-  animation-duration: 0s;
-}
-
-/* Stable desktop columns. */
 @media (min-width:1181px) {
   body.f2w-main-page > header {
-    display:grid !important;
-    grid-template-columns:158px minmax(0,1fr) !important;
-    column-gap:14px !important;
+    display:flex !important;
+    flex-flow:row nowrap !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    height:82px !important;
+    min-height:82px !important;
+    max-height:82px !important;
+    width:100% !important;
+    padding:10px 16px !important;
+    gap:14px !important;
+    overflow:visible !important;
+    transform:none !important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    flex:0 0 158px !important;
+    width:158px !important;
+    min-width:158px !important;
+    max-width:158px !important;
   }
 
   body.f2w-main-page > header > .header-tools {
-    display:grid !important;
-    grid-template-columns:max-content minmax(290px,1fr) max-content !important;
+    position:static !important;
+    display:flex !important;
+    flex:1 1 auto !important;
+    flex-flow:row nowrap !important;
     align-items:center !important;
-    column-gap:8px !important;
-    width:100% !important;
+    min-width:0 !important;
+    width:auto !important;
+    height:42px !important;
+    gap:7px !important;
+    overflow:visible !important;
+    transform:none !important;
   }
 
   body.f2w-main-page > header .f2w-primary-nav {
-    grid-column:1 !important;
-  }
-
-  body.f2w-main-page > header .f2w-search-pair {
-    grid-column:2 !important;
-    width:100% !important;
-    min-width:290px !important;
-    max-width:none !important;
-    margin:0 !important;
-  }
-
-  body.f2w-main-page > header .f2w-action-cluster {
-    grid-column:3 !important;
-    display:grid !important;
-    grid-auto-flow:column !important;
-    grid-auto-columns:max-content !important;
+    display:flex !important;
+    flex:0 0 auto !important;
+    flex-flow:row nowrap !important;
     align-items:center !important;
-    justify-content:end !important;
-    gap:6px !important;
+    height:42px !important;
+    gap:1px !important;
     min-width:0 !important;
   }
 
-  /* Reserve exact auth footprints before Supabase resolves the session. */
-  body.f2w-main-page > header #header-login-btn {
-    width:58px !important;
-    min-width:58px !important;
-  }
-  body.f2w-main-page > header #header-signup-btn {
-    width:66px !important;
-    min-width:66px !important;
-  }
-  body.f2w-main-page > header #account-btn,
-  body.f2w-main-page > header #header-account-btn {
-    width:76px !important;
-    min-width:76px !important;
-  }
-  body.f2w-main-page > header #staff-control-nav {
-    width:74px !important;
-    min-width:74px !important;
+  body.f2w-main-page > header .f2w-search-pair {
+    display:flex !important;
+    flex:1 1 390px !important;
+    flex-flow:row nowrap !important;
+    min-width:240px !important;
+    max-width:585px !important;
+    height:40px !important;
+    gap:7px !important;
+    margin:0 3px !important;
   }
 
-  /* Hidden async-state buttons retain their slot, but are non-interactive.
-     This prevents the whole right side from shifting when auth resolves. */
+  body.f2w-main-page > header .f2w-action-cluster {
+    display:flex !important;
+    flex:0 0 auto !important;
+    flex-flow:row nowrap !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    margin-left:auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    height:40px !important;
+    gap:6px !important;
+  }
+
+  /* Only visible controls participate in layout. Inline display:none stays hidden.
+     This is the piece v18 got wrong and is what caused the overlap. */
   body.f2w-main-page > header .f2w-action-cluster > [style*="display:none"],
   body.f2w-main-page > header .f2w-action-cluster > [style*="display: none"],
   body.f2w-main-page > header .f2w-action-cluster > [hidden] {
-    display:inline-flex !important;
-    visibility:hidden !important;
-    opacity:0 !important;
-    pointer-events:none !important;
+    visibility:visible;
   }
 
-  /* Staff remains a reserved slot only when the button exists in markup. */
-  body.f2w-main-page > header #staff-control-nav[hidden] {
-    display:inline-flex !important;
-    visibility:hidden !important;
-    pointer-events:none !important;
-    opacity:0 !important;
+  /* Prevent click/focus/active states from changing geometry. */
+  body.f2w-main-page > header a,
+  body.f2w-main-page > header button,
+  body.f2w-main-page > header input,
+  body.f2w-main-page > header .f2w-genre-wrap,
+  body.f2w-main-page > header .v17-notification-wrap {
+    translate:none !important;
+    transform:none !important;
+    margin-top:0 !important;
+    margin-bottom:0 !important;
   }
-}
 
-/* Mobile/tablet menu should not resize/reflow the actual header bar. */
-@media (max-width:1180px) {
-  body.f2w-main-page > header {
-    contain:layout paint !important;
-  }
-  body.f2w-main-page > header > .header-tools {
-    position:fixed !important;
-    top:var(--f2w-mobile-header-height,66px) !important;
-    left:10px !important;
-    right:10px !important;
-    width:auto !important;
-    max-height:calc(100dvh - var(--f2w-mobile-header-height,66px) - 20px) !important;
-    overflow-y:auto !important;
-    overscroll-behavior:contain !important;
+  body.f2w-main-page > header a:hover,
+  body.f2w-main-page > header a:focus,
+  body.f2w-main-page > header a:active,
+  body.f2w-main-page > header button:hover,
+  body.f2w-main-page > header button:focus,
+  body.f2w-main-page > header button:active {
+    translate:none !important;
     transform:none !important;
   }
-  body.f2w-main-page > header > .header-tools:not(.mobile-open) {
-    display:none !important;
-  }
-  body.f2w-main-page > header > .header-tools.mobile-open {
-    display:flex !important;
+
+  /* Never animate dimensions/position in the header. */
+  body.f2w-main-page > header *,
+  body.f2w-main-page > header *::before,
+  body.f2w-main-page > header *::after {
+    transition-property:color,background-color,border-color,box-shadow,opacity !important;
   }
 }
 
-/* Popovers/modals never change header dimensions. */
-body:has(.account-modal.open) > header,
-body:has(#account-modal.open) > header,
-body:has(.dropdown-menu.open) > header {
-  width:100% !important;
-  transform:none !important;
+/* Medium desktop: keep everything one row without collisions. */
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page > header {
+    padding-left:10px !important;
+    padding-right:10px !important;
+    gap:8px !important;
+  }
+  body.f2w-main-page > header > .logo {
+    flex-basis:136px !important;
+    width:136px !important;
+    min-width:136px !important;
+    max-width:136px !important;
+  }
+  body.f2w-main-page > header > .logo .logo-image {
+    width:136px !important;
+    max-width:136px !important;
+  }
+  body.f2w-main-page > header .f2w-search-pair {
+    flex-basis:300px !important;
+    min-width:210px !important;
+    max-width:430px !important;
+  }
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn,
+  body.f2w-main-page > header #staff-control-nav {
+    padding-left:6px !important;
+    padding-right:6px !important;
+    font-size:10px !important;
+  }
 }
 
-/* f2w-force-save:static-header-v18:1788213893 */
+/* Very wide desktop/TV: give searches room without stretching actions. */
+@media (min-width:1651px) {
+  body.f2w-main-page > header .f2w-search-pair {
+    flex-basis:450px !important;
+  }
+}
+
+/* Mobile/tablet remains an overlay menu and never pushes the page around. */
+@media (max-width:1180px) {
+  body.f2w-main-page > header {
+    contain:none !important;
+  }
+  body.f2w-main-page > header > .header-tools {
+    transform:none !important;
+  }
+}
+
+/* f2w-force-save:header-layout-repair-v19:1788214305 */
  
