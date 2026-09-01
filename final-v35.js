@@ -915,6 +915,29 @@ function f2wDebounce(fn,wait=140){
       </div>`;
   }
 
+  function openProfileEditorV87(modal){
+    if(!modal)return;
+    document.documentElement.classList.add('f2w-profile-editor-open-v87');
+    document.body.classList.add('f2w-profile-editor-open-v87');
+    modal.hidden=false;
+    modal.setAttribute('aria-hidden','false');
+    requestAnimationFrame(()=>{
+      modal.classList.add('f2w-profile-modal-open-v87');
+    });
+  }
+
+  function closeProfileEditorV87(){
+    const modal=document.getElementById('v35-profile-modal');
+    if(modal){
+      modal.classList.remove('f2w-profile-modal-open-v87');
+      modal.hidden=true;
+      modal.setAttribute('aria-hidden','true');
+    }
+    document.documentElement.classList.remove('f2w-profile-editor-open-v87');
+    document.body.classList.remove('f2w-profile-editor-open-v87');
+  }
+  window.closeProfileEditorV87=closeProfileEditorV87;
+
   function openProfileEditor(){
     const profile=viewedProfileObject();if(!isOwnProfile(profile))return;
     let modal=document.getElementById('v35-profile-modal');
@@ -922,7 +945,7 @@ function f2wDebounce(fn,wait=140){
       modal=document.createElement('div');
       modal.id='v35-profile-modal';
       modal.className='f2w-profile-modal';
-      modal.onclick=e=>{if(e.target===modal)modal.hidden=true};
+      modal.onclick=e=>{if(e.target===modal)closeProfileEditorV87()};
       document.body.appendChild(modal);
     }
 
@@ -1020,8 +1043,8 @@ function f2wDebounce(fn,wait=140){
       </div>
     </div>`;
 
-    modal.hidden=false;
-    modal.querySelector('.f2w-editor-close').onclick=()=>{modal.hidden=true};
+    openProfileEditorV87(modal);
+    modal.querySelector('.f2w-editor-close').onclick=closeProfileEditorV87;
     modal.querySelectorAll('.f2w-edit-nav').forEach(btn=>btn.onclick=()=>{
       modal.querySelectorAll('.f2w-edit-nav').forEach(x=>x.classList.toggle('active',x===btn));
       modal.querySelectorAll('.f2w-editor-section').forEach(sec=>sec.classList.toggle('active',sec.dataset.section===btn.dataset.tab));
@@ -1065,7 +1088,7 @@ function f2wDebounce(fn,wait=140){
       if(state)state.textContent='Saved';
       toast('Profile updated');
       setTimeout(()=>{
-        modal.hidden=true;
+        closeProfileEditorV87();
         try{renderViewedProfile?.();}catch{}
         renderProfileExtras(viewedProfileObject());
         decorateNames();
@@ -1718,4 +1741,5 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:roleless-inline-white-v64:1788222358
 // f2w-force-save:profile-links-stable-v70:1788223711
 // f2w-force-save:role-inline-reset-v83:1788226300
+// f2w-force-save:profile-edit-centering-js-v87:1788227242
  

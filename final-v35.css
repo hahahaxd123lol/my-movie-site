@@ -2119,4 +2119,129 @@ body.f2w-main-page > header .user-search-name.f2w-role-name::after {
 .f2w-role-curator    {--role-main:#ff6be1!important}
 
 /* f2w-force-save:white-role-particles-v86:1788226708 */
+
+/* ============================================================
+   F2W v87 — REAL PROFILE EDIT MODAL CENTERING
+   Actual modal: #v35-profile-modal.f2w-profile-modal
+   ============================================================ */
+
+html.f2w-profile-editor-open-v87,
+html.f2w-profile-editor-open-v87 body,
+body.f2w-profile-editor-open-v87 {
+  contain:none!important;
+  overflow:hidden!important;
+}
+
+#v35-profile-modal.f2w-profile-modal {
+  position:fixed!important;
+  inset:0!important;
+  top:0!important;
+  right:0!important;
+  bottom:0!important;
+  left:0!important;
+
+  width:100vw!important;
+  min-width:100vw!important;
+  max-width:100vw!important;
+
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+
+  margin:0!important;
+  padding:18px!important;
+
+  z-index:2147483646!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+
+  background:rgba(0,0,0,.80)!important;
+  backdrop-filter:blur(10px)!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+
+  transform:none!important;
+  translate:none!important;
+  filter:none!important;
+  isolation:isolate!important;
+}
+
+#v35-profile-modal.f2w-profile-modal[hidden] {
+  display:none!important;
+}
+
+#v35-profile-modal.f2w-profile-modal > .f2w-profile-editor,
+#v35-profile-modal.f2w-profile-modal > .f2w-profile-editor-v22 {
+  position:relative!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+
+  width:min(900px,calc(100vw - 36px))!important;
+  max-width:900px!important;
+
+  height:min(720px,calc(100dvh - 36px))!important;
+  min-height:0!important;
+  max-height:calc(100dvh - 36px)!important;
+
+  margin:0!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+
+  transform:none!important;
+  translate:none!important;
+  align-self:center!important;
+  justify-self:center!important;
+}
+
+#v35-profile-modal .f2w-profile-editor-v22 .f2w-profile-editor-body {
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+#v35-profile-modal .f2w-profile-editor-v22 .f2w-editor-scroll {
+  min-height:0!important;
+  max-height:none!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+}
+
+html.f2w-profile-editor-open-v87 body > header {
+  z-index:2147480000!important;
+}
+
+@media(max-width:760px){
+  #v35-profile-modal.f2w-profile-modal {
+    padding:max(12px,env(safe-area-inset-top))
+            12px
+            max(12px,env(safe-area-inset-bottom))!important;
+  }
+
+  #v35-profile-modal.f2w-profile-modal > .f2w-profile-editor,
+  #v35-profile-modal.f2w-profile-modal > .f2w-profile-editor-v22 {
+    width:min(96vw,680px)!important;
+    max-width:96vw!important;
+    height:min(86dvh,720px)!important;
+    max-height:86dvh!important;
+    margin:0!important;
+  }
+}
+
+@media(max-height:680px){
+  #v35-profile-modal.f2w-profile-modal {
+    padding:10px!important;
+  }
+
+  #v35-profile-modal.f2w-profile-modal > .f2w-profile-editor,
+  #v35-profile-modal.f2w-profile-modal > .f2w-profile-editor-v22 {
+    height:calc(100dvh - 20px)!important;
+    max-height:calc(100dvh - 20px)!important;
+  }
+}
+
+/* f2w-force-save:profile-edit-centering-css-v87:1788227242 */
  
