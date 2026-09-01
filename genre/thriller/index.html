@@ -2620,6 +2620,13 @@ body.f2w-dedicated-genre-v94 #section-title { margin-top:12px!important; }
 </style>
 
 <script>window.__F2W_FIXED_GENRE_V94={id:53,slug:"thriller",name:"Thriller"};document.documentElement.dataset.f2wGenre="thriller";</script>
+
+<style id="f2w-genre-no-featured-v141">
+/* Dedicated genre pages are catalogue-first: no home-page Featured carousel. */
+html[data-f2w-genre] #hero-banner{display:none!important}
+html[data-f2w-genre] .f2w-home-stage{display:none!important}
+html[data-f2w-genre] main{padding-top:22px!important}
+</style>
 </head>
 
 <body class="theme-red f2w-main-page f2w-home-page f2w-dedicated-genre-v94">
@@ -5308,7 +5315,8 @@ if(currentUser){
           return !publicBlockedMediaKeys.has(`${type}:${item.id}`);
         });
 
-      if(visibleFromFirst.length&&catalogPage===1&&!window.v19FeaturedReady){
+      // v141: dedicated genre pages do not have a Featured carousel.
+      if(!location.pathname.startsWith('/genre/') && visibleFromFirst.length&&catalogPage===1&&!window.v19FeaturedReady){
         setupHeroBanner(visibleFromFirst[0]);
       }
 
@@ -5349,9 +5357,11 @@ if(currentUser){
       if(mode==='genre'&&genreId){
         if(location.pathname.startsWith('/genre/'))url.searchParams.delete('genre');
         else url.searchParams.set('genre',String(genreId));
+        url.searchParams.set('sort',genreSort);
         url.searchParams.delete('search');
       }else{
         url.searchParams.delete('genre');
+        url.searchParams.delete('sort');
       }
 
       if(mode==='search'&&query){
@@ -5485,8 +5495,15 @@ if(currentUser){
     catalogGenreSort=allowed.has(value)?value:'popularity.desc';
 
     if(catalogMode==='genre'&&catalogGenreId){
+      // v141: sorting must not re-enter f2wOpenGenreV91 because that used to
+      // reset the selected sort back to Popularity before the request fired.
       catalogPage=1;
-      f2wOpenGenreV91(catalogGenreId,1,false);
+      const url=new URL(location.href);
+      url.searchParams.set('genre',String(catalogGenreId));
+      url.searchParams.set('sort',catalogGenreSort);
+      url.searchParams.delete('page');
+      history.replaceState({f2wGenreSortV141:true},'',url.pathname+'?'+url.searchParams.toString());
+      loadCatalogPage(1,false);
     }
   }
 
@@ -5522,7 +5539,12 @@ if(currentUser){
     catalogGenreId=id;
     catalogQuery='';
     catalogPage=Math.max(1,Number(page)||1);
-    catalogGenreSort='popularity.desc';
+    // v141: preserve a valid sort from the current URL (dedicated genre pages,
+    // refreshes/back-forward) instead of resetting to Popularity every load.
+    const requestedSort=new URL(location.href).searchParams.get('sort');
+    const allowedSorts=new Set(['popularity.desc','primary_release_date.desc','primary_release_date.asc','vote_average.desc']);
+    if(allowedSorts.has(requestedSort)) catalogGenreSort=requestedSort;
+    else if(!allowedSorts.has(catalogGenreSort)) catalogGenreSort='popularity.desc';
 
     setGenreSortVisibility(true);
 

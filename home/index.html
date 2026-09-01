@@ -5481,8 +5481,10 @@ if(currentUser){
       const url=new URL(window.location.href);
       if(mode==='genre'&&genreId){
         url.searchParams.set('genre',String(genreId));
+        url.searchParams.set('sort',genreSort);
         url.searchParams.delete('search');
       }else{
+        url.searchParams.delete('sort');
         url.searchParams.delete('genre');
       }
 
@@ -5645,8 +5647,15 @@ if(currentUser){
     catalogGenreSort=allowed.has(value)?value:'popularity.desc';
 
     if(catalogMode==='genre'&&catalogGenreId){
+      // v141: sorting must not re-enter f2wOpenGenreV91 because that used to
+      // reset the selected sort back to Popularity before the request fired.
       catalogPage=1;
-      f2wOpenGenreV91(catalogGenreId,1,false);
+      const url=new URL(location.href);
+      url.searchParams.set('genre',String(catalogGenreId));
+      url.searchParams.set('sort',catalogGenreSort);
+      url.searchParams.delete('page');
+      history.replaceState({f2wGenreSortV141:true},'',url.pathname+'?'+url.searchParams.toString());
+      loadCatalogPage(1,false);
     }
   }
 
@@ -5682,7 +5691,12 @@ if(currentUser){
     catalogGenreId=id;
     catalogQuery='';
     catalogPage=Math.max(1,Number(page)||1);
-    catalogGenreSort='popularity.desc';
+    // v141: preserve a valid sort from the current URL (dedicated genre pages,
+    // refreshes/back-forward) instead of resetting to Popularity every load.
+    const requestedSort=new URL(location.href).searchParams.get('sort');
+    const allowedSorts=new Set(['popularity.desc','primary_release_date.desc','primary_release_date.asc','vote_average.desc']);
+    if(allowedSorts.has(requestedSort)) catalogGenreSort=requestedSort;
+    else if(!allowedSorts.has(catalogGenreSort)) catalogGenreSort='popularity.desc';
 
     setGenreSortVisibility(true);
 

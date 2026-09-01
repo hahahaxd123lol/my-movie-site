@@ -1,0 +1,25 @@
+Flix2Watch v141 — Genre sorting + dedicated genre cleanup
+
+What changed
+- Fixed Sort by on dedicated genre pages and the home genre catalogue.
+- Root cause: selecting Newest/Oldest/Highest Rated called f2wOpenGenreV91(), which reset catalogGenreSort to popularity.desc before the TMDB request.
+- Sort changes now load the selected TMDB sort directly instead of resetting state.
+- The selected sort is kept in ?sort= so refresh/back-forward preserves the choice.
+- Genre startup now respects a valid sort already present in the URL.
+- Removed the Featured hero/carousel from all dedicated /genre/<name>/ pages.
+- Dedicated genre catalogue loading no longer tries to feed the hidden Featured hero.
+- Service-worker cache bumped to v141.
+
+Sort options
+- Popularity
+- Newest Release
+- Oldest Release
+- Highest Rated (with minimum vote count filtering retained)
+
+Supabase
+- No SQL changes are required for v141.
+
+Deploy
+1. Deploy the full v141 build.
+2. Hard refresh/reopen the site once to replace the previous service-worker cache.
+3. Test /genre/horror/ and switch between every Sort by option.
