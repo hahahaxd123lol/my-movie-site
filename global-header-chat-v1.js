@@ -1843,6 +1843,7 @@
   }
 
   window.submitUserDirectorySearch=runDirectorySearch;
+  window.addEventListener('pageshow',()=>{busy=false;},{passive:true});
 
   // Capture Enter before any older target-level autocomplete listener.
   document.addEventListener('keydown',event=>{
@@ -2290,4 +2291,5 @@ window.f2wOpenGuestDmAuthV98=function(mode){
 };
 // f2w-force-save:guest-dm-auth-opener-v98:1788282202
 // f2w-force-save:dedicated-user-search-route-v104:1788289281
+// f2w-force-save:user-search-route-v106:1788289648
  

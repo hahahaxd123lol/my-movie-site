@@ -427,7 +427,7 @@ html{overflow-y:scroll}
   <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=105-1788289468" defer></script>
+  <script src="/global-header-chat-v1.js?v=106-1788289648" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -1140,7 +1140,7 @@ body.f2w-dedicated-user-search-page > header .user-search-container .user-search
     <div class="f2w-user-search-head">
       <div>
         <h1 id="f2w-user-search-title">User search</h1>
-        <p>Profiles whose usernames start with your search. Up to 30 results per page.</p>
+        <p>Profiles whose usernames contain what you search. Type any letter, number, or username. Up to 30 results per page.</p>
       </div>
       <a class="f2w-user-search-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
     </div>
@@ -1163,7 +1163,8 @@ body.f2w-dedicated-user-search-page > header .user-search-container .user-search
 </main>
 
 
-<script id="f2w-dedicated-user-search-v104">
+
+<script id="f2w-dedicated-user-search-v106">
 (() => {
   'use strict';
 
@@ -1172,31 +1173,19 @@ body.f2w-dedicated-user-search-page > header .user-search-container .user-search
   const USERS_PER_PAGE=30;
   const CACHE_MS=5*60*1000;
 
-  const db = window.chatSupabase?.from
-    ? window.chatSupabase
-    : window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY,
-        {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
-      );
+  const clean=value=>String(value||'')
+    .trim()
+    .replace(/[^A-Za-z0-9]/g,'')
+    .slice(0,30);
 
-  function clean(value){
-    return String(value||'').trim().replace(/[^A-Za-z0-9]/g,'').slice(0,30);
-  }
+  const esc=(value='')=>String(value).replace(/[&<>"']/g,ch=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[ch]));
 
-  function esc(value=''){
-    return String(value).replace(/[&<>"']/g,ch=>({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-    }[ch]));
-  }
-
-  function initials(value=''){
-    const s=String(value||'?').trim();
-    return s.slice(0,2).toUpperCase();
-  }
+  const initials=value=>String(value||'?').trim().slice(0,2).toUpperCase();
 
   function cacheKey(query,page){
-    return `f2w_user_search_v104_${query.toLowerCase()}_${page}`;
+    return `f2w_user_search_v106_${query.toLowerCase()}_${page}`;
   }
 
   function readCache(query,page){
@@ -1204,7 +1193,7 @@ body.f2w-dedicated-user-search-page > header .user-search-container .user-search
       const raw=localStorage.getItem(cacheKey(query,page));
       if(!raw)return null;
       const parsed=JSON.parse(raw);
-      if(!parsed?.ts||Date.now()-parsed.ts>CACHE_MS)return null;
+      if(!parsed?.ts || Date.now()-parsed.ts>CACHE_MS)return null;
       return parsed;
     }catch{return null}
   }
@@ -1215,7 +1204,7 @@ body.f2w-dedicated-user-search-page > header .user-search-container .user-search
         cacheKey(query,page),
         JSON.stringify({ts:Date.now(),...payload})
       );
-      localStorage.setItem('f2w_last_user_search_v104',query);
+      localStorage.setItem('f2w_last_user_search_v106',query);
     }catch{}
   }
 
@@ -1249,11 +1238,11 @@ body.f2w-dedicated-user-search-page > header .user-search-container .user-search
     if(totalPages<=1)return;
 
     const add=(label,target,active=false,disabled=false)=>{
-      const a=document.createElement(disabled?'span':'a');
-      a.className='f2w-user-page-button'+(active?' active':'')+(disabled?' disabled':'');
-      a.textContent=label;
-      if(!disabled)a.href=`/users/search/?q=${encodeURIComponent(query)}&page=${target}`;
-      host.appendChild(a);
+      const node=document.createElement(disabled?'span':'a');
+      node.className='f2w-user-page-button'+(active?' active':'')+(disabled?' disabled':'');
+      node.textContent=label;
+      if(!disabled)node.href=`/users/search/?q=${encodeURIComponent(query)}&page=${target}`;
+      host.appendChild(node);
     };
 
     add('Prev',Math.max(1,page-1),false,page<=1);
@@ -1294,24 +1283,81 @@ body.f2w-dedicated-user-search-page > header .user-search-container .user-search
     if(!grid||!summary)return;
 
     if(queryLabel)queryLabel.textContent=query;
-    if(title)title.textContent=`Users starting with “${query}”`;
+    if(title)title.textContent=`Users containing “${query}”`;
 
     const totalPages=Math.max(1,Math.ceil(total/USERS_PER_PAGE));
 
     summary.textContent=total
-      ? `${total} user${total===1?'':'s'} · page ${page} of ${totalPages}${fromCache?' · cached':''}`
-      : `No usernames start with “${query}”.`;
+      ? `${total} matching user${total===1?'':'s'} · page ${page} of ${totalPages}${fromCache?' · cached':''}`
+      : `No usernames contain “${query}”.`;
 
     grid.innerHTML=rows.length
       ? rows.map(profileCard).join('')
       : `<div class="f2w-users-empty f2w-user-search-empty">
            <i class="fa-regular fa-face-meh"></i>
            <strong>No matching users</strong>
-           <span>Try a different beginning in Search Users above.</span>
+           <span>Try a different letter, number, or username.</span>
          </div>`;
 
     renderPagination(query,page,totalPages);
     try{window.decorateNames?.()}catch{}
+  }
+
+  function showFailure(message){
+    const grid=document.getElementById('users-grid');
+    const summary=document.getElementById('users-summary');
+    if(summary)summary.textContent='User search could not load.';
+    if(grid)grid.innerHTML=`
+      <div class="f2w-users-empty f2w-user-search-empty">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <strong>Search failed</strong>
+        <span>${esc(message||'Please refresh or try again.')}</span>
+      </div>`;
+  }
+
+  async function fetchRows(query,page){
+    const from=(page-1)*USERS_PER_PAGE;
+
+    const params=new URLSearchParams();
+    params.set('select','user_id,username,display_name,avatar_url,bio');
+    params.set('username',`ilike.*${query}*`);
+    params.set('order','username.asc');
+    params.set('offset',String(from));
+    params.set('limit',String(USERS_PER_PAGE));
+
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),5000);
+
+    try{
+      const response=await fetch(`${SUPABASE_URL}/rest/v1/profiles?${params.toString()}`,{
+        method:'GET',
+        cache:'no-store',
+        signal:controller.signal,
+        headers:{
+          apikey:SUPABASE_KEY,
+          Authorization:`Bearer ${SUPABASE_KEY}`,
+          Prefer:'count=exact',
+          Accept:'application/json'
+        }
+      });
+
+      const body=await response.json().catch(()=>[]);
+      if(!response.ok){
+        throw new Error(body?.message||body?.hint||`HTTP ${response.status}`);
+      }
+
+      let total=Array.isArray(body)?body.length:0;
+      const range=response.headers.get('content-range')||'';
+      const match=range.match(/\/(\d+)$/);
+      if(match)total=Number(match[1]);
+
+      return {
+        rows:Array.isArray(body)?body:[],
+        total:Number.isFinite(total)?total:0
+      };
+    }finally{
+      clearTimeout(timer);
+    }
   }
 
   async function load(){
@@ -1319,86 +1365,52 @@ body.f2w-dedicated-user-search-page > header .user-search-container .user-search
     const query=clean(params.get('q'));
     const page=Math.max(1,Number(params.get('page'))||1);
 
-    const headerInput=document.getElementById('user-search');
-    if(headerInput)headerInput.value=query;
-
     if(!query){
       location.replace('/users/');
       return;
     }
 
-    document.getElementById('f2w-user-search-query').textContent=query;
-    document.getElementById('f2w-user-search-title').textContent=`Users starting with “${query}”`;
+    const queryLabel=document.getElementById('f2w-user-search-query');
+    const title=document.getElementById('f2w-user-search-title');
+    const headerInput=document.getElementById('user-search');
+    if(queryLabel)queryLabel.textContent=query;
+    if(title)title.textContent=`Users containing “${query}”`;
+    if(headerInput)headerInput.value=query;
 
     const cached=readCache(query,page);
     if(cached?.rows){
       render(query,page,cached.rows,Number(cached.total||cached.rows.length),true);
     }
 
-    const from=(page-1)*USERS_PER_PAGE;
-    const to=from+USERS_PER_PAGE-1;
-
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),6000);
-
     try{
-      const request=db
-        .from('profiles')
-        .select('user_id,username,display_name,avatar_url,bio',{count:'exact'})
-        .ilike('username',`${query}%`)
-        .order('username',{ascending:true})
-        .range(from,to)
-        .abortSignal(controller.signal);
+      const result=await fetchRows(query,page);
 
-      const {data,error,count}=await request;
-      if(error)throw error;
-
-      const rows=[...(data||[])].sort((a,b)=>{
-        const aExact=String(a.username||'').toLowerCase()===query.toLowerCase()?0:1;
-        const bExact=String(b.username||'').toLowerCase()===query.toLowerCase()?0:1;
-        if(aExact!==bExact)return aExact-bExact;
-        return String(a.username||'').localeCompare(String(b.username||''),undefined,{sensitivity:'base'});
-      });
-
-      const total=Number.isFinite(Number(count))?Number(count):rows.length;
-
-      if(total>0){
-        const totalPages=Math.max(1,Math.ceil(total/USERS_PER_PAGE));
+      if(result.total>0){
+        const totalPages=Math.max(1,Math.ceil(result.total/USERS_PER_PAGE));
         if(page>totalPages){
           location.replace(`/users/search/?q=${encodeURIComponent(query)}&page=1`);
           return;
         }
       }
 
-      writeCache(query,page,{rows,total});
-      render(query,page,rows,total,false);
+      writeCache(query,page,result);
+      render(query,page,result.rows,result.total,false);
     }catch(error){
-      console.error('Dedicated user search failed:',error);
-
+      console.error('v106 user search failed:',error);
       if(cached?.rows)return;
-
-      const grid=document.getElementById('users-grid');
-      const summary=document.getElementById('users-summary');
-      if(summary)summary.textContent='User search could not load.';
-      if(grid)grid.innerHTML=`
-        <div class="f2w-users-empty f2w-user-search-empty">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-          <strong>Search failed</strong>
-          <span>Refresh this page or try the search again.</span>
-        </div>`;
-    }finally{
-      clearTimeout(timer);
+      showFailure(
+        error?.name==='AbortError'
+          ? 'The user database took too long to respond. Try again.'
+          : 'Could not read user results. Try again.'
+      );
     }
   }
 
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',load,{once:true});
-  }else{
-    load();
-  }
+  load();
 })();
-/* f2w-force-save:dedicated-user-search-v104:1788289281 */
+/* f2w-force-save:dedicated-user-search-v106:1788289648 */
 </script>
+
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
@@ -3694,4 +3706,6 @@ body.f2w-users-page .f2w-user-handle {
 <!-- f2w-force-save:dedicated-search-page-v104:1788289281 -->
 <!-- f2w-force-save:v104-cache:1788289281:users/search/index.html -->
 <!-- f2w-force-save:v105-cache:1788289468:users/search/index.html -->
+<!-- f2w-force-save:user-search-rest-v106:1788289648 -->
+<!-- f2w-force-save:v106-cache:1788289648:users/search/index.html -->
  
