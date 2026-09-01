@@ -1534,6 +1534,564 @@ body.f2w-auth-v67-open {
 // f2w-force-save:sitewide-shell-js-v67:1788222795
 </script>
 
+
+<style id="f2w-header-hardlock-v69">
+/* ============================================================
+   F2W v69 — TRUE SITE-WIDE HEADER HARD LOCK
+   One geometry model on every page. No page-local header CSS wins.
+   ============================================================ */
+
+/* ---------- DESKTOP / WIDE ---------- */
+@media (min-width:1601px) {
+  body.f2w-main-page > header {
+    position:sticky!important;
+    top:0!important;
+    z-index:2147482000!important;
+    width:100%!important;
+    min-height:74px!important;
+    height:74px!important;
+    padding:0 12px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    position:static!important;
+    flex:0 0 126px!important;
+    width:126px!important;
+    min-width:126px!important;
+    max-width:126px!important;
+    height:52px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header > .logo .logo-image {
+    width:126px!important;
+    max-width:126px!important;
+    max-height:48px!important;
+    object-fit:contain!important;
+  }
+
+  body.f2w-main-page > header > .f2w-mobile-nav-toggle {
+    display:none!important;
+  }
+
+  body.f2w-main-page > header > .header-tools {
+    position:static!important;
+    flex:1 1 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    height:44px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:max-content minmax(340px,460px) 782px!important;
+    grid-template-rows:44px!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    column-gap:10px!important;
+    overflow:visible!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    grid-column:1!important;
+    grid-row:1!important;
+    position:static!important;
+    width:max-content!important;
+    min-width:0!important;
+    height:44px!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:2px!important;
+    overflow:visible!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav > * {
+    flex:0 0 auto!important;
+  }
+
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button {
+    min-height:38px!important;
+    height:38px!important;
+    padding:0 7px!important;
+    margin:0!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    white-space:nowrap!important;
+    font-size:10px!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    grid-column:2!important;
+    grid-row:1!important;
+    position:static!important;
+    width:100%!important;
+    min-width:340px!important;
+    max-width:460px!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:8px!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container {
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    overflow:visible!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .search-container > i,
+  body.f2w-main-page > header .user-search-container > i {
+    position:absolute!important;
+    left:11px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    width:13px!important;
+    min-width:13px!important;
+    z-index:3!important;
+    pointer-events:none!important;
+  }
+
+  body.f2w-main-page > header #movie-search,
+  body.f2w-main-page > header #user-search {
+    position:static!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0 38px 0 34px!important;
+    box-sizing:border-box!important;
+    font-size:10px!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .user-search-submit {
+    position:absolute!important;
+    right:7px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    width:28px!important;
+    min-width:28px!important;
+    max-width:28px!important;
+    height:28px!important;
+    min-height:28px!important;
+    max-height:28px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+    z-index:4!important;
+    border:0!important;
+    background:transparent!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-column:3!important;
+    grid-row:1!important;
+    position:relative!important;
+    width:782px!important;
+    min-width:782px!important;
+    max-width:782px!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:112px 92px 82px 88px 90px 126px 156px!important;
+    grid-template-rows:40px!important;
+    gap:6px!important;
+    align-items:center!important;
+    justify-content:start!important;
+    overflow:visible!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > * {
+    position:static!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    min-height:40px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    grid-column:1!important;
+    grid-row:1!important;
+    width:112px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    padding:0 12px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+  }
+
+  body.f2w-main-page > header #favorites-nav-btn {
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+  body.f2w-main-page > header #profile-nav-btn {
+    grid-column:3!important;
+    grid-row:1!important;
+  }
+  body.f2w-main-page > header #support-nav-btn {
+    grid-column:4!important;
+    grid-row:1!important;
+  }
+
+  /* Same physical slots when auth state changes = no jitter. */
+  body.f2w-main-page > header #account-btn,
+  body.f2w-main-page > header #header-login-btn {
+    grid-column:5!important;
+    grid-row:1!important;
+  }
+  body.f2w-main-page > header #notification-wrap,
+  body.f2w-main-page > header #header-signup-btn {
+    grid-column:6!important;
+    grid-row:1!important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    grid-column:7!important;
+    grid-row:1!important;
+  }
+
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn,
+  body.f2w-main-page > header #notification-btn,
+  body.f2w-main-page > header #staff-control-nav {
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:40px!important;
+    min-height:40px!important;
+    padding:0 8px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:6px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    font-size:10px!important;
+    box-sizing:border-box!important;
+  }
+
+  body.f2w-main-page > header #notification-wrap {
+    width:126px!important;
+    min-width:126px!important;
+    max-width:126px!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header #notification-btn {
+    width:126px!important;
+  }
+
+  body.f2w-main-page > header #staff-control-nav {
+    width:156px!important;
+  }
+
+  /* Preserve auth/permission visibility; only geometry is forced. */
+  body.f2w-main-page > header [hidden] {
+    display:none!important;
+  }
+
+  body.f2w-main-page.f2w-authenticated > header #header-login-btn,
+  body.f2w-main-page.f2w-authenticated > header #header-signup-btn {
+    display:none!important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #account-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #notification-wrap,
+  body.f2w-main-page:not(.f2w-authenticated) > header #staff-control-nav {
+    display:none!important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn {
+    display:flex!important;
+  }
+}
+
+/* ---------- NORMAL DESKTOP / LAPTOP ---------- */
+@media (min-width:1181px) and (max-width:1600px) {
+  body.f2w-main-page > header {
+    position:sticky!important;
+    top:0!important;
+    z-index:2147482000!important;
+    width:100%!important;
+    min-height:68px!important;
+    height:68px!important;
+    padding:0 8px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:6px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    flex:0 0 104px!important;
+    width:104px!important;
+    min-width:104px!important;
+    max-width:104px!important;
+  }
+
+  body.f2w-main-page > header > .logo .logo-image {
+    width:104px!important;
+    max-width:104px!important;
+  }
+
+  body.f2w-main-page > header > .f2w-mobile-nav-toggle {
+    display:none!important;
+  }
+
+  body.f2w-main-page > header > .header-tools {
+    position:static!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    width:auto!important;
+    height:42px!important;
+    display:grid!important;
+    grid-template-columns:max-content minmax(220px,300px) 576px!important;
+    grid-template-rows:42px!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:6px!important;
+    overflow:visible!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    grid-column:1!important;
+    grid-row:1!important;
+    position:static!important;
+    width:max-content!important;
+    height:42px!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    gap:0!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button {
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 5px!important;
+    font-size:9px!important;
+    gap:4px!important;
+    white-space:nowrap!important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    grid-column:2!important;
+    grid-row:1!important;
+    position:static!important;
+    width:100%!important;
+    min-width:220px!important;
+    max-width:300px!important;
+    height:38px!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+    margin:0!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container {
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    height:38px!important;
+    display:flex!important;
+    align-items:center!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header #movie-search,
+  body.f2w-main-page > header #user-search {
+    width:100%!important;
+    min-width:0!important;
+    height:38px!important;
+    padding:0 32px!important;
+    font-size:9px!important;
+    box-sizing:border-box!important;
+  }
+
+  body.f2w-main-page > header .search-container > i,
+  body.f2w-main-page > header .user-search-container > i {
+    position:absolute!important;
+    left:9px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    z-index:3!important;
+  }
+
+  body.f2w-main-page > header .user-search-submit {
+    position:absolute!important;
+    right:5px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    width:25px!important;
+    height:25px!important;
+    min-width:25px!important;
+    min-height:25px!important;
+    max-width:25px!important;
+    max-height:25px!important;
+    padding:0!important;
+    margin:0!important;
+    display:grid!important;
+    place-items:center!important;
+    background:transparent!important;
+    border:0!important;
+    z-index:4!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-column:3!important;
+    grid-row:1!important;
+    position:relative!important;
+    width:576px!important;
+    min-width:576px!important;
+    max-width:576px!important;
+    height:38px!important;
+    display:grid!important;
+    grid-template-columns:90px 72px 66px 68px 72px 92px 116px!important;
+    grid-template-rows:38px!important;
+    gap:4px!important;
+    margin:0!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header .chat-button {grid-column:1!important}
+  body.f2w-main-page > header #favorites-nav-btn {grid-column:2!important}
+  body.f2w-main-page > header #profile-nav-btn {grid-column:3!important}
+  body.f2w-main-page > header #support-nav-btn {grid-column:4!important}
+  body.f2w-main-page > header #account-btn,
+  body.f2w-main-page > header #header-login-btn {grid-column:5!important}
+  body.f2w-main-page > header #notification-wrap,
+  body.f2w-main-page > header #header-signup-btn {grid-column:6!important}
+  body.f2w-main-page > header #staff-control-nav {grid-column:7!important}
+
+  body.f2w-main-page > header .f2w-action-cluster > *,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn,
+  body.f2w-main-page > header #notification-btn,
+  body.f2w-main-page > header #staff-control-nav {
+    min-width:0!important;
+    max-width:100%!important;
+    width:100%!important;
+    height:38px!important;
+    min-height:38px!important;
+    margin:0!important;
+    padding:0 5px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    font-size:9px!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header #notification-wrap {
+    width:92px!important;
+    min-width:92px!important;
+    max-width:92px!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header [hidden] {
+    display:none!important;
+  }
+
+  body.f2w-main-page.f2w-authenticated > header #header-login-btn,
+  body.f2w-main-page.f2w-authenticated > header #header-signup-btn {
+    display:none!important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #account-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #notification-wrap,
+  body.f2w-main-page:not(.f2w-authenticated) > header #staff-control-nav {
+    display:none!important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn {
+    display:flex!important;
+  }
+}
+
+/* Mobile/tablet keeps the established overlay menu. */
+@media (max-width:1180px) {
+  body.f2w-main-page > header {
+    transform:none!important;
+    translate:none!important;
+  }
+}
+
+/* f2w-force-save:header-hardlock-v69:1788223204 */
+</style>
+
 </body></html>
 <!-- f2w-force-push-20260831-batch2:leaderboard:c5fd546dc2 -->
 <!-- f2w-update-marker: shared-chat-v7:leaderboard -->
@@ -1594,4 +2152,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v65-search-cache:1788222474:leaderboard/index.html -->
 <!-- f2w-force-save:v66-arrow-cache:1788222669:leaderboard/index.html -->
 <!-- f2w-force-save:v67-page:1788222795:leaderboard/index.html -->
+<!-- f2w-force-save:v69-header:1788223204:leaderboard/index.html -->
  
