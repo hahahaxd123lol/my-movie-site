@@ -1439,4 +1439,92 @@ body.f2w-main-page > header
 }
 
 /* f2w-force-save:compact-user-search-particles-v77:1788224897 */
+
+/* ============================================================
+   F2W v78 — TIGHT WHITE ROLE PARTICLES EVERYWHERE
+   Same tight particle boundary as the profile display name.
+   ============================================================ */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  width:fit-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  background-image:none!important;
+  background:none!important;
+}
+
+.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  top:-2px!important;
+  right:-4px!important;
+  bottom:-2px!important;
+  left:-4px!important;
+  width:auto!important;
+  height:auto!important;
+  display:block!important;
+  pointer-events:none!important;
+  border-radius:3px!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  background-color:transparent!important;
+  filter:grayscale(1) brightness(3.4) contrast(1.15)!important;
+  mix-blend-mode:screen!important;
+  opacity:.94!important;
+  z-index:2!important;
+  animation:none!important;
+  box-shadow:none!important;
+}
+
+.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Compact locations must remain just as tight; never span the row/card. */
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.user-search-name.f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  width:fit-content!important;
+  max-width:100%!important;
+  align-self:flex-start!important;
+}
+
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before,
+.user-search-name.f2w-role-name::before,
+[data-f2w-role-decorated="1"].f2w-role-name::before {
+  top:-2px!important;
+  right:-4px!important;
+  bottom:-2px!important;
+  left:-4px!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+}
+
+/* Profile uses the exact same geometry, just naturally scales with its bigger text. */
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  top:-3px!important;
+  right:-5px!important;
+  bottom:-3px!important;
+  left:-5px!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+}
+
+/* f2w-force-save:tight-white-role-particles-v78:1788224965 */
  
