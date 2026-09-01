@@ -1796,4 +1796,118 @@ function f2wDebounce(fn,wait=140){
 })();
 // f2w-force-save:presence-stability-v88:1788227370
 // f2w-force-save:presence-v88:1788227370
+
+/* ============================================================
+   F2W v89 — NORMALIZE DM ROLE DECORATION TO DISPLAY NAME ONLY
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wDmRoleNameNormalizerV89)return;
+  window.__f2wDmRoleNameNormalizerV89=true;
+
+  const ROLE_CLASSES = [
+    'f2w-role-owner','f2w-role-staff','f2w-role-moderator',
+    'f2w-role-support','f2w-role-developer','f2w-role-verified',
+    'f2w-role-contributor','f2w-role-curator'
+  ];
+
+  function roleFrom(node){
+    if(!node?.classList)return '';
+    return ROLE_CLASSES.find(cls=>node.classList.contains(cls)) || '';
+  }
+
+  function clearRoleEffect(node){
+    if(!node?.classList)return;
+    node.classList.remove('f2w-role-name', ...ROLE_CLASSES);
+    node.removeAttribute('data-f2w-role-decorated');
+    node.removeAttribute('data-f2w-role');
+
+    node.style.removeProperty('color');
+    node.style.removeProperty('-webkit-text-fill-color');
+    node.style.removeProperty('text-shadow');
+    node.style.removeProperty('background');
+    node.style.removeProperty('background-image');
+    node.style.removeProperty('filter');
+  }
+
+  function normalizeRow(row){
+    if(!row)return;
+
+    const copy=row.querySelector('.v17-dm-conversation-copy');
+    if(!copy)return;
+
+    const name =
+      copy.querySelector(':scope > strong') ||
+      copy.querySelector(':scope > b') ||
+      copy.firstElementChild;
+
+    if(!name)return;
+
+    name.setAttribute('data-f2w-dm-display-name','1');
+
+    let foundRole = roleFrom(name);
+
+    // Older code sometimes decorated the whole row/copy/avatar.
+    // Capture that role before stripping those containers.
+    const containers = [
+      row,
+      copy,
+      row.querySelector('.v17-dm-conversation-meta'),
+      row.querySelector('.v17-dm-avatar'),
+      row.querySelector('img')
+    ].filter(Boolean);
+
+    for(const node of containers){
+      foundRole = foundRole || roleFrom(node);
+    }
+
+    // The role effect must exist nowhere except the display-name element.
+    for(const node of containers){
+      if(node!==name)clearRoleEffect(node);
+    }
+
+    // Strip accidental decoration from siblings (subtitle, time, etc).
+    [...copy.children].forEach(child=>{
+      if(child!==name)clearRoleEffect(child);
+    });
+
+    if(foundRole){
+      clearRoleEffect(name);
+      name.classList.add('f2w-role-name',foundRole);
+      name.dataset.f2wRoleDecorated='1';
+      name.dataset.f2wRole=foundRole.replace('f2w-role-','');
+    }
+  }
+
+  function normalizeAll(){
+    document.querySelectorAll('#v17-dm-conversations .v17-dm-conversation')
+      .forEach(normalizeRow);
+  }
+
+  function boot(){
+    normalizeAll();
+
+    const host=document.getElementById('v17-dm-conversations');
+    if(!host || host.dataset.f2wDmRoleObserverV89)return;
+    host.dataset.f2wDmRoleObserverV89='1';
+
+    new MutationObserver(()=>{
+      normalizeAll();
+    }).observe(host,{
+      childList:true,
+      subtree:true,
+      attributes:true,
+      attributeFilter:['class','data-f2w-role','data-f2w-role-decorated']
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',boot,{once:true});
+  }else{
+    boot();
+  }
+
+  window.addEventListener('pageshow',boot,{passive:true});
+})();
+// f2w-force-save:dm-display-name-particles-js-v89:1788227613
  
