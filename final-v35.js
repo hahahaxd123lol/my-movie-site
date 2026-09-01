@@ -336,7 +336,7 @@ function f2wDebounce(fn,wait=140){
   function startPresence(){
     if(presenceTimer)return;
     touchPresence();
-    presenceTimer=setInterval(touchPresence,15000);
+    presenceTimer=setInterval(touchPresence,30000);
   }
   function stopPresence(){
     if(presenceTimer){clearInterval(presenceTimer);presenceTimer=null;}
@@ -1164,6 +1164,8 @@ function f2wDebounce(fn,wait=140){
     }
   }
 
+  window.renderProfilePresence=renderProfilePresence;
+
   async function renderProfileComments(){
     if(!location.pathname.startsWith('/profile'))return;
     const profile=viewedProfileObject();if(!profile?.user_id)return;
@@ -1257,7 +1259,7 @@ function f2wDebounce(fn,wait=140){
     profileUiTimer=setInterval(()=>{
       renderProfilePresence();
       renderProfileActivity();
-    },15000);
+    },30000);
   }
 
   function bootProfileRealtime(){
@@ -1332,7 +1334,7 @@ function f2wDebounce(fn,wait=140){
           .subscribe();
       }catch{}
     }
-    setInterval(refresh,20000);
+    setInterval(refresh,30000);
   }
 
   /* ---------- community/forum additions ---------- */
@@ -1742,4 +1744,56 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:profile-links-stable-v70:1788223711
 // f2w-force-save:role-inline-reset-v83:1788226300
 // f2w-force-save:profile-edit-centering-js-v87:1788227242
+
+/* ============================================================
+   F2W v88 — 30 SECOND PRESENCE STABILITY
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wPresenceStabilityV88)return;
+  window.__f2wPresenceStabilityV88=true;
+
+  const REFRESH_MS=30000;
+
+  // Keep visible presence labels stable: update text/content, never remove the slot.
+  function ensureProfilePresenceSlot(){
+    if(!location.pathname.startsWith('/profile'))return;
+    const row=document.querySelector('#profile-hero .profile-name-row');
+    if(!row)return;
+
+    let badge=document.getElementById('v17-profile-presence');
+    if(!badge){
+      badge=document.createElement('span');
+      badge.id='v17-profile-presence';
+      badge.className='f2w-profile-presence offline';
+      badge.setAttribute('aria-live','polite');
+      badge.innerHTML='<i class="f2w-profile-presence-dot"></i><span>Checking status…</span>';
+      row.appendChild(badge);
+    }
+  }
+
+  function refreshVisiblePresence(){
+    ensureProfilePresenceSlot();
+    try{window.renderProfilePresence?.()}catch{}
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{
+      ensureProfilePresenceSlot();
+      refreshVisiblePresence();
+    },{once:true});
+  }else{
+    ensureProfilePresenceSlot();
+    refreshVisiblePresence();
+  }
+
+  // Re-check immediately when the tab becomes active, while normal polling remains 30s.
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible')refreshVisiblePresence();
+  },{passive:true});
+
+  window.addEventListener('focus',refreshVisiblePresence,{passive:true});
+})();
+// f2w-force-save:presence-stability-v88:1788227370
+// f2w-force-save:presence-v88:1788227370
  

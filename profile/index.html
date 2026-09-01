@@ -3329,7 +3329,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/final-v35.css?v=87-1788227242">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=74-1788224239">
+  <link rel="stylesheet" href="/global-header-v1.css?v=88-1788227370">
   <script src="/global-header-chat-v1.js?v=84-1788226452" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
@@ -3493,6 +3493,48 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 }
 
 /* f2w-force-save:profile-edit-center-v52:1788220545 */
+</style>
+
+
+<style id="f2w-profile-camera-static-v88">
+/* ============================================================
+   F2W v88 — PROFILE CAMERA CONTROL: STATIC / NO BLINK
+   ============================================================ */
+.avatar-edit-label {
+  display:grid!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  will-change:auto!important;
+}
+
+.avatar-edit-label[hidden] {
+  display:grid!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+}
+
+/* Camera icon itself is always static. */
+.avatar-edit-label > i {
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  opacity:1!important;
+}
+
+/* f2w-force-save:profile-camera-static-v88:1788227370 */
 </style>
 
 </head>
@@ -3877,6 +3919,10 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       <div class="profile-eyebrow">FLIX2WATCH PROFILE</div>
       <div class="profile-name-row">
         <h1 class="profile-name" id="profile-name">Loading...</h1>
+        <span id="v17-profile-presence" class="f2w-profile-presence offline" aria-live="polite">
+          <i class="f2w-profile-presence-dot"></i>
+          <span>Checking status…</span>
+        </span>
       </div>
       
       
@@ -7548,8 +7594,6 @@ document.body.classList.remove('profile-authenticated-owner');
   }
 
   async function revealProfileOwnerControlsIfAuthorized(){
-    hideProfileOwnerControls();
-
     if(!viewedProfile)return false;
 
     try{
@@ -7577,9 +7621,8 @@ return true;
     }
   }
 
-  // Hide instantly before any async auth/profile work can finish.
-  hideProfileOwnerControls();
-
+  // v88: do not repeatedly hide/reveal owner controls during hydration.
+  // They start visually hidden in CSS and become visible once authorization resolves.
   chatSupabase.auth.onAuthStateChange((_event,session)=>{
     if(!session?.user){
       hideProfileOwnerControls();
@@ -7591,7 +7634,6 @@ return true;
   });
 
   window.addEventListener('pageshow',()=>{
-    hideProfileOwnerControls();
     setTimeout(revealProfileOwnerControlsIfAuthorized,50);
   });
 
@@ -8065,7 +8107,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=87-1788227242" defer></script>
+  <script src="/final-v35.js?v=88-1788227370" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -9658,4 +9700,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v84-cache:1788226452:profile/index.html -->
 <!-- f2w-force-save:v86-cache:1788226708:profile/index.html -->
 <!-- f2w-force-save:v87-cache:1788227242:profile/index.html -->
+<!-- f2w-force-save:profile-v88:1788227370 -->
+<!-- f2w-force-save:v88-cache:1788227370:profile/index.html -->
  

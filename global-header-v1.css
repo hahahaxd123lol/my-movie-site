@@ -2454,3 +2454,38 @@ body.f2w-users-page > .f2w-site-footer {
 
 /* f2w-force-save:footer-bottom-v74:1788224239 */
  
+
+/* ============================================================
+   F2W v88 — STATIC PRESENCE UI SITE-WIDE
+   ============================================================ */
+body.f2w-main-page .f2w-profile-presence,
+body.f2w-main-page .f2w-presence,
+body.f2w-main-page .presence,
+body.f2w-main-page [class*="presence"] {
+  animation:none!important;
+  transition:none!important;
+}
+
+body.f2w-main-page .f2w-profile-presence-dot,
+body.f2w-main-page .f2w-presence-dot,
+body.f2w-main-page .presence {
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+}
+
+#v17-profile-presence {
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-height:30px!important;
+  min-width:82px!important;
+  white-space:nowrap!important;
+  visibility:visible!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+/* f2w-force-save:static-presence-ui-v88:1788227370 */
+ 
