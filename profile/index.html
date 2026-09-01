@@ -3326,11 +3326,11 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=103-1788289090">
+  <link rel="stylesheet" href="/final-v35.css?v=105-1788289468">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
-  <script src="/global-header-chat-v1.js?v=104-1788289281" defer></script>
+  <script src="/global-header-chat-v1.js?v=105-1788289468" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -3535,6 +3535,34 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 }
 
 /* f2w-force-save:profile-camera-static-v88:1788227370 */
+</style>
+
+
+<style id="f2w-profile-no-blink-v105">
+/* ============================================================
+   F2W v105 — STABLE PROFILE FIRST PAINT
+   ============================================================ */
+#profile-hero,
+#profile-hero *,
+#profile-name,
+#profile-avatar,
+#profile-avatar-fallback {
+  animation:none!important;
+}
+
+#profile-hero,
+#profile-name,
+#profile-avatar-wrap {
+  transition:none!important;
+}
+
+/* A cached/loaded profile stays visible while background data refreshes. */
+#profile-hero {
+  opacity:1!important;
+  visibility:visible!important;
+}
+
+/* f2w-force-save:profile-no-blink-v105:1788289468 */
 </style>
 
 </head>
@@ -5880,6 +5908,12 @@ setTimeout(loadLibraryFavorites,0);
   let viewedProfile=null;
   let viewedProfileFavorites=[];
 
+  // v105: one authoritative public-profile request at a time.
+  // A stale/failed request must never wipe a profile that already rendered.
+  let f2wProfileLoadGeneration=0;
+  let f2wProfilePendingUsername='';
+  let f2wProfileResolvedUsername='';
+
   function viewedUsernameFromURL(){
     const pathMatch=window.location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
     if(pathMatch){
@@ -6110,7 +6144,9 @@ setTimeout(loadLibraryFavorites,0);
           if(parsed&&parsed.profile){
             viewedProfile=parsed.profile;
             viewedProfileFavorites=Array.isArray(parsed.favorites)?parsed.favorites:[];
+            f2wProfileResolvedUsername=String(parsed.profile.username||username).toLowerCase();
             renderViewedProfile();
+            renderViewedFavorites();
           }
         }
       }catch{}
@@ -6133,99 +6169,169 @@ setTimeout(loadLibraryFavorites,0);
       return;
     }
 
+    const requestGeneration=++f2wProfileLoadGeneration;
+    const wantedUsername=String(username||'').toLowerCase();
+    f2wProfilePendingUsername=wantedUsername;
+
     try{
-      let profileData=null;
-      let profileError=null;
+      /*
+       * v105: select('*') is intentional.
+       * The old query explicitly named many optional profile columns. If even one
+       * column had not been migrated on production yet, PostgREST rejected the
+       * WHOLE request and the catch block incorrectly changed a valid profile into
+       * "Profile Not Found".
+       */
+      const controller=new AbortController();
+      const timeout=setTimeout(()=>controller.abort(),6000);
 
-      // Current schema.
-      {
-        const result=await chatSupabase
+      let result;
+      try{
+        result=await chatSupabase
           .from('profiles')
-          .select('user_id,username,display_name,bio,avatar_url,is_private,location,favorite_genres,website_url,instagram_username,discord_username,snapchat_username,reddit_username,steam_profile,tiktok_username,status_text,pronouns,favorite_movie_text,favorite_movie_tmdb_id,favorite_movie_poster_path,favorite_tv_text,profile_quote,created_at,updated_at')
+          .select('*')
           .ilike('username',username)
           .limit(1)
-          .maybeSingle();
-
-        profileData=result.data;
-        profileError=result.error;
+          .maybeSingle()
+          .abortSignal(controller.signal);
+      }finally{
+        clearTimeout(timeout);
       }
 
-      // If the private-profile migration has not been applied yet,
-      // retry without is_private.
-      if(
-        profileError &&
-        (
-          profileError.code==='42703' ||
-          /is_private/i.test(profileError.message||'')
-        )
-      ){
-        const fallback=await chatSupabase
-          .from('profiles')
-          .select('user_id,username,display_name,bio,avatar_url,created_at,updated_at')
-          .ilike('username',username)
-          .limit(1)
-          .maybeSingle();
+      if(requestGeneration!==f2wProfileLoadGeneration)return;
 
-        profileData=fallback.data
-          ? {...fallback.data,is_private:false}
-          : null;
-        profileError=fallback.error;
-      }
-
-      // Older schema: retry without display_name as well.
-      if(
-        profileError &&
-        (
-          profileError.code==='42703' ||
-          /display_name/i.test(profileError.message||'')
-        )
-      ){
-        const fallback=await chatSupabase
-          .from('profiles')
-          .select('user_id,username,bio,avatar_url,created_at,updated_at')
-          .ilike('username',username)
-          .limit(1)
-          .maybeSingle();
-
-        profileData=fallback.data
-          ? {...fallback.data,display_name:null,is_private:false}
-          : null;
-        profileError=fallback.error;
-      }
+      const profileData=result?.data||null;
+      const profileError=result?.error||null;
 
       if(profileError)throw profileError;
 
-      viewedProfile=profileData||null;
-      viewedProfileFavorites=[];
-      try{
-        if(viewedProfile?.username){
-          localStorage.setItem('f2w_profile_username_v24',viewedProfile.username);
-          localStorage.setItem(`f2w_profile_cache_v24:${viewedProfile.username.toLowerCase()}`,JSON.stringify({
-            profile:viewedProfile,
-            favorites:viewedProfileFavorites,
-            savedAt:Date.now()
-          }));
+      // "Not found" is only valid after a SUCCESSFUL database response with no row.
+      if(!profileData){
+        // Never let a refresh erase a profile we already had for this username.
+        if(
+          viewedProfile &&
+          String(viewedProfile.username||'').toLowerCase()===wantedUsername
+        ){
+          console.warn('Profile refresh returned no row; preserving rendered profile.');
+          return;
         }
-      }catch{}
-      renderViewedProfile();
-        loadViewedProfileRoleBadge();
 
-      if(!viewedProfile)return;
-    }catch(error){
-      console.error('Profile details load failed:',error);
+        viewedProfile=null;
+        viewedProfileFavorites=[];
+        viewedSocial={
+          followers:0,
+          following:0,
+          is_following:false,
+          can_view_social:false
+        };
+        f2wProfileResolvedUsername='';
+        renderViewedProfile();
+        renderProfilePrivacy();
+        return;
+      }
 
-      viewedProfile=null;
-      viewedProfileFavorites=[];
-      viewedSocial={
-        followers:0,
-        following:0,
-        is_following:false,
-        can_view_social:false
+      // Normalize optional fields so the renderer never depends on a migration
+      // having already added them.
+      viewedProfile={
+        ...profileData,
+        display_name:profileData.display_name??null,
+        bio:profileData.bio??null,
+        avatar_url:profileData.avatar_url??null,
+        is_private:Boolean(profileData.is_private),
+        location:profileData.location??'',
+        favorite_genres:profileData.favorite_genres??[],
+        website_url:profileData.website_url??'',
+        instagram_username:profileData.instagram_username??'',
+        discord_username:profileData.discord_username??'',
+        snapchat_username:profileData.snapchat_username??'',
+        reddit_username:profileData.reddit_username??'',
+        steam_profile:profileData.steam_profile??'',
+        tiktok_username:profileData.tiktok_username??'',
+        status_text:profileData.status_text??'',
+        pronouns:profileData.pronouns??'',
+        favorite_movie_text:profileData.favorite_movie_text??'',
+        favorite_movie_tmdb_id:profileData.favorite_movie_tmdb_id??null,
+        favorite_movie_poster_path:profileData.favorite_movie_poster_path??'',
+        favorite_tv_text:profileData.favorite_tv_text??'',
+        profile_quote:profileData.profile_quote??''
       };
-      socialFeaturesAvailable=false;
+
+      f2wProfileResolvedUsername=String(viewedProfile.username||'').toLowerCase();
+      f2wProfilePendingUsername='';
+
+      // Keep cached favorites until their own request finishes so the page does
+      // not blink from populated -> empty -> populated.
+      if(!Array.isArray(viewedProfileFavorites))viewedProfileFavorites=[];
+
+      try{
+        localStorage.setItem('f2w_profile_username_v24',viewedProfile.username);
+        const existingCache=localStorage.getItem(
+          `f2w_profile_cache_v24:${viewedProfile.username.toLowerCase()}`
+        );
+
+        let cachedFavorites=viewedProfileFavorites;
+        try{
+          const parsed=existingCache?JSON.parse(existingCache):null;
+          if(Array.isArray(parsed?.favorites) && !cachedFavorites.length){
+            cachedFavorites=parsed.favorites;
+            viewedProfileFavorites=cachedFavorites;
+          }
+        }catch{}
+
+        localStorage.setItem(
+          `f2w_profile_cache_v24:${viewedProfile.username.toLowerCase()}`,
+          JSON.stringify({
+            profile:viewedProfile,
+            favorites:cachedFavorites,
+            savedAt:Date.now()
+          })
+        );
+      }catch{}
 
       renderViewedProfile();
-      renderProfilePrivacy();
+      renderViewedFavorites();
+      loadViewedProfileRoleBadge();
+
+    }catch(error){
+      if(requestGeneration!==f2wProfileLoadGeneration)return;
+
+      f2wProfilePendingUsername='';
+      console.error('Profile details refresh failed:',error);
+
+      /*
+       * Network timeout, RLS hiccup, missing optional backend feature, etc. is
+       * NOT "Profile Not Found". Preserve a cached/already-rendered profile.
+       */
+      if(
+        viewedProfile &&
+        String(viewedProfile.username||'').toLowerCase()===wantedUsername
+      ){
+        renderViewedProfile();
+        renderViewedFavorites();
+        return;
+      }
+
+      const cachedUsername=String(
+        viewedProfile?.username||''
+      ).toLowerCase();
+
+      if(cachedUsername===wantedUsername && viewedProfile){
+        return;
+      }
+
+      // No valid cached profile exists. Show a temporary load failure, not a
+      // false "Profile Not Found" state.
+      const name=document.getElementById('profile-name');
+      const bio=document.getElementById('profile-bio');
+      const grid=document.getElementById('profile-favorites-grid');
+
+      if(name)name.textContent='Profile unavailable';
+      if(bio){
+        bio.textContent='This profile could not be refreshed right now. Please try again.';
+        bio.classList.add('empty');
+      }
+      if(grid){
+        grid.innerHTML='<div class="profile-state">Profile data is temporarily unavailable.</div>';
+      }
       return;
     }
 
@@ -6669,20 +6775,36 @@ renderViewedProfile();
     }
   }
 
-  window.addEventListener('DOMContentLoaded',async()=>{
-    // Shared auth initialization may resolve a moment later.
+  window.addEventListener('DOMContentLoaded',()=>{
+    const wanted=String(viewedUsernameFromURL()||currentProfileUsername()||'').toLowerCase();
+    if(wanted && f2wProfilePendingUsername===wanted)return;
     loadViewedProfile();
-  });
+  },{once:true});
 
   let f2wProfileAuthRefreshTimer=null;
   chatSupabase.auth.onAuthStateChange(()=>{
     clearTimeout(f2wProfileAuthRefreshTimer);
     f2wProfileAuthRefreshTimer=setTimeout(()=>{
-      const wanted=viewedUsernameFromURL()||currentProfileUsername();
-      if(!viewedProfile||String(viewedProfile.username||'').toLowerCase()!==String(wanted||'').toLowerCase()){
-        loadViewedProfile();
+      // An explicit /profile/?user=... page is public data. Login/session
+      // hydration must not refetch and repaint it over and over.
+      const explicit=viewedUsernameFromURL();
+      if(explicit){
+        try{syncAuthenticatedOwnerUI?.();}catch{}
+        try{renderProfilePrivacy?.();}catch{}
+        return;
       }
-    },40);
+
+      const wanted=currentProfileUsername();
+      if(!wanted)return;
+
+      const clean=String(wanted).toLowerCase();
+      if(
+        f2wProfilePendingUsername===clean ||
+        f2wProfileResolvedUsername===clean
+      )return;
+
+      loadViewedProfile();
+    },120);
   });
 
 
@@ -8107,7 +8229,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=103-1788289090" defer></script>
+  <script src="/final-v35.js?v=105-1788289468" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -9714,4 +9836,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v100-cache:1788283039:profile/index.html -->
 <!-- f2w-force-save:v103-cache:1788289090:profile/index.html -->
 <!-- f2w-force-save:v104-cache:1788289281:profile/index.html -->
+<!-- f2w-force-save:profile-load-stability-v105:1788289468 -->
+<!-- f2w-force-save:v105-cache:1788289468:profile/index.html -->
  
