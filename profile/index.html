@@ -3330,7 +3330,7 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=129-1788305400" defer></script>
+  <script src="/global-header-chat-v1.js?v=131-1788306600" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -8682,7 +8682,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=129-1788305400" defer></script>
+  <script src="/final-v35.js?v=130-1788306600" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10280,10 +10280,13 @@ body.f2w-auth-v67-open {
     }catch{}
   }
 
+  let currentWatchingBusy=false;
   async function refreshCurrentWatching(){
+    if(currentWatchingBusy)return;
     const host=document.getElementById('f2w-current-watching-card');
     const username=viewedUsername();
     if(!host||!username||!client?.rpc)return;
+    currentWatchingBusy=true;
     try{
       const {data,error}=await client.rpc('get_public_current_watching_v125',{p_username:username});
       if(error)throw error;
@@ -10305,8 +10308,11 @@ body.f2w-auth-v67-open {
       host.onclick=()=>location.href=`/watch/?id=${encodeURIComponent(row.media_id)}&type=${type}`;
       host.style.cursor='pointer';
     }catch(error){
-      host.className='f2w-current-watching-empty';
-      host.textContent='Not watching anything right now.';
+      // A transient network/RPC failure is not proof the user stopped watching.
+      // Keep the last good state on screen and retry on the normal refresh.
+      console.warn('Current watching refresh unavailable:',error?.message||error);
+    }finally{
+      currentWatchingBusy=false;
     }
   }
 
@@ -10359,13 +10365,20 @@ body.f2w-auth-v67-open {
     refreshCurrentWatching();
   }
 
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{bindAvatarMenu();hardBindSocial();setTimeout(()=>{tick();correctMemberAgeFromAccount()},80);setInterval(tick,30000)},{once:true});
-  }else{
-    bindAvatarMenu();hardBindSocial();setTimeout(()=>{tick();correctMemberAgeFromAccount()},80);setInterval(tick,30000);
+  function startProfileLiveCards(){
+    bindAvatarMenu();hardBindSocial();
+    setTimeout(()=>{tick();correctMemberAgeFromAccount()},30);
+    // Catch a watch-page heartbeat that lands just after this profile opened.
+    setTimeout(refreshCurrentWatching,1200);
+    setTimeout(refreshCurrentWatching,3500);
+    setInterval(tick,30000);
   }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',startProfileLiveCards,{once:true});
+  }else startProfileLiveCards();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshCurrentWatching()});
 })();
-/* f2w-force-save:profile-bounty-js-v125:1788300576 */
+/* f2w-force-save:profile-watching-v130:1788306600 */
 </script>
 
 </body>

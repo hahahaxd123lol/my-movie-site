@@ -1,0 +1,19 @@
+FLIX2WATCH v131 — CHAT ROUTE + INSTANT PUBLIC SEND
+
+WHAT CHANGED
+- Every site-wide Chat / Direct Messages trigger now navigates to /chat/.
+- The old global iframe chat overlay is no longer used.
+- /chat/ renders the public chat immediately instead of waiting for chat-token verification.
+- Normal signed-in public text messages now use a short authenticated Supabase RPC path.
+- Public messages appear optimistically in the sender's UI immediately, then reconcile with the saved row.
+- Enter sends from the public chat input site-wide on /chat/.
+- The legacy Edge worker remains for owner/staff commands, image sends, moderation flows, and fallback compatibility.
+- Edge requests now fail faster instead of leaving the interface hanging on TRANSMITTING / AUTH for many seconds.
+
+APPLY
+1. Run chat-route-instant-send-v131.sql in Supabase SQL Editor.
+2. Deploy all files in this build.
+3. Hard refresh / reopen the site once so cached header/chat JS is replaced.
+
+NOTE
+The SQL is required for the new fast public-text send route. If it is not installed, the frontend automatically falls back to the existing rapid-worker path.

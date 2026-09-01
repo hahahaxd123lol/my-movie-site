@@ -2940,7 +2940,7 @@ html{overflow-y:scroll}
   <link rel="stylesheet" href="/final-v35.css?v=125-1788300576">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=129-1788305400" defer></script>
+  <script src="/global-header-chat-v1.js?v=131-1788306600" defer></script>
 
 
 
@@ -6723,6 +6723,7 @@ if(currentUser){
           if (data.poster_path) {
             document.getElementById('detail-poster').src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
           }
+          window.dispatchEvent(new CustomEvent('flix2watch:media-ready',{detail:{id:mediaId,type:mediaType,title:title||''}}));
 
           if (mediaType === 'tv' && data.seasons) {
             tvSeasonsData = data.seasons.filter(s => s.season_number >= 1 && s.episode_count > 0);
@@ -8354,7 +8355,7 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
 
-  <script src="/final-v35.js?v=129-1788305400" defer></script>
+  <script src="/final-v35.js?v=130-1788306600" defer></script>
 
 <style id="f2w-watch-tools-v47-css">
   .f2w-watch-toast-v47{
@@ -10503,28 +10504,60 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
     return {title:(!title||/loading/i.test(title))?'':title,poster:match?.[1]||''};
   }
 
+  let watchingPingBusy=false;
+  let watchingRetryTimer=0;
+  function watchingClient(){
+    try{if(typeof chatSupabase!=='undefined'&&chatSupabase?.rpc)return chatSupabase}catch{}
+    return client;
+  }
+
   async function pingWatching(){
-    if(!client?.rpc||document.visibilityState!=='visible')return;
-    const {data}=await client.auth.getSession().catch(()=>({data:{session:null}}));
-    if(!data?.session?.user)return;
-    const {id,type}=identity();if(!id)return;
-    const d=details();
-    if(!d.title)return;
+    if(watchingPingBusy||document.visibilityState!=='visible')return;
+    const c=watchingClient();
+    if(!c?.rpc||!c?.auth)return;
+    watchingPingBusy=true;
     try{
-      await client.rpc('touch_current_watching_v125',{
+      const {data:sessionData,error:sessionError}=await c.auth.getSession();
+      if(sessionError)throw sessionError;
+      if(!sessionData?.session?.user)return;
+      const {id,type}=identity();if(!id)return;
+      const d=details();
+      // Metadata can arrive after the page shell. Retry quickly instead of
+      // waiting for the next 30 second heartbeat.
+      if(!d.title){
+        clearTimeout(watchingRetryTimer);
+        watchingRetryTimer=setTimeout(pingWatching,800);
+        return;
+      }
+      const {error}=await c.rpc('touch_current_watching_v125',{
         p_media_type:type,p_media_id:id,p_title:d.title.slice(0,250),p_poster_path:d.poster||null
       });
-    }catch(error){console.warn('Current watching heartbeat unavailable:',error?.message||error)}
+      if(error)throw error;
+      window.dispatchEvent(new CustomEvent('flix2watch:watching-heartbeat',{detail:{id,type,at:Date.now()}}));
+    }catch(error){
+      console.warn('Current watching heartbeat unavailable:',error?.message||error);
+      clearTimeout(watchingRetryTimer);
+      watchingRetryTimer=setTimeout(pingWatching,2500);
+    }finally{
+      watchingPingBusy=false;
+    }
+  }
+
+  function startWatchingHeartbeat(){
+    bindDim();
+    // Fire immediately, then again as soon as TMDB metadata becomes usable.
+    setTimeout(pingWatching,50);
+    setTimeout(pingWatching,900);
+    setInterval(pingWatching,30000);
   }
 
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{bindDim();setTimeout(pingWatching,1800);setInterval(pingWatching,30000)},{once:true});
-  }else{
-    bindDim();setTimeout(pingWatching,1800);setInterval(pingWatching,30000);
-  }
+    document.addEventListener('DOMContentLoaded',startWatchingHeartbeat,{once:true});
+  }else startWatchingHeartbeat();
+  window.addEventListener('flix2watch:media-ready',pingWatching);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pingWatching()});
 })();
-/* f2w-force-save:watch-bounty-v125:1788300576 */
+/* f2w-force-save:watch-bounty-v130:1788306600 */
 </script>
 
 </body>

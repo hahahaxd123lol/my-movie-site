@@ -1,0 +1,17 @@
+FLIX2WATCH v130 — CURRENTLY WATCHING FIX
+
+1. Run current-watching-v130.sql in the Supabase SQL Editor.
+2. Deploy the v130 site files.
+3. Hard-refresh/reopen both the watch page and profile page once so old cached JS is replaced.
+
+What changed
+- Watch pages send the current-watching heartbeat immediately instead of waiting for a delayed first check.
+- If TMDB metadata has not loaded yet, the heartbeat retries in under a second rather than waiting 30 seconds.
+- The metadata loader explicitly triggers a heartbeat as soon as the title/poster are ready.
+- The heartbeat reuses the already-authenticated Supabase client where possible, avoiding a second-client session race.
+- RPC errors are now actually checked instead of silently being treated as success.
+- A failed heartbeat retries after 2.5 seconds; healthy pages continue every 30 seconds.
+- Profile current-watching checks immediately, again after 1.2s and 3.5s, then every 30 seconds.
+- Profile refreshes again when the tab becomes visible.
+- Transient profile-network errors no longer falsely replace a valid Watching Now card with “Not watching anything”.
+- SQL heartbeat/getter functions were rebuilt defensively and the active window is 95 seconds, giving a 30-second heartbeat enough tolerance for throttled/sleeping browser timers.

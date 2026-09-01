@@ -3230,7 +3230,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     let edgeError=null;
     try{
       const controller=new AbortController();
-      const timeout=setTimeout(()=>controller.abort(),8000);
+      const timeout=setTimeout(()=>controller.abort(),4500);
       const response=await fetch(CHAT_API_URL,{
         method:'POST',
         headers:{
@@ -3695,7 +3695,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     const headers={'Content-Type':'application/json','apikey':SUPABASE_KEY};
     if(token)headers.Authorization=`Bearer ${token}`;
     const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),8000);
+    const timeout=setTimeout(()=>controller.abort(),4500);
     let response;
     try{
       response=await fetch(CHAT_API_URL,{
@@ -4243,8 +4243,11 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     const staffBypass=Boolean(chatOwner||chatStaff||isCurrentUserOwner());
     const lockedForMember=Boolean(publicOpsConfig?.chat_locked&&!staffBypass);
     const mutedForMember=Boolean(window.__flix2watchAccountState?.muted&&!staffBypass);
+    // v131: normal signed-in public text can send through the authenticated RPC
+    // even while the legacy Edge chat identity is still hydrating.
     const canSend=Boolean(
-      currentUser&&chatAlias&&chatReady&&!chatBanned&&!lockedForMember&&!mutedForMember
+      currentUser&&chatAlias&&!chatBanned&&!lockedForMember&&!mutedForMember&&
+      (chatReady||!isCurrentUserOwner())
     );
     input.disabled=!canSend;
     send.disabled=!canSend;
@@ -4273,23 +4276,34 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     }
   }
 
+  document.addEventListener('keydown',event=>{
+    const input=event.target;
+    if(input?.id!=='chat-message-input')return;
+    if(event.key!=='Enter'||event.shiftKey||event.isComposing)return;
+    event.preventDefault();
+    if(!document.getElementById('chat-send')?.disabled)sendChatMessage();
+  },true);
+
   async function openChat(){
     document.getElementById('chat-modal').classList.add('open');
 
+    // v131: never make the visible public chat wait for Edge identity verification.
+    // Load messages immediately; auth/role hydration runs independently in the background.
+    const messagesPromise=loadChatMessages();
     if(currentUser){
-      await ensureChatIdentity();
-      await refreshChatRole();
+      Promise.resolve()
+        .then(()=>ensureChatIdentity())
+        .then(ok=>ok?refreshChatRole():null)
+        .catch(error=>console.warn('[Flix2Watch Chat] background identity:',error));
     }
 
     refreshAccountUI();
-    await loadChatMessages();
+    await messagesPromise;
 
     if(!currentUser){
       setChatStatus('PUBLIC CHAT // SIGN IN TO SEND','');
     }else if(chatBanned){
       setChatStatus('BANNED // READ-ONLY CHAT','error');
-    }else if(isCurrentUserOwner()&&!chatReady){
-      setChatStatus('OWNER CHAT ACCESS REQUIRED','');
     }
   }
 
@@ -4592,6 +4606,27 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     container.scrollTop=container.scrollHeight;
   }
 
+  async function sendPublicChatRpcV131(message){
+    if(!currentUser||!message||message.startsWith('/')||message.includes('[[image:'))return null;
+    try{
+      const {data,error}=await chatSupabase.rpc('send_public_chat_message_v131',{p_message:message});
+      if(error)throw error;
+      return data&&typeof data==='object'?data:null;
+    }catch(error){
+      console.warn('[Flix2Watch Chat] v131 direct send fallback unavailable:',error);
+      return null;
+    }
+  }
+
+  function addOptimisticPublicMessageV131(message){
+    const tempId=`local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const item={id:tempId,alias:chatAlias||getAccountUsername()||'You',message,created_at:new Date().toISOString(),owner:isCurrentUserOwner(),moderator:chatStaff};
+    addChatMessage(item);
+    const el=document.querySelector(`.chat-message[data-message-id="${CSS.escape(tempId)}"]`);
+    if(el){el.classList.add('f2w-chat-optimistic-v131');el.style.opacity='.72';}
+    return {tempId,el};
+  }
+
   async function sendChatMessage(){
     const input=document.getElementById('chat-message-input');
     const send=document.getElementById('chat-send');
@@ -4605,10 +4640,16 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     if(!chatReady){
       if(isCurrentUserOwner()){
         openAccountModal();
-      }else{
-        await ensureChatIdentity();
+        return;
       }
-      return;
+      const plainRpcCandidate=Boolean(message&&!message.startsWith('/')&&!pendingChatImageFile);
+      if(plainRpcCandidate){
+        // Do not block a normal message on the legacy Edge identity.
+        ensureChatIdentity().catch(()=>{});
+      }else{
+        const ready=await ensureChatIdentity();
+        if(!ready)return;
+      }
     }
 
     if(chatBanned){
@@ -4656,27 +4697,44 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
     input.disabled=true;
     send.disabled=true;
-    setChatStatus(message.startsWith('/')?'RUNNING PRIVATE COMMAND...':'TRANSMITTING MESSAGE...','');
+    const isPlainPublic=!message.startsWith('/')&&!message.includes('[[image:');
+    const optimistic=isPlainPublic?addOptimisticPublicMessageV131(message):null;
+    // Clear immediately so sending feels instant; restore on failure.
+    const originalMessage=message;
+    if(isPlainPublic){input.value='';const c=document.getElementById('chat-char-count');if(c)c.textContent='0/500';}
+    setChatStatus(message.startsWith('/')?'RUNNING PRIVATE COMMAND...':'SENDING...','');
 
     try{
-      let result=await workerRequest('send',{message});
-      if(!result.success && /invalid|expired|identity no longer matches/i.test(String(result.error||'')) && !isCurrentUserOwner()){
-        chatToken='';
-        localStorage.removeItem('josh_chat_token');
-        chatReady=false;
-        const repaired=await ensureChatIdentity();
-        if(repaired)result=await workerRequest('send',{message});
+      let result=null;
+      // Normal signed-in text goes straight through an authenticated Supabase RPC.
+      // This removes the extra create/verify chat-token round trips that caused the lag/timeouts.
+      if(isPlainPublic){
+        result=await sendPublicChatRpcV131(message);
+      }
+      if(!result){
+        result=await workerRequest('send',{message});
+        if(!result.success && /invalid|expired|identity no longer matches/i.test(String(result.error||'')) && !isCurrentUserOwner()){
+          chatToken='';
+          localStorage.removeItem('josh_chat_token');
+          chatReady=false;
+          const repaired=await ensureChatIdentity();
+          if(repaired)result=await workerRequest('send',{message});
+        }
       }
 
-      if(!result.success){
-        if(result.banned){
+      if(!result?.success){
+        if(result?.banned){
           chatBanned=true;
           updateChatControls();
           refreshAccountUI();
         }
-        throw new Error(result.error||'Unable to send message.');
+        throw new Error(result?.error||'Unable to send message.');
       }
 
+      if(optimistic){
+        optimistic.el?.remove();
+        displayedChatIds.delete(optimistic.tempId);
+      }
       input.value='';
       clearChatAttachment();
       const ultraCounter=document.getElementById('chat-char-count');
@@ -4700,6 +4758,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       }
     }catch(error){
       console.error(error);
+      if(optimistic){optimistic.el?.remove();displayedChatIds.delete(optimistic.tempId);}
+      if(isPlainPublic&&!input.value)input.value=originalMessage;
       showPrivateCommand(error.message||'Unable to send message.',true);
 
       if(chatBanned){
@@ -8729,6 +8789,7 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:dm-auth-authority-js-v100:1788283039 */
 </script>
 
+<!-- f2w-force-save:v131-chat-route-instant-send -->
 </body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
