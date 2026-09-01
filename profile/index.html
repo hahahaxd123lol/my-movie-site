@@ -139,6 +139,47 @@ html{overflow-y:scroll}
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script id="f2w-member-age-v139-early">
+  (()=>{
+    'use strict';
+    const API='https://viqufxlcxwgboyxbdhjb.supabase.co';
+    const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+    const match=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
+    const username=match?decodeURIComponent(match[1]):new URLSearchParams(location.search).get('user');
+    if(!username)return;
+    const cacheKey=`f2w_member_since_v139:${String(username).toLowerCase()}`;
+    const ageText=(value)=>{
+      const start=new Date(value),now=new Date(); if(!Number.isFinite(start.getTime()))return '—';
+      if(start>now)return 'TODAY';
+      let y=now.getUTCFullYear()-start.getUTCFullYear(),m=now.getUTCMonth()-start.getUTCMonth(),d=now.getUTCDate()-start.getUTCDate();
+      if(d<0){m--;d+=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),0)).getUTCDate()}
+      if(m<0){y--;m+=12}
+      if(y>0)return m?`${y}Y ${m}MO`:`${y}Y`; if(m>0)return `${m}MO`;
+      const days=Math.max(0,Math.floor((Date.now()-start.getTime())/86400000)); return days<1?'TODAY':`${days}D`;
+    };
+    const paint=(ts)=>{
+      if(!ts)return; window.__F2W_MEMBER_SINCE_V139=ts;
+      const run=()=>{
+        const age=document.getElementById('v16-profile-age'); if(age)age.textContent=ageText(ts);
+        const joined=document.getElementById('profile-joined'); if(joined)joined.textContent=`Joined ${new Date(ts).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
+        const member=document.getElementById('f2w-profile-member'); if(member)member.textContent=new Date(ts).toLocaleDateString(undefined,{month:'short',year:'numeric'});
+        try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=ts}catch{}
+      };
+      run(); if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});
+      // Legacy profile renderers can paint later; reassert the authoritative value
+      // for the first couple of seconds without making another network request.
+      [50,150,350,700,1200,2000].forEach(ms=>setTimeout(run,ms));
+    };
+    try{const cached=localStorage.getItem(cacheKey); if(cached)paint(cached)}catch{}
+    // Start the tiny RPC immediately in <head>; do not wait for DOMContentLoaded,
+    // the large profile bootstrap, auth hydration, presence or current-watching.
+    fetch(`${API}/rest/v1/rpc/get_profile_member_since_v139`,{
+      method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({p_username:String(username)})
+    }).then(r=>r.ok?r.json():Promise.reject(new Error(`member age ${r.status}`))).then(ts=>{
+      if(!ts)return; try{localStorage.setItem(cacheKey,ts)}catch{} paint(ts);
+    }).catch(()=>{});
+  })();
+  </script>
   <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js" defer></script>
 
@@ -8687,7 +8728,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=134-1788313000" defer></script>
+  <script src="/final-v35.js?v=139-20260902" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10263,7 +10304,8 @@ body.f2w-auth-v67-open {
     try{
       const profile=typeof viewedProfile!=='undefined'?viewedProfile:null;
       const el=document.getElementById('v16-profile-age');
-      if(el&&profile?.created_at)el.textContent=ageText(profile.created_at);
+      const authoritative=window.__F2W_MEMBER_SINCE_V139;
+      if(el&&(authoritative||profile?.created_at))el.textContent=ageText(authoritative||profile.created_at);
     }catch{}
   }
 
@@ -10275,7 +10317,7 @@ body.f2w-auth-v67-open {
       const {data,error}=await client.rpc('get_profile_member_since_v129',{p_username:username});
       if(error)throw error;
       if(data){
-        el.textContent=ageText(data);
+        el.textContent=ageText(window.__F2W_MEMBER_SINCE_V139||data);
         const joined=document.getElementById('profile-joined');
         if(joined)joined.textContent=`Joined ${new Date(data).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
         const member=document.getElementById('f2w-profile-member');

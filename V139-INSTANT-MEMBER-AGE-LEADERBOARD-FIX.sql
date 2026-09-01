@@ -1,4 +1,4 @@
--- Flix2Watch v139 compatibility replacement for the broken v138 leaderboard SQL
+-- Flix2Watch v139 — instant member age + robust XP leaderboard
 -- Run after v136/v137. Safe to re-run.
 
 -- Tiny authoritative member-age RPC. This deliberately avoids the heavier

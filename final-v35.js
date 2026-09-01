@@ -2348,10 +2348,11 @@ function f2wDebounce(fn,wait=140){
     // Authoritative member age paints immediately and also repairs the older
     // profile object/cache so legacy 30-second renderers cannot overwrite it.
     if(row.member_since){
-      const age=document.getElementById('v16-profile-age');if(age)age.textContent=ageText(row.member_since);
-      const joined=document.getElementById('profile-joined');if(joined)joined.textContent=`Joined ${new Date(row.member_since).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
-      const member=document.getElementById('f2w-profile-member');if(member)member.textContent=new Date(row.member_since).toLocaleDateString(undefined,{month:'short',year:'numeric'});
-      try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=row.member_since}catch{}
+      const authoritative=window.__F2W_MEMBER_SINCE_V139||row.member_since;
+      const age=document.getElementById('v16-profile-age');if(age)age.textContent=ageText(authoritative);
+      const joined=document.getElementById('profile-joined');if(joined)joined.textContent=`Joined ${new Date(authoritative).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
+      const member=document.getElementById('f2w-profile-member');if(member)member.textContent=new Date(authoritative).toLocaleDateString(undefined,{month:'short',year:'numeric'});
+      try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=authoritative}catch{}
       try{
         const uname=String(row.username||'').toLowerCase(),ck=`f2w_profile_cache_v24:${uname}`,raw=localStorage.getItem(ck),parsed=raw?JSON.parse(raw):null;
         if(parsed?.profile){parsed.profile.created_at=row.member_since;localStorage.setItem(ck,JSON.stringify(parsed))}
