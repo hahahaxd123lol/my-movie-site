@@ -3134,7 +3134,7 @@ body.f2w-dedicated-genre-v94 #section-title { margin-top:12px!important; }
 
 
     <div class="movie-grid" id="movie-grid" aria-live="polite">
-      <p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:42px;">Loading titles...</p>
+      <p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:42px;">Loading titles…</p>
     </div>
     <div class="catalog-pagination" id="catalog-pagination" aria-label="Catalogue pages"></div>
 
@@ -5192,13 +5192,51 @@ if(currentUser){
     addButton('Next <i class="fa-solid fa-chevron-right"></i>',catalogPage+1,false,catalogPage>=catalogTotalPages);
   }
 
-  async function f2wFetchJsonV99(url,timeoutMs=9000){
+  function f2wCatalogCacheKeyV101(url){
+    let hash=0;
+    for(let i=0;i<url.length;i++)hash=((hash<<5)-hash+url.charCodeAt(i))|0;
+    return `f2w_tmdb_v101_${Math.abs(hash)}`;
+  }
+
+  function f2wReadCatalogCacheV101(url,maxAgeMs=10*60*1000){
+    try{
+      const raw=localStorage.getItem(f2wCatalogCacheKeyV101(url));
+      if(!raw)return null;
+      const parsed=JSON.parse(raw);
+      if(!parsed?.ts||Date.now()-parsed.ts>maxAgeMs)return null;
+      return parsed.data||null;
+    }catch{
+      return null;
+    }
+  }
+
+  function f2wWriteCatalogCacheV101(url,data){
+    try{
+      localStorage.setItem(
+        f2wCatalogCacheKeyV101(url),
+        JSON.stringify({ts:Date.now(),data})
+      );
+    }catch{}
+  }
+
+  async function f2wFetchJsonV101(url,timeoutMs=6500){
+    const cached=f2wReadCatalogCacheV101(url);
+    if(cached)return {
+      response:{ok:true,status:200,cached:true},
+      data:cached,
+      cached:true
+    };
+
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),timeoutMs);
     try{
-      const response=await fetch(url,{cache:'no-store',signal:controller.signal});
+      const response=await fetch(url,{
+        cache:'default',
+        signal:controller.signal
+      });
       const data=await response.json().catch(()=>({}));
-      return {response,data};
+      if(response.ok)f2wWriteCatalogCacheV101(url,data);
+      return {response,data,cached:false};
     }finally{
       clearTimeout(timer);
     }
@@ -5235,7 +5273,7 @@ if(currentUser){
       return `https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&page=${tmdbPage}`;
     };
 
-    grid.innerHTML='<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:42px;">Loading titles...</p>';
+    grid.innerHTML='<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:42px;">Loading titles…</p>';
 
     try{
       const startIndex=(targetPage-1)*CATALOG_PAGE_SIZE;
@@ -5243,37 +5281,63 @@ if(currentUser){
       const offset=startIndex%20;
       const secondTmdbPage=firstTmdbPage+1;
 
-      const [{response:r1,data:d1},{response:r2,data:d2}]=await Promise.all([
-        f2wFetchJsonV99(endpoint(firstTmdbPage),9000),
-        f2wFetchJsonV99(endpoint(secondTmdbPage),9000)
-      ]);
+      // v101: fetch the FIRST TMDB page first and paint immediately.
+      // Previously the UI waited for page 1 AND page 2 before showing anything.
+      const {response:r1,data:d1}=await f2wFetchJsonV101(endpoint(firstTmdbPage),6500);
 
       if(requestId!==catalogRequestGeneration)return;
       if(!r1.ok)throw new Error(d1?.status_message||'Could not load catalogue.');
 
-      const items1=Array.isArray(d1.results)?d1.results:[];
-      const items2=r2.ok&&Array.isArray(d2.results)?d2.results:[];
-      const combined=[...items1,...items2]
+      const items1=(Array.isArray(d1.results)?d1.results:[])
         .filter(item=>item&&item.media_type!=='person'&&item.poster_path);
-
-      const pageItems=combined
-        .slice(offset,offset+CATALOG_PAGE_SIZE)
-        .filter(item=>{
-          const type=item.media_type||(item.title?'movie':'tv');
-          return !publicBlockedMediaKeys.has(`${type}:${item.id}`);
-        });
 
       const totalResults=Number(d1.total_results||0);
       catalogTotalPages=Math.max(1,Math.ceil(totalResults/CATALOG_PAGE_SIZE));
       catalogTotalPages=Math.min(catalogTotalPages,334);
       catalogPage=Math.min(targetPage,catalogTotalPages);
 
-      if(pageItems.length&&catalogPage===1&&!window.v19FeaturedReady){
-        setupHeroBanner(pageItems[0]);
+      const visibleFromFirst=items1
+        .slice(offset,offset+CATALOG_PAGE_SIZE)
+        .filter(item=>{
+          const type=item.media_type||(item.title?'movie':'tv');
+          return !publicBlockedMediaKeys.has(`${type}:${item.id}`);
+        });
+
+      if(visibleFromFirst.length&&catalogPage===1&&!window.v19FeaturedReady){
+        setupHeroBanner(visibleFromFirst[0]);
       }
 
-      displayMedia(pageItems,false);
+      // Paint immediately — usually 20 titles on page 1.
+      displayMedia(visibleFromFirst,false);
       renderCatalogPagination();
+
+      // If this catalogue page needs more rows, fetch the next TMDB page AFTER
+      // the first titles are already visible, then expand the grid to 30.
+      const needSecond=(offset+CATALOG_PAGE_SIZE)>items1.length;
+      if(needSecond){
+        try{
+          const {response:r2,data:d2}=await f2wFetchJsonV101(endpoint(secondTmdbPage),6500);
+          if(requestId!==catalogRequestGeneration)return;
+
+          const items2=(r2.ok&&Array.isArray(d2.results)?d2.results:[])
+            .filter(item=>item&&item.media_type!=='person'&&item.poster_path);
+
+          const combined=[...items1,...items2];
+          const fullPageItems=combined
+            .slice(offset,offset+CATALOG_PAGE_SIZE)
+            .filter(item=>{
+              const type=item.media_type||(item.title?'movie':'tv');
+              return !publicBlockedMediaKeys.has(`${type}:${item.id}`);
+            });
+
+          if(fullPageItems.length>visibleFromFirst.length){
+            displayMedia(fullPageItems,false);
+          }
+        }catch(error){
+          // First batch is already visible, so a slow second page is non-fatal.
+          console.warn('Second catalogue batch unavailable:',error);
+        }
+      }
 
       // URL mirrors the request that actually won.
       const url=new URL(window.location.href);
@@ -8338,4 +8402,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v99:1788282758:genre/western/index.html -->
 <!-- f2w-force-save:native-transition-off-v100:1788283039:genre/western/index.html -->
 <!-- f2w-force-save:v100-cache:1788283039:genre/western/index.html -->
+<!-- f2w-force-save:fast-trending-v101:1788283755:genre/western/index.html -->
  
