@@ -3326,7 +3326,7 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=105-1788289468">
+  <link rel="stylesheet" href="/final-v35.css?v=108-1788290088">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
@@ -3563,6 +3563,21 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 }
 
 /* f2w-force-save:profile-no-blink-v105:1788289468 */
+</style>
+
+
+<style id="f2w-profile-role-static-v108">
+#profile-hero .profile-role-row{
+  min-height:26px;
+  margin:6px 0 2px;
+  display:flex;
+  align-items:center;
+}
+#profile-hero #profile-role-badge{
+  transition:none!important;
+  animation:none!important;
+}
+/* f2w-force-save:profile-role-static-v108:1788290088 */
 </style>
 
 </head>
@@ -3951,6 +3966,9 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
           <i class="f2w-profile-presence-dot"></i>
           <span>Checking status…</span>
         </span>
+      </div>
+      <div class="profile-role-row" aria-label="Profile role">
+        <span id="profile-role-badge" class="profile-role-badge" aria-live="off"></span>
       </div>
       
       
@@ -5952,7 +5970,6 @@ setTimeout(loadLibraryFavorites,0);
   }
 
   function renderViewedProfile(){
-    clearViewedProfileRoleBadge();
     const root=document.getElementById('profile-hero');
     const name=document.getElementById('profile-name');
     const displayName=null;
@@ -6005,13 +6022,29 @@ setTimeout(loadLibraryFavorites,0);
     const publicDisplayName=viewedProfile.display_name?.trim()||'';
 
     document.title=`${publicDisplayName||viewedProfile.username} • Flix2Watch`;
-    name.textContent=publicDisplayName||`@${viewedProfile.username}`;
-    name.dataset.username=String(viewedProfile.username||'');
-    name.dataset.f2wPlainText=name.textContent;
-    delete name.dataset.f2wRoleDecorated;
-    delete name.dataset.f2wRole;
-    const immediateRole=String(viewedProfile.user_id||'')==='f5454804-a2a6-4602-9086-51cf51f11c77'?'owner':String(viewedProfile.top_role||'').toLowerCase();
-    if(immediateRole&&typeof window.f2wPaintRoleName==='function'){
+    const nextName=publicDisplayName||`@${viewedProfile.username}`;
+    const nextUsername=String(viewedProfile.username||'');
+    const sameIdentity=String(name.dataset.username||'').toLowerCase()===nextUsername.toLowerCase();
+
+    // Do not rewrite the text node / role classes when this same profile is
+    // merely refreshing. Recreating them restarts the particle GIF and causes
+    // the white/role-colour flash seen on profile load.
+    if(!sameIdentity || name.textContent!==nextName){
+      name.textContent=nextName;
+      name.dataset.f2wPlainText=nextName;
+    }
+    name.dataset.username=nextUsername;
+
+    const immediateRole=
+      String(viewedProfile.user_id||'')==='f5454804-a2a6-4602-9086-51cf51f11c77'
+        ? 'owner'
+        : String(viewedProfile.top_role||'').toLowerCase();
+
+    if(
+      immediateRole &&
+      name.dataset.f2wRole!==immediateRole &&
+      typeof window.f2wPaintRoleName==='function'
+    ){
       window.f2wPaintRoleName(name,immediateRole,viewedProfile.username);
     }
 
@@ -7041,7 +7074,7 @@ renderViewedProfile();
 
   <div class="f2w-network-pill" id="f2w-network-pill">
     <i class="fa-solid fa-circle"></i>
-    <span id="f2w-network-text">ONLINE</span>
+    <span id="f2w-network-text">SITE ONLINE</span>
   </div>
 <div class="f2w-command-overlay" id="f2w-command-overlay" onclick="if(event.target===this)closeUltraCommand()">
     <div class="f2w-command">
@@ -7213,7 +7246,7 @@ renderViewedProfile();
     if(!pill||!text)return;
     const online=navigator.onLine;
     pill.classList.toggle('offline',!online);
-    text.textContent=online?'ONLINE':'OFFLINE';
+    text.textContent=online?'SITE ONLINE':'SITE OFFLINE';
     if(!online)f2wToast('You are offline. Cached artwork and pages may still work.','fa-wifi');
   }
   window.addEventListener('online',updateUltraNetwork);
@@ -7538,108 +7571,129 @@ renderViewedProfile();
 
 
 
-  /* ================= PUBLIC ROLE BADGE REFRESH ================= */
+  /* ================= PUBLIC ROLE BADGE REFRESH — v108 ================= */
+
+  const f2wProfileRoleCacheV108=new Map();
+  let f2wProfileRoleRequestV108=0;
+
+  function roleBadgeSlotV108(){
+    return document.getElementById('profile-role-badge');
+  }
 
   function clearViewedProfileRoleBadge(){
-    document.getElementById('profile-role-badge')?.remove();
+    const badge=roleBadgeSlotV108();
+    if(!badge)return;
+    badge.className='profile-role-badge';
+    badge.replaceChildren();
+    badge.removeAttribute('title');
+    badge.dataset.role='';
+  }
+
+  function renderStaticProfileRoleV108(role){
+    if(!['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(role))return;
+
+    const badge=roleBadgeSlotV108();
+    if(!badge)return;
+
+    // If it already displays the correct role, DO NOTHING. This keeps it
+    // completely static instead of disappearing/reappearing.
+    if(badge.dataset.role===role && badge.classList.contains('show'))return;
+
+    const label=role.charAt(0).toUpperCase()+role.slice(1);
+    badge.className=`profile-role-badge show ${role}`;
+    badge.dataset.role=role;
+    badge.title=`Flix2Watch ${label}`;
+    badge.innerHTML=`<i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>${label}</span>`;
+  }
+
+  function applyProfileNameRoleV108(role){
+    const name=document.getElementById('profile-name');
+    if(!name||!viewedProfile)return;
+    if(name.dataset.f2wRole===role)return;
+
+    if(typeof window.f2wPaintRoleName==='function'){
+      window.f2wPaintRoleName(name,role,viewedProfile.username||'');
+    }
   }
 
   async function loadViewedProfileRoleBadge(){
-    clearViewedProfileRoleBadge();
-
     if(!viewedProfile)return;
 
+    const username=String(viewedProfile.username||'').trim();
     const userId=String(viewedProfile.user_id||'');
+    const cacheKey=username.toLowerCase();
+    if(!cacheKey)return;
 
-    function insertRoleBadge(role){
-      if(!['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(role))return;
-
-      clearViewedProfileRoleBadge();
-
-      const row=document.querySelector('#profile-hero .profile-name-row');
-      if(!row)return;
-
-      const badge=document.createElement('span');
-      badge.id='profile-role-badge';
-      badge.className=`profile-role-badge show ${role}`;
-      badge.title=`Flix2Watch ${role.charAt(0).toUpperCase()+role.slice(1)}`;
-
-      const icon=document.createElement('i');
-      icon.className='fa-solid fa-shield-halved';
-
-      const label=document.createElement('span');
-      label.textContent=role.charAt(0).toUpperCase()+role.slice(1);
-
-      // Force exact role colours at render time so theme CSS cannot override them.
-      const roleColor=role==='owner'?'#ff2b3d':'#a855f7';
-
-      badge.style.setProperty('color',roleColor,'important');
-      badge.style.setProperty(
-        'border-color',
-        role==='owner'?'rgba(255,43,61,.55)':'rgba(168,85,247,.55)',
-        'important'
-      );
-      badge.style.setProperty(
-        'background',
-        role==='owner'?'rgba(255,43,61,.10)':'rgba(168,85,247,.10)',
-        'important'
-      );
-      badge.style.setProperty('box-shadow','none','important');
-
-      icon.style.setProperty('color',roleColor,'important');
-      label.style.setProperty('color',roleColor,'important');
-
-      badge.append(icon,label);
-      row.appendChild(badge);
-
-      const profileName=document.getElementById('profile-name');
-      if(profileName&&typeof window.f2wPaintRoleName==='function'){
-        profileName.dataset.f2wPlainText=profileName.dataset.f2wPlainText||profileName.textContent;
-        delete profileName.dataset.f2wRoleDecorated;
-        window.f2wPaintRoleName(profileName,role,viewedProfile?.username||'');
-      }
-    }
-
-    // The owner badge is UUID-only. A username alone can never grant it.
+    // Owner is UUID-authoritative and can render synchronously.
     if(userId===OWNER_UUID){
-      insertRoleBadge('owner');
+      f2wProfileRoleCacheV108.set(cacheKey,'owner');
+      renderStaticProfileRoleV108('owner');
+      applyProfileNameRoleV108('owner');
       return;
     }
+
+    // Use cached role immediately. Never blank the badge while refreshing.
+    const cached=f2wProfileRoleCacheV108.get(cacheKey)
+      || String(viewedProfile.top_role||'').toLowerCase();
+
+    if(['staff','moderator','support','developer','verified','contributor','curator'].includes(cached)){
+      renderStaticProfileRoleV108(cached);
+      applyProfileNameRoleV108(cached);
+    }
+
+    const requestId=++f2wProfileRoleRequestV108;
 
     try{
       const {data,error}=await chatSupabase.rpc(
         'get_public_profile_role',
-        {target_username:viewedProfile.username}
+        {target_username:username}
       );
 
+      if(requestId!==f2wProfileRoleRequestV108)return;
       if(error)throw error;
 
-      // Only an exact Staff permission result creates the Staff badge.
-      if(['staff','moderator','support','developer','verified','contributor','curator'].includes(data)){
-        insertRoleBadge(data);
+      const role=String(
+        Array.isArray(data)
+          ? (data[0]?.top_role||data[0]?.role_key||data[0]?.role||data[0]||'')
+          : (data?.top_role||data?.role_key||data?.role||data||'')
+      ).toLowerCase();
+
+      if(['staff','moderator','support','developer','verified','contributor','curator'].includes(role)){
+        f2wProfileRoleCacheV108.set(cacheKey,role);
+        renderStaticProfileRoleV108(role);
+        applyProfileNameRoleV108(role);
+      }else if(!cached){
+        // Only clear if a successful lookup confirms there is no role AND
+        // there was no previously rendered/cached role.
+        clearViewedProfileRoleBadge();
       }
     }catch(error){
-      console.warn('Public role badge lookup failed:',error);
-      clearViewedProfileRoleBadge();
+      // Network/RPC failures do not erase a badge already on screen.
+      console.warn('Public role badge lookup unavailable:',error);
     }
   }
 
+
+  let f2wLastRoleRefreshAtV108=0;
   function refreshPublicProfileRoleBadge(){
-    if(viewedProfile){
-      loadViewedProfileRoleBadge();
-    }else{
+    if(!viewedProfile){
       clearViewedProfileRoleBadge();
+      return;
     }
+
+    const now=Date.now();
+    if(now-f2wLastRoleRefreshAtV108<5000)return;
+    f2wLastRoleRefreshAtV108=now;
+    loadViewedProfileRoleBadge();
   }
 
   window.addEventListener('pageshow',()=>{
-    setTimeout(refreshPublicProfileRoleBadge,0);
-    setTimeout(refreshPublicProfileRoleBadge,250);
-  });
+    setTimeout(refreshPublicProfileRoleBadge,80);
+  },{passive:true});
 
   window.addEventListener('focus',()=>{
     refreshPublicProfileRoleBadge();
-  });
+  },{passive:true});
 
 
 
@@ -8229,7 +8283,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=105-1788289468" defer></script>
+  <script src="/final-v35.js?v=108-1788290088" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -9840,4 +9894,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v105-cache:1788289468:profile/index.html -->
 <!-- f2w-force-save:v106-cache:1788289648:profile/index.html -->
 <!-- f2w-force-save:v107-cache:1788289786:profile/index.html -->
+<!-- f2w-force-save:profile-role-stability-v108:1788290088 -->
+<!-- f2w-force-save:v108-cache:1788290088:profile/index.html -->
  

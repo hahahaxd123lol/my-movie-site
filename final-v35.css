@@ -2603,4 +2603,126 @@ body.f2w-main-page > header .user-search-name.f2w-role-name::after {
 
 /* f2w-force-save:stable-role-display-v103:1788289090 */
 
+/* ============================================================
+   F2W v108 — PROFILE ROLE / PARTICLE / BADGE STABILITY
+   ============================================================ */
+
+/* The display-name effect is owned only by the display name. */
+#profile-name.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  transition:none!important;
+  animation:none!important;
+  background:none!important;
+  background-image:none!important;
+  text-shadow:none!important;
+}
+
+/* Highest role controls letters only. */
+#profile-name.f2w-role-owner {
+  color:#ff2638!important;
+  -webkit-text-fill-color:#ff2638!important;
+}
+#profile-name.f2w-role-staff {
+  color:#c05cff!important;
+  -webkit-text-fill-color:#c05cff!important;
+}
+#profile-name.f2w-role-moderator {
+  color:#62b4ff!important;
+  -webkit-text-fill-color:#62b4ff!important;
+}
+#profile-name.f2w-role-support {
+  color:#32c8ff!important;
+  -webkit-text-fill-color:#32c8ff!important;
+}
+#profile-name.f2w-role-developer {
+  color:#31d9ad!important;
+  -webkit-text-fill-color:#31d9ad!important;
+}
+#profile-name.f2w-role-verified {
+  color:#579dff!important;
+  -webkit-text-fill-color:#579dff!important;
+}
+#profile-name.f2w-role-contributor {
+  color:#ffc13d!important;
+  -webkit-text-fill-color:#ffc13d!important;
+}
+#profile-name.f2w-role-curator {
+  color:#ff6be1!important;
+  -webkit-text-fill-color:#ff6be1!important;
+}
+
+/*
+ * The GIF remains mounted continuously. No class removal/re-add means it
+ * keeps moving instead of restarting/flashing. Normal blend mode prevents
+ * white particles being tinted by Owner/Staff text underneath.
+ */
+#profile-name.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  inset:-.20em -.30em!important;
+  z-index:4!important;
+  pointer-events:none!important;
+  background-image:url("https://i.ibb.co/HC3GW9B/Particles.gif")!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:112% 145%!important;
+  background-color:transparent!important;
+  filter:grayscale(1) saturate(0) brightness(5) contrast(1.35)!important;
+  mix-blend-mode:normal!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+#profile-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Permanent separate badge row — never part of the display-name effect. */
+#profile-hero .profile-role-row {
+  min-height:26px!important;
+  margin:6px 0 2px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+
+#profile-hero #profile-role-badge {
+  position:static!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+  transform:none!important;
+  transition:none!important;
+  animation:none!important;
+  background-image:none!important;
+}
+
+#profile-hero #profile-role-badge,
+#profile-hero #profile-role-badge * {
+  transition:none!important;
+  animation:none!important;
+}
+
+#profile-hero #profile-role-badge::before,
+#profile-hero #profile-role-badge::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Presence itself never pulses/blinks. */
+#v17-profile-presence,
+#v17-profile-presence *,
+.f2w-profile-presence-dot {
+  animation:none!important;
+  transition:none!important;
+}
+
+/* f2w-force-save:profile-role-particle-stability-v108:1788290088 */
+
  

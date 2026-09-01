@@ -440,7 +440,6 @@ function f2wDebounce(fn,wait=140){
   window.f2wPaintRoleName=paintRoleName;
   async function decorateNames(){
     const selector=[
-      '#profile-name',
       '.chat-user',
       '.chat-username',
       '.comment-author',
@@ -1178,23 +1177,56 @@ function f2wDebounce(fn,wait=140){
     }
   }
 
+  let f2wProfilePresenceGenerationV108=0;
+  const f2wProfilePresenceCacheV108=new Map();
+
   async function renderProfilePresence(){
     if(!location.pathname.startsWith('/profile'))return;
     const profile=viewedProfileObject();if(!profile?.user_id)return;
     ensureProfileRealtimePanels();
 
     const badge=document.getElementById('v17-profile-presence');if(!badge)return;
+    const userId=String(profile.user_id);
+    const requestId=++f2wProfilePresenceGenerationV108;
+
+    const cached=f2wProfilePresenceCacheV108.get(userId);
+    if(cached){
+      badge.classList.toggle('online',cached.online);
+      badge.classList.toggle('offline',!cached.online);
+      badge.querySelector('span').textContent=cached.text;
+    }
+
     try{
       const rows=await rpc('get_public_profile_presence',{p_user_id:profile.user_id});
+      if(requestId!==f2wProfilePresenceGenerationV108)return;
+
       const row=Array.isArray(rows)?rows[0]:rows;
       const online=Boolean(row?.online);
+      const text=online
+        ? 'Online'
+        : row?.last_seen_at
+          ? `Last online ${formatRelative(row.last_seen_at)}`
+          : 'Offline';
+
+      f2wProfilePresenceCacheV108.set(userId,{online,text});
+
       badge.classList.toggle('online',online);
       badge.classList.toggle('offline',!online);
-      badge.querySelector('span').textContent=online?'Online':row?.last_seen_at?`Last online ${formatRelative(row.last_seen_at)}`:'Offline';
+      badge.querySelector('span').textContent=text;
     }catch{
-      badge.classList.remove('online');
-      badge.classList.add('offline');
-      badge.querySelector('span').textContent='Offline';
+      if(requestId!==f2wProfilePresenceGenerationV108)return;
+
+      // Do NOT convert an RPC/network failure into a false "Offline".
+      // Keep last known state; if none exists, show neutral unavailable text.
+      const previous=f2wProfilePresenceCacheV108.get(userId);
+      if(previous){
+        badge.classList.toggle('online',previous.online);
+        badge.classList.toggle('offline',!previous.online);
+        badge.querySelector('span').textContent=previous.text;
+      }else{
+        badge.classList.remove('online','offline');
+        badge.querySelector('span').textContent='Status unavailable';
+      }
     }
   }
 
@@ -1946,4 +1978,5 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:dm-display-name-particles-js-v89:1788227613
 // f2w-force-save:display-name-only-role-decoration-v90:1788227716
 // f2w-force-save:role-stability-v103:1788289090
+// f2w-force-save:profile-presence-stable-v108:1788290088
  
