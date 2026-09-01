@@ -38,6 +38,7 @@
     panel=overlay.querySelector('#f2w-global-chat-panel');
     frame=overlay.querySelector('#f2w-global-chat-frame');
     const closeButton=overlay.querySelector('#f2w-global-chat-close');
+    frame?.addEventListener('load',()=>{ready=true;panel?.classList.add('ready');forceHidden();},{once:false});
     const hardClose=e=>{
       e?.preventDefault?.();
       e?.stopPropagation?.();

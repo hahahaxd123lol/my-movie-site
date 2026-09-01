@@ -3330,7 +3330,7 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=128-1788304200" defer></script>
+  <script src="/global-header-chat-v1.js?v=129-1788305400" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -5791,7 +5791,12 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
     setChatStatus(message.startsWith('/')?'RUNNING PRIVATE COMMAND...':'TRANSMITTING MESSAGE...','');
 
     try{
-      const result=await workerRequest('send',{message});
+      let result=await workerRequest('send',{message});
+      if(!result.success && /invalid|expired|identity no longer matches/i.test(String(result.error||'')) && !isCurrentUserOwner()){
+        chatToken='';localStorage.removeItem('josh_chat_token');chatReady=false;
+        const repaired=await ensureChatIdentity();
+        if(repaired)result=await workerRequest('send',{message});
+      }
 
       if(!result.success){
         if(result.banned){
@@ -8677,7 +8682,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=128-1788304200" defer></script>
+  <script src="/final-v35.js?v=129-1788305400" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10234,17 +10239,19 @@ body.f2w-auth-v67-open {
   }
 
   function ageText(created){
-    const start=new Date(created).getTime();
-    if(!Number.isFinite(start))return '—';
-    const ms=Math.max(0,Date.now()-start);
-    const days=Math.floor(ms/86400000);
-    if(days<1)return 'TODAY';
-    if(days<30)return `${days}D`;
-    const months=Math.floor(days/30.4375);
-    if(months<12)return `${months}MO`;
-    const years=Math.floor(months/12);
-    const rem=months%12;
-    return rem?`${years}Y ${rem}MO`:`${years}Y`;
+    const start=new Date(created);
+    if(!Number.isFinite(start.getTime()))return '—';
+    const now=new Date();
+    if(start>now)return 'TODAY';
+    let years=now.getUTCFullYear()-start.getUTCFullYear();
+    let months=now.getUTCMonth()-start.getUTCMonth();
+    let days=now.getUTCDate()-start.getUTCDate();
+    if(days<0){months--;const prev=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),0));days+=prev.getUTCDate()}
+    if(months<0){years--;months+=12}
+    if(years>0)return months?`${years}Y ${months}MO`:`${years}Y`;
+    if(months>0)return `${months}MO`;
+    const totalDays=Math.max(0,Math.floor((Date.now()-start.getTime())/86400000));
+    return totalDays<1?'TODAY':`${totalDays}D`;
   }
 
   function refreshMemberAge(){
@@ -10252,6 +10259,24 @@ body.f2w-auth-v67-open {
       const profile=typeof viewedProfile!=='undefined'?viewedProfile:null;
       const el=document.getElementById('v16-profile-age');
       if(el&&profile?.created_at)el.textContent=ageText(profile.created_at);
+    }catch{}
+  }
+
+  async function correctMemberAgeFromAccount(){
+    const username=viewedUsername();
+    const el=document.getElementById('v16-profile-age');
+    if(!username||!el||!client?.rpc)return;
+    try{
+      const {data,error}=await client.rpc('get_profile_member_since_v129',{p_username:username});
+      if(error)throw error;
+      if(data){
+        el.textContent=ageText(data);
+        const joined=document.getElementById('profile-joined');
+        if(joined)joined.textContent=`Joined ${new Date(data).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
+        const member=document.getElementById('f2w-profile-member');
+        if(member)member.textContent=new Date(data).toLocaleDateString(undefined,{month:'short',year:'numeric'});
+        try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=data}catch{}
+      }
     }catch{}
   }
 
@@ -10335,9 +10360,9 @@ body.f2w-auth-v67-open {
   }
 
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{bindAvatarMenu();hardBindSocial();setTimeout(tick,350);setInterval(tick,30000)},{once:true});
+    document.addEventListener('DOMContentLoaded',()=>{bindAvatarMenu();hardBindSocial();setTimeout(()=>{tick();correctMemberAgeFromAccount()},80);setInterval(tick,30000)},{once:true});
   }else{
-    bindAvatarMenu();hardBindSocial();setTimeout(tick,350);setInterval(tick,30000);
+    bindAvatarMenu();hardBindSocial();setTimeout(()=>{tick();correctMemberAgeFromAccount()},80);setInterval(tick,30000);
   }
 })();
 /* f2w-force-save:profile-bounty-js-v125:1788300576 */

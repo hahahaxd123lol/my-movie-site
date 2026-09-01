@@ -2160,120 +2160,107 @@ function f2wDebounce(fn,wait=140){
  
 
 /* ============================================================
-   F2W v126 — FAST DIRECT MESSAGES + SHARED DELETION TIMER
+   F2W v129 — DIRECT MESSAGES: FAST OPEN / SEND / ENTER / REALTIME
    ============================================================ */
 (() => {
   'use strict';
-  if(window.__f2wDmV126)return;
-  window.__f2wDmV126=true;
-
+  if(window.__f2wDmV129)return;window.__f2wDmV129=true;
   const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
   const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
-  let client=null, me=null, activeId='', activeOther=null, dmChannel=null, sending=false;
-
+  let client=null,me=null,activeId='',activeOther=null,dmChannel=null,sending=false,lastSessionAt=0,refreshTimer=0,threadTimer=0;
   function db(){
     if(client)return client;
-    try{client=window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null}catch{}
+    try{if(window.chatSupabase?.rpc)client=window.chatSupabase}catch{}
+    try{if(!client&&window.f2wSupabase?.rpc)client=window.f2wSupabase}catch{}
+    try{if(!client&&window.supabaseClient?.rpc)client=window.supabaseClient}catch{}
+    try{if(!client)client=window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null}catch{}
     return client;
   }
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  const rel=v=>{const d=Math.max(0,Date.now()-new Date(v).getTime());if(d<60000)return'now';if(d<3600000)return`${Math.floor(d/60000)}m`;if(d<86400000)return`${Math.floor(d/3600000)}h`;return`${Math.floor(d/86400000)}d`};
+  const rel=v=>{const t=new Date(v).getTime(),d=Math.max(0,Date.now()-t);if(!Number.isFinite(t))return'';if(d<60000)return'now';if(d<3600000)return`${Math.floor(d/60000)}m`;if(d<86400000)return`${Math.floor(d/3600000)}h`;return`${Math.floor(d/86400000)}d`};
   const label=v=>({after_viewing:'After viewing','24h':'24 hours','1w':'1 week','1m':'1 month'}[v]||'24 hours');
-
-  async function session(){
-    const c=db();if(!c)return null;
-    const {data}=await c.auth.getSession();me=data?.session?.user||null;return me;
+  async function session(force=false){
+    if(me&&!force&&Date.now()-lastSessionAt<30000)return me;
+    const c=db();if(!c?.auth)return null;
+    const {data}=await c.auth.getSession();me=data?.session?.user||null;lastSessionAt=Date.now();return me;
   }
   async function call(name,args={}){const c=db();if(!c)throw new Error('Database unavailable');const {data,error}=await c.rpc(name,args);if(error)throw error;return data}
-
   function ensureRetentionUI(){
     const head=document.getElementById('v17-dm-thread-head');if(!head||document.getElementById('f2w-dm-retention-v126'))return;
     const wrap=document.createElement('div');wrap.id='f2w-dm-retention-v126';wrap.style.cssText='margin-left:auto;display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end';
     wrap.innerHTML='<label style="font-size:.58rem;opacity:.7;text-transform:uppercase;letter-spacing:.08em">Delete</label><select id="f2w-dm-retention-select-v126" style="background:#111827;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:6px 8px;font-size:.7rem"><option value="after_viewing">After viewing</option><option value="24h">24 hours</option><option value="1w">1 week</option><option value="1m">1 month</option></select>';
     head.appendChild(wrap);
-    wrap.querySelector('select').addEventListener('change',async e=>{
-      if(!activeId)return;
-      e.target.disabled=true;
-      try{await call('set_dm_retention_v126',{p_conversation_id:activeId,p_retention:e.target.value});await loadThread()}catch(err){alert(err.message||'Could not change deletion time')}
-      finally{e.target.disabled=false}
-    });
+    wrap.querySelector('select').addEventListener('change',async e=>{if(!activeId)return;e.target.disabled=true;try{await call('set_dm_retention_v126',{p_conversation_id:activeId,p_retention:e.target.value});scheduleThread(0)}catch(err){alert(err.message||'Could not change deletion time')}finally{e.target.disabled=false}});
   }
-
+  function scheduleList(ms=80){clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>refreshDirectMessages(false),ms)}
+  function scheduleThread(ms=50){clearTimeout(threadTimer);threadTimer=setTimeout(()=>loadThread(),ms)}
   function subscribe(){
     const c=db();if(!c||!activeId)return;
     try{if(dmChannel)c.removeChannel(dmChannel)}catch{}
-    dmChannel=c.channel(`f2w-dm-v126-${activeId}`)
-      .on('postgres_changes',{event:'*',schema:'public',table:'f2w_dm_messages_v126',filter:`conversation_id=eq.${activeId}`},()=>{loadThread();refreshDirectMessages()})
-      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'f2w_dm_conversations_v126',filter:`id=eq.${activeId}`},()=>{loadThread();refreshDirectMessages()})
+    dmChannel=c.channel(`f2w-dm-v129-${activeId}`)
+      .on('postgres_changes',{event:'*',schema:'public',table:'f2w_dm_messages_v126',filter:`conversation_id=eq.${activeId}`},()=>{scheduleThread();scheduleList(120)})
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'f2w_dm_conversations_v126',filter:`id=eq.${activeId}`},()=>{scheduleThread();scheduleList(120)})
       .subscribe();
   }
-
   async function loadThread(){
     if(!activeId)return;
-    ensureRetentionUI();
-    const host=document.getElementById('v17-dm-messages');if(!host)return;
+    ensureRetentionUI();const host=document.getElementById('v17-dm-messages');if(!host)return;
     try{
-      const rows=await call('get_dm_messages_v126',{p_conversation_id:activeId,p_limit:120});
-      const list=Array.isArray(rows)?rows:[];
+      const rows=await call('get_dm_messages_v126',{p_conversation_id:activeId,p_limit:120}),list=Array.isArray(rows)?rows:[];
       const retention=list[0]?.retention||activeOther?.retention||'24h';
       const sel=document.getElementById('f2w-dm-retention-select-v126');if(sel)sel.value=retention;
       const sub=document.querySelector('#v17-dm-thread-head span');if(sub)sub.textContent=`Messages delete ${label(retention).toLowerCase()}. This setting applies to both people.`;
-      host.innerHTML=list.length?list.map(m=>m.kind==='system'
-        ? `<div class="v17-dm-empty" style="margin:7px auto;max-width:90%">${esc(m.body)}</div>`
-        : `<div class="v17-dm-message ${String(m.sender_user_id)===String(me?.id)?'own':''}" data-id="${esc(m.id)}"><div>${esc(m.body)}</div><small>${rel(m.created_at)}</small></div>`).join('')
-        : '<div class="v17-dm-empty">No messages yet. Say hello.</div>';
+      host.innerHTML=list.length?list.map(m=>m.kind==='system'?`<div class="v17-dm-empty" style="margin:7px auto;max-width:90%">${esc(m.body)}</div>`:`<div class="v17-dm-message ${String(m.sender_user_id)===String(me?.id)?'own':''}" data-id="${esc(m.id)}"><div>${esc(m.body)}</div><small>${rel(m.created_at)}</small></div>`).join(''):'<div class="v17-dm-empty">No messages yet. Say hello.</div>';
       host.scrollTop=host.scrollHeight;
     }catch(err){host.innerHTML=`<div class="v17-dm-empty">${esc(err.message||'Messages unavailable')}</div>`}
   }
-
   async function selectConversation(row){
-    activeId=row.conversation_id;activeOther=row;
-    const head=document.getElementById('v17-dm-thread-head');
-    if(head){const d=head.querySelector(':scope > div');if(d)d.innerHTML=`<strong>${esc(row.display_name||'@'+row.username)}</strong><span>@${esc(row.username)}</span>`}
-    ensureRetentionUI();
-    const input=document.getElementById('v17-dm-input'),send=document.getElementById('v17-dm-send');if(input)input.disabled=false;if(send)send.disabled=false;
+    if(!row?.conversation_id)return;activeId=row.conversation_id;activeOther=row;
+    const head=document.getElementById('v17-dm-thread-head');if(head){const d=head.querySelector(':scope > div');if(d)d.innerHTML=`<strong>${esc(row.display_name||'@'+row.username)}</strong><span>@${esc(row.username)}</span>`}
+    ensureRetentionUI();const input=document.getElementById('v17-dm-input'),send=document.getElementById('v17-dm-send');if(input)input.disabled=false;if(send)send.disabled=false;
     document.querySelectorAll('#v17-dm-conversations .v17-dm-conversation').forEach(x=>x.classList.toggle('active',x.dataset.id===activeId));
-    subscribe();await loadThread();input?.focus();
+    subscribe();loadThread();setTimeout(()=>input?.focus(),0);
   }
-
-  async function refreshDirectMessages(){
-    await session();
-    const host=document.getElementById('v17-dm-conversations');if(!host)return;
-    if(!me){host.innerHTML='<div class="v17-dm-empty">Sign in to use direct messages.</div>';return}
+  async function refreshDirectMessages(checkSession=true){
+    if(checkSession)await session();
+    const host=document.getElementById('v17-dm-conversations');if(!host)return[];
+    if(!me){host.innerHTML='<div class="v17-dm-empty">Sign in to use direct messages.</div>';return[]}
     try{
-      const rows=await call('get_my_dm_conversations_v126');const list=Array.isArray(rows)?rows:[];
+      const rows=await call('get_my_dm_conversations_v126'),list=Array.isArray(rows)?rows:[];
       host.innerHTML=list.length?list.map(r=>`<button type="button" class="v17-dm-conversation ${r.conversation_id===activeId?'active':''}" data-id="${esc(r.conversation_id)}"><span class="v17-dm-avatar">${r.avatar_url?`<img src="${esc(r.avatar_url)}" alt="" loading="lazy" decoding="async">`:'<i class="fa-solid fa-user"></i>'}</span><span class="v17-dm-conversation-copy"><strong data-f2w-dm-display-name="1">${esc(r.display_name||'@'+r.username)}</strong><span>${esc(r.last_message||'No messages yet')}</span></span><span class="v17-dm-conversation-meta"><small>${r.last_message_at?rel(r.last_message_at):''}</small></span></button>`).join(''):'<div class="v17-dm-empty">No conversations yet.</div>';
-      host.querySelectorAll('.v17-dm-conversation').forEach((el,i)=>el.onclick=()=>selectConversation(list[i]));
-    }catch(err){host.innerHTML=`<div class="v17-dm-empty">${esc(err.message||'Could not load messages')}</div>`}
+      host.querySelectorAll('.v17-dm-conversation').forEach((el,i)=>el.addEventListener('click',()=>selectConversation(list[i]),{once:false}));return list;
+    }catch(err){host.innerHTML=`<div class="v17-dm-empty">${esc(err.message||'Could not load messages')}</div>`;return[]}
   }
-
   async function openDirectMessage(username){
     if(!await session()){try{window.openAccountModal?.()}catch{};return}
-    try{await window.openChat?.()}catch{}
     try{window.switchChatMode?.('dm')}catch{}
-    const id=await call('open_dm_conversation_v126',{p_other_username:String(username||'').replace(/^@/,'')});
-    await refreshDirectMessages();
-    const rows=await call('get_my_dm_conversations_v126');const row=(rows||[]).find(r=>r.conversation_id===id);if(row)await selectConversation(row);
+    const clean=String(username||'').replace(/^@/,'');
+    try{
+      const id=await call('open_dm_conversation_v126',{p_other_username:clean});activeId=id;
+      const list=await refreshDirectMessages(false),row=list.find(r=>r.conversation_id===id);
+      if(row)selectConversation(row);else{activeOther={conversation_id:id,username:clean,display_name:'@'+clean,retention:'24h'};selectConversation(activeOther)}
+    }catch(err){const host=document.getElementById('v17-dm-messages');if(host)host.innerHTML=`<div class="v17-dm-empty">${esc(err.message||'Could not open direct message')}</div>`}
   }
-
   async function sendDirectMessage(){
-    const input=document.getElementById('v17-dm-input');const button=document.getElementById('v17-dm-send');
+    const input=document.getElementById('v17-dm-input'),button=document.getElementById('v17-dm-send');
     const body=String(input?.value||'').trim();if(!activeId||!body||sending)return;
-    sending=true;if(button)button.disabled=true;
-    const optimisticId='local-'+Date.now();
-    const host=document.getElementById('v17-dm-messages');
-    if(host){if(host.querySelector('.v17-dm-empty'))host.innerHTML='';host.insertAdjacentHTML('beforeend',`<div class="v17-dm-message own" data-id="${optimisticId}"><div>${esc(body)}</div><small>sending…</small></div>`);host.scrollTop=host.scrollHeight}
-    if(input)input.value='';
-    try{await call('send_dm_message_v126',{p_conversation_id:activeId,p_body:body});await loadThread();refreshDirectMessages()}
-    catch(err){host?.querySelector(`[data-id="${optimisticId}"]`)?.remove();if(input)input.value=body;alert(err.message||'Message failed')}
+    sending=true;if(button)button.disabled=true;const optimisticId='local-'+Date.now(),host=document.getElementById('v17-dm-messages');
+    if(host){if(host.querySelector('.v17-dm-empty'))host.innerHTML='';host.insertAdjacentHTML('beforeend',`<div class="v17-dm-message own" data-id="${optimisticId}"><div>${esc(body)}</div><small>sending…</small></div>`);host.scrollTop=host.scrollHeight}if(input)input.value='';
+    try{
+      const rows=await call('send_dm_message_v126',{p_conversation_id:activeId,p_body:body});const sent=Array.isArray(rows)?rows[0]:rows;
+      const el=host?.querySelector(`[data-id="${optimisticId}"]`);if(el&&sent){el.dataset.id=sent.id||optimisticId;const sm=el.querySelector('small');if(sm)sm.textContent='now'}
+      scheduleList(60);
+    }catch(err){host?.querySelector(`[data-id="${optimisticId}"]`)?.remove();if(input)input.value=body;alert(err.message||'Message failed')}
     finally{sending=false;if(button)button.disabled=false;input?.focus()}
   }
-
-  window.refreshDirectMessages=refreshDirectMessages;
-  window.openDirectMessage=openDirectMessage;
-  window.sendDirectMessage=sendDirectMessage;
-  document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&document.activeElement?.id==='v17-dm-input'){e.preventDefault();sendDirectMessage()}});
-  document.addEventListener('click',e=>{if(e.target.closest?.('#v17-chat-dm-tab'))setTimeout(refreshDirectMessages,0)});
+  function bindCompose(){
+    const input=document.getElementById('v17-dm-input'),button=document.getElementById('v17-dm-send');if(!input)return;
+    if(input.dataset.f2wDmEnterV129!=='1'){input.dataset.f2wDmEnterV129='1';input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();e.stopPropagation();sendDirectMessage()}},true)}
+    if(button&&button.dataset.f2wDmSendV129!=='1'){button.dataset.f2wDmSendV129='1';button.addEventListener('click',e=>{e.preventDefault();sendDirectMessage()},true)}
+  }
+  window.refreshDirectMessages=refreshDirectMessages;window.openDirectMessage=openDirectMessage;window.sendDirectMessage=sendDirectMessage;
+  document.addEventListener('click',e=>{if(e.target.closest?.('#v17-chat-dm-tab')){bindCompose();setTimeout(()=>refreshDirectMessages(),0)}},{passive:true});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindCompose,{once:true});else bindCompose();
 })();
 
 /* ============================================================
