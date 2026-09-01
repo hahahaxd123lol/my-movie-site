@@ -1954,4 +1954,169 @@ body.f2w-main-page > header .user-search-sub {
 }
 
 /* f2w-force-save:display-name-role-effect-v83:1788226300 */
+
+/* ============================================================
+   F2W v86 — WHITE ROLE PARTICLES FOREVER
+   Role colour belongs ONLY to the letters.
+   Particles stay WHITE and float just around the whole word.
+   ============================================================ */
+
+/* The display name itself keeps the highest-role colour. */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  background:none!important;
+  background-image:none!important;
+  filter:none!important;
+}
+
+/* ONE particle layer only.
+   Slightly larger than the word so the animated GIF moves AROUND the letters,
+   but never stretches into a row/card banner. */
+.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-0.20em!important;
+  right:-0.30em!important;
+  bottom:-0.20em!important;
+  left:-0.30em!important;
+  width:auto!important;
+  height:auto!important;
+  pointer-events:none!important;
+  z-index:3!important;
+  border-radius:.20em!important;
+
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:112% 145%!important;
+  background-color:transparent!important;
+
+  /* Force the GIF to WHITE regardless of role colour/source tint. */
+  filter:grayscale(1) saturate(0) brightness(4.2) contrast(1.28)!important;
+  mix-blend-mode:screen!important;
+  opacity:.96!important;
+
+  box-shadow:none!important;
+  animation:none!important;
+}
+
+/* No second/legacy particle system. */
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after,
+.f2w-role-fairy-dust,
+.f2w-role-fairy-dust * {
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  box-shadow:none!important;
+  animation:none!important;
+}
+
+/* Autocomplete had a higher-specificity rule disabling ::before.
+   Override it here so ONLY the display name gets the white particles. */
+body.f2w-main-page > header .user-search-copy {
+  overflow:visible!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  align-self:flex-start!important;
+  overflow:visible!important;
+  background:none!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-0.18em!important;
+  right:-0.28em!important;
+  bottom:-0.18em!important;
+  left:-0.28em!important;
+  width:auto!important;
+  height:auto!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:112% 145%!important;
+  filter:grayscale(1) saturate(0) brightness(4.2) contrast(1.28)!important;
+  mix-blend-mode:screen!important;
+  opacity:.96!important;
+  pointer-events:none!important;
+  z-index:3!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Compact surfaces use the SAME word-bound effect, never the parent width. */
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.profile-username.f2w-role-name,
+.display-name.f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  background:none!important;
+}
+
+/* Slightly tighter on tiny rows, still visibly around the letters. */
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before {
+  top:-0.16em!important;
+  right:-0.25em!important;
+  bottom:-0.16em!important;
+  left:-0.25em!important;
+  background-size:110% 140%!important;
+}
+
+/* Profile gets a touch more breathing room around the larger name. */
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  top:-0.22em!important;
+  right:-0.32em!important;
+  bottom:-0.22em!important;
+  left:-0.32em!important;
+  background-size:114% 148%!important;
+}
+
+/* Role palette remains letters-only. */
+.f2w-role-owner      {--role-main:#ff2638!important}
+.f2w-role-staff      {--role-main:#c05cff!important}
+.f2w-role-moderator  {--role-main:#62b4ff!important}
+.f2w-role-support    {--role-main:#32c8ff!important}
+.f2w-role-developer  {--role-main:#31d9ad!important}
+.f2w-role-verified   {--role-main:#579dff!important}
+.f2w-role-contributor{--role-main:#ffc13d!important}
+.f2w-role-curator    {--role-main:#ff6be1!important}
+
+/* f2w-force-save:white-role-particles-v86:1788226708 */
  
