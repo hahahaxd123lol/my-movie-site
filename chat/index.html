@@ -2337,10 +2337,10 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=83-1788226300">
+  <link rel="stylesheet" href="/final-v35.css?v=85-1788226556">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=74-1788224239">
+  <link rel="stylesheet" href="/global-header-v1.css?v=85-1788226556">
 
   <style id="f2w-dedicated-chat-page">
     /* /chat/ is a dedicated chat route, not a disguised Home page. */
@@ -2460,85 +2460,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 .f2w-guest-dm-lock-actions-v50 .secondary{border:1px solid #2b435c;background:#0a1927;color:#dbe6f3}
 /* f2w-force-save:guest-dm-lock-v50:1788220357 */
 </style>
-<script id="f2w-guest-dm-lock-v50-js">
-(() => {
-  'use strict';
 
-  function rightPane(){
-    return document.querySelector(
-      '#dm-thread-pane,#chat-thread-pane,.dm-thread-pane,.chat-thread-pane,.v17-chat-thread,.thread-pane,.chat-thread'
-    );
-  }
-
-  async function currentSession(){
-    try{
-      const client=window.chatSupabase||window.supabaseClient||window.f2wSupabase;
-      if(client?.auth?.getSession){
-        const {data}=await client.auth.getSession();
-        return data?.session||null;
-      }
-    }catch{}
-    return null;
-  }
-
-  function renderGuestLock(){
-    const pane=rightPane();
-    if(!pane)return;
-    pane.innerHTML=`<div class="f2w-guest-dm-lock-v50">
-      <div class="f2w-guest-dm-lock-card-v50">
-        <div class="f2w-guest-dm-lock-icon-v50"><i class="fa-solid fa-lock"></i></div>
-        <h3>Direct Messages are locked</h3>
-        <p>Log in or create an account to use private messages. Public Chat is still available.</p>
-        <div class="f2w-guest-dm-lock-actions-v50">
-          <button class="primary" type="button" data-f2w-dm-login>Log In</button>
-          <button class="secondary" type="button" data-f2w-dm-signup>Create Account</button>
-        </div>
-      </div>
-    </div>`;
-    pane.querySelector('[data-f2w-dm-login]')?.addEventListener('click',()=>window.openHeaderAuth?.('login'));
-    pane.querySelector('[data-f2w-dm-signup]')?.addEventListener('click',()=>window.openHeaderAuth?.('signup'));
-  }
-
-  function dmTab(){
-    return document.querySelector(
-      '[data-chat-mode="dm"],#dm-tab,.dm-tab,[data-mode="dm"],button[onclick*="switchChatMode"][onclick*="dm"]'
-    );
-  }
-
-  function publicTab(){
-    return document.querySelector(
-      '[data-chat-mode="public"],#public-tab,.public-tab,[data-mode="public"],button[onclick*="switchChatMode"][onclick*="public"]'
-    );
-  }
-
-  async function openDmAsGuestAware(e){
-    const session=await currentSession();
-    if(session?.user)return; // let the original logged-in handler work
-    e?.preventDefault?.();
-    e?.stopImmediatePropagation?.();
-
-    // Keep both tabs usable; switch visible active state without hiding the left rail.
-    const dm=dmTab(),pub=publicTab();
-    dm?.classList.add('active');
-    pub?.classList.remove('active');
-    document.body.dataset.chatMode='dm';
-    renderGuestLock();
-  }
-
-  function bind(){
-    const dm=dmTab();
-    if(dm && !dm.dataset.f2wGuestDmV50){
-      dm.dataset.f2wGuestDmV50='1';
-      dm.addEventListener('click',openDmAsGuestAware,true);
-    }
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
-  else bind();
-
-  new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
 
 </head>
 
@@ -6464,7 +6386,7 @@ if(currentUser){
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=83-1788226300" defer></script>
+  <script src="/final-v35.js?v=85-1788226556" defer></script>
 
   <!-- F2W dedicated chat route bootstrap -->
 
@@ -6580,144 +6502,7 @@ if(currentUser){
   .f2w-dm-auth-check{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(5,10,18,.92);color:#aeb8c8;font:800 14px/1.2 Inter,system-ui,sans-serif}
   .f2w-dm-auth-check i{color:#e50914;font-size:20px}
 </style>
-<script id="f2w-guest-dm-lock-patch">
-(()=>{
-  'use strict';
-  const originalSwitch = typeof window.switchChatMode==='function' ? window.switchChatMode : null;
 
-  function openAuth(mode){
-    try{ if(typeof window.showAccountMode==='function') window.showAccountMode(mode); }catch{}
-    try{ if(typeof window.openAccountModal==='function') window.openAccountModal(); }catch{}
-  }
-
-  function renderGuestDmLock(){
-    const panel=document.getElementById('v17-dm-panel');
-    const thread=panel?.querySelector('.v17-dm-thread');
-    if(!panel||!thread)return;
-
-    let lock=thread.querySelector('.f2w-guest-dm-lock');
-    if(!lock){
-      lock=document.createElement('div');
-      lock.className='f2w-guest-dm-lock';
-      lock.innerHTML=`<div class="f2w-guest-dm-lock-card">
-        <div class="f2w-guest-dm-lock-icon"><i class="fa-solid fa-lock"></i></div>
-        <h3>Direct Messages are locked</h3>
-        <p>Sign in or create an account to privately message other Flix2Watch members.</p>
-        <div class="f2w-guest-dm-lock-actions">
-          <button class="f2w-guest-dm-login" type="button">Sign In</button>
-          <button class="f2w-guest-dm-signup" type="button">Create Account</button>
-        </div>
-      </div>`;
-      lock.querySelector('.f2w-guest-dm-login').addEventListener('click',()=>openAuth('login'));
-      lock.querySelector('.f2w-guest-dm-signup').addEventListener('click',()=>openAuth('signup'));
-      thread.appendChild(lock);
-    }
-    lock.style.display='flex';
-
-    const sidebar=panel.querySelector('.v17-dm-sidebar');
-    if(sidebar){
-      sidebar.classList.add('f2w-dm-sidebar-guest');
-    }
-  }
-
-  function restoreDmPanel(){
-    const panel=document.getElementById('v17-dm-panel');
-    if(!panel)return;
-    const lock=panel.querySelector('.f2w-guest-dm-lock');
-    if(lock)lock.style.display='none';
-    panel.querySelector('.v17-dm-sidebar')?.classList.remove('f2w-dm-sidebar-guest');
-  }
-
-  function fallbackSwitch(mode){
-    const isDm=mode==='dm';
-    document.getElementById('v17-chat-public-tab')?.classList.toggle('active',!isDm);
-    document.getElementById('v17-chat-dm-tab')?.classList.toggle('active',isDm);
-    const pub=document.getElementById('v17-public-chat-panel');
-    const dm=document.getElementById('v17-dm-panel');
-    if(pub) pub.hidden=isDm;
-    if(dm) dm.hidden=!isDm;
-  }
-
-  window.switchChatMode=function(mode){
-    if(mode!=='dm'){
-      restoreDmPanel();
-      if(originalSwitch)return originalSwitch(mode);
-      fallbackSwitch(mode);
-      return;
-    }
-
-    const openDmForUser=(user)=>{
-      window.currentUser=user||null;
-      if(user){
-        restoreDmPanel();
-        if(originalSwitch)return originalSwitch('dm');
-        fallbackSwitch('dm');
-        return;
-      }
-      fallbackSwitch('dm');
-      renderGuestDmLock();
-    };
-
-    if(window.currentUser){
-      return openDmForUser(window.currentUser);
-    }
-
-    // Auth can still be hydrating when the user taps DM. Ask Supabase directly
-    // instead of treating an unresolved session as logged out.
-    try{
-      const getter=window.chatSupabase?.auth?.getSession
-        ? window.chatSupabase.auth.getSession.bind(window.chatSupabase.auth)
-        : (typeof chatSupabase!=='undefined'&&chatSupabase?.auth?.getSession
-            ? chatSupabase.auth.getSession.bind(chatSupabase.auth)
-            : null);
-
-      if(getter){
-        fallbackSwitch('dm');
-        const thread=document.querySelector('#v17-dm-panel .v17-dm-thread');
-        if(thread&&!thread.querySelector('.f2w-dm-auth-check')){
-          const checking=document.createElement('div');
-          checking.className='f2w-dm-auth-check';
-          checking.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i><span>Checking your session…</span>';
-          thread.appendChild(checking);
-        }
-        getter().then(({data})=>{
-          document.querySelectorAll('.f2w-dm-auth-check').forEach(el=>el.remove());
-          openDmForUser(data?.session?.user||null);
-        }).catch(()=>{
-          document.querySelectorAll('.f2w-dm-auth-check').forEach(el=>el.remove());
-          openDmForUser(null);
-        });
-        return;
-      }
-    }catch{}
-
-    openDmForUser(null);
-  };
-
-  // Re-apply after auth state changes without touching the silent-preload/opening logic.
-  const mo=new MutationObserver(()=>{
-    const dmTab=document.getElementById('v17-chat-dm-tab');
-    if(!dmTab?.classList.contains('active'))return;
-    if(window.currentUser){
-      restoreDmPanel();
-      return;
-    }
-    // Do not flash the guest lock during auth hydration.
-    clearTimeout(window.__f2wDmGuestDelay);
-    window.__f2wDmGuestDelay=setTimeout(async()=>{
-      try{
-        const {data}=await chatSupabase.auth.getSession();
-        window.currentUser=data?.session?.user||null;
-        if(window.currentUser)restoreDmPanel();
-        else renderGuestDmLock();
-      }catch{
-        renderGuestDmLock();
-      }
-    },180);
-  });
-  if(document.documentElement) mo.observe(document.documentElement,{subtree:true,childList:true});
-})();
-</script>
 
 
 <style id="f2w-chat-slowmode-v37">
@@ -8314,6 +8099,379 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-spacing-v70:1788223711 */
 </style>
 
+
+<style id="f2w-guest-dm-stable-v85">
+/* ============================================================
+   F2W v85 — GUEST DIRECT MESSAGES / RIGHT-PANE LOCK
+   ============================================================ */
+#v17-dm-panel {
+  min-width:0!important;
+}
+
+#v17-dm-panel .v17-dm-thread {
+  position:relative!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+
+.f2w-guest-dm-lock-v85 {
+  position:absolute!important;
+  inset:0!important;
+  z-index:20!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  background:rgba(5,10,18,.97)!important;
+  backdrop-filter:blur(5px)!important;
+  -webkit-backdrop-filter:blur(5px)!important;
+}
+
+.f2w-guest-dm-card-v85 {
+  width:min(470px,100%)!important;
+  padding:28px 24px!important;
+  border:1px solid rgba(255,52,68,.35)!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#0b1826,#07121e)!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.38)!important;
+  text-align:center!important;
+}
+
+.f2w-guest-dm-icon-v85 {
+  width:58px!important;
+  height:58px!important;
+  margin:0 auto 14px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid rgba(255,52,68,.42)!important;
+  border-radius:15px!important;
+  background:rgba(229,9,20,.12)!important;
+  color:#ff3040!important;
+  font-size:1.32rem!important;
+}
+
+.f2w-guest-dm-card-v85 h3 {
+  margin:0 0 8px!important;
+  color:#fff!important;
+  font-size:1.08rem!important;
+  font-weight:900!important;
+}
+
+.f2w-guest-dm-card-v85 p {
+  max-width:370px!important;
+  margin:0 auto!important;
+  color:#879bb1!important;
+  font-size:.75rem!important;
+  line-height:1.55!important;
+}
+
+.f2w-guest-dm-actions-v85 {
+  display:flex!important;
+  justify-content:center!important;
+  gap:9px!important;
+  flex-wrap:wrap!important;
+  margin-top:16px!important;
+}
+
+.f2w-guest-dm-actions-v85 button {
+  min-width:142px!important;
+  min-height:40px!important;
+  padding:0 14px!important;
+  border-radius:10px!important;
+  font-size:.74rem!important;
+  font-weight:850!important;
+  cursor:pointer!important;
+}
+
+.f2w-guest-dm-actions-v85 .login {
+  border:1px solid #ff3444!important;
+  background:#e50914!important;
+  color:#fff!important;
+}
+
+.f2w-guest-dm-actions-v85 .signup {
+  border:1px solid #2b435c!important;
+  background:#0a1927!important;
+  color:#dbe6f3!important;
+}
+
+/* LEFT side remains the conversations rail. It is visible but inert for guests. */
+#v17-dm-panel .v17-dm-sidebar.f2w-guest-v85 {
+  opacity:.52!important;
+  filter:saturate(.55)!important;
+}
+
+#v17-dm-panel .v17-dm-sidebar.f2w-guest-v85 input,
+#v17-dm-panel .v17-dm-sidebar.f2w-guest-v85 button,
+#v17-dm-panel .v17-dm-sidebar.f2w-guest-v85 .v17-dm-conversation {
+  pointer-events:none!important;
+}
+
+.f2w-dm-session-check-v85 {
+  position:absolute!important;
+  inset:0!important;
+  z-index:21!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  background:rgba(5,10,18,.96)!important;
+  color:#92a6bc!important;
+  font-size:.76rem!important;
+  font-weight:800!important;
+}
+
+.f2w-dm-session-check-v85 i {
+  color:#e50914!important;
+}
+
+@media(max-width:680px){
+  .f2w-guest-dm-lock-v85 { padding:14px!important; }
+  .f2w-guest-dm-card-v85 { padding:22px 16px!important; }
+  .f2w-guest-dm-actions-v85 button {
+    min-width:0!important;
+    flex:1 1 130px!important;
+  }
+}
+/* f2w-force-save:guest-dm-stable-css-v85:1788226556 */
+</style>
+
+<script id="f2w-guest-dm-stable-v85-js">
+(() => {
+  'use strict';
+  if(window.__f2wGuestDmStableV85)return;
+  window.__f2wGuestDmStableV85=true;
+
+  const originalSwitch =
+    typeof window.switchChatMode==='function' ? window.switchChatMode.bind(window) : null;
+
+  let switchGeneration=0;
+
+  function panel(){
+    return document.getElementById('v17-dm-panel');
+  }
+
+  function thread(){
+    return panel()?.querySelector('.v17-dm-thread') || null;
+  }
+
+  function sidebar(){
+    return panel()?.querySelector('.v17-dm-sidebar') || null;
+  }
+
+  function setVisibleMode(mode){
+    const isDm=mode==='dm';
+    document.getElementById('v17-chat-public-tab')?.classList.toggle('active',!isDm);
+    document.getElementById('v17-chat-dm-tab')?.classList.toggle('active',isDm);
+
+    const pub=document.getElementById('v17-public-chat-panel');
+    const dm=panel();
+    if(pub)pub.hidden=isDm;
+    if(dm)dm.hidden=!isDm;
+
+    document.body.dataset.chatMode=isDm?'dm':'public';
+  }
+
+  function removeCheck(){
+    document.querySelectorAll('.f2w-dm-session-check-v85').forEach(el=>el.remove());
+  }
+
+  function hideGuestLock(){
+    removeCheck();
+    panel()?.querySelector('.f2w-guest-dm-lock-v85')?.remove();
+    sidebar()?.classList.remove('f2w-guest-v85');
+  }
+
+  function openSiteAuth(mode){
+    // Use the exact same site-wide auth modal as header/watch buttons.
+    if(typeof window.openHeaderAuth==='function'){
+      window.openHeaderAuth(mode);
+      return;
+    }
+    if(typeof window.f2wOpenAuth==='function'){
+      window.f2wOpenAuth(mode);
+      return;
+    }
+  }
+
+  function renderGuestLock(){
+    const dm=panel();
+    const right=thread();
+    if(!dm||!right)return;
+
+    setVisibleMode('dm');
+    removeCheck();
+
+    let lock=right.querySelector('.f2w-guest-dm-lock-v85');
+    if(!lock){
+      lock=document.createElement('div');
+      lock.className='f2w-guest-dm-lock-v85';
+      lock.innerHTML=`
+        <div class="f2w-guest-dm-card-v85">
+          <div class="f2w-guest-dm-icon-v85">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <h3>Direct Messages are locked</h3>
+          <p>Log in or create an account to send private messages. Public Chat stays available.</p>
+          <div class="f2w-guest-dm-actions-v85">
+            <button class="login" type="button" data-f2w-v85-login>
+              <i class="fa-solid fa-right-to-bracket"></i> Log In
+            </button>
+            <button class="signup" type="button" data-f2w-v85-signup>
+              <i class="fa-solid fa-user-plus"></i> Create Account
+            </button>
+          </div>
+        </div>`;
+
+      lock.querySelector('[data-f2w-v85-login]')?.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        openSiteAuth('login');
+      });
+
+      lock.querySelector('[data-f2w-v85-signup]')?.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        openSiteAuth('signup');
+      });
+
+      right.appendChild(lock);
+    }
+
+    sidebar()?.classList.add('f2w-guest-v85');
+  }
+
+  function renderSessionCheck(){
+    const right=thread();
+    if(!right)return;
+    removeCheck();
+
+    const check=document.createElement('div');
+    check.className='f2w-dm-session-check-v85';
+    check.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i><span>Checking your session…</span>';
+    right.appendChild(check);
+  }
+
+  function authClient(){
+    try{if(window.chatSupabase?.auth)return window.chatSupabase;}catch{}
+    try{if(window.f2wSupabase?.auth)return window.f2wSupabase;}catch{}
+    try{if(window.supabaseClient?.auth)return window.supabaseClient;}catch{}
+    try{if(typeof chatSupabase!=='undefined'&&chatSupabase?.auth)return chatSupabase;}catch{}
+    return null;
+  }
+
+  async function resolveCurrentUser(generation){
+    if(window.currentUser)return window.currentUser;
+
+    const client=authClient();
+    if(!client?.auth?.getSession)return null;
+
+    try{
+      const {data}=await client.auth.getSession();
+      if(generation!==switchGeneration)return undefined; // stale click; ignore it.
+      const user=data?.session?.user||null;
+      window.currentUser=user;
+      return user;
+    }catch{
+      if(generation!==switchGeneration)return undefined;
+      return null;
+    }
+  }
+
+  async function switchToDm(){
+    const generation=++switchGeneration;
+
+    // Make the DM panel visible immediately. The lock/check belongs ONLY on the right.
+    setVisibleMode('dm');
+
+    if(window.currentUser){
+      hideGuestLock();
+      if(originalSwitch)originalSwitch('dm');
+      else setVisibleMode('dm');
+      return;
+    }
+
+    renderSessionCheck();
+
+    const user=await resolveCurrentUser(generation);
+    if(generation!==switchGeneration || user===undefined)return;
+
+    removeCheck();
+
+    if(user){
+      hideGuestLock();
+      if(originalSwitch)originalSwitch('dm');
+      else setVisibleMode('dm');
+      return;
+    }
+
+    renderGuestLock();
+  }
+
+  function switchToPublic(){
+    ++switchGeneration; // cancels any pending getSession result.
+    hideGuestLock();
+
+    if(originalSwitch)originalSwitch('public');
+    else setVisibleMode('public');
+  }
+
+  window.switchChatMode=function(mode){
+    if(mode==='dm'){
+      switchToDm();
+      return false;
+    }
+    switchToPublic();
+    return false;
+  };
+
+  // If auth changes while DM is open, update the right pane without breaking tabs.
+  function bindAuth(){
+    const client=authClient();
+    if(!client?.auth?.onAuthStateChange || window.__f2wDmAuthBoundV85)return;
+    window.__f2wDmAuthBoundV85=true;
+
+    client.auth.onAuthStateChange((_event,session)=>{
+      window.currentUser=session?.user||null;
+
+      const dmActive=document.getElementById('v17-chat-dm-tab')?.classList.contains('active');
+      if(!dmActive)return;
+
+      if(window.currentUser){
+        ++switchGeneration;
+        hideGuestLock();
+        if(originalSwitch)originalSwitch('dm');
+        else setVisibleMode('dm');
+      }else{
+        ++switchGeneration;
+        renderGuestLock();
+      }
+    });
+  }
+
+  function boot(){
+    bindAuth();
+
+    // Inline onclick already calls switchChatMode. This fallback handles
+    // dynamically rebuilt tabs without stacking another conflicting capture listener.
+    const dm=document.getElementById('v17-chat-dm-tab');
+    const pub=document.getElementById('v17-chat-public-tab');
+
+    if(dm && !dm.getAttribute('onclick'))dm.onclick=()=>window.switchChatMode('dm');
+    if(pub && !pub.getAttribute('onclick'))pub.onclick=()=>window.switchChatMode('public');
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',boot,{once:true});
+  }else{
+    boot();
+  }
+
+  window.addEventListener('pageshow',boot,{passive:true});
+})();
+// f2w-force-save:guest-dm-stable-js-v85:1788226556
+</script>
+
 </body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
@@ -8403,4 +8561,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v82-cache:1788225709:chat/index.html -->
 <!-- f2w-force-save:v83-cache:1788226300:chat/index.html -->
 <!-- f2w-force-save:v84-cache:1788226452:chat/index.html -->
+<!-- f2w-force-save:chat-dm-v85:1788226556 -->
+<!-- f2w-force-save:chat-cache-v85:1788226556 -->
  
