@@ -2283,3 +2283,141 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:v126-dm-presence-performance
 
 // f2w-force-save:v128-instant-profile-presence:1788304200
+
+/* ============================================================
+   F2W v134 — INSTANT SITE-WIDE PROFILE LIVE CACHE
+   One compact snapshot replaces serial member-age/presence/watching lookups.
+   Profile links are warmed on intent/idle so opening a profile usually paints
+   the realtime header from cache before the network round-trip finishes.
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wLiveProfileV134)return;window.__f2wLiveProfileV134=true;
+  const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  const PREFIX='f2w_live_profile_v134:';
+  const inflight=new Map();
+  const warmed=new Set();
+  let client=null,currentChannel=null,currentUserId='';
+  const bc=(()=>{try{return new BroadcastChannel('f2w-live-profile-v134')}catch{return null}})();
+
+  function db(){
+    try{if(typeof chatSupabase!=='undefined'&&chatSupabase)return chatSupabase}catch{}
+    try{if(window.db?.rpc)return window.db}catch{}
+    if(client)return client;
+    try{if(window.supabase?.createClient)client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch{}
+    return client;
+  }
+  function usernameFromUrl(href=location.href){
+    try{
+      const u=new URL(href,location.href);if(u.origin!==location.origin||!u.pathname.startsWith('/profile'))return '';
+      const m=u.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);if(m)return decodeURIComponent(m[1]);
+      return String(u.searchParams.get('user')||'').replace(/[^A-Za-z0-9]/g,'');
+    }catch{return ''}
+  }
+  function key(username){return PREFIX+String(username||'').toLowerCase()}
+  function read(username){
+    try{const x=JSON.parse(localStorage.getItem(key(username))||'null');return x&&x.username?x:null}catch{return null}
+  }
+  function save(row){
+    if(!row?.username)return;
+    const snap={...row,saved_at:Date.now()};
+    try{localStorage.setItem(key(row.username),JSON.stringify(snap))}catch{}
+    try{bc?.postMessage(snap)}catch{}
+    if(String(row.username).toLowerCase()===usernameFromUrl().toLowerCase())paint(snap);
+  }
+  function ageText(value){
+    const start=new Date(value),now=new Date();if(!Number.isFinite(start.getTime()))return '—';
+    if(start>now)return 'TODAY';
+    let y=now.getUTCFullYear()-start.getUTCFullYear(),m=now.getUTCMonth()-start.getUTCMonth(),d=now.getUTCDate()-start.getUTCDate();
+    if(d<0){m--;d+=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),0)).getUTCDate()}
+    if(m<0){y--;m+=12}
+    if(y>0)return m?`${y}Y ${m}MO`:`${y}Y`;
+    if(m>0)return `${m}MO`;
+    const days=Math.max(0,Math.floor((Date.now()-start.getTime())/86400000));return days<1?'TODAY':`${days}D`;
+  }
+  function rel(ts){
+    const t=new Date(ts).getTime();if(!Number.isFinite(t))return 'not recorded yet';
+    const s=Math.max(0,Math.floor((Date.now()-t)/1000));
+    if(s<10)return 'just now';if(s<60)return `${s}s ago`;const m=Math.floor(s/60);if(m<60)return `${m}m ago`;
+    const h=Math.floor(m/60);if(h<24)return `${h}h ago`;const d=Math.floor(h/24);if(d<30)return `${d}d ago`;
+    return new Date(t).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+  }
+  function paint(row){
+    if(!row)return;
+    // Authoritative member age paints immediately and also repairs the older
+    // profile object/cache so legacy 30-second renderers cannot overwrite it.
+    if(row.member_since){
+      const age=document.getElementById('v16-profile-age');if(age)age.textContent=ageText(row.member_since);
+      const joined=document.getElementById('profile-joined');if(joined)joined.textContent=`Joined ${new Date(row.member_since).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
+      const member=document.getElementById('f2w-profile-member');if(member)member.textContent=new Date(row.member_since).toLocaleDateString(undefined,{month:'short',year:'numeric'});
+      try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=row.member_since}catch{}
+      try{
+        const uname=String(row.username||'').toLowerCase(),ck=`f2w_profile_cache_v24:${uname}`,raw=localStorage.getItem(ck),parsed=raw?JSON.parse(raw):null;
+        if(parsed?.profile){parsed.profile.created_at=row.member_since;localStorage.setItem(ck,JSON.stringify(parsed))}
+      }catch{}
+    }
+    const badge=document.getElementById('v17-profile-presence');
+    if(badge){
+      const online=Boolean(row.online_until&&new Date(row.online_until).getTime()>Date.now());
+      badge.classList.toggle('online',online);badge.classList.toggle('offline',!online);
+      const label=badge.querySelector('span');
+      if(label)label.textContent=online?'Online':row.last_seen_at?`Last online ${rel(row.last_seen_at)}`:'Last online not recorded yet';
+    }
+    const host=document.getElementById('f2w-current-watching-card');
+    if(host){
+      const fresh=row.watching_media_id&&row.watching_last_seen_at&&(Date.now()-new Date(row.watching_last_seen_at).getTime()<95000);
+      if(fresh){
+        const type=row.watching_media_type==='tv'?'tv':'movie';
+        const poster=row.watching_poster_path?`https://image.tmdb.org/t/p/w342${row.watching_poster_path}`:'/flix2watch-logo-red-v34.png';
+        host.className='f2w-current-watching-card';
+        host.innerHTML=`<img src="${poster}" alt=""><div class="f2w-current-watching-copy"><strong>${String(row.watching_title||'Untitled').replace(/[<>&]/g,'')}</strong><span class="f2w-current-watching-live"><i class="fa-solid fa-circle"></i> Watching now</span><span>${type==='tv'?'TV Series':'Movie'} · updated ${new Date(row.watching_last_seen_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>`;
+        host.onclick=()=>location.href=`/watch/?id=${encodeURIComponent(row.watching_media_id)}&type=${type}`;host.style.cursor='pointer';
+      }else if(row.watching_media_id===null||row.watching_media_id===undefined){
+        host.className='f2w-current-watching-empty';host.innerHTML='Not watching anything right now.';host.onclick=null;host.style.cursor='';
+      }
+    }
+  }
+  async function fetchOne(username,{paintNow=false}={}){
+    username=String(username||'').replace(/[^A-Za-z0-9]/g,'');if(!username)return null;
+    const low=username.toLowerCase();if(inflight.has(low))return inflight.get(low);
+    const p=(async()=>{
+      const c=db();if(!c?.rpc)return null;
+      const {data,error}=await c.rpc('get_public_profile_live_v134',{p_username:username});if(error)throw error;
+      const row=Array.isArray(data)?data[0]:data;if(row){save(row);if(paintNow)paint(row)}return row||null;
+    })().catch(()=>null).finally(()=>inflight.delete(low));
+    inflight.set(low,p);return p;
+  }
+  function subscribe(row){
+    if(!row?.user_id||currentUserId===String(row.user_id))return;currentUserId=String(row.user_id);
+    const c=db();if(!c?.channel)return;
+    try{if(currentChannel)c.removeChannel(currentChannel)}catch{}
+    const refresh=()=>fetchOne(row.username,{paintNow:true});
+    try{currentChannel=c.channel(`f2w-v134-live-${row.user_id}`)
+      .on('postgres_changes',{event:'*',schema:'public',table:'user_presence',filter:`user_id=eq.${row.user_id}`},refresh)
+      .on('postgres_changes',{event:'*',schema:'public',table:'current_watching_v125',filter:`user_id=eq.${row.user_id}`},refresh)
+      .on('postgres_changes',{event:'*',schema:'public',table:'profiles',filter:`user_id=eq.${row.user_id}`},refresh)
+      .subscribe()}catch{}
+  }
+  async function bootProfile(){
+    const username=usernameFromUrl();if(!username)return;
+    const cached=read(username);if(cached)paint(cached);
+    const row=await fetchOne(username,{paintNow:true});if(row)subscribe(row);
+  }
+  function warmAnchor(a){const u=usernameFromUrl(a?.href);if(!u||warmed.has(u.toLowerCase()))return;warmed.add(u.toLowerCase());const cached=read(u);if(!cached||Date.now()-Number(cached.saved_at||0)>15000)fetchOne(u)}
+  document.addEventListener('pointerover',e=>{const a=e.target.closest?.('a[href*="/profile"]');if(a)warmAnchor(a)},{passive:true});
+  document.addEventListener('focusin',e=>{const a=e.target.closest?.('a[href*="/profile"]');if(a)warmAnchor(a)},{passive:true});
+  document.addEventListener('touchstart',e=>{const a=e.target.closest?.('a[href*="/profile"]');if(a)warmAnchor(a)},{passive:true});
+  bc?.addEventListener?.('message',e=>{const row=e.data;if(row?.username&&String(row.username).toLowerCase()===usernameFromUrl().toLowerCase())paint(row)});
+  const start=()=>{
+    bootProfile();
+    // Warm a small number of visible profile destinations in idle time. Capped
+    // deliberately so "instant" does not turn into excessive Supabase load.
+    const idle=window.requestIdleCallback||((fn)=>setTimeout(fn,800));idle(()=>Array.from(document.querySelectorAll('a[href*="/profile"]')).slice(0,12).forEach((a,i)=>setTimeout(()=>warmAnchor(a),i*80)));
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')bootProfile()});
+  window.addEventListener('pageshow',bootProfile,{passive:true});
+  window.f2wWarmProfileV134=(username)=>fetchOne(username);
+})();
+// f2w-force-save:v134-instant-sitewide-live-profile:1788313000
