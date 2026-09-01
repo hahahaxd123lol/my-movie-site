@@ -3090,6 +3090,274 @@ body.f2w-users-page > header .user-search-submit {
 /* f2w-force-save:users-auth-cards-v71:1788223881 */
 </style>
 
+
+<style id="f2w-users-auth-toplayer-v73">
+/* ============================================================
+   F2W v73 — USERS AUTH POPUP IN THE BROWSER TOP LAYER
+   ============================================================ */
+#f2w-users-auth-dialog-v73 {
+  width:100vw!important;
+  max-width:none!important;
+  height:100dvh!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  overflow:hidden!important;
+}
+
+#f2w-users-auth-dialog-v73::backdrop {
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+}
+
+#f2w-users-auth-dialog-v73 > #account-modal {
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  margin:0!important;
+  padding:18px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:transparent!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  overflow:hidden!important;
+  z-index:auto!important;
+}
+
+#f2w-users-auth-dialog-v73 #account-modal .account-card {
+  position:relative!important;
+  width:min(540px,calc(100vw - 36px))!important;
+  max-width:540px!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  overflow:auto!important;
+  transform:none!important;
+  translate:none!important;
+}
+
+@media(max-width:600px){
+  #f2w-users-auth-dialog-v73 > #account-modal {
+    padding:12px!important;
+  }
+  #f2w-users-auth-dialog-v73 #account-modal .account-card {
+    width:min(94vw,500px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+}
+
+/* Result card: readable and avatar can never stretch. */
+body.f2w-users-page .f2w-user-card {
+  min-height:132px!important;
+  padding:18px 20px!important;
+  gap:18px!important;
+}
+
+body.f2w-users-page .f2w-user-avatar {
+  flex:0 0 80px!important;
+  width:80px!important;
+  min-width:80px!important;
+  max-width:80px!important;
+  height:80px!important;
+  min-height:80px!important;
+  max-height:80px!important;
+  aspect-ratio:1/1!important;
+  border-radius:50%!important;
+}
+
+body.f2w-users-page .f2w-user-avatar img {
+  width:80px!important;
+  min-width:80px!important;
+  max-width:80px!important;
+  height:80px!important;
+  min-height:80px!important;
+  max-height:80px!important;
+  aspect-ratio:1/1!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:50%!important;
+  display:block!important;
+}
+
+body.f2w-users-page .f2w-user-display {
+  font-size:1.18rem!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+}
+
+body.f2w-users-page .f2w-user-handle {
+  font-size:.88rem!important;
+  line-height:1.3!important;
+  font-weight:800!important;
+}
+
+/* f2w-force-save:users-auth-toplayer-css-v73:1788224087 */
+</style>
+
+<script id="f2w-users-auth-toplayer-v73-js">
+(() => {
+  'use strict';
+  if(window.__f2wUsersAuthTopLayerV73)return;
+  window.__f2wUsersAuthTopLayerV73=true;
+
+  let dialog=null;
+  let modal=null;
+
+  function ensure(){
+    modal=document.getElementById('account-modal');
+    if(!modal)return null;
+
+    dialog=document.getElementById('f2w-users-auth-dialog-v73');
+    if(!dialog){
+      dialog=document.createElement('dialog');
+      dialog.id='f2w-users-auth-dialog-v73';
+      document.body.appendChild(dialog);
+    }
+
+    if(modal.parentElement!==dialog){
+      dialog.appendChild(modal);
+    }
+
+    return dialog;
+  }
+
+  function mode(next){
+    const signup=next==='signup';
+    document.getElementById('account-login-tab')?.classList.toggle('active',!signup);
+    document.getElementById('account-signup-tab')?.classList.toggle('active',signup);
+
+    const usernameWrap=document.getElementById('account-username-wrap');
+    const confirmWrap=document.getElementById('account-confirm-wrap');
+    const label=document.getElementById('account-email-label');
+    const submit=document.getElementById('account-submit');
+    const password=document.getElementById('account-password');
+
+    if(usernameWrap)usernameWrap.style.display=signup?'block':'none';
+    if(confirmWrap)confirmWrap.style.display=signup?'block':'none';
+    if(label)label.textContent=signup?'EMAIL':'USERNAME OR EMAIL';
+    if(submit)submit.textContent=signup?'Create Account':'Log In';
+    if(password)password.autocomplete=signup?'new-password':'current-password';
+
+    const card=document.querySelector('#f2w-users-auth-dialog-v73 .account-card');
+    if(card){
+      try{
+        card.animate(
+          signup
+            ? [{opacity:.72,transform:'translateX(16px)'},{opacity:1,transform:'translateX(0)'}]
+            : [{opacity:.72,transform:'translateX(-16px)'},{opacity:1,transform:'translateX(0)'}],
+          {duration:220,easing:'ease-out'}
+        );
+      }catch{}
+    }
+  }
+
+  function open(next='login'){
+    const d=ensure();
+    if(!d)return false;
+
+    modal.hidden=false;
+    modal.removeAttribute('inert');
+    modal.classList.add('open','f2w-auth-v67');
+    modal.setAttribute('aria-hidden','false');
+
+    mode(next);
+
+    if(!d.open){
+      try{d.showModal();}catch{d.setAttribute('open','')}
+    }
+
+    document.documentElement.style.setProperty('overflow','hidden','important');
+    document.body.style.setProperty('overflow','hidden','important');
+
+    setTimeout(()=>{
+      const target=document.getElementById(next==='signup'?'account-username':'account-email');
+      try{target?.focus({preventScroll:true})}catch{target?.focus()}
+    },60);
+
+    return false;
+  }
+
+  function close(){
+    const d=ensure();
+    if(!d)return false;
+
+    modal?.classList.remove('open');
+    modal?.setAttribute('aria-hidden','true');
+    modal?.setAttribute('inert','');
+
+    try{if(d.open)d.close();}catch{d.removeAttribute('open')}
+
+    document.documentElement.style.removeProperty('overflow');
+    document.body.style.removeProperty('overflow');
+    return false;
+  }
+
+  window.openHeaderAuth=open;
+  window.f2wOpenAuth=open;
+  window.showAccountMode=mode;
+  window.closeAccountModal=close;
+
+  function bind(){
+    const d=ensure();
+    if(!d)return;
+
+    if(!d.dataset.f2wBoundV73){
+      d.dataset.f2wBoundV73='1';
+
+      d.addEventListener('cancel',e=>{
+        e.preventDefault();
+        close();
+      });
+
+      d.addEventListener('click',e=>{
+        if(e.target===d)close();
+      });
+
+      modal?.querySelector('.chat-close,.account-close')?.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();close();
+      },true);
+
+      document.getElementById('account-login-tab')?.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();mode('login');
+      },true);
+
+      document.getElementById('account-signup-tab')?.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();mode('signup');
+      },true);
+    }
+
+    document.querySelectorAll('#header-login-btn').forEach(btn=>{
+      if(btn.dataset.f2wV73Login)return;
+      btn.dataset.f2wV73Login='1';
+      btn.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();open('login');
+      },true);
+    });
+
+    document.querySelectorAll('#header-signup-btn').forEach(btn=>{
+      if(btn.dataset.f2wV73Signup)return;
+      btn.dataset.f2wV73Signup='1';
+      btn.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();open('signup');
+      },true);
+    });
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
+
+  new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
+})();
+// f2w-force-save:users-auth-toplayer-js-v73:1788224087
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:users:01c6b68a68 -->
@@ -3158,4 +3426,5 @@ body.f2w-users-page > header .user-search-submit {
 <!-- f2w-force-save:users-v71:1788223881 -->
 <!-- f2w-force-save:auth-button-icons-v72:1788223976:users/index.html -->
 <!-- f2w-force-save:v72-cache:1788223976:users/index.html -->
+<!-- f2w-force-save:users-v73:1788224087 -->
  
