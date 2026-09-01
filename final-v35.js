@@ -434,25 +434,52 @@ function f2wDebounce(fn,wait=140){
   async function decorateNames(){
     const selector=[
       '#profile-name',
-      '#account-user-username',
-      '[data-username]',
-      '[data-f2w-username]',
       '.chat-user',
       '.chat-username',
       '.comment-author',
       '.leaderboard-username',
-      '.profile-username',
       '.user-name',
       '.display-name',
       '.forum-v30-author',
       '.forum-v30-rank-name',
-      '.user-search-name'
+      '.user-search-name',
+      '[data-f2w-dm-display-name]'
     ].join(',');
+
+    // v90: role particles belong ONLY to display-name leaf elements.
+    // Strip old accidental role decoration from rows/cards/containers first.
+    const forbidden=[
+      '.user-search-result',
+      '.user-search-copy',
+      '.v17-dm-conversation',
+      '.v17-dm-conversation-copy',
+      '.v17-dm-conversation-meta',
+      '.f2w-user-card',
+      '.forum-v30-rank-row',
+      '.leaderboard-row',
+      '[data-username]:not(.user-search-name):not(.display-name):not(.chat-user):not(.chat-username):not(.comment-author):not(.leaderboard-username):not(.forum-v30-author):not(.forum-v30-rank-name):not([data-f2w-dm-display-name])',
+      '[data-f2w-username]:not(.user-search-name):not(.display-name):not(.chat-user):not(.chat-username):not(.comment-author):not(.leaderboard-username):not(.forum-v30-author):not(.forum-v30-rank-name):not([data-f2w-dm-display-name])'
+    ].join(',');
+
+    document.querySelectorAll(forbidden).forEach(node=>{
+      clearRoleEffect(node);
+      node.classList.remove('f2w-no-role-name');
+      node.removeAttribute('data-f2w-role-decorated');
+      node.style.removeProperty('--f2w-particles-url');
+      node.style.removeProperty('background');
+      node.style.removeProperty('background-image');
+      node.style.removeProperty('filter');
+    });
 
     const nodes=[...document.querySelectorAll(selector)].filter(Boolean);
     if(!nodes.length)return;
 
     const accountName=document.getElementById('account-user-username');
+    if(accountName){
+      clearRoleEffect(accountName);
+      accountName.classList.remove('f2w-no-role-name');
+      accountName.style.removeProperty('--f2w-particles-url');
+    }
     const accountRole=String(document.getElementById('account-user-role')?.textContent||'').trim().toLowerCase();
     if(accountName && ['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(accountRole)){
       const username=String(accountName.dataset.username||accountName.textContent||'').trim().replace(/^@/,'');
@@ -1910,4 +1937,5 @@ function f2wDebounce(fn,wait=140){
   window.addEventListener('pageshow',boot,{passive:true});
 })();
 // f2w-force-save:dm-display-name-particles-js-v89:1788227613
+// f2w-force-save:display-name-only-role-decoration-v90:1788227716
  

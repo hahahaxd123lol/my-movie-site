@@ -2362,4 +2362,139 @@ html.f2w-profile-editor-open-v87 body > header {
 }
 
 /* f2w-force-save:dm-display-name-particles-css-v89:1788227613 */
+
+/* ============================================================
+   F2W v90 — PARTICLES ON DISPLAY NAME ONLY, NO BANNERS
+   ============================================================ */
+
+/* Search autocomplete containers can NEVER sparkle. */
+body.f2w-main-page > header .user-search-result,
+body.f2w-main-page > header .user-search-copy,
+body.f2w-main-page > header .user-search-handle,
+body.f2w-main-page > header .user-search-sub,
+body.f2w-main-page > header .user-search-result > i,
+body.f2w-main-page > header .user-search-result > .user-search-avatar {
+  background-image:none!important;
+  background:none!important;
+  text-shadow:none!important;
+  filter:none!important;
+}
+
+body.f2w-main-page > header .user-search-result::before,
+body.f2w-main-page > header .user-search-result::after,
+body.f2w-main-page > header .user-search-copy::before,
+body.f2w-main-page > header .user-search-copy::after,
+body.f2w-main-page > header .user-search-handle::before,
+body.f2w-main-page > header .user-search-handle::after,
+body.f2w-main-page > header .user-search-sub::before,
+body.f2w-main-page > header .user-search-sub::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* ONLY the actual display-name span gets role colour + white particles. */
+body.f2w-main-page > header .user-search-name.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  flex:0 0 auto!important;
+  align-self:flex-start!important;
+  width:max-content!important;
+  max-width:calc(100% - 8px)!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1.08!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  background:none!important;
+  background-image:none!important;
+  filter:none!important;
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-.14em!important;
+  right:-.24em!important;
+  bottom:-.14em!important;
+  left:-.24em!important;
+  width:auto!important;
+  height:auto!important;
+  pointer-events:none!important;
+  z-index:3!important;
+
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:108% 138%!important;
+  background-color:transparent!important;
+
+  filter:grayscale(1) saturate(0) brightness(4.2) contrast(1.25)!important;
+  mix-blend-mode:screen!important;
+  opacity:.94!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Generic rows/cards/containers must never render role particles. */
+.user-search-result.f2w-role-name,
+.user-search-copy.f2w-role-name,
+.v17-dm-conversation.f2w-role-name,
+.v17-dm-conversation-copy.f2w-role-name,
+.v17-dm-conversation-meta.f2w-role-name,
+.f2w-user-card.f2w-role-name,
+.forum-v30-rank-row.f2w-role-name,
+.leaderboard-row.f2w-role-name {
+  background:none!important;
+  background-image:none!important;
+  text-shadow:none!important;
+  filter:none!important;
+  color:inherit!important;
+  -webkit-text-fill-color:inherit!important;
+}
+
+.user-search-result.f2w-role-name::before,
+.user-search-result.f2w-role-name::after,
+.user-search-copy.f2w-role-name::before,
+.user-search-copy.f2w-role-name::after,
+.v17-dm-conversation.f2w-role-name::before,
+.v17-dm-conversation.f2w-role-name::after,
+.v17-dm-conversation-copy.f2w-role-name::before,
+.v17-dm-conversation-copy.f2w-role-name::after,
+.v17-dm-conversation-meta.f2w-role-name::before,
+.v17-dm-conversation-meta.f2w-role-name::after,
+.f2w-user-card.f2w-role-name::before,
+.f2w-user-card.f2w-role-name::after,
+.forum-v30-rank-row.f2w-role-name::before,
+.forum-v30-rank-row.f2w-role-name::after,
+.leaderboard-row.f2w-role-name::before,
+.leaderboard-row.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Site-wide actual display-name targets stay compact around the word only. */
+#profile-name.f2w-role-name,
+.display-name.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.forum-v30-author.f2w-role-name,
+.forum-v30-rank-name.f2w-role-name,
+[data-f2w-dm-display-name].f2w-role-name {
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:visible!important;
+}
+
+/* f2w-force-save:display-name-only-particles-css-v90:1788227716 */
  
