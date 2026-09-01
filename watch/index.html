@@ -8744,6 +8744,489 @@ if(currentUser){
 </script>
 
 
+
+<style id="f2w-sitewide-shell-v67">
+/* ============================================================
+   F2W v67 — ONE SITE-WIDE HEADER + ONE AUTH POPUP
+   ============================================================ */
+
+/* ---------- Header: identical geometry on every desktop page ---------- */
+@media (min-width:1181px) {
+  body.f2w-main-page > header {
+    position:sticky!important;
+    top:0!important;
+    z-index:2147482000!important;
+    display:flex!important;
+    align-items:center!important;
+    min-height:74px!important;
+    height:74px!important;
+    padding:0 14px!important;
+    gap:10px!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+    translate:none!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    flex:0 0 126px!important;
+    width:126px!important;
+    min-width:126px!important;
+    max-width:126px!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    flex:0 0 auto!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    height:42px!important;
+    white-space:nowrap!important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    flex:1 1 440px!important;
+    min-width:300px!important;
+    max-width:560px!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    height:40px!important;
+    margin-left:auto!important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container {
+    width:100%!important;
+    min-width:0!important;
+    height:40px!important;
+    position:relative!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    flex:0 0 auto!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:6px!important;
+    min-height:40px!important;
+    height:40px!important;
+    margin-left:8px!important;
+    transform:none!important;
+    translate:none!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > button,
+  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap,
+  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap > button {
+    min-height:40px!important;
+    height:40px!important;
+    margin:0!important;
+    transform:none!important;
+    translate:none!important;
+    white-space:nowrap!important;
+    box-sizing:border-box!important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    min-width:112px!important;
+    padding:0 14px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+  }
+}
+
+/* ---------- Auth modal: same popup on EVERY page ---------- */
+html.f2w-auth-v67-open,
+body.f2w-auth-v67-open {
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+
+#account-modal.f2w-auth-v67 {
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483646!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:18px!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  transform:none!important;
+  translate:none!important;
+  filter:none!important;
+}
+
+#account-modal.f2w-auth-v67.open {
+  display:flex!important;
+}
+
+#account-modal.f2w-auth-v67 .account-card {
+  position:relative!important;
+  z-index:2!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  width:min(520px,calc(100vw - 36px))!important;
+  max-width:520px!important;
+  min-width:0!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:auto!important;
+  box-sizing:border-box!important;
+  border:1px solid rgba(255,61,78,.42)!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#0b1826,#07121e)!important;
+  box-shadow:0 30px 100px rgba(0,0,0,.78),0 0 34px rgba(229,9,20,.12)!important;
+  transform:none!important;
+  translate:none!important;
+}
+
+#account-modal.f2w-auth-v67 .account-header {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  min-height:66px!important;
+  padding:16px 18px!important;
+  border-bottom:1px solid #23394f!important;
+  background:#081522!important;
+}
+
+#account-modal.f2w-auth-v67 .account-title {
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  margin:0!important;
+  color:#fff!important;
+  font-size:1.05rem!important;
+  font-weight:900!important;
+  line-height:1.1!important;
+}
+
+#account-modal.f2w-auth-v67 .account-subtitle {
+  margin-top:3px!important;
+  color:#71879d!important;
+  font-size:.62rem!important;
+}
+
+#account-modal.f2w-auth-v67 .chat-close,
+#account-modal.f2w-auth-v67 .account-close {
+  position:static!important;
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  padding:0!important;
+  margin:0!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid transparent!important;
+  border-radius:9px!important;
+  background:transparent!important;
+  color:#8497ad!important;
+  font-size:1rem!important;
+  line-height:1!important;
+  cursor:pointer!important;
+  transform:none!important;
+  translate:none!important;
+}
+
+#account-modal.f2w-auth-v67 .chat-close:hover,
+#account-modal.f2w-auth-v67 .account-close:hover {
+  background:#102132!important;
+  color:#fff!important;
+}
+
+#account-modal.f2w-auth-v67 .account-body {
+  padding:16px 18px 18px!important;
+}
+
+#account-modal.f2w-auth-v67 .account-tabs {
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:5px!important;
+  margin:0 0 14px!important;
+  padding:4px!important;
+  border:1px solid #28425b!important;
+  border-radius:11px!important;
+  background:#071522!important;
+}
+
+#account-modal.f2w-auth-v67 .account-tab {
+  min-height:40px!important;
+  padding:0 10px!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  color:#8ea0b5!important;
+  font-size:.76rem!important;
+  font-weight:800!important;
+  cursor:pointer!important;
+}
+
+#account-modal.f2w-auth-v67 .account-tab.active {
+  background:#e50914!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+
+#account-modal.f2w-auth-v67 .account-label {
+  display:block!important;
+  margin:10px 0 6px!important;
+  color:#91a3b7!important;
+  font-size:.63rem!important;
+  font-weight:800!important;
+}
+
+#account-modal.f2w-auth-v67 .account-input {
+  width:100%!important;
+  min-height:42px!important;
+  padding:0 12px!important;
+  border:1px solid #29455f!important;
+  border-radius:9px!important;
+  background:#061421!important;
+  color:#fff!important;
+  font-size:.82rem!important;
+  box-sizing:border-box!important;
+  outline:none!important;
+}
+
+#account-modal.f2w-auth-v67 .account-input:focus {
+  border-color:#e50914!important;
+  box-shadow:0 0 0 2px rgba(229,9,20,.12)!important;
+}
+
+#account-modal.f2w-auth-v67 .account-primary {
+  width:100%!important;
+  min-height:42px!important;
+  margin-top:14px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:#e50914!important;
+  color:#fff!important;
+  font-size:.8rem!important;
+  font-weight:900!important;
+}
+
+#account-modal.f2w-auth-v67 .f2w-oauth-block {
+  margin-top:14px!important;
+}
+
+@media(max-width:600px) {
+  #account-modal.f2w-auth-v67 {
+    padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))!important;
+  }
+  #account-modal.f2w-auth-v67 .account-card {
+    width:min(94vw,480px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+    border-radius:15px!important;
+  }
+}
+
+/* f2w-force-save:sitewide-shell-css-v67:1788222795 */
+</style>
+
+<script id="f2w-sitewide-shell-v67-js">
+(() => {
+  'use strict';
+  if(window.__f2wSitewideShellV67)return;
+  window.__f2wSitewideShellV67=true;
+
+  let savedY=0;
+  let locked=false;
+
+  function modal(){
+    return document.getElementById('account-modal');
+  }
+
+  function promoteModal(){
+    const m=modal();
+    if(!m)return null;
+
+    // Critical: keep the popup OUTSIDE page/header stacking contexts.
+    if(m.parentElement!==document.body){
+      document.body.appendChild(m);
+    }
+
+    m.classList.add('f2w-auth-v67');
+    return m;
+  }
+
+  function lock(){
+    if(locked)return;
+    savedY=window.scrollY||0;
+    locked=true;
+    document.documentElement.classList.add('f2w-auth-v67-open');
+    document.body.classList.add('f2w-auth-v67-open');
+    document.body.style.setProperty('position','fixed','important');
+    document.body.style.setProperty('top',`-${savedY}px`,'important');
+    document.body.style.setProperty('left','0','important');
+    document.body.style.setProperty('right','0','important');
+    document.body.style.setProperty('width','100%','important');
+  }
+
+  function unlock(){
+    if(!locked)return;
+    locked=false;
+    document.documentElement.classList.remove('f2w-auth-v67-open');
+    document.body.classList.remove('f2w-auth-v67-open');
+    document.body.style.removeProperty('position');
+    document.body.style.removeProperty('top');
+    document.body.style.removeProperty('left');
+    document.body.style.removeProperty('right');
+    document.body.style.removeProperty('width');
+    window.scrollTo({top:savedY,left:0,behavior:'auto'});
+  }
+
+  function mode(next){
+    const signup=next==='signup';
+    document.getElementById('account-login-tab')?.classList.toggle('active',!signup);
+    document.getElementById('account-signup-tab')?.classList.toggle('active',signup);
+
+    const usernameWrap=document.getElementById('account-username-wrap');
+    const confirmWrap=document.getElementById('account-confirm-wrap');
+    const label=document.getElementById('account-email-label');
+    const submit=document.getElementById('account-submit');
+    const pw=document.getElementById('account-password');
+
+    if(usernameWrap)usernameWrap.style.display=signup?'block':'none';
+    if(confirmWrap)confirmWrap.style.display=signup?'block':'none';
+    if(label)label.textContent=signup?'EMAIL':'USERNAME OR EMAIL';
+    if(submit)submit.textContent=signup?'Create Account':'Log In';
+    if(pw)pw.autocomplete=signup?'new-password':'current-password';
+
+    document.querySelectorAll('#account-modal .f2w-oauth-btn.google .f2w-oauth-label')
+      .forEach(el=>el.textContent=signup?'Sign up with Google':'Sign in with Google');
+    document.querySelectorAll('#account-modal .f2w-oauth-btn.discord .f2w-oauth-label')
+      .forEach(el=>el.textContent=signup?'Sign up with Discord':'Sign in with Discord');
+
+    const card=modal()?.querySelector('.account-card');
+    if(card){
+      card.animate(
+        signup
+          ? [{opacity:.75,transform:'translateX(16px)'},{opacity:1,transform:'translateX(0)'}]
+          : [{opacity:.75,transform:'translateX(-16px)'},{opacity:1,transform:'translateX(0)'}],
+        {duration:220,easing:'ease-out'}
+      );
+    }
+  }
+
+  function open(next='login'){
+    const m=promoteModal();
+    if(!m)return false;
+
+    m.removeAttribute('inert');
+    m.hidden=false;
+    m.classList.add('open');
+    m.setAttribute('aria-hidden','false');
+    lock();
+    mode(next);
+
+    setTimeout(()=>{
+      const target=document.getElementById(next==='signup'?'account-username':'account-email');
+      try{target?.focus({preventScroll:true})}catch{target?.focus()}
+    },70);
+
+    return false;
+  }
+
+  function close(){
+    const m=promoteModal();
+    if(!m)return false;
+    m.classList.remove('open');
+    m.setAttribute('aria-hidden','true');
+    m.setAttribute('inert','');
+    unlock();
+    return false;
+  }
+
+  window.openHeaderAuth=open;
+  window.f2wOpenAuth=open;
+  window.showAccountMode=mode;
+  window.closeAccountModal=close;
+
+  function bind(){
+    const m=promoteModal();
+    if(m && !m.dataset.f2wV67Bound){
+      m.dataset.f2wV67Bound='1';
+
+      m.querySelector('.chat-close,.account-close')?.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();close();
+      },true);
+
+      m.addEventListener('click',e=>{
+        if(e.target===m){e.preventDefault();close();}
+      });
+
+      document.getElementById('account-login-tab')?.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();mode('login');
+      },true);
+
+      document.getElementById('account-signup-tab')?.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();mode('signup');
+      },true);
+
+      if(!m.classList.contains('open'))m.setAttribute('inert','');
+    }
+
+    document.querySelectorAll('#header-login-btn').forEach(btn=>{
+      if(btn.dataset.f2wV67Login)return;
+      btn.dataset.f2wV67Login='1';
+      btn.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();open('login');
+      },true);
+    });
+
+    document.querySelectorAll('#header-signup-btn').forEach(btn=>{
+      if(btn.dataset.f2wV67Signup)return;
+      btn.dataset.f2wV67Signup='1';
+      btn.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();open('signup');
+      },true);
+    });
+
+    const watch=document.getElementById('watch-login-overlay');
+    if(watch){
+      const buttons=watch.querySelectorAll('.watch-login-actions button');
+      if(buttons[0]&&!buttons[0].dataset.f2wV67){
+        buttons[0].dataset.f2wV67='1';
+        buttons[0].addEventListener('click',e=>{
+          e.preventDefault();e.stopImmediatePropagation();open('login');
+        },true);
+      }
+      if(buttons[1]&&!buttons[1].dataset.f2wV67){
+        buttons[1].dataset.f2wV67='1';
+        buttons[1].addEventListener('click',e=>{
+          e.preventDefault();e.stopImmediatePropagation();open('signup');
+        },true);
+      }
+    }
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
+
+  window.addEventListener('pageshow',bind,{passive:true});
+  new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
+})();
+// f2w-force-save:sitewide-shell-js-v67:1788222795
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
@@ -8811,4 +9294,5 @@ if(currentUser){
 <!-- f2w-force-save:v64-cache:1788222358:watch/index.html -->
 <!-- f2w-force-save:v65-search-cache:1788222474:watch/index.html -->
 <!-- f2w-force-save:v66-arrow-cache:1788222669:watch/index.html -->
+<!-- f2w-force-save:v67-page:1788222795:watch/index.html -->
  
