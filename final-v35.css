@@ -1527,4 +1527,80 @@ body.f2w-main-page > header
 }
 
 /* f2w-force-save:tight-white-role-particles-v78:1788224965 */
+
+/* ============================================================
+   F2W v80 — FORUM HERO BUTTONS: EXACT SAME SIZE / BASELINE
+   ============================================================ */
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions {
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:10px!important;
+}
+
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-primary,
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-secondary {
+  flex:0 0 160px!important;
+  width:160px!important;
+  min-width:160px!important;
+  max-width:160px!important;
+
+  height:44px!important;
+  min-height:44px!important;
+  max-height:44px!important;
+
+  padding:0 14px!important;
+  margin:0!important;
+
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-self:center!important;
+
+  box-sizing:border-box!important;
+  line-height:1!important;
+  font-size:.78rem!important;
+  font-weight:850!important;
+  white-space:nowrap!important;
+  vertical-align:middle!important;
+
+  border-width:1px!important;
+  border-style:solid!important;
+  border-radius:10px!important;
+
+  transform:none!important;
+  translate:none!important;
+  position:relative!important;
+  top:auto!important;
+  bottom:auto!important;
+}
+
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-primary > i,
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-secondary > i {
+  width:14px!important;
+  min-width:14px!important;
+  max-width:14px!important;
+  margin:0!important;
+  line-height:1!important;
+  text-align:center!important;
+  flex:0 0 14px!important;
+}
+
+@media(max-width:700px){
+  body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions {
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+  }
+
+  body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-primary,
+  body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-secondary {
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+}
+
+/* f2w-force-save:forum-hero-buttons-v80:1788225203 */
  
