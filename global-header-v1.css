@@ -1964,4 +1964,61 @@ body.f2w-main-page > header .chat-button {
   contain:layout style!important;
 }
 /* f2w-force-save:chat-preload-style-v50:1788220357 */
+
+
+/* ============================================================
+   F2W v56 — SITE-WIDE AUTH MODAL
+   ============================================================ */
+.f2w-auth-modal-v56,
+#account-modal {
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483500!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+}
+#account-modal.open {
+  display:flex!important;
+}
+.f2w-auth-card-v56 {
+  width:min(520px,calc(100vw - 28px))!important;
+  max-width:520px!important;
+  max-height:calc(100dvh - 36px)!important;
+  overflow:auto!important;
+}
+.f2w-auth-slider-v56 {
+  overflow:hidden!important;
+}
+.f2w-auth-pane-v56 {
+  transition:transform .2s ease,opacity .2s ease!important;
+}
+.f2w-auth-pane-v56.swipe-left {
+  transform:translateX(-10px)!important;
+  opacity:.7!important;
+}
+.f2w-auth-pane-v56.swipe-right {
+  transform:translateX(10px)!important;
+  opacity:.7!important;
+}
+.f2w-auth-hint-v56 {
+  margin-top:5px!important;
+  color:#687d95!important;
+  font-size:.64rem!important;
+}
+html.f2w-auth-open-v56 {
+  overflow:hidden!important;
+}
+@media(max-width:600px){
+  .f2w-auth-card-v56,
+  #account-modal .account-card {
+    width:min(94vw,480px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+  #account-modal {
+    padding:12px!important;
+  }
+}
+/* f2w-force-save:sitewide-auth-css-v56:1788221054 */
  

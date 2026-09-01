@@ -456,4 +456,291 @@
   },{capture:true,passive:true});
 })();
 // f2w-force-save:chat-preload-v50:1788220357
+
+/* ============================================================
+   F2W v56 — SITE-WIDE AUTH RESTORE
+   One working Login/Create Account flow on every page.
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wAuthRestoreV56)return;
+  window.__f2wAuthRestoreV56=true;
+
+  const SUPABASE_URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const SUPABASE_KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  let fallbackClient=null;
+  let mode='login';
+  let swipeStartX=null;
+
+  function client(){
+    try{if(window.chatSupabase?.auth)return window.chatSupabase;}catch{}
+    try{if(window.f2wSupabase?.auth)return window.f2wSupabase;}catch{}
+    try{if(window.supabaseClient?.auth)return window.supabaseClient;}catch{}
+    try{
+      if(!fallbackClient && window.supabase?.createClient){
+        fallbackClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+      }
+    }catch{}
+    return fallbackClient;
+  }
+
+  function ensureModal(){
+    let modal=document.getElementById('account-modal');
+    if(modal)return modal;
+
+    modal=document.createElement('div');
+    modal.className='account-modal f2w-auth-modal-v56';
+    modal.id='account-modal';
+    modal.innerHTML=`
+      <div class="account-card f2w-auth-card-v56" role="dialog" aria-modal="true" aria-labelledby="f2w-auth-title-v56">
+        <div class="account-header">
+          <div>
+            <div class="account-title" id="f2w-auth-title-v56"><i class="fa-solid fa-user"></i> Account</div>
+            <div class="account-subtitle">FLIX2WATCH ACCOUNT</div>
+          </div>
+          <button class="chat-close f2w-auth-close-v56" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="account-body">
+          <div id="account-logged-out">
+            <div class="account-tabs f2w-auth-tabs-v56">
+              <button class="account-tab active" id="account-login-tab" type="button">Log In</button>
+              <button class="account-tab" id="account-signup-tab" type="button">Create Account</button>
+            </div>
+            <div class="f2w-auth-slider-v56">
+              <div class="f2w-auth-pane-v56" id="f2w-auth-pane-v56">
+                <div id="account-username-wrap" style="display:none">
+                  <label class="account-label">USERNAME</label>
+                  <input class="account-input" id="account-username" maxlength="30" autocomplete="username" placeholder="Choose your username">
+                  <div class="f2w-auth-hint-v56">2–30 letters or numbers only.</div>
+                </div>
+                <label class="account-label" id="account-email-label">USERNAME OR EMAIL</label>
+                <input class="account-input" id="account-email" type="text" autocomplete="username" placeholder="Username or email">
+                <label class="account-label">PASSWORD</label>
+                <input class="account-input" id="account-password" type="password" autocomplete="current-password" placeholder="Password">
+                <div id="account-confirm-wrap" style="display:none">
+                  <label class="account-label">CONFIRM PASSWORD</label>
+                  <input class="account-input" id="account-confirm" type="password" autocomplete="new-password" placeholder="Repeat password">
+                </div>
+                <button class="account-primary" id="account-submit" type="button">Log In</button>
+                <div class="f2w-oauth-block">
+                  <div class="f2w-oauth-divider"><span>or continue with</span></div>
+                  <div class="f2w-oauth-grid">
+                    <button class="f2w-oauth-btn google" type="button" data-provider="google"><i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span></button>
+                    <button class="f2w-oauth-btn discord" type="button" data-provider="discord"><i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span></button>
+                  </div>
+                </div>
+                <div class="account-message" id="account-message"></div>
+              </div>
+            </div>
+          </div>
+          <div id="account-logged-in" style="display:none"></div>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    bindModal(modal);
+    return modal;
+  }
+
+  function setMessage(message,error=false){
+    const el=document.getElementById('account-message');
+    if(!el)return;
+    el.textContent=String(message||'');
+    el.style.color=error?'#ff7782':'#94a3b8';
+  }
+
+  function setMode(next){
+    mode=next==='signup'?'signup':'login';
+    const login=document.getElementById('account-login-tab');
+    const signup=document.getElementById('account-signup-tab');
+    const userWrap=document.getElementById('account-username-wrap');
+    const confirmWrap=document.getElementById('account-confirm-wrap');
+    const emailLabel=document.getElementById('account-email-label');
+    const submit=document.getElementById('account-submit');
+    const password=document.getElementById('account-password');
+
+    login?.classList.toggle('active',mode==='login');
+    signup?.classList.toggle('active',mode==='signup');
+    if(userWrap)userWrap.style.display=mode==='signup'?'block':'none';
+    if(confirmWrap)confirmWrap.style.display=mode==='signup'?'block':'none';
+    if(emailLabel)emailLabel.textContent=mode==='signup'?'EMAIL':'USERNAME OR EMAIL';
+    if(submit)submit.textContent=mode==='signup'?'Create Account':'Log In';
+    if(password)password.autocomplete=mode==='signup'?'new-password':'current-password';
+
+    document.querySelectorAll('#account-modal .f2w-oauth-btn.google .f2w-oauth-label')
+      .forEach(el=>el.textContent=mode==='signup'?'Sign up with Google':'Sign in with Google');
+    document.querySelectorAll('#account-modal .f2w-oauth-btn.discord .f2w-oauth-label')
+      .forEach(el=>el.textContent=mode==='signup'?'Sign up with Discord':'Sign in with Discord');
+
+    const pane=document.getElementById('f2w-auth-pane-v56');
+    if(pane){
+      pane.classList.remove('swipe-left','swipe-right');
+      pane.classList.add(mode==='signup'?'swipe-left':'swipe-right');
+      setTimeout(()=>pane.classList.remove('swipe-left','swipe-right'),220);
+    }
+    setMessage('');
+  }
+
+  function openAuth(next='login'){
+    const modal=ensureModal();
+    setMode(next);
+    modal.classList.add('open');
+    modal.removeAttribute('hidden');
+    modal.style.display='flex';
+    document.documentElement.classList.add('f2w-auth-open-v56');
+    setTimeout(()=>{
+      const id=mode==='signup'?'account-username':'account-email';
+      document.getElementById(id)?.focus();
+    },60);
+  }
+
+  function closeAuth(){
+    const modal=document.getElementById('account-modal');
+    modal?.classList.remove('open');
+    if(modal)modal.style.removeProperty('display');
+    document.documentElement.classList.remove('f2w-auth-open-v56');
+  }
+
+  async function submit(){
+    const c=client();
+    if(!c?.auth){
+      setMessage('Authentication is still loading. Try again in a moment.',true);
+      return;
+    }
+
+    const email=String(document.getElementById('account-email')?.value||'').trim();
+    const password=String(document.getElementById('account-password')?.value||'');
+    const confirm=String(document.getElementById('account-confirm')?.value||'');
+    const username=String(document.getElementById('account-username')?.value||'').trim();
+    const button=document.getElementById('account-submit');
+
+    if(mode==='signup'){
+      if(!/^[A-Za-z0-9]{2,30}$/.test(username)){
+        setMessage('Username must be 2–30 letters or numbers.',true);return;
+      }
+      if(!email.includes('@')){setMessage('Enter a valid email address.',true);return;}
+      if(password.length<6){setMessage('Password must be at least 6 characters.',true);return;}
+      if(password!==confirm){setMessage('Passwords do not match.',true);return;}
+    }else{
+      if(!email||!password){setMessage('Enter your username/email and password.',true);return;}
+    }
+
+    if(button)button.disabled=true;
+    setMessage(mode==='signup'?'Creating account…':'Logging in…');
+
+    try{
+      if(mode==='login'){
+        let result;
+        if(typeof window.f2wLoginIdentifier==='function'){
+          result=await window.f2wLoginIdentifier(email,password);
+        }else{
+          result=await c.auth.signInWithPassword({email,password});
+        }
+        if(result?.error)throw result.error;
+        setMessage('Logged in.');
+        setTimeout(()=>location.reload(),180);
+      }else{
+        const guard=window.__f2wAbuseGuard;
+        if(guard?.preflight)await guard.preflight();
+
+        const {data,error}=await c.auth.signUp({
+          email,
+          password,
+          options:{data:{username,chat_alias:username}}
+        });
+        if(error)throw error;
+
+        if(data?.session){
+          try{
+            await c.from('profiles').upsert({
+              user_id:data.user.id,
+              username,
+              display_name:username
+            },{onConflict:'user_id'});
+          }catch{}
+          setMessage('Account created.');
+          setTimeout(()=>location.reload(),220);
+        }else{
+          setMessage('Account created. Check your email if confirmation is required.');
+        }
+      }
+    }catch(error){
+      setMessage(error?.message||'Authentication failed.',true);
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
+  async function oauth(provider){
+    const c=client();
+    if(!c?.auth){setMessage('Authentication is still loading.',true);return;}
+    try{
+      const guard=window.__f2wAbuseGuard;
+      if(guard?.preflight)await guard.preflight();
+      const {error}=await c.auth.signInWithOAuth({
+        provider,
+        options:{redirectTo:location.href}
+      });
+      if(error)throw error;
+    }catch(error){
+      setMessage(error?.message||`${provider} login failed.`,true);
+    }
+  }
+
+  function bindModal(modal){
+    if(!modal||modal.dataset.f2wAuthBoundV56)return;
+    modal.dataset.f2wAuthBoundV56='1';
+
+    modal.addEventListener('click',e=>{
+      if(e.target===modal)closeAuth();
+    });
+    modal.querySelector('.f2w-auth-close-v56,.chat-close')?.addEventListener('click',e=>{e.preventDefault();closeAuth();});
+    modal.querySelector('#account-login-tab')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();setMode('login');},true);
+    modal.querySelector('#account-signup-tab')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();setMode('signup');},true);
+    modal.querySelector('#account-submit')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();submit();},true);
+
+    modal.querySelectorAll('.f2w-oauth-btn').forEach(btn=>{
+      btn.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();
+        const provider=btn.dataset.provider || (btn.classList.contains('discord')?'discord':'google');
+        oauth(provider);
+      },true);
+    });
+
+    const card=modal.querySelector('.account-card');
+    card?.addEventListener('touchstart',e=>{swipeStartX=e.touches?.[0]?.clientX??null;},{passive:true});
+    card?.addEventListener('touchend',e=>{
+      if(swipeStartX==null)return;
+      const end=e.changedTouches?.[0]?.clientX??swipeStartX;
+      const dx=end-swipeStartX;swipeStartX=null;
+      if(Math.abs(dx)<55)return;
+      setMode(dx<0?'signup':'login');
+    },{passive:true});
+  }
+
+  // This is the missing global function all header buttons already call.
+  window.openHeaderAuth=openAuth;
+  window.openAccountModal=window.openAccountModal || (()=>openAuth('login'));
+  window.showAccountMode=window.showAccountMode || setMode;
+  window.closeAccountModal=window.closeAccountModal || closeAuth;
+
+  function bindSitewide(){
+    const existing=document.getElementById('account-modal');
+    if(existing)bindModal(existing);
+
+    document.querySelectorAll('#header-login-btn').forEach(btn=>{
+      btn.onclick=null;
+      btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();openAuth('login');},true);
+    });
+    document.querySelectorAll('#header-signup-btn').forEach(btn=>{
+      btn.onclick=null;
+      btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();openAuth('signup');},true);
+    });
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindSitewide,{once:true});
+  else bindSitewide();
+
+  window.addEventListener('pageshow',bindSitewide,{passive:true});
+})();
+// f2w-force-save:sitewide-auth-restore-v56:1788221054
  
