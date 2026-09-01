@@ -1342,4 +1342,314 @@
   new MutationObserver(fixArrow).observe(document.documentElement,{childList:true,subtree:true});
 })();
 // f2w-force-save:user-search-arrow-js-v66:1788222669
+
+/* ============================================================
+   F2W v70 — SITE-WIDE REAL ACCOUNT STATE
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wAccountStateV70)return;
+  window.__f2wAccountStateV70=true;
+
+  const SUPABASE_URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const SUPABASE_KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  const OWNER_ID='f5454804-a2a6-4602-9086-51cf51f11c77';
+  let client=null;
+  let lastUser=null;
+
+  function db(){
+    try{if(window.chatSupabase?.auth)return window.chatSupabase;}catch{}
+    try{if(window.f2wSupabase?.auth)return window.f2wSupabase;}catch{}
+    try{if(window.supabaseClient?.auth)return window.supabaseClient;}catch{}
+    try{
+      if(!client && window.supabase?.createClient){
+        client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+      }
+    }catch{}
+    return client;
+  }
+
+  function ensureLoggedInMarkup(){
+    const host=document.getElementById('account-logged-in');
+    if(!host)return null;
+
+    // Keep the richer canonical account box if it already exists.
+    if(document.getElementById('account-user-email') &&
+       document.getElementById('account-user-username') &&
+       document.getElementById('account-user-role')) return host;
+
+    host.innerHTML=`
+      <div class="account-user-box">
+        <div class="account-user-avatar"><i class="fa-solid fa-user"></i></div>
+        <div>
+          <div class="account-user-email" id="account-user-email">Signed-in user</div>
+          <div class="account-user-username" id="account-user-username">@username</div>
+          <div class="account-role" id="account-user-role">MEMBER</div>
+        </div>
+      </div>
+
+      <div class="account-username-change" id="account-username-change-box">
+        <div class="account-username-change-head">
+          <div>
+            <strong><i class="fa-solid fa-at"></i> CHANGE USERNAME</strong>
+            <span>You can change it whenever you want.</span>
+          </div>
+        </div>
+        <div class="account-username-change-row">
+          <input class="account-input" id="account-change-username" type="text"
+            inputmode="text" pattern="[A-Za-z0-9]+" minlength="2" maxlength="30"
+            autocomplete="off" placeholder="New username">
+          <button class="account-secondary account-change-username-btn" type="button"
+            onclick="changeFlix2WatchUsername()">Update Username</button>
+        </div>
+        <div class="account-username-change-note">
+          2–30 English letters or numbers only. Your old usernames may stay reserved,
+          and account restrictions follow your account.
+        </div>
+      </div>
+
+      <button class="account-secondary" id="account-support-btn" type="button"
+        onclick="window.location.href='/support/'">
+        <i class="fa-solid fa-life-ring"></i> Support
+      </button>
+      <button class="account-secondary" id="account-staff-control" type="button" hidden>
+        <i class="fa-solid fa-shield-halved"></i> Staff Control Center
+      </button>
+      <button class="account-secondary" type="button" onclick="signOutAccount()">Log Out</button>
+    `;
+    return host;
+  }
+
+  async function resolveRole(user, username){
+    if(!user)return {key:'member',label:'MEMBER'};
+    if(String(user.id)===OWNER_ID)return {key:'owner',label:'OWNER'};
+
+    const c=db();
+    try{
+      const {data}=await c.rpc('get_staff_context');
+      const role=String(data?.role||'').toLowerCase();
+      if(role==='staff')return {key:'staff',label:'STAFF'};
+      if(role==='owner')return {key:'owner',label:'OWNER'};
+    }catch{}
+
+    if(username){
+      try{
+        const {data}=await c.rpc('get_public_profile_role',{p_username:username});
+        const row=Array.isArray(data)?data[0]:data;
+        const role=String(row?.top_role||row?.role_key||row?.role||'').toLowerCase();
+        if(role)return {key:role,label:role.toUpperCase()};
+      }catch{}
+    }
+
+    return {key:'member',label:'MEMBER'};
+  }
+
+  async function readProfile(user){
+    if(!user)return null;
+    const c=db();
+    if(!c?.from)return null;
+    try{
+      const {data}=await c.from('profiles')
+        .select('username,display_name')
+        .eq('user_id',user.id)
+        .maybeSingle();
+      return data||null;
+    }catch{return null}
+  }
+
+  function setHeaderState(user, roleKey){
+    const logged=Boolean(user);
+    document.body?.classList.toggle('f2w-authenticated',logged);
+
+    const login=document.getElementById('header-login-btn');
+    const signup=document.getElementById('header-signup-btn');
+    const fav=document.getElementById('favorites-nav-btn');
+    const profile=document.getElementById('profile-nav-btn');
+    const support=document.getElementById('support-nav-btn');
+    const account=document.getElementById('account-btn');
+    const notify=document.getElementById('notification-wrap');
+    const staff=document.getElementById('staff-control-nav');
+
+    if(login)login.style.display=logged?'none':'flex';
+    if(signup)signup.style.display=logged?'none':'flex';
+
+    [fav,profile,support].forEach(el=>{
+      if(el)el.style.display='flex';
+    });
+
+    if(account){
+      account.style.display=logged?'flex':'none';
+      if(logged){
+        account.innerHTML=roleKey==='owner'
+          ? '<i class="fa-solid fa-crown"></i> Owner'
+          : '<i class="fa-regular fa-user"></i> Account';
+      }
+    }
+
+    if(notify)notify.style.display=logged?'block':'none';
+
+    const canStaff=['owner','staff'].includes(roleKey);
+    if(staff){
+      staff.hidden=!canStaff;
+      staff.style.display=canStaff?'flex':'none';
+      if(canStaff){
+        staff.removeAttribute('aria-disabled');
+        staff.removeAttribute('tabindex');
+        staff.onclick=()=>{location.href='/staff/'};
+      }
+    }
+  }
+
+  async function refresh(){
+    const c=db();
+    if(!c?.auth)return null;
+
+    let session=null;
+    try{
+      const {data}=await c.auth.getSession();
+      session=data?.session||null;
+    }catch{}
+
+    const user=session?.user||null;
+    lastUser=user;
+
+    const loggedOut=document.getElementById('account-logged-out');
+    const loggedIn=ensureLoggedInMarkup();
+
+    if(!user){
+      if(loggedOut)loggedOut.style.display='block';
+      if(loggedIn)loggedIn.style.display='none';
+      setHeaderState(null,'member');
+      return null;
+    }
+
+    const profile=await readProfile(user);
+    const username=String(
+      profile?.username ||
+      user.user_metadata?.username ||
+      user.user_metadata?.chat_alias ||
+      ''
+    ).trim().replace(/^@/,'');
+
+    const role=await resolveRole(user,username);
+
+    if(loggedOut)loggedOut.style.display='none';
+    if(loggedIn)loggedIn.style.display='block';
+
+    const emailEl=document.getElementById('account-user-email');
+    const usernameEl=document.getElementById('account-user-username');
+    const roleEl=document.getElementById('account-user-role');
+    const changeInput=document.getElementById('account-change-username');
+    const staffBtn=document.getElementById('account-staff-control');
+    const supportBtn=document.getElementById('account-support-btn');
+
+    if(emailEl)emailEl.textContent=user.email||'Signed-in user';
+    if(usernameEl){
+      usernameEl.textContent=username?`@${username}`:'@username';
+      usernameEl.dataset.username=username;
+      usernameEl.dataset.f2wUsername=username;
+    }
+    if(roleEl){
+      roleEl.textContent=role.label;
+      roleEl.dataset.role=role.key;
+    }
+    if(changeInput && !changeInput.matches(':focus'))changeInput.value=username;
+    if(supportBtn){
+      supportBtn.hidden=false;
+      supportBtn.style.removeProperty('display');
+    }
+    if(staffBtn){
+      const allowed=['owner','staff'].includes(role.key);
+      staffBtn.hidden=!allowed;
+      staffBtn.style.display=allowed?'flex':'none';
+      staffBtn.onclick=()=>{location.href='/staff/'};
+    }
+
+    setHeaderState(user,role.key);
+
+    try{window.refreshAccountIdentityV54?.()}catch{}
+    try{window.decorateNames?.()}catch{}
+
+    return {user,profile,username,role};
+  }
+
+  function openModalVisual(){
+    const m=document.getElementById('account-modal');
+    if(!m)return;
+    m.removeAttribute('inert');
+    m.hidden=false;
+    m.classList.add('open','f2w-auth-v67');
+    m.setAttribute('aria-hidden','false');
+
+    // Use the established v67 background lock when available.
+    document.documentElement.classList.add('f2w-auth-v67-open');
+    document.body.classList.add('f2w-auth-v67-open');
+  }
+
+  window.openAccountModal=async function(){
+    const state=await refresh();
+    if(!state?.user){
+      try{window.openHeaderAuth?.('login')}catch{}
+      return false;
+    }
+    openModalVisual();
+    return false;
+  };
+
+  window.signOutAccount=async function(){
+    const c=db();
+    if(!c?.auth)return;
+    try{await c.auth.signOut();}catch{}
+    try{
+      const m=document.getElementById('account-modal');
+      m?.classList.remove('open');
+      m?.setAttribute('aria-hidden','true');
+    }catch{}
+    location.href='/home/';
+  };
+
+  window.changeFlix2WatchUsername=async function(){
+    const c=db();
+    const input=document.getElementById('account-change-username');
+    const next=String(input?.value||'').trim();
+    if(!/^[A-Za-z0-9]{2,30}$/.test(next)){
+      if(input){
+        input.setCustomValidity('Use 2–30 English letters or numbers.');
+        input.reportValidity();
+        input.setCustomValidity('');
+      }
+      return;
+    }
+
+    const {data:{session}}=await c.auth.getSession();
+    const user=session?.user;
+    if(!user)return window.openHeaderAuth?.('login');
+
+    try{
+      const {error}=await c.from('profiles').update({username:next}).eq('user_id',user.id);
+      if(error)throw error;
+      try{
+        await c.auth.updateUser({data:{username:next,chat_alias:next}});
+      }catch{}
+      await refresh();
+    }catch(error){
+      alert(error?.message||'Could not update username.');
+    }
+  };
+
+  async function boot(){
+    await refresh();
+    const c=db();
+    try{
+      c?.auth?.onAuthStateChange?.(()=>setTimeout(refresh,0));
+    }catch{}
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+
+  window.addEventListener('pageshow',()=>setTimeout(refresh,0),{passive:true});
+  window.f2wRefreshAccountV70=refresh;
+})();
+// f2w-force-save:account-state-v70:1788223711
  

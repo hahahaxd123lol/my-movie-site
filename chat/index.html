@@ -6464,7 +6464,7 @@ if(currentUser){
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=64-1788222358" defer></script>
+  <script src="/final-v35.js?v=70-1788223711" defer></script>
 
   <!-- F2W dedicated chat route bootstrap -->
 
@@ -8122,6 +8122,198 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-hardlock-v69:1788223204 */
 </style>
 
+
+<style id="f2w-account-canonical-v70">
+/* F2W v70 — canonical Account/Auth card on every page */
+#account-modal.f2w-auth-v67,
+#account-modal.f2w-auth-modal-open-v60,
+#account-modal.open {
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483646!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  overflow:hidden!important;
+}
+
+#account-modal.open {
+  display:flex!important;
+}
+
+#account-modal .account-card {
+  position:relative!important;
+  width:min(540px,calc(100vw - 36px))!important;
+  max-width:540px!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  border:1px solid rgba(255,64,82,.38)!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#0b1826,#07121e)!important;
+  box-shadow:0 30px 100px rgba(0,0,0,.78),0 0 32px rgba(229,9,20,.10)!important;
+  overflow:auto!important;
+  transform:none!important;
+}
+
+#account-modal .account-header {
+  min-height:66px!important;
+  padding:16px 18px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  border-bottom:1px solid #23394f!important;
+  background:#081522!important;
+}
+
+#account-modal .account-title {
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  color:#fff!important;
+  font-size:1.05rem!important;
+  font-weight:900!important;
+}
+
+#account-modal .account-body {
+  padding:16px 18px 18px!important;
+}
+
+#account-modal .account-user-box {
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  padding:12px!important;
+  border:1px solid #24394f!important;
+  border-radius:11px!important;
+  background:#0b1927!important;
+}
+
+#account-modal .account-user-avatar {
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:10px!important;
+  background:#142536!important;
+  color:#ff2637!important;
+}
+
+#account-modal .account-user-email {
+  color:#fff!important;
+  font-size:.78rem!important;
+  font-weight:850!important;
+}
+
+#account-modal .account-user-username {
+  margin-top:2px!important;
+  color:#a8b8c9!important;
+  font-size:.71rem!important;
+  font-weight:750!important;
+}
+
+#account-modal .account-role {
+  margin-top:3px!important;
+  color:#ffbf3f!important;
+  font-size:.60rem!important;
+  font-weight:900!important;
+  letter-spacing:.07em!important;
+}
+
+#account-modal .account-username-change {
+  margin:13px 0!important;
+  padding:12px!important;
+  border:1px solid #24394f!important;
+  border-radius:11px!important;
+  background:#091725!important;
+}
+
+#account-modal .account-username-change-row {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:8px!important;
+}
+
+#account-modal .account-input {
+  min-height:42px!important;
+  width:100%!important;
+  padding:0 12px!important;
+  border:1px solid #29455f!important;
+  border-radius:9px!important;
+  background:#061421!important;
+  color:#fff!important;
+  box-sizing:border-box!important;
+}
+
+#account-modal .account-secondary,
+#account-modal .account-primary {
+  min-height:40px!important;
+  border-radius:9px!important;
+  font-size:.76rem!important;
+  font-weight:850!important;
+}
+
+#account-modal #account-support-btn,
+#account-modal #account-staff-control {
+  width:100%!important;
+  margin-top:8px!important;
+}
+
+@media(max-width:600px){
+  #account-modal {
+    padding:12px!important;
+  }
+  #account-modal .account-card {
+    width:min(94vw,500px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+  #account-modal .account-username-change-row {
+    grid-template-columns:1fr!important;
+  }
+}
+/* f2w-force-save:account-canonical-css-v70:1788223711 */
+</style>
+
+
+<style id="f2w-header-spacing-v70">
+@media (min-width:1181px) and (max-width:1600px) {
+  body.f2w-main-page > header > .header-tools {
+    grid-template-columns:max-content minmax(220px,300px) 612px!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster {
+    width:612px!important;
+    min-width:612px!important;
+    max-width:612px!important;
+    grid-template-columns:90px 72px 66px 68px 72px 92px 116px!important;
+    gap:6px!important;
+  }
+  body.f2w-main-page > header #notification-wrap {
+    margin-right:0!important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    margin-left:0!important;
+  }
+}
+@media (min-width:1601px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    gap:8px!important;
+    width:794px!important;
+    min-width:794px!important;
+    max-width:794px!important;
+  }
+  body.f2w-main-page > header > .header-tools {
+    grid-template-columns:max-content minmax(340px,460px) 794px!important;
+  }
+}
+/* f2w-force-save:header-spacing-v70:1788223711 */
+</style>
+
 </body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
@@ -8196,4 +8388,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v66-arrow-cache:1788222669:chat/index.html -->
 <!-- f2w-force-save:v67-page:1788222795:chat/index.html -->
 <!-- f2w-force-save:v69-header:1788223204:chat/index.html -->
+<!-- f2w-force-save:v70-cache:1788223711:chat/index.html -->
+<!-- f2w-force-save:canonical-account-v70:chat/index.html -->
  

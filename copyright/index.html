@@ -175,28 +175,41 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 <section class="legal-card"><h2>Submit</h2><p>Send the request through Support with “Copyright / DMCA” in the subject and include all relevant URLs and supporting details.</p></section>
   <p class="legal-note">Last updated: 31 August 2026. This page describes Flix2Watch site policy and is not a substitute for professional legal advice.</p>
 </main>
-<script src="/global-header-chat-v1.js?v=66-1788222669"></script>
+<script src="/global-header-chat-v1.js?v=70-1788223711"></script>
 <!-- f2w-force-save:legal-page-v15:1788212347 -->
  
 <div class="account-modal" id="account-modal">
-  <div class="account-card">
-    <div class="account-header">
-      <div>
-        <div class="account-title"><i class="fa-solid fa-user"></i> Account</div>
-        <div class="account-subtitle">FLIX2WATCH ACCOUNT</div>
+    <div class="account-card">
+      <div class="account-header">
+        <div>
+          <div class="account-title"><i class="fa-solid fa-user"></i> Account</div>
+          <div class="account-subtitle">USERNAME + EMAIL + PASSWORD // SUPABASE AUTH</div>
+        </div>
+        <button class="chat-close" onclick="closeAccountModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <button class="chat-close" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="account-body">
+
+      <div class="account-body">
       <div id="account-logged-out">
+        <div class="f2w-account-brand">
+          <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch">
+          <strong>Watch. Chill. Repeat.</strong>
+          <span>Log in or create an account to unlock playback.</span>
+          <div class="v17-free-note">
+            <strong><i class="fa-solid fa-circle-check"></i> Free to use after sign-in</strong>
+            <span>Flix2Watch does not require a subscription or payment. Accounts help reduce automated abuse and scraping, and let us apply account-level moderation when needed.</span>
+          </div>
+        </div>
         <div class="account-tabs">
-          <button class="account-tab active" id="account-login-tab" type="button">Log In</button>
-          <button class="account-tab" id="account-signup-tab" type="button">Create Account</button>
+          <button class="account-tab active" id="account-login-tab" onclick="showAccountMode('login')">Log In</button>
+          <button class="account-tab" id="account-signup-tab" onclick="showAccountMode('signup')">Create Account</button>
         </div>
 
-        <div id="account-username-wrap" style="display:none">
+        <div id="account-username-wrap" style="display:none;">
           <label class="account-label">USERNAME</label>
-          <input class="account-input" id="account-username" maxlength="30" autocomplete="username" placeholder="Choose your username">
+          <input class="account-input" id="account-username" pattern="[A-Za-z0-9]+" inputmode="text" title="Use only normal English letters A-Z and numbers 0-9." maxlength="30" autocomplete="username" placeholder="Choose your username...">
+          <div class="username-rule-note">
+            Normal English letters A-Z and numbers 0-9 only. No spaces, dashes, underscores, symbols or stylized Unicode letters.
+          </div>
         </div>
 
         <label class="account-label" id="account-email-label">USERNAME OR EMAIL</label>
@@ -205,31 +218,99 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <label class="account-label">PASSWORD</label>
         <input class="account-input" id="account-password" type="password" autocomplete="current-password" placeholder="Password">
 
-        <div id="account-confirm-wrap" style="display:none">
+        <div id="account-confirm-wrap" style="display:none;">
           <label class="account-label">CONFIRM PASSWORD</label>
           <input class="account-input" id="account-confirm" type="password" autocomplete="new-password" placeholder="Repeat password">
         </div>
 
-        <button class="account-primary" id="account-submit" type="button" onclick="submitAccountAuth?.()">Log In</button>
+        <button class="account-primary" id="account-submit" onclick="submitAccountAuth()">Log In</button>
 
         <div class="f2w-oauth-block">
           <div class="f2w-oauth-divider"><span>or continue with</span></div>
           <div class="f2w-oauth-grid">
-            <button class="f2w-oauth-btn google" type="button" onclick="signInWithOAuthProvider?.('google')">
+            <button class="f2w-oauth-btn google" type="button" onclick="signInWithOAuthProvider('google')">
               <i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span>
             </button>
-            <button class="f2w-oauth-btn discord" type="button" onclick="signInWithOAuthProvider?.('discord')">
+            <button class="f2w-oauth-btn discord" type="button" onclick="signInWithOAuthProvider('discord')">
               <i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span>
             </button>
           </div>
+          <div class="f2w-oauth-note">Works for both Login and Create Account. If this is your first time, Flix2Watch creates your account and profile automatically.</div>
+        </div>
+        
+      </div>
+
+      <div id="account-logged-in" style="display:none;">
+        <div class="account-user-box">
+          <div class="account-avatar"><i class="fa-solid fa-user"></i></div>
+          <div>
+            
+            
+            <div class="account-user-email" id="account-user-email">Signed-in user</div>
+            <div class="account-user-username" id="account-user-username">@username</div>
+            <div class="account-role" id="account-user-role">MEMBER</div>
+            <div class="account-owner-note" id="account-owner-note" style="display:none;"><i class="fa-solid fa-crown"></i> WEBSITE OWNER</div>
+          </div>
         </div>
 
-        <div class="account-message" id="account-message"></div>
+        <div class="account-warning-box" id="account-warning-box" hidden>
+          <strong><i class="fa-solid fa-triangle-exclamation"></i> ACCOUNT WARNINGS</strong>
+          
+        </div>
+
+        <div class="owner-chat-auth" id="owner-chat-auth">
+          <label class="account-label">OWNER CHAT ACCESS</label>
+          <div class="owner-chat-auth-row">
+            <input
+              class="account-input"
+              id="owner-chat-password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Owner chat password"
+            >
+            <button class="owner-chat-auth-btn" id="owner-chat-auth-btn" onclick="activateOwnerChat()">Activate</button>
+          </div>
+          
+        </div>
+
+
+
+        <div class="account-username-change" id="account-username-change-box">
+          <div class="account-username-change-head">
+            <div>
+              <strong><i class="fa-solid fa-at"></i> CHANGE USERNAME</strong>
+              <span>You can change it whenever you want.</span>
+            </div>
+          </div>
+          <div class="account-username-change-row">
+            <input
+              class="account-input"
+              id="account-change-username"
+              type="text"
+              inputmode="text"
+              pattern="[A-Za-z0-9]+"
+              minlength="2"
+              maxlength="30"
+              autocomplete="off"
+              placeholder="New username"
+            >
+            <button class="account-secondary account-change-username-btn" type="button" onclick="changeFlix2WatchUsername()">
+              Update Username
+            </button>
+          </div>
+          <div class="account-username-change-note">
+            2–30 English letters or numbers only. Your old usernames stay reserved to your account, and bans, mutes, warnings and Staff permissions follow your account automatically.
+          </div>
+          
+        </div>
+<button class="account-secondary" id="account-support-btn" hidden onclick="window.location.href='/support/'"><i class="fa-solid fa-life-ring"></i> Support</button>
+        <button class="account-secondary" id="account-staff-control" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1"><i class="fa-solid fa-shield-halved"></i> Staff Control Center</button>
+        <button class="account-secondary" onclick="signOutAccount()">Log Out</button>
+        
       </div>
-      <div id="account-logged-in" style="display:none"></div>
+      </div>
     </div>
   </div>
-</div>
 
 
 <style id="f2w-auth-hardfix-v58-css">
@@ -1543,6 +1624,198 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-hardlock-v69:1788223204 */
 </style>
 
+
+<style id="f2w-account-canonical-v70">
+/* F2W v70 — canonical Account/Auth card on every page */
+#account-modal.f2w-auth-v67,
+#account-modal.f2w-auth-modal-open-v60,
+#account-modal.open {
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483646!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  overflow:hidden!important;
+}
+
+#account-modal.open {
+  display:flex!important;
+}
+
+#account-modal .account-card {
+  position:relative!important;
+  width:min(540px,calc(100vw - 36px))!important;
+  max-width:540px!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  border:1px solid rgba(255,64,82,.38)!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#0b1826,#07121e)!important;
+  box-shadow:0 30px 100px rgba(0,0,0,.78),0 0 32px rgba(229,9,20,.10)!important;
+  overflow:auto!important;
+  transform:none!important;
+}
+
+#account-modal .account-header {
+  min-height:66px!important;
+  padding:16px 18px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  border-bottom:1px solid #23394f!important;
+  background:#081522!important;
+}
+
+#account-modal .account-title {
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  color:#fff!important;
+  font-size:1.05rem!important;
+  font-weight:900!important;
+}
+
+#account-modal .account-body {
+  padding:16px 18px 18px!important;
+}
+
+#account-modal .account-user-box {
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  padding:12px!important;
+  border:1px solid #24394f!important;
+  border-radius:11px!important;
+  background:#0b1927!important;
+}
+
+#account-modal .account-user-avatar {
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:10px!important;
+  background:#142536!important;
+  color:#ff2637!important;
+}
+
+#account-modal .account-user-email {
+  color:#fff!important;
+  font-size:.78rem!important;
+  font-weight:850!important;
+}
+
+#account-modal .account-user-username {
+  margin-top:2px!important;
+  color:#a8b8c9!important;
+  font-size:.71rem!important;
+  font-weight:750!important;
+}
+
+#account-modal .account-role {
+  margin-top:3px!important;
+  color:#ffbf3f!important;
+  font-size:.60rem!important;
+  font-weight:900!important;
+  letter-spacing:.07em!important;
+}
+
+#account-modal .account-username-change {
+  margin:13px 0!important;
+  padding:12px!important;
+  border:1px solid #24394f!important;
+  border-radius:11px!important;
+  background:#091725!important;
+}
+
+#account-modal .account-username-change-row {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:8px!important;
+}
+
+#account-modal .account-input {
+  min-height:42px!important;
+  width:100%!important;
+  padding:0 12px!important;
+  border:1px solid #29455f!important;
+  border-radius:9px!important;
+  background:#061421!important;
+  color:#fff!important;
+  box-sizing:border-box!important;
+}
+
+#account-modal .account-secondary,
+#account-modal .account-primary {
+  min-height:40px!important;
+  border-radius:9px!important;
+  font-size:.76rem!important;
+  font-weight:850!important;
+}
+
+#account-modal #account-support-btn,
+#account-modal #account-staff-control {
+  width:100%!important;
+  margin-top:8px!important;
+}
+
+@media(max-width:600px){
+  #account-modal {
+    padding:12px!important;
+  }
+  #account-modal .account-card {
+    width:min(94vw,500px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+  #account-modal .account-username-change-row {
+    grid-template-columns:1fr!important;
+  }
+}
+/* f2w-force-save:account-canonical-css-v70:1788223711 */
+</style>
+
+
+<style id="f2w-header-spacing-v70">
+@media (min-width:1181px) and (max-width:1600px) {
+  body.f2w-main-page > header > .header-tools {
+    grid-template-columns:max-content minmax(220px,300px) 612px!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster {
+    width:612px!important;
+    min-width:612px!important;
+    max-width:612px!important;
+    grid-template-columns:90px 72px 66px 68px 72px 92px 116px!important;
+    gap:6px!important;
+  }
+  body.f2w-main-page > header #notification-wrap {
+    margin-right:0!important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    margin-left:0!important;
+  }
+}
+@media (min-width:1601px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    gap:8px!important;
+    width:794px!important;
+    min-width:794px!important;
+    max-width:794px!important;
+  }
+  body.f2w-main-page > header > .header-tools {
+    grid-template-columns:max-content minmax(340px,460px) 794px!important;
+  }
+}
+/* f2w-force-save:header-spacing-v70:1788223711 */
+</style>
+
 </body>
 </html>
 <!-- f2w-force-save:chat-route-cache-v16:1788212934:copyright/index.html -->
@@ -1592,4 +1865,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v66-arrow-cache:1788222669:copyright/index.html -->
 <!-- f2w-force-save:v67-page:1788222795:copyright/index.html -->
 <!-- f2w-force-save:v69-header:1788223204:copyright/index.html -->
+<!-- f2w-force-save:v70-cache:1788223711:copyright/index.html -->
+<!-- f2w-force-save:canonical-account-v70:copyright/index.html -->
  

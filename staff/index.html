@@ -818,7 +818,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=66-1788222669">
   <script src="/seo-v17.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=66-1788222669" defer></script>
+  <script src="/global-header-chat-v1.js?v=70-1788223711" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -1008,6 +1008,12 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
     </div>
   </header>
+<div id="staff-access-screen" class="staff-access-screen">
+  <div class="card" style="max-width:560px;margin:80px auto;text-align:center">
+    <strong><i class="fa-solid fa-shield-halved"></i> Checking Staff access…</strong>
+    <div class="empty" style="margin-top:8px">Verifying your live account permissions.</div>
+  </div>
+</div>
 
 
 <div id="staff-app-header" class="staff-page-toolbar" hidden>
@@ -1016,7 +1022,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     <div class="top-title"><strong>Staff Control Center</strong><span>MODERATION · CMS · SUPPORT · STREAM OPERATIONS</span></div>
     <div class="top-actions">
       <span class="ghost" id="staff-live-status" title="Supabase realtime connection"><i class="fa-solid fa-signal"></i> Live</span>
-      <span class="role-chip" id="role-chip"><i class="fa-solid fa-shield-halved"></i></span>
+      <span class="role-chip" id="role-chip"><i class="fa-solid fa-shield-halved"></i><span id="role-chip-text">STAFF</span></span>
       <a class="ghost" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
       <button class="ghost" type="button" onclick="signOut()"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
     </div>
@@ -1069,6 +1075,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     </section>
 
       
+      <div class="stats" id="stats-grid"></div>
       <div class="card">
         <div class="card-head"><strong>Quick actions</strong><span>Live controls</span></div>
         <div class="row">
@@ -1115,7 +1122,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <div class="moderation-shell">
           <div class="card moderation-target-card">
             <div class="card-head"><strong>Target account</strong><span>Username lookup</span></div>
-            <div class="field user-autofind-wrap"><label>USERNAME</label><input id="user-target" placeholder="Start typing a username…" autocomplete="off" aria-autocomplete="list" aria-controls="user-autofind-results"></div>
+            <div class="field user-autofind-wrap"><label>USERNAME</label><input id="user-target" placeholder="Start typing a username…" autocomplete="off" aria-autocomplete="list" aria-controls="user-autofind-results"><div id="user-autofind-results" class="user-autofind-results" hidden></div></div>
+        <div id="moderation-target-profile"></div>
             <div class="row" style="margin-top:9px"><button class="btn primary" onclick="inspectUser()"><i class="fa-solid fa-magnifying-glass"></i> Load account</button><button class="btn" onclick="clearModerationTarget()"><i class="fa-solid fa-xmark"></i> Clear</button></div>
             
           </div>
@@ -1133,8 +1141,10 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         </div>
       </div>
       
+      <div class="card" id="user-snapshot" hidden></div>
       <div class="card" id="permission-card" hidden>
         <div class="card-head"><strong>Staff permission overrides</strong><span>Owner-only backend overrides.</span></div>
+        <div id="permission-grid" class="perm-grid"></div>
         
       </div>
     </section>
@@ -1162,7 +1172,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
       <div class="card staff-profile-manager" id="staff-profile-manager-card" hidden>
         <div class="card-head">
-          <strong id="staff-profile-manager-title">Profile editor</strong>
+          <div><strong id="staff-profile-manager-title">Profile editor</strong><span id="staff-profile-manager-id"></span></div>
           
         </div>
 
@@ -1225,6 +1235,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             <button class="staff-role-toggle" data-role="verified" type="button" onclick="toggleManagedRole('verified')"><i class="fa-solid fa-circle-check"></i> Verified</button>
             <button class="staff-role-toggle" data-role="contributor" type="button" onclick="toggleManagedRole('contributor')"><i class="fa-solid fa-star"></i> Contributor</button>
           </div>
+          <div class="staff-role-summary"><strong id="staff-role-summary-title">Public roles</strong><span id="staff-role-summary-copy"></span></div>
           <div class="staff-profile-help">These badges appear publicly on the profile. Core Owner/Staff access is still managed separately through the existing Staff controls.</div>
         </div>
       </div>
@@ -1279,7 +1290,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div class="field"><label>SORT ORDER — LOWER NUMBER APPEARS FIRST</label><input id="collection-order" type="number" value="100" title="10 appears before 100. Lower numbers are earlier."></div>
           <button class="btn primary" onclick="createCollection()">Create</button>
         </div>
-        
+        <div id="collections-list"></div>
       </div>
       <div class="card">
         <div class="card-head"><strong>Block a title</strong><span>Hides it from catalogue results and blocks watch-page playback.</span></div>
@@ -1330,11 +1341,12 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </div>
 
 
+<div id="toast-stack" class="toast-stack"></div><div id="staff-toast-stack" class="toast-stack"></div>
 <div class="staff-dialog" id="staff-dialog" hidden>
   <div class="staff-dialog-card" role="dialog" aria-modal="true" aria-labelledby="staff-dialog-title">
     
     <div class="staff-dialog-body">
-      <div class="staff-dialog-title" id="staff-dialog-title">Staff action</div>
+      <div class="staff-dialog-title" id="staff-dialog-title">Staff action</div><div id="staff-dialog-copy" class="staff-dialog-copy"></div><div id="staff-dialog-input-host"></div>
       
       
       <div class="staff-dialog-actions">
@@ -1342,10 +1354,10 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <button class="btn primary" id="staff-dialog-ok" type="button">Continue</button>
       </div>
     </div>
+    <div id="staff-ticket-modal-messages" class="staff-ticket-messages"></div>
+    <div id="staff-ticket-statusline"></div>
   </div>
 </div>
-
-
 
 <script>
 const SUPABASE_URL="https://viqufxlcxwgboyxbdhjb.supabase.co";
@@ -1361,7 +1373,7 @@ const allPermissions=[
 ];
 
 function esc(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]))}
-function toast(message){const host=document.getElementById('toast-stack');const el=document.createElement('div');el.className='toast';el.textContent=message;host.appendChild(el);setTimeout(()=>el.remove(),2600)}
+function toast(message){let host=document.getElementById('toast-stack');if(!host){host=document.createElement('div');host.id='toast-stack';host.className='toast-stack';document.body.appendChild(host)}const el=document.createElement('div');el.className='toast';el.textContent=message;host.appendChild(el);setTimeout(()=>el.remove(),2600)}
 function hasPerm(permission){return staffContext?.role==='owner'||staffContext?.permissions?.includes(permission)}
 function fmt(value){if(!value)return '—';try{return new Date(value).toLocaleString()}catch{return String(value)}}
 function roleBadge(role){return `<span class="status">${esc(role||'member')}</span>`}
@@ -1825,17 +1837,17 @@ async function boot(){
     return;
   }
 
-  document.getElementById('staff-access-screen').hidden=true;
-  document.getElementById('staff-app-header').hidden=false;
-  document.getElementById('staff-app-shell').hidden=false;
+  document.getElementById('staff-access-screen')?.setAttribute('hidden','');
+  document.getElementById('staff-app-header')?.removeAttribute('hidden');
+  document.getElementById('staff-app-shell')?.removeAttribute('hidden');
 
   const chip=document.getElementById('role-chip');
   chip.classList.add(staffContext.role);
-  document.getElementById('role-chip-text').textContent=String(staffContext.role||'staff').toUpperCase();
+  const roleChipText=document.getElementById('role-chip-text');if(roleChipText)roleChipText.textContent=String(staffContext.role||'staff').toUpperCase();
   applyRoleScopedNavigation();
 
   if(staffContext.role!=='owner'){
-    document.getElementById('permission-card').hidden=true;
+    const permissionCard=document.getElementById('permission-card');if(permissionCard)permissionCard.hidden=true;
   }
 
   applyPermissionUI();
@@ -2646,7 +2658,7 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js?v=64-1788222358" defer>
+  <script src="/final-v35.js?v=70-1788223711" defer>
 document.getElementById('staff-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='staff-ticket-modal')closeStaffTicketModal()});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('staff-ticket-modal')?.hidden)closeStaffTicketModal()});
 document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendStaffTicketReply()}});
@@ -2654,7 +2666,7 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 
 <div class="staff-ticket-modal" id="staff-ticket-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="staff-ticket-modal-title">
   <div class="staff-ticket-chat">
-    <div class="staff-ticket-head"><div class="staff-ticket-head-copy"><strong id="staff-ticket-modal-title">Support ticket</strong></div><button class="btn staff-ticket-close" type="button" onclick="closeStaffTicketModal()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="staff-ticket-head"><div class="staff-ticket-head-copy"><strong id="staff-ticket-modal-title">Support ticket</strong><span id="staff-ticket-modal-meta"></span></div><button class="btn staff-ticket-close" type="button" onclick="closeStaffTicketModal()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
     
     <div class="staff-ticket-compose">
       <textarea id="staff-ticket-reply" maxlength="4000" placeholder="Reply to this ticket…"></textarea>
@@ -2673,24 +2685,37 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 
 
 <div class="account-modal" id="account-modal">
-  <div class="account-card">
-    <div class="account-header">
-      <div>
-        <div class="account-title"><i class="fa-solid fa-user"></i> Account</div>
-        <div class="account-subtitle">FLIX2WATCH ACCOUNT</div>
+    <div class="account-card">
+      <div class="account-header">
+        <div>
+          <div class="account-title"><i class="fa-solid fa-user"></i> Account</div>
+          <div class="account-subtitle">USERNAME + EMAIL + PASSWORD // SUPABASE AUTH</div>
+        </div>
+        <button class="chat-close" onclick="closeAccountModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <button class="chat-close" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="account-body">
+
+      <div class="account-body">
       <div id="account-logged-out">
+        <div class="f2w-account-brand">
+          <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch">
+          <strong>Watch. Chill. Repeat.</strong>
+          <span>Log in or create an account to unlock playback.</span>
+          <div class="v17-free-note">
+            <strong><i class="fa-solid fa-circle-check"></i> Free to use after sign-in</strong>
+            <span>Flix2Watch does not require a subscription or payment. Accounts help reduce automated abuse and scraping, and let us apply account-level moderation when needed.</span>
+          </div>
+        </div>
         <div class="account-tabs">
-          <button class="account-tab active" id="account-login-tab" type="button">Log In</button>
-          <button class="account-tab" id="account-signup-tab" type="button">Create Account</button>
+          <button class="account-tab active" id="account-login-tab" onclick="showAccountMode('login')">Log In</button>
+          <button class="account-tab" id="account-signup-tab" onclick="showAccountMode('signup')">Create Account</button>
         </div>
 
-        <div id="account-username-wrap" style="display:none">
+        <div id="account-username-wrap" style="display:none;">
           <label class="account-label">USERNAME</label>
-          <input class="account-input" id="account-username" maxlength="30" autocomplete="username" placeholder="Choose your username">
+          <input class="account-input" id="account-username" pattern="[A-Za-z0-9]+" inputmode="text" title="Use only normal English letters A-Z and numbers 0-9." maxlength="30" autocomplete="username" placeholder="Choose your username...">
+          <div class="username-rule-note">
+            Normal English letters A-Z and numbers 0-9 only. No spaces, dashes, underscores, symbols or stylized Unicode letters.
+          </div>
         </div>
 
         <label class="account-label" id="account-email-label">USERNAME OR EMAIL</label>
@@ -2699,31 +2724,99 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
         <label class="account-label">PASSWORD</label>
         <input class="account-input" id="account-password" type="password" autocomplete="current-password" placeholder="Password">
 
-        <div id="account-confirm-wrap" style="display:none">
+        <div id="account-confirm-wrap" style="display:none;">
           <label class="account-label">CONFIRM PASSWORD</label>
           <input class="account-input" id="account-confirm" type="password" autocomplete="new-password" placeholder="Repeat password">
         </div>
 
-        <button class="account-primary" id="account-submit" type="button" onclick="submitAccountAuth?.()">Log In</button>
+        <button class="account-primary" id="account-submit" onclick="submitAccountAuth()">Log In</button>
 
         <div class="f2w-oauth-block">
           <div class="f2w-oauth-divider"><span>or continue with</span></div>
           <div class="f2w-oauth-grid">
-            <button class="f2w-oauth-btn google" type="button" onclick="signInWithOAuthProvider?.('google')">
+            <button class="f2w-oauth-btn google" type="button" onclick="signInWithOAuthProvider('google')">
               <i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span>
             </button>
-            <button class="f2w-oauth-btn discord" type="button" onclick="signInWithOAuthProvider?.('discord')">
+            <button class="f2w-oauth-btn discord" type="button" onclick="signInWithOAuthProvider('discord')">
               <i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span>
             </button>
           </div>
+          <div class="f2w-oauth-note">Works for both Login and Create Account. If this is your first time, Flix2Watch creates your account and profile automatically.</div>
+        </div>
+        
+      </div>
+
+      <div id="account-logged-in" style="display:none;">
+        <div class="account-user-box">
+          <div class="account-avatar"><i class="fa-solid fa-user"></i></div>
+          <div>
+            
+            
+            <div class="account-user-email" id="account-user-email">Signed-in user</div>
+            <div class="account-user-username" id="account-user-username">@username</div>
+            <div class="account-role" id="account-user-role">MEMBER</div>
+            <div class="account-owner-note" id="account-owner-note" style="display:none;"><i class="fa-solid fa-crown"></i> WEBSITE OWNER</div>
+          </div>
         </div>
 
-        <div class="account-message" id="account-message"></div>
+        <div class="account-warning-box" id="account-warning-box" hidden>
+          <strong><i class="fa-solid fa-triangle-exclamation"></i> ACCOUNT WARNINGS</strong>
+          
+        </div>
+
+        <div class="owner-chat-auth" id="owner-chat-auth">
+          <label class="account-label">OWNER CHAT ACCESS</label>
+          <div class="owner-chat-auth-row">
+            <input
+              class="account-input"
+              id="owner-chat-password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Owner chat password"
+            >
+            <button class="owner-chat-auth-btn" id="owner-chat-auth-btn" onclick="activateOwnerChat()">Activate</button>
+          </div>
+          
+        </div>
+
+
+
+        <div class="account-username-change" id="account-username-change-box">
+          <div class="account-username-change-head">
+            <div>
+              <strong><i class="fa-solid fa-at"></i> CHANGE USERNAME</strong>
+              <span>You can change it whenever you want.</span>
+            </div>
+          </div>
+          <div class="account-username-change-row">
+            <input
+              class="account-input"
+              id="account-change-username"
+              type="text"
+              inputmode="text"
+              pattern="[A-Za-z0-9]+"
+              minlength="2"
+              maxlength="30"
+              autocomplete="off"
+              placeholder="New username"
+            >
+            <button class="account-secondary account-change-username-btn" type="button" onclick="changeFlix2WatchUsername()">
+              Update Username
+            </button>
+          </div>
+          <div class="account-username-change-note">
+            2–30 English letters or numbers only. Your old usernames stay reserved to your account, and bans, mutes, warnings and Staff permissions follow your account automatically.
+          </div>
+          
+        </div>
+<button class="account-secondary" id="account-support-btn" hidden onclick="window.location.href='/support/'"><i class="fa-solid fa-life-ring"></i> Support</button>
+        <button class="account-secondary" id="account-staff-control" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1"><i class="fa-solid fa-shield-halved"></i> Staff Control Center</button>
+        <button class="account-secondary" onclick="signOutAccount()">Log Out</button>
+        
       </div>
-      <div id="account-logged-in" style="display:none"></div>
+      </div>
     </div>
   </div>
-</div>
 
 
 <style id="f2w-auth-hardfix-v58-css">
@@ -4037,6 +4130,198 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-hardlock-v69:1788223204 */
 </style>
 
+
+<style id="f2w-account-canonical-v70">
+/* F2W v70 — canonical Account/Auth card on every page */
+#account-modal.f2w-auth-v67,
+#account-modal.f2w-auth-modal-open-v60,
+#account-modal.open {
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483646!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  overflow:hidden!important;
+}
+
+#account-modal.open {
+  display:flex!important;
+}
+
+#account-modal .account-card {
+  position:relative!important;
+  width:min(540px,calc(100vw - 36px))!important;
+  max-width:540px!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  border:1px solid rgba(255,64,82,.38)!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#0b1826,#07121e)!important;
+  box-shadow:0 30px 100px rgba(0,0,0,.78),0 0 32px rgba(229,9,20,.10)!important;
+  overflow:auto!important;
+  transform:none!important;
+}
+
+#account-modal .account-header {
+  min-height:66px!important;
+  padding:16px 18px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  border-bottom:1px solid #23394f!important;
+  background:#081522!important;
+}
+
+#account-modal .account-title {
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  color:#fff!important;
+  font-size:1.05rem!important;
+  font-weight:900!important;
+}
+
+#account-modal .account-body {
+  padding:16px 18px 18px!important;
+}
+
+#account-modal .account-user-box {
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  padding:12px!important;
+  border:1px solid #24394f!important;
+  border-radius:11px!important;
+  background:#0b1927!important;
+}
+
+#account-modal .account-user-avatar {
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:10px!important;
+  background:#142536!important;
+  color:#ff2637!important;
+}
+
+#account-modal .account-user-email {
+  color:#fff!important;
+  font-size:.78rem!important;
+  font-weight:850!important;
+}
+
+#account-modal .account-user-username {
+  margin-top:2px!important;
+  color:#a8b8c9!important;
+  font-size:.71rem!important;
+  font-weight:750!important;
+}
+
+#account-modal .account-role {
+  margin-top:3px!important;
+  color:#ffbf3f!important;
+  font-size:.60rem!important;
+  font-weight:900!important;
+  letter-spacing:.07em!important;
+}
+
+#account-modal .account-username-change {
+  margin:13px 0!important;
+  padding:12px!important;
+  border:1px solid #24394f!important;
+  border-radius:11px!important;
+  background:#091725!important;
+}
+
+#account-modal .account-username-change-row {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:8px!important;
+}
+
+#account-modal .account-input {
+  min-height:42px!important;
+  width:100%!important;
+  padding:0 12px!important;
+  border:1px solid #29455f!important;
+  border-radius:9px!important;
+  background:#061421!important;
+  color:#fff!important;
+  box-sizing:border-box!important;
+}
+
+#account-modal .account-secondary,
+#account-modal .account-primary {
+  min-height:40px!important;
+  border-radius:9px!important;
+  font-size:.76rem!important;
+  font-weight:850!important;
+}
+
+#account-modal #account-support-btn,
+#account-modal #account-staff-control {
+  width:100%!important;
+  margin-top:8px!important;
+}
+
+@media(max-width:600px){
+  #account-modal {
+    padding:12px!important;
+  }
+  #account-modal .account-card {
+    width:min(94vw,500px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+  #account-modal .account-username-change-row {
+    grid-template-columns:1fr!important;
+  }
+}
+/* f2w-force-save:account-canonical-css-v70:1788223711 */
+</style>
+
+
+<style id="f2w-header-spacing-v70">
+@media (min-width:1181px) and (max-width:1600px) {
+  body.f2w-main-page > header > .header-tools {
+    grid-template-columns:max-content minmax(220px,300px) 612px!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster {
+    width:612px!important;
+    min-width:612px!important;
+    max-width:612px!important;
+    grid-template-columns:90px 72px 66px 68px 72px 92px 116px!important;
+    gap:6px!important;
+  }
+  body.f2w-main-page > header #notification-wrap {
+    margin-right:0!important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    margin-left:0!important;
+  }
+}
+@media (min-width:1601px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    gap:8px!important;
+    width:794px!important;
+    min-width:794px!important;
+    max-width:794px!important;
+  }
+  body.f2w-main-page > header > .header-tools {
+    grid-template-columns:max-content minmax(340px,460px) 794px!important;
+  }
+}
+/* f2w-force-save:header-spacing-v70:1788223711 */
+</style>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->
@@ -4098,4 +4383,7 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v66-arrow-cache:1788222669:staff/index.html -->
 <!-- f2w-force-save:v67-page:1788222795:staff/index.html -->
 <!-- f2w-force-save:v69-header:1788223204:staff/index.html -->
+<!-- f2w-force-save:staff-compat-v70:1788223711 -->
+<!-- f2w-force-save:v70-cache:1788223711:staff/index.html -->
+<!-- f2w-force-save:canonical-account-v70:staff/index.html -->
  
