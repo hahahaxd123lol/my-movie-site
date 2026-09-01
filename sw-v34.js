@@ -1,5 +1,5 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v34-1788217565';
+const CACHE='f2w-v58-1788221340';
 const CORE=[
   '/home/','/favorites/','/profile/','/support/','/chat/',
   '/leaderboard/','/forum/','/users/',
@@ -37,24 +37,19 @@ async function staleWhileRevalidate(request){
 async function navigationResponse(request){
   const cache=await caches.open(CACHE);
 
-  // Race a warm cached page against network. The v33 prefetcher usually means
-  // the page is already in the HTTP cache; this adds a second fast path.
+  // v58: NETWORK-FIRST for HTML navigation.
+  // This prevents an old cached page from surviving a new deployment.
+  try{
+    const network=await fetch(request,{cache:'no-cache'});
+    if(network&&network.ok){
+      cache.put(request,network.clone()).catch(()=>{});
+      return network;
+    }
+  }catch{}
+
   const cached=await cache.match(request,{ignoreSearch:false});
-  const networkPromise=fetch(request).then(response=>{
-    if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});
-    return response;
-  }).catch(()=>null);
+  if(cached)return cached;
 
-  if(cached){
-    // Refresh in the background without delaying navigation.
-    networkPromise.catch(()=>{});
-    return cached;
-  }
-
-  const network=await networkPromise;
-  if(network)return network;
-
-  // For profile query URLs, fall back to the base profile shell.
   if(new URL(request.url).pathname==='/profile/'){
     const shell=await cache.match('/profile/');
     if(shell)return shell;
@@ -82,4 +77,5 @@ self.addEventListener('fetch',event=>{
     event.respondWith(staleWhileRevalidate(request));
   }
 });
+// f2w-force-save:service-worker-network-first-v58:1788221340
  

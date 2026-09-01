@@ -2526,11 +2526,11 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=54-1788220759">
+  <link rel="stylesheet" href="/final-v35.css?v=58-1788221340">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=57-1788221142">
-  <script src="/global-header-chat-v1.js?v=57-1788221142" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=58-1788221340">
+  <script src="/global-header-chat-v1.js?v=58-1788221340" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -5593,7 +5593,217 @@ setTimeout(loadLibraryFavorites,0);
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=54-1788220759" defer></script>
+  <script src="/final-v35.js?v=58-1788221340" defer></script>
+
+<style id="f2w-auth-hardfix-v58-css">
+#account-modal.f2w-auth-hard-open-v58 {
+  display:flex!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483600!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  background:rgba(0,0,0,.84)!important;
+}
+#account-modal.f2w-auth-hard-open-v58 .account-card {
+  width:min(520px,calc(100vw - 28px))!important;
+  max-width:520px!important;
+  max-height:calc(100dvh - 36px)!important;
+  overflow:auto!important;
+}
+@media(max-width:600px){
+  #account-modal.f2w-auth-hard-open-v58 {
+    padding:12px!important;
+  }
+  #account-modal.f2w-auth-hard-open-v58 .account-card {
+    width:min(94vw,480px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+}
+/* f2w-force-save:auth-hardfix-css-v58:1788221340 */
+</style>
+
+<script id="f2w-auth-hardfix-v58">
+(() => {
+  'use strict';
+  if(window.__f2wAuthHardfixV58)return;
+  window.__f2wAuthHardfixV58=true;
+
+  let currentMode='login';
+  let touchStartX=null;
+
+  function modal(){
+    return document.getElementById('account-modal');
+  }
+
+  function setMode(mode){
+    currentMode=mode==='signup'?'signup':'login';
+
+    const loginTab=document.getElementById('account-login-tab');
+    const signupTab=document.getElementById('account-signup-tab');
+    const usernameWrap=document.getElementById('account-username-wrap');
+    const confirmWrap=document.getElementById('account-confirm-wrap');
+    const emailLabel=document.getElementById('account-email-label');
+    const submit=document.getElementById('account-submit');
+    const password=document.getElementById('account-password');
+
+    loginTab?.classList.toggle('active',currentMode==='login');
+    signupTab?.classList.toggle('active',currentMode==='signup');
+
+    if(usernameWrap)usernameWrap.style.display=currentMode==='signup'?'block':'none';
+    if(confirmWrap)confirmWrap.style.display=currentMode==='signup'?'block':'none';
+    if(emailLabel)emailLabel.textContent=currentMode==='signup'?'EMAIL':'USERNAME OR EMAIL';
+    if(submit)submit.textContent=currentMode==='signup'?'Create Account':'Log In';
+    if(password)password.autocomplete=currentMode==='signup'?'new-password':'current-password';
+
+    document.querySelectorAll('#account-modal .f2w-oauth-btn.google .f2w-oauth-label')
+      .forEach(el=>el.textContent=currentMode==='signup'?'Sign up with Google':'Sign in with Google');
+    document.querySelectorAll('#account-modal .f2w-oauth-btn.discord .f2w-oauth-label')
+      .forEach(el=>el.textContent=currentMode==='signup'?'Sign up with Discord':'Sign in with Discord');
+
+    const message=document.getElementById('account-message');
+    if(message)message.textContent='';
+  }
+
+  function open(mode='login'){
+    const m=modal();
+    if(!m){
+      console.error('Flix2Watch auth modal is missing on this page.');
+      return false;
+    }
+
+    setMode(mode);
+    m.hidden=false;
+    m.classList.add('open','f2w-auth-hard-open-v58');
+    m.style.setProperty('display','flex','important');
+    document.documentElement.style.overflow='hidden';
+
+    setTimeout(()=>{
+      const field=document.getElementById(currentMode==='signup'?'account-username':'account-email');
+      field?.focus();
+    },50);
+
+    return false;
+  }
+
+  function close(){
+    const m=modal();
+    if(!m)return;
+    m.classList.remove('open','f2w-auth-hard-open-v58');
+    m.style.removeProperty('display');
+    document.documentElement.style.removeProperty('overflow');
+  }
+
+  // Define these globals UNCONDITIONALLY. Older broken/stale versions cannot win.
+  window.openHeaderAuth=open;
+  window.f2wOpenAuth=open;
+
+  // Preserve the existing authenticated Account opener. For logged-out users,
+  // Account becomes the Login modal.
+  const oldOpenAccount=typeof window.openAccountModal==='function' ? window.openAccountModal : null;
+  window.openAccountModal=function(){
+    const loggedIn=document.body.classList.contains('f2w-authenticated');
+    if(loggedIn && oldOpenAccount){
+      try{ return oldOpenAccount(); }catch(error){ console.warn(error); }
+    }
+    return open('login');
+  };
+
+  window.showAccountMode=setMode;
+
+  function bindModal(){
+    const m=modal();
+    if(!m || m.dataset.f2wHardAuthBoundV58)return;
+    m.dataset.f2wHardAuthBoundV58='1';
+
+    m.addEventListener('click',e=>{
+      if(e.target===m)close();
+    });
+
+    m.querySelector('.chat-close')?.addEventListener('click',e=>{
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      close();
+    },true);
+
+    document.getElementById('account-login-tab')?.addEventListener('click',e=>{
+      e.preventDefault();e.stopImmediatePropagation();setMode('login');
+    },true);
+
+    document.getElementById('account-signup-tab')?.addEventListener('click',e=>{
+      e.preventDefault();e.stopImmediatePropagation();setMode('signup');
+    },true);
+
+    const card=m.querySelector('.account-card');
+    card?.addEventListener('touchstart',e=>{
+      touchStartX=e.touches?.[0]?.clientX??null;
+    },{passive:true});
+    card?.addEventListener('touchend',e=>{
+      if(touchStartX==null)return;
+      const end=e.changedTouches?.[0]?.clientX??touchStartX;
+      const dx=end-touchStartX;
+      touchStartX=null;
+      if(Math.abs(dx)<55)return;
+      setMode(dx<0?'signup':'login');
+    },{passive:true});
+  }
+
+  function bindButtons(){
+    bindModal();
+
+    document.querySelectorAll('#header-login-btn').forEach(btn=>{
+      if(btn.dataset.f2wHardAuthLoginV58)return;
+      btn.dataset.f2wHardAuthLoginV58='1';
+      btn.addEventListener('click',e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        open('login');
+      },true);
+    });
+
+    document.querySelectorAll('#header-signup-btn').forEach(btn=>{
+      if(btn.dataset.f2wHardAuthSignupV58)return;
+      btn.dataset.f2wHardAuthSignupV58='1';
+      btn.addEventListener('click',e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        open('signup');
+      },true);
+    });
+
+    // Watch-page Login/Create Account buttons.
+    const watchOverlay=document.getElementById('watch-login-overlay');
+    if(watchOverlay){
+      const buttons=watchOverlay.querySelectorAll('.watch-login-actions button');
+      if(buttons[0] && !buttons[0].dataset.f2wHardAuthV58){
+        buttons[0].dataset.f2wHardAuthV58='1';
+        buttons[0].addEventListener('click',e=>{
+          e.preventDefault();e.stopImmediatePropagation();open('login');
+        },true);
+      }
+      if(buttons[1] && !buttons[1].dataset.f2wHardAuthV58){
+        buttons[1].dataset.f2wHardAuthV58='1';
+        buttons[1].addEventListener('click',e=>{
+          e.preventDefault();e.stopImmediatePropagation();open('signup');
+        },true);
+      }
+    }
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bindButtons,{once:true});
+  } else {
+    bindButtons();
+  }
+
+  new MutationObserver(bindButtons).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('pageshow',bindButtons,{passive:true});
+})();
+// f2w-force-save:auth-hardfix-js-v58:1788221340
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:favorites:86de6ac719 -->
@@ -5646,4 +5856,6 @@ setTimeout(loadLibraryFavorites,0);
 <!-- f2w-force-save:account-details-cache-v54:1788220759:favorites/index.html -->
 <!-- f2w-force-save:v56-auth-cache:1788221054:favorites/index.html -->
 <!-- f2w-force-save:v57-user-search-cache:1788221142:favorites/index.html -->
+<!-- f2w-force-save:v58-auth-hardfix:1788221340:favorites/index.html -->
+<!-- f2w-force-save:v58-cache:1788221340:favorites/index.html -->
  
