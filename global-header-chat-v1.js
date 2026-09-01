@@ -1300,4 +1300,46 @@
   window.addEventListener('pageshow',scan,{passive:true});
 })();
 // f2w-force-save:search-no-password-v65:1788222474
+
+/* ============================================================
+   F2W v66 — REMOVE LEGACY FLOATING USER SEARCH ARROWS
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wUserSearchArrowFixV66)return;
+  window.__f2wUserSearchArrowFixV66=true;
+
+  function fixArrow(){
+    document.querySelectorAll('.f2w-search-pair').forEach(pair=>{
+      const container=pair.querySelector('.user-search-container');
+      if(!container)return;
+
+      // Any submit control intended for user search must live inside the container.
+      [...pair.querySelectorAll(
+        '.user-search-submit,[data-user-search-submit],button[onclick*="submitUserDirectorySearch"]'
+      )].forEach(btn=>{
+        if(container.contains(btn))return;
+
+        // If the container has no in-box submit button, move the legacy one in.
+        const inBox=container.querySelector(
+          '.user-search-submit,[data-user-search-submit],button[onclick*="submitUserDirectorySearch"]'
+        );
+        if(!inBox){
+          container.appendChild(btn);
+        }else{
+          btn.remove();
+        }
+      });
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',fixArrow,{once:true});
+  }else{
+    fixArrow();
+  }
+
+  new MutationObserver(fixArrow).observe(document.documentElement,{childList:true,subtree:true});
+})();
+// f2w-force-save:user-search-arrow-js-v66:1788222669
  

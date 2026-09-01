@@ -2304,3 +2304,66 @@ body.f2w-main-page input[type="search"]::-webkit-contacts-auto-fill-button {
 
 /* f2w-force-save:search-field-visuals-v65:1788222474 */
  
+
+/* ============================================================
+   F2W v66 — USER SEARCH ARROW STAYS INSIDE THE BOX
+   ============================================================ */
+
+body.f2w-main-page > header .user-search-container {
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  overflow:visible!important;
+}
+
+body.f2w-main-page > header .user-search-container .user-search-bar,
+body.f2w-main-page > header .user-search-container #user-search {
+  width:100%!important;
+  min-width:0!important;
+  padding-right:42px!important;
+  box-sizing:border-box!important;
+}
+
+/* The real submit arrow belongs INSIDE the search field. */
+body.f2w-main-page > header .user-search-container .user-search-submit,
+body.f2w-main-page > header .user-search-container [data-user-search-submit],
+body.f2w-main-page > header .user-search-container button[onclick*="submitUserDirectorySearch"],
+body.f2w-main-page > header .user-search-container button[aria-label*="user" i] {
+  position:absolute!important;
+  right:8px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  margin:0!important;
+  width:28px!important;
+  min-width:28px!important;
+  max-width:28px!important;
+  height:28px!important;
+  min-height:28px!important;
+  max-height:28px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  z-index:5!important;
+  border:0!important;
+  background:transparent!important;
+  color:#91a5ba!important;
+  overflow:hidden!important;
+}
+
+/* Kill any legacy duplicate/floating arrow outside the user-search box. */
+body.f2w-main-page > header .f2w-search-pair > .user-search-submit,
+body.f2w-main-page > header .f2w-search-pair > [data-user-search-submit],
+body.f2w-main-page > header .f2w-search-pair > button[onclick*="submitUserDirectorySearch"] {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* No pseudo arrow from old CSS outside the box. */
+body.f2w-main-page > header .user-search-container::after,
+body.f2w-main-page > header .user-search-container::before {
+  pointer-events:none!important;
+}
+
+/* f2w-force-save:user-search-arrow-fix-v66:1788222669 */
+ 
