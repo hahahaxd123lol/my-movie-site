@@ -2939,8 +2939,8 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/social-v34.js" defer></script>
   <link rel="stylesheet" href="/final-v35.css?v=90-1788227716">
   <!-- Unified Watch-page header + preloaded chat -->
-  <link rel="stylesheet" href="/global-header-v1.css?v=88-1788227370">
-  <script src="/global-header-chat-v1.js?v=91-1788228094" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=92-1788228465">
+  <script src="/global-header-chat-v1.js?v=92-1788228465" defer></script>
 
 
 
@@ -9979,6 +9979,100 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-spacing-v70:1788223711 */
 </style>
 
+
+<script id="f2w-watch-auth-success-v92">
+(() => {
+  'use strict';
+  if(window.__f2wWatchAuthSuccessV92)return;
+  window.__f2wWatchAuthSuccessV92=true;
+
+  let unlockGeneration=0;
+
+  async function unlockFromSession() {
+    const generation=++unlockGeneration;
+    let user=null;
+
+    try {
+      if(window.currentUser)user=window.currentUser;
+    } catch {}
+
+    if(!user) {
+      try {
+        const {data}=await chatSupabase.auth.getSession();
+        if(generation!==unlockGeneration)return;
+        user=data?.session?.user||null;
+        if(user)window.currentUser=user;
+      } catch {}
+    }
+
+    if(!user)return false;
+
+    // Remove the playback gate immediately.
+    try {
+      setWatchPlaybackAccess(true);
+    } catch {
+      document.body.classList.add('watch-authenticated');
+      document.body.classList.remove('watch-locked');
+      const overlay=document.getElementById('watch-login-overlay');
+      if(overlay) {
+        overlay.hidden=true;
+        overlay.setAttribute('aria-hidden','true');
+        overlay.style.display='none';
+      }
+    }
+
+    // Make absolutely sure no account-modal blur/backdrop survives successful login.
+    const modal=document.getElementById('account-modal');
+    if(modal) {
+      modal.classList.remove('open','f2w-auth-v67','f2w-auth-hard-open-v58','f2w-auth-modal-open-v60');
+      modal.style.removeProperty('display');
+      modal.setAttribute('aria-hidden','true');
+      modal.setAttribute('inert','');
+    }
+
+    document.documentElement.classList.remove('f2w-auth-open-v56','f2w-auth-v67-open');
+    document.body.classList.remove('f2w-auth-v67-open');
+    document.documentElement.style.removeProperty('overflow');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('position');
+    document.body.style.removeProperty('top');
+    document.body.style.removeProperty('left');
+    document.body.style.removeProperty('right');
+    document.body.style.removeProperty('width');
+
+    // Start/reveal player once. Existing duplicate-src guard prevents a movie restart.
+    try {
+      if(mediaId)loadPlayer();
+    } catch(error) {
+      console.warn('Could not reveal player after login:',error);
+    }
+
+    return true;
+  }
+
+  window.addEventListener('f2w:auth-success',()=>{
+    setTimeout(unlockFromSession,0);
+  });
+
+  window.addEventListener('f2w:auth-session-ready',()=>{
+    setTimeout(unlockFromSession,0);
+  });
+
+  // Keep local auth-state callback deterministic as well.
+  try {
+    chatSupabase.auth.onAuthStateChange((_event,session)=>{
+      window.currentUser=session?.user||null;
+      if(session?.user)setTimeout(unlockFromSession,0);
+    });
+  } catch {}
+
+  window.addEventListener('pageshow',()=>{
+    setTimeout(unlockFromSession,0);
+  },{passive:true});
+})();
+/* f2w-force-save:watch-auth-success-v92:1788228465 */
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
@@ -10069,4 +10163,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v89-cache:1788227613:watch/index.html -->
 <!-- f2w-force-save:v90-cache:1788227716:watch/index.html -->
 <!-- f2w-force-save:v91-cache:1788228094:watch/index.html -->
+<!-- f2w-force-save:watch-auth-v92:1788228465 -->
+<!-- f2w-force-save:v92-cache:1788228465:watch/index.html -->
  

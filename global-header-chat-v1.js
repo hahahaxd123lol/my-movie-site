@@ -548,6 +548,8 @@
     el.style.color=error?'#ff7782':'#94a3b8';
   }
 
+  window.f2wSetAuthMessage=setMessage;
+
   function setMode(next){
     mode=next==='signup'?'signup':'login';
     const login=document.getElementById('account-login-tab');
@@ -595,9 +597,47 @@
 
   function closeAuth(){
     const modal=document.getElementById('account-modal');
-    modal?.classList.remove('open');
-    if(modal)modal.style.removeProperty('display');
-    document.documentElement.classList.remove('f2w-auth-open-v56');
+
+    if(modal){
+      modal.classList.remove(
+        'open',
+        'f2w-auth-v67',
+        'f2w-auth-hard-open-v58',
+        'f2w-auth-modal-open-v60'
+      );
+      modal.style.removeProperty('display');
+      modal.setAttribute('aria-hidden','true');
+      modal.setAttribute('inert','');
+    }
+
+    // Clean every historical auth scroll/backdrop lock.
+    document.documentElement.classList.remove(
+      'f2w-auth-open-v56',
+      'f2w-auth-v67-open'
+    );
+    document.body?.classList.remove(
+      'f2w-auth-v67-open'
+    );
+
+    document.documentElement.style.removeProperty('overflow');
+    document.documentElement.style.removeProperty('height');
+
+    if(document.body){
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('position');
+      document.body.style.removeProperty('top');
+      document.body.style.removeProperty('left');
+      document.body.style.removeProperty('right');
+      document.body.style.removeProperty('width');
+      document.body.style.removeProperty('min-height');
+    }
+
+    // /users/ can place the account modal in a native top-layer dialog.
+    const dialog=document.getElementById('f2w-users-auth-dialog-v73');
+    if(dialog){
+      try{ if(dialog.open) dialog.close(); }catch{}
+      dialog.removeAttribute('open');
+    }
   }
 
   async function submit(){
@@ -607,7 +647,7 @@
       return;
     }
 
-    const email=String(document.getElementById('account-email')?.value||'').trim();
+    const identifier=String(document.getElementById('account-email')?.value||'').trim();
     const password=String(document.getElementById('account-password')?.value||'');
     const confirm=String(document.getElementById('account-confirm')?.value||'');
     const username=String(document.getElementById('account-username')?.value||'').trim();
@@ -617,37 +657,73 @@
       if(!/^[A-Za-z0-9]{2,30}$/.test(username)){
         setMessage('Username must be 2–30 letters or numbers.',true);return;
       }
-      if(!email.includes('@')){setMessage('Enter a valid email address.',true);return;}
-      if(password.length<6){setMessage('Password must be at least 6 characters.',true);return;}
-      if(password!==confirm){setMessage('Passwords do not match.',true);return;}
+      if(!identifier.includes('@')){
+        setMessage('Enter a valid email address.',true);return;
+      }
+      if(password.length<6){
+        setMessage('Password must be at least 6 characters.',true);return;
+      }
+      if(password!==confirm){
+        setMessage('Passwords do not match.',true);return;
+      }
     }else{
-      if(!email||!password){setMessage('Enter your username/email and password.',true);return;}
+      if(!identifier||!password){
+        setMessage('Enter your username/email and password.',true);return;
+      }
     }
 
-    if(button)button.disabled=true;
-    setMessage(mode==='signup'?'Creating account…':'Logging in…');
+    if(button){
+      button.disabled=true;
+      button.dataset.f2wBusy='1';
+      button.dataset.f2wOriginalText=button.textContent||'';
+      button.innerHTML=mode==='signup'
+        ? '<i class="fa-solid fa-circle-notch fa-spin"></i> Creating account…'
+        : '<i class="fa-solid fa-circle-notch fa-spin"></i> Logging in…';
+    }
+
+    setMessage(mode==='signup'?'Creating your account…':'Logging you in…');
 
     try{
+      let authenticatedUser=null;
+      let authenticatedSession=null;
+
       if(mode==='login'){
         let result;
         if(typeof window.f2wLoginIdentifier==='function'){
-          result=await window.f2wLoginIdentifier(email,password);
+          result=await window.f2wLoginIdentifier(identifier,password);
         }else{
-          result=await c.auth.signInWithPassword({email,password});
+          result=await c.auth.signInWithPassword({email:identifier,password});
         }
+
         if(result?.error)throw result.error;
-        setMessage('Logged in.');
-        setTimeout(()=>location.reload(),180);
+
+        authenticatedUser=result?.data?.user||null;
+        authenticatedSession=result?.data?.session||null;
+
+        if(!authenticatedUser){
+          const sessionResult=await c.auth.getSession();
+          authenticatedSession=authenticatedSession||sessionResult?.data?.session||null;
+          authenticatedUser=authenticatedSession?.user||null;
+        }
+
+        if(!authenticatedUser){
+          throw new Error('Login succeeded but the account session could not be loaded.');
+        }
+
+        setMessage('Logged in successfully.');
       }else{
         const guard=window.__f2wAbuseGuard;
         if(guard?.preflight)await guard.preflight();
 
         const {data,error}=await c.auth.signUp({
-          email,
+          email:identifier,
           password,
           options:{data:{username,chat_alias:username}}
         });
         if(error)throw error;
+
+        authenticatedUser=data?.user||null;
+        authenticatedSession=data?.session||null;
 
         if(data?.session){
           try{
@@ -657,18 +733,67 @@
               display_name:username
             },{onConflict:'user_id'});
           }catch{}
-          setMessage('Account created.');
-          setTimeout(()=>location.reload(),220);
+
+          setMessage('Account created and signed in.');
         }else{
           setMessage('Account created. Check your email if confirmation is required.');
+          return;
         }
       }
+
+      // Sync every site-wide auth UI BEFORE closing the modal.
+      try{ window.currentUser=authenticatedUser||authenticatedSession?.user||null; }catch{}
+      try{ await window.f2wRefreshAccountV70?.(); }catch{}
+      try{ window.refreshAccountUI?.(); }catch{}
+
+      // Notify page-specific gates (Watch, Chat, Favorites, etc.).
+      window.dispatchEvent(new CustomEvent('f2w:auth-success',{
+        detail:{
+          mode,
+          user:authenticatedUser||authenticatedSession?.user||null,
+          session:authenticatedSession||null
+        }
+      }));
+
+      // Do not reload the page. Reloading was racing the Watch overlay/player.
+      closeAuth();
+
+      // A second session read after close keeps auth state deterministic.
+      try{
+        const {data}=await c.auth.getSession();
+        if(data?.session?.user){
+          window.currentUser=data.session.user;
+          window.dispatchEvent(new CustomEvent('f2w:auth-session-ready',{
+            detail:{user:data.session.user,session:data.session}
+          }));
+        }
+      }catch{}
     }catch(error){
-      setMessage(error?.message||'Authentication failed.',true);
+      console.error('Flix2Watch authentication error:',error);
+
+      const raw=String(error?.message||'').trim();
+      let message=raw||'Authentication failed.';
+
+      if(/invalid login credentials|invalid credentials|email or password/i.test(raw)){
+        message='Incorrect username/email or password.';
+      }else if(/email not confirmed/i.test(raw)){
+        message='Confirm your email address before logging in.';
+      }else if(/user already registered|already been registered/i.test(raw)){
+        message='An account with that email already exists.';
+      }else if(/rate limit|too many requests/i.test(raw)){
+        message='Too many attempts. Wait a moment and try again.';
+      }
+
+      setMessage(message,true);
     }finally{
-      if(button)button.disabled=false;
+      if(button){
+        button.disabled=false;
+        delete button.dataset.f2wBusy;
+        button.textContent=mode==='signup'?'Create Account':'Log In';
+      }
     }
   }
+  window.submitAccountAuth=submit;
 
   async function oauth(provider){
     const c=client();
@@ -1881,4 +2006,5 @@
   },true);
 })();
 // f2w-force-save:genre-navigation-v91:1788228094
+// f2w-force-save:auth-session-stability-v92:1788228465
  

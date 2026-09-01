@@ -2489,3 +2489,38 @@ body.f2w-main-page .presence {
 
 /* f2w-force-save:static-presence-ui-v88:1788227370 */
  
+
+/* ============================================================
+   F2W v92 — LOGIN / SIGNUP STATUS FEEDBACK
+   ============================================================ */
+#account-modal #account-message {
+  display:block!important;
+  min-height:20px!important;
+  margin-top:10px!important;
+  padding:7px 9px!important;
+  border-radius:8px!important;
+  font-size:.72rem!important;
+  line-height:1.35!important;
+  font-weight:750!important;
+  text-align:left!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+
+#account-modal #account-message:empty {
+  min-height:0!important;
+  padding:0!important;
+  margin-top:7px!important;
+}
+
+#account-modal #account-submit[data-f2w-busy="1"] {
+  cursor:wait!important;
+  opacity:.88!important;
+}
+
+#account-modal #account-submit[data-f2w-busy="1"] i {
+  margin-right:7px!important;
+}
+
+/* f2w-force-save:auth-feedback-css-v92:1788228465 */
+ 
