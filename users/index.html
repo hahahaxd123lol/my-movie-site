@@ -427,7 +427,7 @@ html{overflow-y:scroll}
   <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=98-1788282202" defer></script>
+  <script src="/global-header-chat-v1.js?v=104-1788289281" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -729,6 +729,18 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
 
 /* f2w-force-save:users-page-clean-v68:1788222895 */
 </style>
+
+
+<script id="f2w-users-landing-route-v104">
+(() => {
+  const params=new URLSearchParams(location.search);
+  const q=String(params.get('q')||'').trim().replace(/[^A-Za-z0-9]/g,'').slice(0,30);
+  if(q){
+    location.replace(`/users/search/?q=${encodeURIComponent(q)}&page=${Math.max(1,Number(params.get('page'))||1)}`);
+  }
+})();
+/* f2w-force-save:users-landing-route-v104:1788289281 */
+</script>
 
 </head>
 <body class="theme-red f2w-main-page f2w-users-page">
@@ -3466,4 +3478,6 @@ body.f2w-users-page .f2w-user-handle {
 <!-- f2w-force-save:native-transition-off-v100:1788283039:users/index.html -->
 <!-- f2w-force-save:v100-cache:1788283039:users/index.html -->
 <!-- f2w-force-save:v103-cache:1788289090:users/index.html -->
+<!-- f2w-force-save:users-landing-v104:1788289281 -->
+<!-- f2w-force-save:v104-cache:1788289281:users/index.html -->
  

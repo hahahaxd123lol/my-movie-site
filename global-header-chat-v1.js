@@ -1829,35 +1829,16 @@
     if(!query || busy)return false;
 
     hideAutocomplete(input);
+    busy=true;
 
-    const onUsers=location.pathname.replace(/\/+$/,'')==='/users';
-    if(onUsers){
-      busy=true;
-      try{
-        const url=new URL(location.href);
-        url.searchParams.set('q',query);
-        url.searchParams.set('page','1');
-        history.replaceState({f2wUsersSearch:true},'',url.pathname+'?'+url.searchParams.toString());
-
-        if(typeof window.loadDirectoryResults==='function'){
-          await window.loadDirectoryResults();
-        } else {
-          throw new Error('User directory loader is unavailable.');
-        }
-      }catch(error){
-        console.error('User directory search failed:',error);
-        const grid=document.getElementById('users-grid');
-        const summary=document.getElementById('users-summary');
-        if(summary)summary.textContent='Could not load user results.';
-        if(grid)grid.innerHTML='<div class="f2w-users-empty">Search failed. Please try again.</div>';
-      }finally{
-        busy=false;
-      }
-      return false;
+    try{
+      // v104: user searches always use their own real page.
+      // No in-place /users/ mutation, no loader race, no infinite tab state.
+      location.assign(`/users/search/?q=${encodeURIComponent(query)}&page=1`);
+    }finally{
+      // pageshow resets this after navigation; timeout protects cancelled navs.
+      setTimeout(()=>{busy=false},1200);
     }
-
-    // From every other page, navigate exactly once.
-    location.assign(`/users/?q=${encodeURIComponent(query)}&page=1`);
     return false;
   }
 
@@ -2308,4 +2289,5 @@ window.f2wOpenGuestDmAuthV98=function(mode){
   return false;
 };
 // f2w-force-save:guest-dm-auth-opener-v98:1788282202
+// f2w-force-save:dedicated-user-search-route-v104:1788289281
  

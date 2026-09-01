@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <script id="f2w-page-fade-boot-v33">
@@ -99,7 +99,7 @@ html{overflow-y:scroll}
 <link rel="preconnect" href="https://viqufxlcxwgboyxbdhjb.supabase.co" crossorigin>
 
   <script src="/popup-protection-v34.js"></script>
-<meta charset="utf-8">
+  <meta charset="UTF-8">
   <script id="v18-force-https">
     (() => {
       const localHosts=new Set(['localhost','127.0.0.1','::1']);
@@ -117,32 +117,26 @@ html{overflow-y:scroll}
       }
     })();
   </script>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Support & Help | Flix2Watch</title>
-<link rel="icon" href="/favicon-v16.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-v16.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16-v16.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon-v16.png">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/silent-account-v16.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>User Results | Flix2Watch</title>
+  <meta name="theme-color" content="#e50914">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="/favicon-v16.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-v16.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon-v16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js" defer></script>
-<style>
-:root{--bg:#050508;--panel:#0b0b10;--line:rgba(255,255,255,.08);--muted:#8b93a7}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top right,rgba(229,9,20,.08),transparent 32%),var(--bg);color:#fff;font-family:Inter,system-ui,sans-serif}
-header{border-bottom:1px solid var(--line);background:rgba(5,5,8,.9);backdrop-filter:blur(18px)}.top{max-width:1050px;margin:auto;padding:13px 20px;display:flex;align-items:center;gap:14px}.top img{width:96px}.top a{margin-left:auto;color:#fff;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:.6rem}
-main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p{color:var(--muted);font-size:.66rem;line-height:1.5}.card{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:16px;margin-top:14px}label{display:block;color:var(--muted);font-size:.48rem;font-weight:800;margin:10px 0 5px}input,textarea{width:100%;border:1px solid var(--line);background:#08080d;color:#fff;border-radius:8px;padding:10px}textarea{min-height:110px}button{margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:#fff;color:#050507;font-weight:800;cursor:pointer}.ticket{border:1px solid var(--line);border-radius:11px;padding:12px;margin-top:10px}.msg{padding:8px;border:1px solid var(--line);border-radius:8px;margin:6px 0;background:#08080d}.msg.staff{border-color:rgba(168,85,247,.28)}.msg.owner{border-color:rgba(239,68,68,.28)}.msg small{display:block;color:var(--muted);font-size:.45rem;margin-bottom:4px}.msg div{font-size:.58rem;white-space:pre-wrap}.empty{padding:25px;text-align:center;color:var(--muted);font-size:.6rem}
-</style>
-  <link rel="preconnect" href="https://viqufxlcxwgboyxbdhjb.supabase.co" crossorigin>
-  <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
-  <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <link rel="dns-prefetch" href="//fonts.googleapis.com">
-  <link rel="dns-prefetch" href="//fonts.gstatic.com">
-  <link rel="stylesheet" href="/responsive-v7.css">
-  <link rel="stylesheet" href="/final-v9.css">
+  <script>
+    (function(){
+      const allowed=new Set(['theme-red','theme-blue','theme-green','theme-purple','theme-amber','theme-matrix','theme-cyan','theme-pink','theme-orange','theme-ice','theme-gold','theme-midnight']);
+      const saved=localStorage.getItem('flix2watch_theme')||localStorage.getItem('josh_site_theme')||'theme-red';
+      document.documentElement.dataset.flix2watchTheme=allowed.has(saved)?saved:'theme-red';
+    })();
+  </script>
   <link rel="stylesheet" href="/approved-ui-v12.css">
   <link rel="stylesheet" href="/final-fixes-v13.css">
   <link rel="stylesheet" href="/final-v14.css">
@@ -158,8 +152,8 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   <link rel="stylesheet" href="/final-v32.css">
   <link rel="stylesheet" href="/final-v33.css">
   
-  <script src="/final-fixes-v13.js" defer></script>
   <script src="/approved-ui-v12.js" defer></script>
+  <script src="/final-fixes-v13.js" defer></script>
   <script src="/final-v14.js" defer></script>
   <script src="/final-v15.js" defer></script>
   <script src="/final-v16.js" defer></script>
@@ -425,80 +419,14 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=103-1788289090">
-
-<style id="support-v36-ticket-ui">
-  /* Support V36: larger typography + horizontal ticket rail + chat modal */
-  /* V37 readability pass: gently zoom everything below the site header. */
-  @media (min-width: 701px){
-    .f2w-support-page main{zoom:1.08;}
-  }
-  @media (max-width: 700px){
-    .f2w-support-page main{zoom:1.04;}
-  }
-  .f2w-support-page main,
-  .f2w-support-page main button,
-  .f2w-support-page main input,
-  .f2w-support-page main textarea,
-  .f2w-support-page main select{
-    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
-  }
-  .f2w-support-page main p,
-  .f2w-support-page main li,
-  .f2w-support-page main .support-v16-card p{
-    font-size:1.06rem!important;
-    line-height:1.68!important;
-  }
-  .f2w-support-page .support-v16-card{min-height:0!important;}
-  .f2w-support-page main{max-width:1420px!important;padding:42px 34px 66px!important}
-  .f2w-support-page .support-v16-hero{padding:36px!important}
-  .f2w-support-page .support-v16-hero h1{font-size:clamp(3rem,5.4vw,5rem)!important;line-height:1!important;letter-spacing:-.025em!important}
-  .f2w-support-page .support-v16-hero p{font-size:1.14rem!important;line-height:1.72!important;max-width:930px!important;font-weight:500!important}
-  .f2w-support-page .support-v16-kicker{font-size:.88rem!important;letter-spacing:.12em!important;font-weight:900!important}
-  .f2w-support-page .support-v16-grid{gap:16px!important;margin-top:22px!important}
-  .f2w-support-page .support-v16-quick{padding:27px!important;min-height:184px!important;text-align:left!important;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
-  .f2w-support-page .support-v16-quick i{font-size:1.55rem!important;margin-bottom:3px!important}
-  .f2w-support-page .support-v16-quick strong{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;font-size:1.34rem!important;line-height:1.28!important;letter-spacing:0!important;text-transform:none!important;font-weight:800!important}
-  .f2w-support-page .support-v16-quick span{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;font-size:1.06rem!important;line-height:1.65!important;font-weight:500!important;letter-spacing:0!important;color:#a6b2c3!important}
-  .f2w-support-page .support-v16-layout{grid-template-columns:minmax(360px,.78fr) minmax(0,1.22fr)!important;gap:20px!important;margin-top:22px!important}
-  .f2w-support-page .support-v16-card{padding:30px!important}
-  .f2w-support-page .support-v16-card-head strong{font-size:1.18rem!important}.f2w-support-page .support-v16-card-head span{font-size:.9rem!important}
-  .f2w-support-page label{font-size:.82rem!important;font-weight:850!important}.f2w-support-page input,.f2w-support-page textarea,.f2w-support-page select{font-size:1rem!important;padding:14px 15px!important;line-height:1.45!important}.f2w-support-page .support-v16-primary,.f2w-support-page .support-v16-secondary{font-size:.96rem!important;min-height:46px!important;align-items:center!important;justify-content:center!important;gap:9px!important;font-weight:800!important;line-height:1!important;text-align:center!important}
-  .support-v36-ticket-rail{display:flex;gap:11px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin}
-  .support-v36-ticket-pill{appearance:none;flex:0 0 min(310px,85vw);scroll-snap-align:start;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;margin:0!important;padding:14px 15px!important;border:1px solid rgba(255,255,255,.09)!important;border-radius:12px!important;background:#08111c!important;color:#fff!important;text-align:left!important;cursor:pointer!important}
-  .support-v36-ticket-pill:hover,.support-v36-ticket-pill:focus-visible{border-color:color-mix(in srgb,var(--accent) 55%,#2a3b51)!important;background:#0b1724!important;outline:none!important}
-  .support-v36-ticket-pill strong{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.support-v36-ticket-pill small{display:block;color:#8292a8;font-size:.72rem;margin-top:4px}.support-v36-ticket-pill .status{font-size:.66rem;text-transform:uppercase;white-space:nowrap}
-  .support-v36-staff-moved{padding:30px;border:1px solid rgba(229,9,20,.20);border-radius:13px;background:rgba(229,9,20,.045);text-align:center}.support-v36-staff-moved>i{font-size:1.7rem;color:var(--accent)}.support-v36-staff-moved strong{display:block;font-size:1.18rem;margin-top:10px}.support-v36-staff-moved p{font-size:.98rem!important;line-height:1.6!important;margin:8px auto 16px!important;max-width:620px!important}.support-v36-staff-moved .support-v16-primary{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;min-width:230px!important;text-align:center!important}.support-v36-staff-moved .support-v16-primary i{display:inline-block!important;font-size:1rem!important;color:currentColor!important}
-  .support-v36-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.78);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}.support-v36-modal[hidden]{display:none!important}
-  .support-v36-chat{width:min(760px,100%);max-height:min(820px,calc(100vh - 36px));display:grid;grid-template-rows:auto minmax(220px,1fr) auto;border:1px solid #29394e;border-radius:18px;overflow:hidden;background:#07101a;box-shadow:0 30px 100px rgba(0,0,0,.72)}
-  .support-v36-chat-head{display:flex;gap:12px;align-items:center;padding:16px 17px;border-bottom:1px solid #1c2a3a;background:#091522}.support-v36-chat-title{min-width:0;flex:1}.support-v36-chat-title strong{display:block;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.support-v36-chat-title span{display:block;color:#8393a9;font-size:.73rem;margin-top:3px}.support-v36-close{margin:0!important;width:40px;height:40px;padding:0!important;display:grid!important;place-items:center;border:1px solid #25364a!important;border-radius:10px!important;background:#0d1926!important;color:#fff!important}
-  .support-v36-messages{overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#07101a,#060c14)}
-  .support-v36-bubble{max-width:78%;padding:10px 12px;border:1px solid #243447;border-radius:13px;background:#0c1723;align-self:flex-start}.support-v36-bubble.mine{align-self:flex-end;background:rgba(229,9,20,.10);border-color:rgba(229,9,20,.28)}.support-v36-bubble.staff,.support-v36-bubble.owner{border-color:rgba(168,85,247,.32)}.support-v36-bubble small{display:block;color:#8090a7;font-size:.67rem;margin-bottom:5px}.support-v36-bubble .body{font-size:.88rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.support-v36-bubble img{display:block;max-width:min(420px,100%);max-height:360px;object-fit:contain;border-radius:10px;margin-top:8px;border:1px solid rgba(255,255,255,.09);background:#03070c}
-  .support-v36-compose{padding:13px;border-top:1px solid #1c2a3a;background:#091522}.support-v36-compose textarea{min-height:78px!important;max-height:170px!important;resize:vertical}.support-v36-compose-row{display:flex;gap:8px;align-items:center;margin-top:8px}.support-v36-compose-row button{margin:0!important}.support-v36-attach{background:#101c29!important;color:#fff!important;border-color:#293a4f!important}.support-v36-file-name{min-width:0;flex:1;color:#8393a9;font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.support-v36-send{margin-left:auto!important}.support-v36-chat-status{min-height:18px;margin-top:6px;color:#8fa0b5;font-size:.7rem}.support-v36-chat-status.error{color:#fca5a5}
-  @media(max-width:850px){.f2w-support-page .support-v16-layout{grid-template-columns:1fr!important}.support-v36-chat{max-height:calc(100vh - 24px)}.support-v36-bubble{max-width:90%}}
-  @media(max-width:600px){.f2w-support-page main{padding:20px 12px 40px!important}.f2w-support-page .support-v16-grid{grid-template-columns:1fr!important}.support-v36-modal{padding:8px}.support-v36-chat{border-radius:13px;max-height:calc(100vh - 16px)}.support-v36-messages{padding:12px}}
-</style>
-
-
-  <style id="support-user-search-arrow-center-fix">
-    .user-search-submit{
-      display:inline-flex !important;
-      align-items:center !important;
-      justify-content:center !important;
-      padding:0 !important;
-      line-height:1 !important;
-    }
-    .user-search-submit i{
-      display:block !important;
-      margin:0 !important;
-      line-height:1 !important;
-      transform:none !important;
-    }
-  </style>
+  <link rel="stylesheet" href="/final-v35.css?v=104-1788289281">
   <!-- Unified Watch-page header + preloaded chat -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/responsive-v7.css">
+  <link rel="stylesheet" href="/final-v9.css">
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
+  <script src="/interaction-v7.js" defer></script>
+  <script src="/realtime-v7.js" defer></script>
   <script src="/global-header-chat-v1.js?v=104-1788289281" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
@@ -543,8 +471,528 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 /* f2w-force-save:header-gorilla-lock-v30:1788216738 */
 </style>
 
+
+<style id="f2w-users-results-v65">
+/* Bigger, more readable user search results */
+.users-results,
+#user-results,
+.user-results {
+  display:grid!important;
+  gap:12px!important;
+}
+
+.user-result-card,
+.user-card,
+.users-result-card {
+  min-height:96px!important;
+  padding:14px 16px!important;
+  border-radius:14px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+}
+
+.user-result-card img,
+.user-card img,
+.users-result-card img,
+.user-result-avatar {
+  width:58px!important;
+  height:58px!important;
+  min-width:58px!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+}
+
+.user-result-card strong,
+.user-card strong,
+.users-result-card strong,
+.user-result-name {
+  font-size:1rem!important;
+  line-height:1.2!important;
+}
+
+.user-result-card small,
+.user-card small,
+.users-result-card small,
+.user-result-meta {
+  font-size:.76rem!important;
+  line-height:1.35!important;
+}
+
+#users-pagination,
+.users-pagination,
+.pagination {
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:7px!important;
+  flex-wrap:wrap!important;
+  margin:22px 0 8px!important;
+}
+
+#users-pagination button,
+.users-pagination button,
+.pagination button,
+.f2w-users-page-btn {
+  min-width:38px!important;
+  height:38px!important;
+  padding:0 11px!important;
+  border:1px solid #29425c!important;
+  border-radius:9px!important;
+  background:#081725!important;
+  color:#dce7f3!important;
+  font-size:.78rem!important;
+  font-weight:800!important;
+  cursor:pointer!important;
+}
+
+#users-pagination button.active,
+.users-pagination button.active,
+.pagination button.active,
+.f2w-users-page-btn.active {
+  background:#e50914!important;
+  border-color:#ff3344!important;
+  color:#fff!important;
+}
+/* f2w-force-save:users-results-v65:1788222474 */
+</style>
+
+
+<style id="f2w-users-page-clean-v68">
+/* ============================================================
+   F2W v68 — USERS PAGE CLEANUP
+   ============================================================ */
+
+/* User search page gets a wider readable content area. */
+.f2w-users-main {
+  max-width:1540px!important;
+  margin:0 auto!important;
+  padding:26px 28px 64px!important;
+}
+
+.f2w-users-hero {
+  padding:20px 22px!important;
+  border-radius:14px!important;
+}
+
+.f2w-users-hero h1 {
+  font-size:1.32rem!important;
+  line-height:1.2!important;
+}
+
+.f2w-users-hero p,
+.f2w-users-summary {
+  font-size:.78rem!important;
+  line-height:1.5!important;
+}
+
+.f2w-users-grid {
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(420px,1fr))!important;
+  gap:14px!important;
+  margin-top:12px!important;
+}
+
+/* REAL user result card classes */
+.f2w-user-card {
+  min-height:118px!important;
+  padding:16px 18px!important;
+  border:1px solid #28435d!important;
+  border-radius:14px!important;
+  background:#081725!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:16px!important;
+  text-decoration:none!important;
+}
+
+.f2w-user-card:hover {
+  border-color:#3d617f!important;
+  background:#0b1d2d!important;
+}
+
+.f2w-user-avatar {
+  width:72px!important;
+  height:72px!important;
+  min-width:72px!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  display:grid!important;
+  place-items:center!important;
+  background:#14273a!important;
+  color:#fff!important;
+  font-size:1rem!important;
+  font-weight:900!important;
+}
+
+.f2w-user-avatar img {
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  display:block!important;
+}
+
+.f2w-user-copy {
+  min-width:0!important;
+  flex:1 1 auto!important;
+}
+
+.f2w-user-display {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font-size:1.08rem!important;
+  font-weight:900!important;
+  line-height:1.2!important;
+  margin-bottom:4px!important;
+}
+
+.f2w-user-handle {
+  color:#a7b8ca!important;
+  -webkit-text-fill-color:#a7b8ca!important;
+  font-size:.82rem!important;
+  font-weight:750!important;
+  line-height:1.3!important;
+}
+
+.f2w-user-bio {
+  margin-top:7px!important;
+  color:#8196ad!important;
+  font-size:.75rem!important;
+  line-height:1.4!important;
+}
+
+/* Real pagination container */
+#users-pagination {
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:7px!important;
+  flex-wrap:wrap!important;
+  margin:24px 0 0!important;
+}
+
+#users-pagination button {
+  min-width:40px!important;
+  height:40px!important;
+  padding:0 12px!important;
+  border:1px solid #29445e!important;
+  border-radius:9px!important;
+  background:#081725!important;
+  color:#dce7f3!important;
+  font-size:.78rem!important;
+  font-weight:850!important;
+  cursor:pointer!important;
+}
+
+#users-pagination button.active {
+  background:#e50914!important;
+  border-color:#ff3445!important;
+  color:#fff!important;
+}
+
+/* On this page specifically there is NO separate user-search arrow button. */
+body.f2w-users-page > header .user-search-container #user-search {
+  padding-right:14px!important;
+}
+
+body.f2w-users-page > header .user-search-container .user-search-submit,
+body.f2w-users-page > header .f2w-search-pair > .user-search-submit {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* Keep only the canonical legal footer. */
+body.f2w-users-page > a[href="/privacy/"],
+body.f2w-users-page > main + a[href="/privacy/"],
+body.f2w-users-page > footer + a[href="/privacy/"] {
+  display:none!important;
+}
+
+@media(max-width:760px) {
+  .f2w-users-main {
+    padding:18px 14px 46px!important;
+  }
+  .f2w-users-grid {
+    grid-template-columns:1fr!important;
+  }
+  .f2w-user-card {
+    min-height:104px!important;
+    padding:14px!important;
+  }
+  .f2w-user-avatar {
+    width:62px!important;
+    height:62px!important;
+    min-width:62px!important;
+  }
+}
+
+/* f2w-force-save:users-page-clean-v68:1788222895 */
+</style>
+
+
+<style id="f2w-dedicated-user-search-css-v104">
+.f2w-search-results-main {
+  width:min(1480px,calc(100% - 36px))!important;
+  margin:26px auto 72px!important;
+  padding:0!important;
+}
+
+.f2w-user-search-hero {
+  border:1px solid #28435d!important;
+  border-radius:18px!important;
+  padding:28px 30px!important;
+  background:
+    radial-gradient(circle at 92% 0%,rgba(229,9,20,.13),transparent 34%),
+    linear-gradient(135deg,#081725,#07111d)!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.22)!important;
+}
+
+.f2w-user-search-kicker {
+  color:#ff2638!important;
+  font-size:.7rem!important;
+  font-weight:950!important;
+  letter-spacing:.14em!important;
+  margin-bottom:10px!important;
+}
+
+.f2w-user-search-head {
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+}
+
+.f2w-user-search-head h1 {
+  margin:0!important;
+  color:#fff!important;
+  font-size:clamp(1.65rem,3vw,2.55rem)!important;
+  line-height:1.06!important;
+}
+
+.f2w-user-search-head p {
+  margin:9px 0 0!important;
+  color:#8fa3b9!important;
+  font-size:.82rem!important;
+}
+
+.f2w-user-search-home {
+  flex:0 0 auto!important;
+  min-height:42px!important;
+  padding:0 16px!important;
+  border:1px solid #2b4863!important;
+  border-radius:10px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  color:#e4edf7!important;
+  background:#091927!important;
+  text-decoration:none!important;
+  font-weight:850!important;
+  font-size:.76rem!important;
+}
+
+.f2w-user-search-toolbar {
+  margin-top:14px!important;
+  min-height:62px!important;
+  padding:13px 16px!important;
+  border:1px solid #253f58!important;
+  border-radius:13px!important;
+  background:#071522!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+}
+
+.f2w-user-search-query {
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  color:#8ea2b8!important;
+  font-size:.78rem!important;
+}
+
+.f2w-user-search-query i {
+  color:#ff2638!important;
+}
+
+.f2w-user-search-query strong {
+  color:#fff!important;
+  font-size:.9rem!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+.f2w-user-search-count {
+  flex:0 0 auto!important;
+  color:#8fa4ba!important;
+  font-size:.76rem!important;
+  font-weight:750!important;
+}
+
+.f2w-search-results-main .f2w-users-grid {
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:14px!important;
+  margin-top:16px!important;
+}
+
+.f2w-search-results-main .f2w-user-result-card {
+  position:relative!important;
+  min-height:128px!important;
+  padding:18px 58px 18px 18px!important;
+  border:1px solid #28445f!important;
+  border-radius:15px!important;
+  background:linear-gradient(145deg,#081827,#07131f)!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.12)!important;
+}
+
+.f2w-search-results-main .f2w-user-result-card:hover {
+  border-color:#496f92!important;
+  background:linear-gradient(145deg,#0b1e30,#081827)!important;
+}
+
+.f2w-search-results-main .f2w-user-avatar {
+  width:78px!important;
+  height:78px!important;
+  min-width:78px!important;
+  font-size:1.05rem!important;
+}
+
+.f2w-search-results-main .f2w-user-display {
+  font-size:1.08rem!important;
+  line-height:1.2!important;
+  margin-bottom:4px!important;
+}
+
+.f2w-search-results-main .f2w-user-handle {
+  font-size:.83rem!important;
+}
+
+.f2w-user-result-arrow {
+  position:absolute!important;
+  right:18px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:34px!important;
+  height:34px!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#8fa5bc!important;
+  background:#0c2031!important;
+  border:1px solid #29465f!important;
+}
+
+#users-pagination {
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:7px!important;
+  flex-wrap:wrap!important;
+  margin:26px 0 0!important;
+}
+
+.f2w-user-page-button {
+  min-width:42px!important;
+  height:42px!important;
+  padding:0 13px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:1px solid #29465f!important;
+  border-radius:9px!important;
+  background:#081725!important;
+  color:#dbe7f3!important;
+  text-decoration:none!important;
+  font-size:.78rem!important;
+  font-weight:850!important;
+}
+
+.f2w-user-page-button.active {
+  background:#e50914!important;
+  border-color:#ff3445!important;
+  color:#fff!important;
+}
+
+.f2w-user-page-button.disabled {
+  opacity:.38!important;
+}
+
+.f2w-user-page-dots {
+  color:#6f8297!important;
+}
+
+.f2w-user-search-empty {
+  grid-column:1/-1!important;
+  min-height:180px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  border:1px dashed #29465f!important;
+  border-radius:14px!important;
+  background:#071522!important;
+  color:#8fa4ba!important;
+}
+
+.f2w-user-search-empty i {
+  color:#ff3344!important;
+  font-size:1.35rem!important;
+}
+
+.f2w-user-search-empty strong {
+  color:#fff!important;
+  font-size:1rem!important;
+}
+
+/* Dedicated results page keeps the canonical header search arrow visible. */
+body.f2w-dedicated-user-search-page > header .user-search-container .user-search-submit {
+  display:flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+
+@media(max-width:900px){
+  .f2w-search-results-main .f2w-users-grid {
+    grid-template-columns:1fr!important;
+  }
+}
+
+@media(max-width:620px){
+  .f2w-search-results-main {
+    width:calc(100% - 22px)!important;
+    margin-top:16px!important;
+  }
+  .f2w-user-search-hero {
+    padding:20px 18px!important;
+  }
+  .f2w-user-search-head {
+    align-items:flex-start!important;
+    flex-direction:column!important;
+  }
+  .f2w-user-search-toolbar {
+    align-items:flex-start!important;
+    flex-direction:column!important;
+  }
+  .f2w-search-results-main .f2w-user-result-card {
+    min-height:112px!important;
+    padding:15px 48px 15px 15px!important;
+  }
+  .f2w-search-results-main .f2w-user-avatar {
+    width:64px!important;
+    height:64px!important;
+    min-width:64px!important;
+  }
+}
+
+/* f2w-force-save:dedicated-user-search-css-v104:1788289281 */
+</style>
+
 </head>
-<body class="f2w-main-page f2w-support-page">
+<body class="theme-red f2w-main-page f2w-users-page f2w-dedicated-user-search-page">
 <header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
       <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
@@ -643,11 +1091,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             oninput="handleUserSearchInput(this)"
             onfocus="protectUserSearchField(this)"
            role="searchbox">
-          <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
-            <i class="fa-solid fa-arrow-right"></i>
-          </button>
-          
-        </div>
+</div>
       </div>
 
       <div class="f2w-action-cluster">
@@ -690,357 +1134,277 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     </div>
   </header>
 
-<main>
-  <section class="support-v16-hero">
-    <div>
-      <div class="support-v16-kicker">FLIX2WATCH HELP DESK</div>
-      <h1>Need a hand?</h1>
-      <p>Send a private ticket to Flix2Watch Staff for account help, playback problems, profile concerns or anything else that needs a human reply. Your ticket is visible only to you and authorized Staff/Owner accounts.</p>
-      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:13px">
-        <a class="support-v16-primary" href="/home/" style="text-decoration:none"><i class="fa-solid fa-house"></i> Back to Home</a>
-        <button class="support-v16-secondary" type="button" onclick="document.getElementById('ticket-subject')?.focus()"><i class="fa-solid fa-plus"></i> New Ticket</button>
+<main class="f2w-users-main f2w-search-results-main">
+  <section class="f2w-user-search-hero">
+    <div class="f2w-user-search-kicker"><i class="fa-solid fa-users"></i> FLIX2WATCH USERS</div>
+    <div class="f2w-user-search-head">
+      <div>
+        <h1 id="f2w-user-search-title">User search</h1>
+        <p>Profiles whose usernames start with your search. Up to 30 results per page.</p>
       </div>
-    </div>
-    <div class="support-v16-brand">
-      <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch">
+      <a class="f2w-user-search-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
     </div>
   </section>
 
-  <section class="support-v16-grid" aria-label="Support shortcuts">
-    <button class="support-v16-quick" type="button" onclick="prefillSupport('Playback','Playback problem')">
-      <i class="fa-solid fa-circle-play"></i>
-      <strong>Playback help</strong>
-      <span>Player not loading, buffering, wrong title, audio or subtitle problems.</span>
-    </button>
-    <button class="support-v16-quick" type="button" onclick="prefillSupport('Account','Account help')">
-      <i class="fa-solid fa-user-lock"></i>
-      <strong>Account help</strong>
-      <span>Login, OAuth, username, profile or account-access questions.</span>
-    </button>
-    <button class="support-v16-quick" type="button" onclick="prefillSupport('Safety','Profile or user concern')">
-      <i class="fa-solid fa-user-shield"></i>
-      <strong>User concern</strong>
-      <span>Harassment, impersonation, unsafe profile content or moderation concerns.</span>
-    </button>
+  <section class="f2w-user-search-toolbar" aria-label="User search">
+    <div class="f2w-user-search-query">
+      <i class="fa-solid fa-user-magnifying-glass"></i>
+      <span>Searching for</span>
+      <strong id="f2w-user-search-query">—</strong>
+    </div>
+    <div class="f2w-user-search-count" id="users-summary">Loading results…</div>
   </section>
 
-  <section class="support-v16-layout">
-    <div class="support-v16-card" id="new-ticket-card">
-      <div class="support-v16-card-head">
-        <strong><i class="fa-regular fa-pen-to-square" style="color:var(--accent)"></i> New support ticket</strong>
-        <span>Private to you + Staff</span>
-      </div>
-
-      <label for="ticket-category">CATEGORY</label>
-      <select id="ticket-category">
-        <option value="General">General help</option>
-        <option value="Playback">Playback</option>
-        <option value="Account">Account / login</option>
-        <option value="Profile">Profile / username</option>
-        <option value="Safety">User / safety concern</option>
-        <option value="Feedback">Feedback / suggestion</option>
-      </select>
-
-      <label for="ticket-subject">SUBJECT</label>
-      <input id="ticket-subject" maxlength="160" placeholder="Short summary">
-
-      <label for="ticket-message">MESSAGE</label>
-      <textarea id="ticket-message" maxlength="4000" placeholder="Tell Staff what happened, what you expected, and anything useful for reproducing the problem."></textarea>
-
-      <button class="support-v16-primary" id="ticket-create-btn" type="button" onclick="createTicket()">
-        <i class="fa-solid fa-paper-plane"></i> Create ticket
-      </button>
-      
-    </div>
-
-    <div class="support-v16-card">
-      <div class="support-v16-card-head">
-        <strong><i class="fa-regular fa-comments" style="color:var(--accent)"></i> Your tickets</strong>
-        <button class="support-v16-secondary" type="button" onclick="loadTickets()" style="margin:0"><i class="fa-solid fa-rotate"></i> Refresh</button>
-      </div>
-      <div id="tickets"><div class="support-v16-empty">Loading your support history…</div></div>
-    </div>
+  <section class="f2w-users-grid" id="users-grid" aria-live="polite">
+    <div class="f2w-users-empty"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading users…</div>
   </section>
+
+  <nav id="users-pagination" aria-label="User result pages"></nav>
 </main>
 
-<div class="support-v36-modal" id="support-ticket-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="support-ticket-modal-title">
-  <div class="support-v36-chat">
-    <div class="support-v36-chat-head">
-      <div class="support-v36-chat-title"><strong id="support-ticket-modal-title">Support ticket</strong></div>
-      <button class="support-v36-close" type="button" onclick="closeTicketModal()" aria-label="Close ticket"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    
-    <div class="support-v36-compose">
-      <textarea id="support-ticket-modal-reply" maxlength="4000" placeholder="Write a reply…"></textarea>
-      <div class="support-v36-compose-row">
-        <input id="support-ticket-image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onchange="selectSupportImage(this.files?.[0])">
-        <button class="support-v16-secondary support-v36-attach" type="button" onclick="document.getElementById('support-ticket-image').click()"><i class="fa-regular fa-image"></i> Image</button>
-        <span class="support-v36-file-name" id="support-ticket-file-name">No image selected</span>
-        <button class="support-v16-primary support-v36-send" id="support-ticket-send" type="button" onclick="sendTicketModalReply()"><i class="fa-solid fa-paper-plane"></i> Send</button>
-      </div>
-      
-    </div>
-  </div>
-</div>
 
+<script id="f2w-dedicated-user-search-v104">
+(() => {
+  'use strict';
 
+  const SUPABASE_URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const SUPABASE_KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  const USERS_PER_PAGE=30;
+  const CACHE_MS=5*60*1000;
 
-<script>
-const db=window.supabase.createClient(
-  "https://viqufxlcxwgboyxbdhjb.supabase.co",
-  "sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge"
-);
+  const db = window.chatSupabase?.from
+    ? window.chatSupabase
+    : window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+      );
 
-function esc(v=''){
-  return String(v).replace(/[&<>"']/g,c=>({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-  }[c]));
-}
-
-function fmt(v){
-  try{return new Date(v).toLocaleString()}
-  catch{return String(v)}
-}
-
-async function rpc(name,args={}){
-  const {data,error}=await db.rpc(name,args);
-  if(error)throw error;
-  return data;
-}
-
-function setTicketStatus(message,error=false){
-  const el=document.getElementById('ticket-create-status');
-  if(!el)return;
-  el.textContent=message||'';
-  el.classList.toggle('error',Boolean(error));
-}
-
-function prefillSupport(category,subject){
-  const categoryEl=document.getElementById('ticket-category');
-  const subjectEl=document.getElementById('ticket-subject');
-  if(categoryEl)categoryEl.value=category;
-  if(subjectEl&&!subjectEl.value)subjectEl.value=subject;
-  document.getElementById('ticket-message')?.focus();
-}
-
-async function boot(){
-  const {data,error}=await db.auth.getUser();
-
-  if(error||!data?.user){
-    document.getElementById('new-ticket-card').innerHTML=`
-      <div class="support-v16-empty">
-        <i class="fa-solid fa-lock" style="color:var(--accent);font-size:1.1rem"></i>
-        <div style="margin-top:8px">Sign in to create and view private support tickets.</div>
-        <button class="support-v16-primary" type="button" onclick="openHeaderAuth('login')">
-          <i class="fa-regular fa-user"></i> Log In
-        </button>
-      </div>`;
-    document.getElementById('tickets').innerHTML=
-      '<div class="support-v16-empty">Your ticket history appears here after login.</div>';
-    return;
+  function clean(value){
+    return String(value||'').trim().replace(/[^A-Za-z0-9]/g,'').slice(0,30);
   }
 
-  await loadTickets();
-}
-
-async function createTicket(){
-  const category=document.getElementById('ticket-category')?.value||'General';
-  const subject=document.getElementById('ticket-subject')?.value.trim()||'';
-  const message=document.getElementById('ticket-message')?.value.trim()||'';
-  const button=document.getElementById('ticket-create-btn');
-
-  if(!subject||!message){
-    setTicketStatus('Add a subject and message first.',true);
-    return;
+  function esc(value=''){
+    return String(value).replace(/[&<>"']/g,ch=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    }[ch]));
   }
 
-  if(button)button.disabled=true;
-  setTicketStatus('Sending ticket…');
-
-  try{
-    await rpc('create_support_ticket',{
-      p_subject:`[${category}] ${subject}`.slice(0,160),
-      p_message:message
-    });
-
-    document.getElementById('ticket-subject').value='';
-    document.getElementById('ticket-message').value='';
-    document.getElementById('ticket-category').value='General';
-
-    setTicketStatus('Ticket created. Staff can reply from the Control Center.');
-    await loadTickets();
-  }catch(error){
-    setTicketStatus(error.message||'Could not create ticket.',true);
-  }finally{
-    if(button)button.disabled=false;
+  function initials(value=''){
+    const s=String(value||'?').trim();
+    return s.slice(0,2).toUpperCase();
   }
-}
 
-let supportTickets=[];
-let activeSupportTicketId=null;
-let pendingSupportImage=null;
-let currentSupportUser=null;
-let currentSupportRole='member';
+  function cacheKey(query,page){
+    return `f2w_user_search_v104_${query.toLowerCase()}_${page}`;
+  }
 
-function ticketStatusLabel(value='open'){
-  return String(value||'open').replaceAll('_',' ');
-}
-
-function parseSupportMessage(raw=''){
-  const text=String(raw||'');
-  const match=text.match(/\[\[support-image:(https:\/\/[^\]]+)\]\]/i);
-  const imageUrl=match?.[1]||'';
-  const body=match?text.replace(match[0],'').trim():text;
-  return {body,imageUrl};
-}
-
-function safeSupportImageUrl(url=''){
-  try{
-    const u=new URL(url);
-    return u.protocol==='https:' && u.hostname==='viqufxlcxwgboyxbdhjb.supabase.co' && u.pathname.includes('/storage/v1/object/public/chat-media/') ? u.href : '';
-  }catch{return ''}
-}
-
-function renderTicket(ticket){
-  return `
-    <button class="support-v36-ticket-pill" type="button" onclick="openTicketModal('${ticket.id}')">
-      <span><strong>${esc(ticket.subject)}</strong><small>Updated ${esc(fmt(ticket.updated_at))} · ${esc(ticket.priority||'normal')} priority</small></span>
-      <span class="status">${esc(ticketStatusLabel(ticket.status))}</span>
-    </button>`;
-}
-
-function renderTicketModal(ticket){
-  const messages=[...(ticket?.support_ticket_messages||[])].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-  document.getElementById('support-ticket-modal-title').textContent=ticket?.subject||'Support ticket';
-  document.getElementById('support-ticket-modal-meta').textContent=`${ticketStatusLabel(ticket?.status)} · ${ticket?.priority||'normal'} priority · updated ${fmt(ticket?.updated_at)}`;
-  const host=document.getElementById('support-ticket-modal-messages');
-  host.innerHTML=messages.map(message=>{
-    const parsed=parseSupportMessage(message.message);
-    const img=safeSupportImageUrl(parsed.imageUrl);
-    const mine=message.sender_user_id && currentSupportUser?.id===message.sender_user_id;
-    return `<div class="support-v36-bubble ${mine?'mine':''} ${esc(message.sender_role||'member')}">
-      <small>${esc(mine?'You':message.sender_role||'member')} · ${esc(fmt(message.created_at))}</small>
-      ${parsed.body?`<div class="body">${esc(parsed.body)}</div>`:''}
-      ${img?`<a href="${esc(img)}" target="_blank" rel="noopener"><img src="${esc(img)}" alt="Support attachment"></a>`:''}
-    </div>`;
-  }).join('')||'<div class="support-v16-empty">No messages yet.</div>';
-  requestAnimationFrame(()=>{host.scrollTop=host.scrollHeight});
-}
-
-function openTicketModal(id){
-  const ticket=supportTickets.find(t=>String(t.id)===String(id));
-  if(!ticket)return;
-  activeSupportTicketId=ticket.id;
-  pendingSupportImage=null;
-  const input=document.getElementById('support-ticket-image'); if(input)input.value='';
-  document.getElementById('support-ticket-file-name').textContent='No image selected';
-  document.getElementById('support-ticket-modal-reply').value='';
-  setSupportChatStatus('');
-  renderTicketModal(ticket);
-  const modal=document.getElementById('support-ticket-modal');
-  modal.hidden=false;modal.setAttribute('aria-hidden','false');
-  document.body.style.overflow='hidden';
-  setTimeout(()=>document.getElementById('support-ticket-modal-reply')?.focus(),30);
-}
-
-function closeTicketModal(){
-  const modal=document.getElementById('support-ticket-modal');
-  modal.hidden=true;modal.setAttribute('aria-hidden','true');
-  document.body.style.overflow='';
-  activeSupportTicketId=null;pendingSupportImage=null;
-}
-
-function selectSupportImage(file){
-  pendingSupportImage=null;
-  const name=document.getElementById('support-ticket-file-name');
-  if(!file){if(name)name.textContent='No image selected';return}
-  const allowed=new Set(['image/jpeg','image/png','image/webp','image/gif']);
-  if(!allowed.has(file.type)){setSupportChatStatus('Use JPG, PNG, WEBP or GIF.',true);return}
-  if(file.size>5*1024*1024){setSupportChatStatus('Image must be 5 MB or smaller.',true);return}
-  pendingSupportImage=file;if(name)name.textContent=file.name;setSupportChatStatus('Image ready to send.');
-}
-
-function setSupportChatStatus(message,error=false){
-  const el=document.getElementById('support-ticket-chat-status');if(!el)return;
-  el.textContent=message||'';el.classList.toggle('error',Boolean(error));
-}
-
-async function uploadSupportImage(ticketId){
-  if(!pendingSupportImage)return '';
-  const {data:userData}=await db.auth.getUser();
-  const user=userData?.user;if(!user)throw new Error('Sign in again before uploading.');
-  const ext=(pendingSupportImage.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-  const objectPath=`${user.id}/support/${ticketId}/${Date.now()}-${crypto.randomUUID?.()||Math.random().toString(36).slice(2)}.${ext}`;
-  const {error}=await db.storage.from('chat-media').upload(objectPath,pendingSupportImage,{upsert:false,contentType:pendingSupportImage.type,cacheControl:'3600'});
-  if(error)throw error;
-  const {data}=db.storage.from('chat-media').getPublicUrl(objectPath);
-  return data?.publicUrl||'';
-}
-
-async function loadTickets(){
-  const host=document.getElementById('tickets');
-  if(!host)return;
-  host.innerHTML='<div class="support-v16-empty">Loading tickets…</div>';
-  try{
-    const {data:userData,error:userError}=await db.auth.getUser();
-    if(userError||!userData?.user)throw userError||new Error('Sign in to view tickets.');
-    currentSupportUser=userData.user;
+  function readCache(query,page){
     try{
-      const state=await rpc('get_staff_context');
-      currentSupportRole=String(state?.role||'member').toLowerCase();
-    }catch{currentSupportRole='member'}
-    if(['owner','staff'].includes(currentSupportRole)){
-      supportTickets=[];
-      host.innerHTML=`<div class="support-v36-staff-moved"><i class="fa-solid fa-headset"></i><strong>Staff ticket queue moved</strong><p>Owner and Staff ticket management now lives in the Staff Control Center so this page stays clean for normal support requests.</p><a class="support-v16-primary" href="/staff/?tab=support" style="display:inline-flex;text-decoration:none"><i class="fa-solid fa-ticket"></i> Open Support Tickets</a></div>`;
+      const raw=localStorage.getItem(cacheKey(query,page));
+      if(!raw)return null;
+      const parsed=JSON.parse(raw);
+      if(!parsed?.ts||Date.now()-parsed.ts>CACHE_MS)return null;
+      return parsed;
+    }catch{return null}
+  }
+
+  function writeCache(query,page,payload){
+    try{
+      localStorage.setItem(
+        cacheKey(query,page),
+        JSON.stringify({ts:Date.now(),...payload})
+      );
+      localStorage.setItem('f2w_last_user_search_v104',query);
+    }catch{}
+  }
+
+  function profileCard(profile){
+    const username=esc(profile.username||'');
+    const display=esc(profile.display_name||profile.username||'Member');
+    const bio=esc(profile.bio||'');
+    const avatar=profile.avatar_url
+      ? `<img src="${esc(profile.avatar_url)}" alt="${display} profile picture" loading="lazy" decoding="async">`
+      : `<span>${esc(initials(profile.username))}</span>`;
+
+    return `<a class="f2w-user-card f2w-user-result-card"
+              href="/profile/?user=${encodeURIComponent(profile.username||'')}"
+              aria-label="Open @${username} public profile">
+      <div class="f2w-user-avatar">${avatar}</div>
+      <div class="f2w-user-copy">
+        <div class="f2w-user-display display-name"
+             data-username="${username}"
+             data-f2w-username="${username}">${display}</div>
+        <div class="f2w-user-handle">@${username}</div>
+        ${bio?`<div class="f2w-user-bio">${bio}</div>`:''}
+      </div>
+      <span class="f2w-user-result-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+    </a>`;
+  }
+
+  function renderPagination(query,page,totalPages){
+    const host=document.getElementById('users-pagination');
+    if(!host)return;
+    host.innerHTML='';
+    if(totalPages<=1)return;
+
+    const add=(label,target,active=false,disabled=false)=>{
+      const a=document.createElement(disabled?'span':'a');
+      a.className='f2w-user-page-button'+(active?' active':'')+(disabled?' disabled':'');
+      a.textContent=label;
+      if(!disabled)a.href=`/users/search/?q=${encodeURIComponent(query)}&page=${target}`;
+      host.appendChild(a);
+    };
+
+    add('Prev',Math.max(1,page-1),false,page<=1);
+
+    const start=Math.max(1,page-2);
+    const end=Math.min(totalPages,page+2);
+
+    if(start>1){
+      add('1',1,page===1);
+      if(start>2){
+        const dots=document.createElement('span');
+        dots.className='f2w-user-page-dots';
+        dots.textContent='…';
+        host.appendChild(dots);
+      }
+    }
+
+    for(let n=start;n<=end;n++)add(String(n),n,n===page);
+
+    if(end<totalPages){
+      if(end<totalPages-1){
+        const dots=document.createElement('span');
+        dots.className='f2w-user-page-dots';
+        dots.textContent='…';
+        host.appendChild(dots);
+      }
+      add(String(totalPages),totalPages,page===totalPages);
+    }
+
+    add('Next',Math.min(totalPages,page+1),false,page>=totalPages);
+  }
+
+  function render(query,page,rows,total,fromCache=false){
+    const grid=document.getElementById('users-grid');
+    const summary=document.getElementById('users-summary');
+    const queryLabel=document.getElementById('f2w-user-search-query');
+    const title=document.getElementById('f2w-user-search-title');
+    if(!grid||!summary)return;
+
+    if(queryLabel)queryLabel.textContent=query;
+    if(title)title.textContent=`Users starting with “${query}”`;
+
+    const totalPages=Math.max(1,Math.ceil(total/USERS_PER_PAGE));
+
+    summary.textContent=total
+      ? `${total} user${total===1?'':'s'} · page ${page} of ${totalPages}${fromCache?' · cached':''}`
+      : `No usernames start with “${query}”.`;
+
+    grid.innerHTML=rows.length
+      ? rows.map(profileCard).join('')
+      : `<div class="f2w-users-empty f2w-user-search-empty">
+           <i class="fa-regular fa-face-meh"></i>
+           <strong>No matching users</strong>
+           <span>Try a different beginning in Search Users above.</span>
+         </div>`;
+
+    renderPagination(query,page,totalPages);
+    try{window.decorateNames?.()}catch{}
+  }
+
+  async function load(){
+    const params=new URLSearchParams(location.search);
+    const query=clean(params.get('q'));
+    const page=Math.max(1,Number(params.get('page'))||1);
+
+    const headerInput=document.getElementById('user-search');
+    if(headerInput)headerInput.value=query;
+
+    if(!query){
+      location.replace('/users/');
       return;
     }
-    const {data,error}=await db.from('support_tickets').select('*,support_ticket_messages(*)').eq('user_id',currentSupportUser.id).order('updated_at',{ascending:false});
-    if(error)throw error;
-    supportTickets=data||[];
-    host.innerHTML=supportTickets.length?`<div class="support-v36-ticket-rail">${supportTickets.map(renderTicket).join('')}</div>`:'<div class="support-v16-empty">No tickets yet. Use the form to start one.</div>';
-    if(activeSupportTicketId){const active=supportTickets.find(t=>String(t.id)===String(activeSupportTicketId));if(active)renderTicketModal(active)}
-  }catch(error){host.innerHTML=`<div class="support-v16-empty">${esc(error?.message||'Could not load tickets.')}</div>`}
-}
 
-async function sendTicketModalReply(){
-  if(!activeSupportTicketId)return;
-  const input=document.getElementById('support-ticket-modal-reply');
-  const button=document.getElementById('support-ticket-send');
-  const message=input?.value.trim()||'';
-  if(!message&&!pendingSupportImage){setSupportChatStatus('Write a message or choose an image.',true);return}
-  button.disabled=true;setSupportChatStatus(pendingSupportImage?'Uploading image…':'Sending…');
-  try{
-    const imageUrl=await uploadSupportImage(activeSupportTicketId);
-    const payload=`${message}${message&&imageUrl?'\n':''}${imageUrl?`[[support-image:${imageUrl}]]`:''}`.slice(0,4000);
-    await rpc('add_support_ticket_message',{p_ticket_id:activeSupportTicketId,p_message:payload});
-    input.value='';pendingSupportImage=null;document.getElementById('support-ticket-image').value='';document.getElementById('support-ticket-file-name').textContent='No image selected';
-    setSupportChatStatus('Sent.');await loadTickets();
-  }catch(error){setSupportChatStatus(error?.message||'Could not send reply.',true)}finally{button.disabled=false}
-}
+    document.getElementById('f2w-user-search-query').textContent=query;
+    document.getElementById('f2w-user-search-title').textContent=`Users starting with “${query}”`;
 
-async function reply(id){activeSupportTicketId=id;await sendTicketModalReply()}
+    const cached=readCache(query,page);
+    if(cached?.rows){
+      render(query,page,cached.rows,Number(cached.total||cached.rows.length),true);
+    }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('support-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='support-ticket-modal')closeTicketModal()});
-  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('support-ticket-modal')?.hidden)closeTicketModal()});
-  document.getElementById('support-ticket-modal-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendTicketModalReply()}});
-  const message=document.getElementById('ticket-message');
-  if(message){
-    message.addEventListener('keydown',event=>{
-      if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){
-        event.preventDefault();
-        createTicket();
+    const from=(page-1)*USERS_PER_PAGE;
+    const to=from+USERS_PER_PAGE-1;
+
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),6000);
+
+    try{
+      const request=db
+        .from('profiles')
+        .select('user_id,username,display_name,avatar_url,bio',{count:'exact'})
+        .ilike('username',`${query}%`)
+        .order('username',{ascending:true})
+        .range(from,to)
+        .abortSignal(controller.signal);
+
+      const {data,error,count}=await request;
+      if(error)throw error;
+
+      const rows=[...(data||[])].sort((a,b)=>{
+        const aExact=String(a.username||'').toLowerCase()===query.toLowerCase()?0:1;
+        const bExact=String(b.username||'').toLowerCase()===query.toLowerCase()?0:1;
+        if(aExact!==bExact)return aExact-bExact;
+        return String(a.username||'').localeCompare(String(b.username||''),undefined,{sensitivity:'base'});
+      });
+
+      const total=Number.isFinite(Number(count))?Number(count):rows.length;
+
+      if(total>0){
+        const totalPages=Math.max(1,Math.ceil(total/USERS_PER_PAGE));
+        if(page>totalPages){
+          location.replace(`/users/search/?q=${encodeURIComponent(query)}&page=1`);
+          return;
+        }
       }
-    });
+
+      writeCache(query,page,{rows,total});
+      render(query,page,rows,total,false);
+    }catch(error){
+      console.error('Dedicated user search failed:',error);
+
+      if(cached?.rows)return;
+
+      const grid=document.getElementById('users-grid');
+      const summary=document.getElementById('users-summary');
+      if(summary)summary.textContent='User search could not load.';
+      if(grid)grid.innerHTML=`
+        <div class="f2w-users-empty f2w-user-search-empty">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <strong>Search failed</strong>
+          <span>Refresh this page or try the search again.</span>
+        </div>`;
+    }finally{
+      clearTimeout(timer);
+    }
   }
-});
 
-boot();
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',load,{once:true});
+  }else{
+    load();
+  }
+})();
+/* f2w-force-save:dedicated-user-search-v104:1788289281 */
 </script>
-
-  <script src="/interaction-v7.js" defer></script>
-  <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=103-1788289090" defer></script>
+<script>
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+  }
+</script>
+  <script src="/final-v35.js?v=104-1788289281" defer></script>
 
 <div class="account-modal" id="account-modal">
     <div class="account-card">
@@ -1448,6 +1812,73 @@ boot();
 
 
 
+<script id="f2w-users-pagination-v65">
+(() => {
+  'use strict';
+  window.F2W_USERS_PAGE_SIZE=30;
+
+  function ensurePager(){
+    let pager=document.getElementById('users-pagination');
+    if(pager)return pager;
+
+    const results=document.getElementById('user-results') ||
+      document.querySelector('.users-results,.user-results,[data-users-results]');
+    if(!results)return null;
+
+    pager=document.createElement('div');
+    pager.id='users-pagination';
+    pager.className='users-pagination';
+    results.after(pager);
+    return pager;
+  }
+
+  window.renderUsersPaginationV65=function(total,page){
+    const pager=ensurePager();
+    if(!pager)return;
+
+    const pages=Math.max(1,Math.ceil(Number(total||0)/30));
+    const current=Math.max(1,Math.min(Number(page||1),pages));
+    const parts=[];
+
+    const start=Math.max(1,Math.min(current-2,Math.max(1,pages-4)));
+    const end=Math.min(pages,start+4);
+
+    if(current>1)parts.push(`<button type="button" class="f2w-users-page-btn" data-page="${current-1}"><i class="fa-solid fa-chevron-left"></i></button>`);
+    for(let p=start;p<=end;p++){
+      parts.push(`<button type="button" class="f2w-users-page-btn ${p===current?'active':''}" data-page="${p}">${p}</button>`);
+    }
+    if(current<pages)parts.push(`<button type="button" class="f2w-users-page-btn" data-page="${current+1}"><i class="fa-solid fa-chevron-right"></i></button>`);
+
+    pager.innerHTML=parts.join('');
+
+    pager.querySelectorAll('[data-page]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const url=new URL(location.href);
+        url.searchParams.set('page',btn.dataset.page);
+        location.href=url.toString();
+      });
+    });
+  };
+})();
+// f2w-force-save:users-pagination-v65:1788222474
+</script>
+
+
+<script id="f2w-users-pagination-autobind-v65">
+window.addEventListener('load',()=>{
+  const params=new URLSearchParams(location.search);
+  const page=Math.max(1,Number(params.get('page')||1));
+
+  // If page script exposes total count, use it. Otherwise use current result count
+  // and only show page 1; existing page script can call renderUsersPaginationV65(total,page).
+  const total=Number(window.f2wUsersTotalCount||window.usersTotalCount||0);
+  if(total>0 && typeof window.renderUsersPaginationV65==='function'){
+    window.renderUsersPaginationV65(total,page);
+  }
+});
+</script>
+
+
 <style id="f2w-sitewide-shell-v67">
 /* ============================================================
    F2W v67 — ONE SITE-WIDE HEADER + ONE AUTH POPUP
@@ -1772,15 +2203,18 @@ body.f2w-auth-v67-open {
 
   function lock(){
     if(locked)return;
-    savedY=window.scrollY||0;
+    savedY=window.scrollY||window.pageYOffset||0;
     locked=true;
     document.documentElement.classList.add('f2w-auth-v67-open');
     document.body.classList.add('f2w-auth-v67-open');
-    document.body.style.setProperty('position','fixed','important');
-    document.body.style.setProperty('top',`-${savedY}px`,'important');
-    document.body.style.setProperty('left','0','important');
-    document.body.style.setProperty('right','0','important');
-    document.body.style.setProperty('width','100%','important');
+
+    // v71 USERS fix: do NOT make the body position:fixed.
+    // Short directory pages were becoming the containing/clipping surface
+    // for the viewport auth overlay. Lock scrolling only.
+    document.documentElement.style.setProperty('overflow','hidden','important');
+    document.body.style.setProperty('overflow','hidden','important');
+    document.documentElement.style.setProperty('height','100%','important');
+    document.body.style.setProperty('min-height','100dvh','important');
   }
 
   function unlock(){
@@ -1788,11 +2222,10 @@ body.f2w-auth-v67-open {
     locked=false;
     document.documentElement.classList.remove('f2w-auth-v67-open');
     document.body.classList.remove('f2w-auth-v67-open');
-    document.body.style.removeProperty('position');
-    document.body.style.removeProperty('top');
-    document.body.style.removeProperty('left');
-    document.body.style.removeProperty('right');
-    document.body.style.removeProperty('width');
+    document.documentElement.style.removeProperty('overflow');
+    document.body.style.removeProperty('overflow');
+    document.documentElement.style.removeProperty('height');
+    document.body.style.removeProperty('min-height');
     window.scrollTo({top:savedY,left:0,behavior:'auto'});
   }
 
@@ -1929,6 +2362,9 @@ body.f2w-auth-v67-open {
 })();
 // f2w-force-save:sitewide-shell-js-v67:1788222795
 </script>
+
+
+
 
 
 <style id="f2w-header-hardlock-v69">
@@ -2680,94 +3116,581 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-spacing-v70:1788223711 */
 </style>
 
-</body></html>
-<!-- f2w-force-push-20260831-batch2:support:d47c388b82 -->
-<!-- f2w-update-marker: shared-chat-v7:support -->
+
+<style id="f2w-users-auth-and-cards-v71">
+/* ============================================================
+   F2W v71 — USERS PAGE: FULL AUTH POPUP + READABLE RESULT CARDS
+   ============================================================ */
+
+/* The auth popup must cover the ENTIRE browser viewport on this short page. */
+body.f2w-users-page #account-modal {
+  position:fixed!important;
+  inset:0!important;
+  top:0!important;
+  right:0!important;
+  bottom:0!important;
+  left:0!important;
+  width:100%!important;
+  min-width:100%!important;
+  max-width:none!important;
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:18px!important;
+  z-index:2147483647!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  transform:none!important;
+  translate:none!important;
+  contain:none!important;
+}
+
+body.f2w-users-page #account-modal.open {
+  display:flex!important;
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+}
+
+body.f2w-users-page #account-modal .account-card {
+  position:relative!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+  width:min(540px,calc(100vw - 36px))!important;
+  min-width:0!important;
+  max-width:540px!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  overflow:auto!important;
+  transform:none!important;
+  translate:none!important;
+}
+
+/* Keep Login/Create Account as the same swipey two-mode card used elsewhere. */
+body.f2w-users-page #account-modal .account-tabs {
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:5px!important;
+}
+
+body.f2w-users-page #account-modal .account-tab {
+  min-height:42px!important;
+}
+
+/* -------- User result layout -------- */
+body.f2w-users-page .f2w-users-main {
+  max-width:1500px!important;
+  margin:0 auto!important;
+  padding:28px 30px 72px!important;
+}
+
+body.f2w-users-page .f2w-users-grid {
+  display:grid!important;
+  grid-template-columns:minmax(0,760px)!important;
+  gap:14px!important;
+  align-items:start!important;
+}
+
+body.f2w-users-page .f2w-user-card {
+  width:100%!important;
+  min-width:0!important;
+  min-height:132px!important;
+  padding:18px 20px!important;
+  gap:18px!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+
+body.f2w-users-page .f2w-user-avatar {
+  flex:0 0 80px!important;
+  width:80px!important;
+  min-width:80px!important;
+  max-width:80px!important;
+  height:80px!important;
+  min-height:80px!important;
+  max-height:80px!important;
+  aspect-ratio:1 / 1!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  display:grid!important;
+  place-items:center!important;
+}
+
+body.f2w-users-page .f2w-user-avatar > img {
+  width:100%!important;
+  min-width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  max-height:100%!important;
+  aspect-ratio:1 / 1!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:50%!important;
+  display:block!important;
+  transform:none!important;
+}
+
+body.f2w-users-page .f2w-user-copy {
+  flex:1 1 auto!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  gap:5px!important;
+}
+
+body.f2w-users-page .f2w-user-display {
+  margin:0!important;
+  font-size:1.18rem!important;
+  line-height:1.22!important;
+  font-weight:900!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+body.f2w-users-page .f2w-user-handle {
+  margin:0!important;
+  font-size:.88rem!important;
+  line-height:1.3!important;
+  font-weight:800!important;
+  color:#a9bacb!important;
+  -webkit-text-fill-color:#a9bacb!important;
+}
+
+body.f2w-users-page .f2w-user-bio {
+  margin-top:2px!important;
+  font-size:.78rem!important;
+  line-height:1.45!important;
+  color:#8499ae!important;
+}
+
+body.f2w-users-page .f2w-users-summary {
+  margin:14px 0 10px!important;
+  font-size:.80rem!important;
+  line-height:1.45!important;
+}
+
+/* No floating users-search arrow on the directory page. Enter performs search. */
+body.f2w-users-page > header .user-search-submit {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+@media(max-width:760px){
+  body.f2w-users-page #account-modal {
+    padding:12px!important;
+  }
+  body.f2w-users-page #account-modal .account-card {
+    width:min(94vw,500px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+  body.f2w-users-page .f2w-users-main {
+    padding:20px 14px 52px!important;
+  }
+  body.f2w-users-page .f2w-users-grid {
+    grid-template-columns:1fr!important;
+  }
+  body.f2w-users-page .f2w-user-card {
+    min-height:112px!important;
+    padding:14px!important;
+    gap:14px!important;
+  }
+  body.f2w-users-page .f2w-user-avatar {
+    flex-basis:68px!important;
+    width:68px!important;
+    min-width:68px!important;
+    max-width:68px!important;
+    height:68px!important;
+    min-height:68px!important;
+    max-height:68px!important;
+  }
+  body.f2w-users-page .f2w-user-display {
+    font-size:1.02rem!important;
+  }
+}
+
+/* f2w-force-save:users-auth-cards-v71:1788223881 */
+</style>
+
+
+<style id="f2w-users-auth-toplayer-v73">
+/* ============================================================
+   F2W v73 — USERS AUTH POPUP IN THE BROWSER TOP LAYER
+   ============================================================ */
+#f2w-users-auth-dialog-v73 {
+  width:100vw!important;
+  max-width:none!important;
+  height:100dvh!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  overflow:hidden!important;
+}
+
+#f2w-users-auth-dialog-v73::backdrop {
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+}
+
+#f2w-users-auth-dialog-v73 > #account-modal {
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  margin:0!important;
+  padding:18px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:transparent!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  overflow:hidden!important;
+  z-index:auto!important;
+}
+
+#f2w-users-auth-dialog-v73 #account-modal .account-card {
+  position:relative!important;
+  width:min(540px,calc(100vw - 36px))!important;
+  max-width:540px!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  overflow:auto!important;
+  transform:none!important;
+  translate:none!important;
+}
+
+@media(max-width:600px){
+  #f2w-users-auth-dialog-v73 > #account-modal {
+    padding:12px!important;
+  }
+  #f2w-users-auth-dialog-v73 #account-modal .account-card {
+    width:min(94vw,500px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+}
+
+/* Result card: readable and avatar can never stretch. */
+body.f2w-users-page .f2w-user-card {
+  min-height:132px!important;
+  padding:18px 20px!important;
+  gap:18px!important;
+}
+
+body.f2w-users-page .f2w-user-avatar {
+  flex:0 0 80px!important;
+  width:80px!important;
+  min-width:80px!important;
+  max-width:80px!important;
+  height:80px!important;
+  min-height:80px!important;
+  max-height:80px!important;
+  aspect-ratio:1/1!important;
+  border-radius:50%!important;
+}
+
+body.f2w-users-page .f2w-user-avatar img {
+  width:80px!important;
+  min-width:80px!important;
+  max-width:80px!important;
+  height:80px!important;
+  min-height:80px!important;
+  max-height:80px!important;
+  aspect-ratio:1/1!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:50%!important;
+  display:block!important;
+}
+
+body.f2w-users-page .f2w-user-display {
+  font-size:1.18rem!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+}
+
+body.f2w-users-page .f2w-user-handle {
+  font-size:.88rem!important;
+  line-height:1.3!important;
+  font-weight:800!important;
+}
+
+/* f2w-force-save:users-auth-toplayer-css-v73:1788224087 */
+</style>
+
+<script id="f2w-users-auth-toplayer-v73-js">
+(() => {
+  'use strict';
+  if(window.__f2wUsersAuthTopLayerV73)return;
+  window.__f2wUsersAuthTopLayerV73=true;
+
+  let dialog=null;
+  let modal=null;
+
+  function ensure(){
+    modal=document.getElementById('account-modal');
+    if(!modal)return null;
+
+    dialog=document.getElementById('f2w-users-auth-dialog-v73');
+    if(!dialog){
+      dialog=document.createElement('dialog');
+      dialog.id='f2w-users-auth-dialog-v73';
+      document.body.appendChild(dialog);
+    }
+
+    if(modal.parentElement!==dialog){
+      dialog.appendChild(modal);
+    }
+
+    return dialog;
+  }
+
+  function mode(next){
+    const signup=next==='signup';
+    document.getElementById('account-login-tab')?.classList.toggle('active',!signup);
+    document.getElementById('account-signup-tab')?.classList.toggle('active',signup);
+
+    const usernameWrap=document.getElementById('account-username-wrap');
+    const confirmWrap=document.getElementById('account-confirm-wrap');
+    const label=document.getElementById('account-email-label');
+    const submit=document.getElementById('account-submit');
+    const password=document.getElementById('account-password');
+
+    if(usernameWrap)usernameWrap.style.display=signup?'block':'none';
+    if(confirmWrap)confirmWrap.style.display=signup?'block':'none';
+    if(label)label.textContent=signup?'EMAIL':'USERNAME OR EMAIL';
+    if(submit)submit.textContent=signup?'Create Account':'Log In';
+    if(password)password.autocomplete=signup?'new-password':'current-password';
+
+    const card=document.querySelector('#f2w-users-auth-dialog-v73 .account-card');
+    if(card){
+      try{
+        card.animate(
+          signup
+            ? [{opacity:.72,transform:'translateX(16px)'},{opacity:1,transform:'translateX(0)'}]
+            : [{opacity:.72,transform:'translateX(-16px)'},{opacity:1,transform:'translateX(0)'}],
+          {duration:220,easing:'ease-out'}
+        );
+      }catch{}
+    }
+  }
+
+  function open(next='login'){
+    const d=ensure();
+    if(!d)return false;
+
+    modal.hidden=false;
+    modal.removeAttribute('inert');
+    modal.classList.add('open','f2w-auth-v67');
+    modal.setAttribute('aria-hidden','false');
+
+    mode(next);
+
+    if(!d.open){
+      try{d.showModal();}catch{d.setAttribute('open','')}
+    }
+
+    document.documentElement.style.setProperty('overflow','hidden','important');
+    document.body.style.setProperty('overflow','hidden','important');
+
+    setTimeout(()=>{
+      const target=document.getElementById(next==='signup'?'account-username':'account-email');
+      try{target?.focus({preventScroll:true})}catch{target?.focus()}
+    },60);
+
+    return false;
+  }
+
+  function close(){
+    const d=ensure();
+    if(!d)return false;
+
+    modal?.classList.remove('open');
+    modal?.setAttribute('aria-hidden','true');
+    modal?.setAttribute('inert','');
+
+    try{if(d.open)d.close();}catch{d.removeAttribute('open')}
+
+    document.documentElement.style.removeProperty('overflow');
+    document.body.style.removeProperty('overflow');
+    return false;
+  }
+
+  window.openHeaderAuth=open;
+  window.f2wOpenAuth=open;
+  window.showAccountMode=mode;
+  window.closeAccountModal=close;
+
+  function bind(){
+    const d=ensure();
+    if(!d)return;
+
+    if(!d.dataset.f2wBoundV73){
+      d.dataset.f2wBoundV73='1';
+
+      d.addEventListener('cancel',e=>{
+        e.preventDefault();
+        close();
+      });
+
+      d.addEventListener('click',e=>{
+        if(e.target===d)close();
+      });
+
+      modal?.querySelector('.chat-close,.account-close')?.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();close();
+      },true);
+
+      document.getElementById('account-login-tab')?.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();mode('login');
+      },true);
+
+      document.getElementById('account-signup-tab')?.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();mode('signup');
+      },true);
+    }
+
+    document.querySelectorAll('#header-login-btn').forEach(btn=>{
+      if(btn.dataset.f2wV73Login)return;
+      btn.dataset.f2wV73Login='1';
+      btn.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();open('login');
+      },true);
+    });
+
+    document.querySelectorAll('#header-signup-btn').forEach(btn=>{
+      if(btn.dataset.f2wV73Signup)return;
+      btn.dataset.f2wV73Signup='1';
+      btn.addEventListener('click',e=>{
+        e.preventDefault();e.stopImmediatePropagation();open('signup');
+      },true);
+    });
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
+
+  new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
+})();
+// f2w-force-save:users-auth-toplayer-js-v73:1788224087
+</script>
+
+</body>
+</html>
+<!-- f2w-force-push-20260831-batch2:users:01c6b68a68 -->
+<!-- f2w-update-marker: shared-chat-v7:users -->
 <!-- f2w-force-save: 20260831-2110 -->
-<!-- f2w-force-save:chat-v8-never-auto-open:1788208311:support -->
-<!-- f2w-force-save:device-v9:20260831-205349:support -->
-<!-- f2w-force-save:compact-modal-v11:1788210997:support -->
-<!-- f2w-force-save:sitewide-auth-v13:1788211530:support/index.html -->
-<!-- f2w-force-save:remove-nettools-v14:1788211808:support/index.html -->
-<!-- f2w-force-save:sitewide-footer-v15:1788212347:support/index.html -->
-<!-- f2w-force-save:chat-route-cache-v16:1788212934:support/index.html -->
-<!-- f2w-force-save:sitewide-v17:1788213599:support/index.html -->
-<!-- f2w-force-save:sitewide-header-v18:1788213893:support/index.html -->
-<!-- f2w-force-save:sitewide-header-repair-v19:1788214305:support/index.html -->
-<!-- f2w-force-save:account-favorites-cache-v20:1788214488:support/index.html -->
-<!-- f2w-force-save:canonical-static-header-v21:1788214596:support/index.html -->
-<!-- f2w-force-save:header-static-cache-v21:1788214596:support/index.html -->
-<!-- f2w-force-save:v21-theme-clean:support/index.html -->
-<!-- f2w-force-save:final-assets-v22:1788214990:support/index.html -->
-<!-- f2w-force-save:chat-green-dot-v23:1788215130:support/index.html -->
-<!-- f2w-force-save:chat-dot-js-cache-v23:178821-v23-dot-guard:support/index.html -->
-<!-- f2w-force-save:critical-header-v24:1788215534:support/index.html -->
-<!-- f2w-force-save:instant-profile-route-v24:1788215534:support/index.html -->
-<!-- f2w-force-save:performance-cache-v24:1788215534:support/index.html -->
-<!-- f2w-force-save:role-name-cache-v25:1788215879:support/index.html -->
-<!-- f2w-force-save:sitewide-fade-page-v26:1788216027:support/index.html -->
-<!-- f2w-force-save:fade-js-cache-v26:1788216027:support/index.html -->
-<!-- f2w-force-save:v27-cache:1788216279:support/index.html -->
-<!-- f2w-force-save:v30-page:1788216738:support/index.html -->
-<!-- f2w-force-save:v31-cache:1788217048:support/index.html -->
-<!-- f2w-force-save:v32-cache:1788217362:support/index.html -->
-<!-- f2w-force-save:v33-performance-cache:1788217440:support/index.html -->
-<!-- f2w-force-save:v34-performance:1788217565:support/index.html -->
-<!-- f2w-force-save:header-button-fit-v35:1788217735:support/index.html -->
-<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:support/index.html -->
-<!-- f2w-force-save:footer-cache-v36:1788217803:support/index.html -->
-<!-- f2w-force-save:chat-width-v38:1788218284:support/index.html -->
-<!-- f2w-force-save:v39-cache:1788218599:support/index.html -->
-<!-- f2w-force-save:v40-cache:1788218691:support/index.html -->
-<!-- f2w-force-save:v41-arrow-cache:1788219230:support/index.html -->
-<!-- f2w-force-save:chat-button-final-width-v42:1788219270:support/index.html -->
-<!-- f2w-force-save:v43-watch-auth-cache:1788219527:support/index.html -->
-<!-- f2w-force-save:v44-header-cache:1788219651:support/index.html -->
-<!-- f2w-force-save:v50-cache:1788220357:support/index.html -->
-<!-- f2w-force-save:v52-profile-edit-cache:1788220545:support/index.html -->
-<!-- f2w-force-save:account-details-cache-v54:1788220759:support/index.html -->
-<!-- f2w-force-save:v56-auth-cache:1788221054:support/index.html -->
-<!-- f2w-force-save:v57-user-search-cache:1788221142:support/index.html -->
-<!-- f2w-force-save:v58-auth-hardfix:1788221340:support/index.html -->
-<!-- f2w-force-save:v58-cache:1788221340:support/index.html -->
-<!-- f2w-force-save:v59-cache:1788221542:support/index.html -->
-<!-- f2w-force-save:auth-modal-lock-v60:1788221799:support/index.html -->
-<!-- f2w-force-save:v60-auth-cache:1788221799:support/index.html -->
-<!-- f2w-force-save:text-input-cache-v62:1788221977:support/index.html -->
-<!-- f2w-force-save:v63-search-isolation:1788222324:support/index.html -->
-<!-- f2w-force-save:v64-cache:1788222358:support/index.html -->
-<!-- f2w-force-save:v65-search-cache:1788222474:support/index.html -->
-<!-- f2w-force-save:v66-arrow-cache:1788222669:support/index.html -->
-<!-- f2w-force-save:v67-page:1788222795:support/index.html -->
-<!-- f2w-force-save:v69-header:1788223204:support/index.html -->
-<!-- f2w-force-save:v70-cache:1788223711:support/index.html -->
-<!-- f2w-force-save:canonical-account-v70:support/index.html -->
-<!-- f2w-force-save:auth-button-icons-v72:1788223976:support/index.html -->
-<!-- f2w-force-save:v72-cache:1788223976:support/index.html -->
-<!-- f2w-force-save:footer-privacy-v74:1788224239:support/index.html -->
-<!-- f2w-force-save:role-particles-white-v75:1788224563:support/index.html -->
-<!-- f2w-force-save:v76-cache:1788224745:support/index.html -->
-<!-- f2w-force-save:v77-role-particles:1788224897:support/index.html -->
-<!-- f2w-force-save:v78-cache:1788224965:support/index.html -->
-<!-- f2w-force-save:v79-cache:1788225124:support/index.html -->
-<!-- f2w-force-save:v80-cache:1788225203:support/index.html -->
-<!-- f2w-force-save:v81-cache:1788225523:support/index.html -->
-<!-- f2w-force-save:v82-cache:1788225709:support/index.html -->
-<!-- f2w-force-save:v83-cache:1788226300:support/index.html -->
-<!-- f2w-force-save:v84-cache:1788226452:support/index.html -->
-<!-- f2w-force-save:v86-cache:1788226708:support/index.html -->
-<!-- f2w-force-save:v87-cache:1788227242:support/index.html -->
-<!-- f2w-force-save:v88-cache:1788227370:support/index.html -->
-<!-- f2w-force-save:v89-cache:1788227613:support/index.html -->
-<!-- f2w-force-save:v90-cache:1788227716:support/index.html -->
-<!-- f2w-force-save:v91-cache:1788228094:support/index.html -->
-<!-- f2w-force-save:v92-cache:1788228465:support/index.html -->
-<!-- f2w-force-save:v93-cache:1788229371:support/index.html -->
-<!-- f2w-force-save:v94-links:1788280907:support/index.html -->
-<!-- f2w-force-save:v97-cache:1788281880:support/index.html -->
-<!-- f2w-force-save:v98-cache:1788282202:support/index.html -->
-<!-- f2w-force-save:native-transition-off-v100:1788283039:support/index.html -->
-<!-- f2w-force-save:v100-cache:1788283039:support/index.html -->
-<!-- f2w-force-save:v103-cache:1788289090:support/index.html -->
-<!-- f2w-force-save:v104-cache:1788289281:support/index.html -->
+<!-- f2w-force-save:chat-v8-never-auto-open:1788208311:users -->
+<!-- f2w-force-save:device-v9:20260831-205349:users -->
+<!-- f2w-force-save:compact-modal-v11:1788210997:users -->
+<!-- f2w-force-save:sitewide-auth-v13:1788211530:users/index.html -->
+<!-- f2w-force-save:remove-nettools-v14:1788211808:users/index.html -->
+<!-- f2w-force-save:sitewide-footer-v15:1788212347:users/index.html -->
+<!-- f2w-force-save:chat-route-cache-v16:1788212934:users/index.html -->
+<!-- f2w-force-save:sitewide-v17:1788213599:users/index.html -->
+<!-- f2w-force-save:sitewide-header-v18:1788213893:users/index.html -->
+<!-- f2w-force-save:sitewide-header-repair-v19:1788214305:users/index.html -->
+<!-- f2w-force-save:account-favorites-cache-v20:1788214488:users/index.html -->
+<!-- f2w-force-save:canonical-static-header-v21:1788214596:users/index.html -->
+<!-- f2w-force-save:header-static-cache-v21:1788214596:users/index.html -->
+<!-- f2w-force-save:v21-theme-clean:users/index.html -->
+<!-- f2w-force-save:final-assets-v22:1788214990:users/index.html -->
+<!-- f2w-force-save:chat-green-dot-v23:1788215130:users/index.html -->
+<!-- f2w-force-save:chat-dot-js-cache-v23:178821-v23-dot-guard:users/index.html -->
+<!-- f2w-force-save:critical-header-v24:1788215534:users/index.html -->
+<!-- f2w-force-save:instant-profile-route-v24:1788215534:users/index.html -->
+<!-- f2w-force-save:performance-cache-v24:1788215534:users/index.html -->
+<!-- f2w-force-save:role-name-cache-v25:1788215879:users/index.html -->
+<!-- f2w-force-save:sitewide-fade-page-v26:1788216027:users/index.html -->
+<!-- f2w-force-save:fade-js-cache-v26:1788216027:users/index.html -->
+<!-- f2w-force-save:v27-cache:1788216279:users/index.html -->
+<!-- f2w-force-save:v30-page:1788216738:users/index.html -->
+<!-- f2w-force-save:v31-cache:1788217048:users/index.html -->
+<!-- f2w-force-save:v32-cache:1788217362:users/index.html -->
+<!-- f2w-force-save:v33-performance-cache:1788217440:users/index.html -->
+<!-- f2w-force-save:v34-performance:1788217565:users/index.html -->
+<!-- f2w-force-save:header-button-fit-v35:1788217735:users/index.html -->
+<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:users/index.html -->
+<!-- f2w-force-save:footer-cache-v36:1788217803:users/index.html -->
+<!-- f2w-force-save:chat-width-v38:1788218284:users/index.html -->
+<!-- f2w-force-save:v39-cache:1788218599:users/index.html -->
+<!-- f2w-force-save:v40-cache:1788218691:users/index.html -->
+<!-- f2w-force-save:v41-arrow-cache:1788219230:users/index.html -->
+<!-- f2w-force-save:chat-button-final-width-v42:1788219270:users/index.html -->
+<!-- f2w-force-save:v43-watch-auth-cache:1788219527:users/index.html -->
+<!-- f2w-force-save:v44-header-cache:1788219651:users/index.html -->
+<!-- f2w-force-save:v50-cache:1788220357:users/index.html -->
+<!-- f2w-force-save:v52-profile-edit-cache:1788220545:users/index.html -->
+<!-- f2w-force-save:account-details-cache-v54:1788220759:users/index.html -->
+<!-- f2w-force-save:v56-auth-cache:1788221054:users/index.html -->
+<!-- f2w-force-save:v57-user-search-cache:1788221142:users/index.html -->
+<!-- f2w-force-save:v58-auth-hardfix:1788221340:users/index.html -->
+<!-- f2w-force-save:v58-cache:1788221340:users/index.html -->
+<!-- f2w-force-save:v59-cache:1788221542:users/index.html -->
+<!-- f2w-force-save:auth-modal-lock-v60:1788221799:users/index.html -->
+<!-- f2w-force-save:v60-auth-cache:1788221799:users/index.html -->
+<!-- f2w-force-save:text-input-cache-v62:1788221977:users/index.html -->
+<!-- f2w-force-save:v63-search-isolation:1788222324:users/index.html -->
+<!-- f2w-force-save:v64-cache:1788222358:users/index.html -->
+<!-- f2w-force-save:v65-search-cache:1788222474:users/index.html -->
+<!-- f2w-force-save:users-page-v65:1788222474 -->
+<!-- f2w-force-save:v66-arrow-cache:1788222669:users/index.html -->
+<!-- f2w-force-save:v67-page:1788222795:users/index.html -->
+<!-- f2w-force-save:users-index-v68:1788222895 -->
+<!-- f2w-force-save:v69-header:1788223204:users/index.html -->
+<!-- f2w-force-save:v70-cache:1788223711:users/index.html -->
+<!-- f2w-force-save:canonical-account-v70:users/index.html -->
+<!-- f2w-force-save:users-v71:1788223881 -->
+<!-- f2w-force-save:auth-button-icons-v72:1788223976:users/index.html -->
+<!-- f2w-force-save:v72-cache:1788223976:users/index.html -->
+<!-- f2w-force-save:users-v73:1788224087 -->
+<!-- f2w-force-save:footer-privacy-v74:1788224239:users/index.html -->
+<!-- f2w-force-save:role-particles-white-v75:1788224563:users/index.html -->
+<!-- f2w-force-save:users-enter-v76:1788224745 -->
+<!-- f2w-force-save:v76-cache:1788224745:users/index.html -->
+<!-- f2w-force-save:v77-role-particles:1788224897:users/index.html -->
+<!-- f2w-force-save:v78-cache:1788224965:users/index.html -->
+<!-- f2w-force-save:users-prefix-v79:1788225124 -->
+<!-- f2w-force-save:v79-cache:1788225124:users/index.html -->
+<!-- f2w-force-save:v80-cache:1788225203:users/index.html -->
+<!-- f2w-force-save:v81-cache:1788225523:users/index.html -->
+<!-- f2w-force-save:users-loader-v82:1788225709 -->
+<!-- f2w-force-save:v82-cache:1788225709:users/index.html -->
+<!-- f2w-force-save:v83-cache:1788226300:users/index.html -->
+<!-- f2w-force-save:v84-cache:1788226452:users/index.html -->
+<!-- f2w-force-save:v86-cache:1788226708:users/index.html -->
+<!-- f2w-force-save:v87-cache:1788227242:users/index.html -->
+<!-- f2w-force-save:v88-cache:1788227370:users/index.html -->
+<!-- f2w-force-save:v89-cache:1788227613:users/index.html -->
+<!-- f2w-force-save:v90-cache:1788227716:users/index.html -->
+<!-- f2w-force-save:v91-cache:1788228094:users/index.html -->
+<!-- f2w-force-save:v92-cache:1788228465:users/index.html -->
+<!-- f2w-force-save:v93-cache:1788229371:users/index.html -->
+<!-- f2w-force-save:v94-links:1788280907:users/index.html -->
+<!-- f2w-force-save:v97-cache:1788281880:users/index.html -->
+<!-- f2w-force-save:v98-cache:1788282202:users/index.html -->
+<!-- f2w-force-save:native-transition-off-v100:1788283039:users/index.html -->
+<!-- f2w-force-save:v100-cache:1788283039:users/index.html -->
+<!-- f2w-force-save:v103-cache:1788289090:users/index.html -->
+<!-- f2w-force-save:dedicated-search-page-v104:1788289281 -->
+<!-- f2w-force-save:v104-cache:1788289281:users/search/index.html -->
  
