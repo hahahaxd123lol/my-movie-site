@@ -6667,6 +6667,7 @@ if(currentUser){
     // call loadPlayer() more than once during startup; reassigning the same src
     // resets VidSrcMe and can make its first-click ad gate fire again.
     let lastLoadedEmbedUrl = '';
+    let lastLoadedPlaybackKey = ''; // v127: logical player identity; progress updates must never reload a paused iframe
     function logTerminal() { /* debug console disabled */ }
 
     let watchMetadataStarted=false;
@@ -6802,6 +6803,7 @@ if(currentUser){
       // Playback is account-only. Browsing metadata remains public.
       if(!watchPlaybackUnlocked){
         lastLoadedEmbedUrl = '';
+        lastLoadedPlaybackKey = '';
         iframe.src='data:text/html,%3Cbody%20style%3D%22margin%3A0%3Bbackground%3A%23000%22%3E';
         iframe.style.display='none';
         setWatchPlaybackAccess(false);
@@ -6838,6 +6840,19 @@ if(currentUser){
         const eElem = document.getElementById('episode-select');
         if (sElem && sElem.value) seasonNum = sElem.value;
         if (eElem && eElem.value) episodeNum = eElem.value;
+      }
+
+      // v127: treat a playing embed as stateful. Auth refreshes, visibility
+      // changes, presence pings and progress events can all call loadPlayer(),
+      // but none of those should ever reload the same movie/episode. In
+      // particular, Flix2Watch API stores pause progress in localStorage; if we
+      // rebuilt its URL with a new startAt value on every callback, pausing could
+      // make the iframe refresh several times and resume by itself.
+      const playbackKey = [currentServer, mediaType, String(mediaId || ''), String(currentImdbId || ''), String(seasonNum), String(episodeNum)].join('|');
+      const liveSrc = iframe.getAttribute('src') || '';
+      const isRealPlayerLoaded = liveSrc && !liveSrc.startsWith('data:text/html');
+      if (lastLoadedPlaybackKey === playbackKey && isRealPlayerLoaded) {
+        return;
       }
 
       switch(currentServer) {
@@ -6957,6 +6972,7 @@ if(currentUser){
       if (lastLoadedEmbedUrl === embedUrl && iframe.getAttribute('src') === embedUrl) {
         return;
       }
+      lastLoadedPlaybackKey = playbackKey;
       lastLoadedEmbedUrl = embedUrl;
       iframe.src = embedUrl;
       const targetLabel = mediaType === 'tv' ? `S${seasonNum}E${episodeNum}` : 'Movie';
@@ -8338,7 +8354,7 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
 
-  <script src="/final-v35.js?v=126-1788301800" defer></script>
+  <script src="/final-v35.js?v=127-1788303000" defer></script>
 
 <style id="f2w-watch-tools-v47-css">
   .f2w-watch-toast-v47{

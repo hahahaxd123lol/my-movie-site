@@ -1,0 +1,8 @@
+Flix2Watch v127 player pause/play fix
+
+Fixed the Flix2Watch API player reloading after pause.
+Cause: several auth/visibility callbacks call loadPlayer(). The API player also saves pause progress. That changed the generated startAt URL, so the same paused title looked like a "new" iframe URL and got reloaded repeatedly.
+
+v127 adds a logical playback identity (server + media type + title id + season + episode). Once that exact player is already live, background callbacks no-op instead of reassigning iframe.src. Progress/startAt is now only used when a player is genuinely loaded for the first time or when the source/title/episode changes.
+
+No Supabase SQL change is required for this patch.
