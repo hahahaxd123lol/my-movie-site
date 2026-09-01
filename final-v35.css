@@ -1289,3 +1289,34 @@ body.f2w-main-page .watch-auth-card {
 
 /* f2w-force-save:plain-usernames-white-v59:1788221542 */
  
+
+/* ============================================================
+   F2W v64 — ROLELESS USERNAME WHITE FALLBACK
+   ============================================================ */
+.f2w-no-role-name,
+[data-f2w-username]:not(.f2w-role-name),
+[data-username]:not(.f2w-role-name),
+.user-search-name:not(.f2w-role-name),
+.chat-user:not(.f2w-role-name),
+.chat-username:not(.f2w-role-name),
+.comment-author:not(.f2w-role-name),
+.leaderboard-username:not(.f2w-role-name),
+.profile-username:not(.f2w-role-name),
+.user-name:not(.f2w-role-name),
+.display-name:not(.f2w-role-name),
+.forum-v30-author:not(.f2w-role-name),
+.forum-v30-rank-name:not(.f2w-role-name) {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:none!important;
+  background:none!important;
+  filter:none!important;
+}
+
+.f2w-role-name {
+  color:var(--role-main)!important;
+  -webkit-text-fill-color:var(--role-main)!important;
+}
+
+/* f2w-force-save:roleless-usernames-white-final-v64:1788222358 */
+ 

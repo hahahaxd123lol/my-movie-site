@@ -2526,11 +2526,11 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=59-1788221542">
+  <link rel="stylesheet" href="/final-v35.css?v=64-1788222358">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=62-1788221977">
-  <script src="/global-header-chat-v1.js?v=62-1788221977" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=64-1788222358">
+  <script src="/global-header-chat-v1.js?v=64-1788222358" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -2626,7 +2626,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <i class="fa-solid fa-search"></i>
           <input
             id="movie-search"
-            name="flix2watch_title_lookup_query"
+           
             class="search-bar"
             type="search"
             placeholder="Search movies..."
@@ -2637,7 +2637,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             autocorrect="off"
             spellcheck="false"
             aria-label="Search movies and TV shows"
-            aria-autocomplete="none"
+            aria-autocomplete="one-time-code"
             data-form-type="search"
             data-lpignore="true"
             data-1p-ignore="true"
@@ -2646,7 +2646,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             data-keeper-ignore="true"
             readonly
             oninput="v18HeaderMovieSearch(this.value)"
-            onfocus="protectMovieSearchField(this)">
+            onfocus="protectMovieSearchField(this)" role="searchbox">
         </div>
 
         <div class="user-search-container" role="search">
@@ -2654,7 +2654,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <input
             type="search"
             id="user-search"
-            name="flix2watch_people_search_query"
+           
             class="user-search-bar"
             placeholder="Search users..."
             autocomplete="one-time-code"
@@ -2664,7 +2664,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             autocorrect="off"
             spellcheck="false"
             aria-label="Search Flix2Watch users"
-            aria-autocomplete="none"
+            aria-autocomplete="one-time-code"
             data-form-type="search"
             data-lpignore="true"
             data-1p-ignore="true"
@@ -2674,7 +2674,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             readonly
             oninput="handleUserSearchInput(this)"
             onfocus="protectUserSearchField(this)"
-          >
+           role="searchbox">
           <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
             <i class="fa-solid fa-arrow-right"></i>
           </button>
@@ -2979,7 +2979,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       <button class="filter-btn" data-filter="tv" onclick="setFilter('tv',this)">TV Series</button>
       <div class="search-wrap">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input id="favorite-search" class="search-input" type="search" placeholder="Search your favorites..." oninput="renderFavorites()">
+        <input id="favorite-search" class="search-input" type="search" placeholder="Search your favorites..." oninput="renderFavorites()" autocomplete="one-time-code" role="searchbox" inputmode="search" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" data-protonpass-ignore="true">
       </div>
     </div>
 
@@ -4909,7 +4909,7 @@ setTimeout(loadLibraryFavorites,0);
   </div>
 <div class="f2w-command-overlay" id="f2w-command-overlay" onclick="if(event.target===this)closeUltraCommand()">
     <div class="f2w-command">
-      <input id="f2w-command-search" class="f2w-command-search" type="search" placeholder="Search actions, genres, pages..." autocomplete="off">
+      <input id="f2w-command-search" class="f2w-command-search" type="search" placeholder="Search actions, genres, pages..." autocomplete="one-time-code" role="searchbox" inputmode="search" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" data-protonpass-ignore="true">
       
       <div class="f2w-command-foot">
         <span>↑ ↓ navigate · Enter open</span>
@@ -5593,7 +5593,7 @@ setTimeout(loadLibraryFavorites,0);
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=59-1788221542" defer></script>
+  <script src="/final-v35.js?v=64-1788222358" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -5923,4 +5923,6 @@ setTimeout(loadLibraryFavorites,0);
 <!-- f2w-force-save:auth-modal-lock-v60:1788221799:favorites/index.html -->
 <!-- f2w-force-save:v60-auth-cache:1788221799:favorites/index.html -->
 <!-- f2w-force-save:text-input-cache-v62:1788221977:favorites/index.html -->
+<!-- f2w-force-save:v63-search-isolation:1788222324:favorites/index.html -->
+<!-- f2w-force-save:v64-cache:1788222358:favorites/index.html -->
  

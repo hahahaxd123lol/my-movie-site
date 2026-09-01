@@ -871,6 +871,11 @@
           openProfile(button.dataset.username);
         });
       });
+
+      // v64: role users get their role colour/particles; everyone else stays white.
+      try{
+        if(typeof window.decorateNames==='function')window.decorateNames();
+      }catch{}
     }catch(error){
       console.warn('User autocomplete failed:',error?.message||error);
       if(seq===requestSeq){
@@ -1005,4 +1010,172 @@
   },true);
 })();
 // f2w-force-save:text-input-guard-v62:1788221977
+
+/* ============================================================
+   F2W v63 — HARD SEARCH / PASSWORD-MANAGER ISOLATION
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wSearchPasswordIsolationV63)return;
+  window.__f2wSearchPasswordIsolationV63=true;
+
+  const SEARCH_SELECTOR = [
+    '#movie-search',
+    '#user-search',
+    '#forum-search',
+    '#forum-search-input',
+    '#v35-dm-user-search',
+    '.movie-search-container input',
+    '.user-search-container input',
+    '.forum-v30-toolbar input',
+    '.forum-search input',
+    'input[data-f2w-search]',
+    'input[type="search"]'
+  ].join(',');
+
+  function ensureIsolationForm(){
+    let form=document.getElementById('f2w-search-isolation-form-v63');
+    if(form)return form;
+
+    form=document.createElement('form');
+    form.id='f2w-search-isolation-form-v63';
+    form.autocomplete='off';
+    form.setAttribute('aria-hidden','true');
+    form.style.display='none';
+    document.body.appendChild(form);
+    return form;
+  }
+
+  function isolateSearch(input,index=0){
+    if(!input || input.closest?.('#account-modal'))return;
+    if(input.matches?.('input[type="password"],input[type="email"]'))return;
+
+    const form=ensureIsolationForm();
+
+    input.type='search';
+    input.setAttribute('role','searchbox');
+    input.setAttribute('inputmode','search');
+    input.setAttribute('autocomplete','one-time-code');
+    input.setAttribute('autocapitalize','none');
+    input.setAttribute('spellcheck','false');
+    input.setAttribute('enterkeyhint','search');
+
+    // Strong hints for common password managers.
+    input.setAttribute('data-lpignore','true');
+    input.setAttribute('data-1p-ignore','true');
+    input.setAttribute('data-bwignore','true');
+    input.setAttribute('data-form-type','other');
+    input.setAttribute('data-protonpass-ignore','true');
+
+    // Isolate search controls from any auth form present elsewhere in the DOM.
+    input.setAttribute('form',form.id);
+
+    // Credential-looking names are a common reason browsers attach password UI.
+    input.setAttribute(
+      'name',
+      `f2w_query_${String(input.id||index).replace(/[^A-Za-z0-9]/g,'_')}_v63`
+    );
+
+    // Ensure this never inherits username/email semantics from older markup.
+    input.removeAttribute('aria-haspopup');
+    input.dataset.f2wSearchIsolatedV63='1';
+  }
+
+  function isolateAll(){
+    [...document.querySelectorAll(SEARCH_SELECTOR)].forEach(isolateSearch);
+    dehydrateClosedAuth();
+  }
+
+  /*
+   * When the auth modal is closed, disable its credential controls.
+   * This keeps hidden login/password fields from causing Chrome/Brave password
+   * manager heuristics to associate unrelated search boxes with the login form.
+   * They are re-enabled immediately when the auth popup opens.
+   */
+  function authFields(){
+    return [...document.querySelectorAll(
+      '#account-modal #account-username,'+
+      '#account-modal #account-email,'+
+      '#account-modal #account-password,'+
+      '#account-modal #account-confirm'
+    )];
+  }
+
+  function dehydrateClosedAuth(){
+    const modal=document.getElementById('account-modal');
+    if(!modal)return;
+    const open=modal.classList.contains('open') ||
+      modal.classList.contains('f2w-auth-modal-open-v60') ||
+      modal.classList.contains('f2w-auth-hard-open-v58');
+
+    authFields().forEach(field=>{
+      if(open){
+        field.disabled=false;
+        field.removeAttribute('data-f2w-auth-disabled-v63');
+      }else{
+        field.disabled=true;
+        field.setAttribute('data-f2w-auth-disabled-v63','1');
+      }
+    });
+  }
+
+  function enableAuthFields(){
+    authFields().forEach(field=>{
+      field.disabled=false;
+      field.removeAttribute('data-f2w-auth-disabled-v63');
+    });
+  }
+
+  // Wrap the existing auth opener so fields are enabled only when actually needed.
+  const installAuthWrapper=()=>{
+    if(typeof window.openHeaderAuth==='function' && !window.openHeaderAuth.__f2wV63Wrapped){
+      const original=window.openHeaderAuth;
+      const wrapped=function(...args){
+        enableAuthFields();
+        return original.apply(this,args);
+      };
+      wrapped.__f2wV63Wrapped=true;
+      window.openHeaderAuth=wrapped;
+      window.f2wOpenAuth=wrapped;
+    }
+  };
+
+  document.addEventListener('pointerdown',e=>{
+    const input=e.target.closest?.(SEARCH_SELECTOR);
+    if(input)isolateSearch(input);
+  },{capture:true,passive:true});
+
+  document.addEventListener('focusin',e=>{
+    const input=e.target.closest?.(SEARCH_SELECTOR);
+    if(input)isolateSearch(input);
+  },true);
+
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('#header-login-btn,#header-signup-btn,#watch-login-overlay .watch-login-actions button')){
+      enableAuthFields();
+    }
+  },true);
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{
+      isolateAll();
+      installAuthWrapper();
+    },{once:true});
+  }else{
+    isolateAll();
+    installAuthWrapper();
+  }
+
+  new MutationObserver(()=>{
+    isolateAll();
+    installAuthWrapper();
+  }).observe(document.documentElement,{childList:true,subtree:true});
+
+  window.addEventListener('pageshow',()=>{
+    isolateAll();
+    installAuthWrapper();
+  },{passive:true});
+})();
+// f2w-force-save:search-password-isolation-v63:1788222324
+// f2w-force-save:user-search-role-decoration-v64:1788222358
  

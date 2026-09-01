@@ -504,6 +504,10 @@ function f2wDebounce(fn,wait=140){
           'f2w-role-contributor','f2w-role-curator'
         );
         el.classList.add('f2w-no-role-name');
+        el.style.setProperty('color','#fff','important');
+        el.style.setProperty('-webkit-text-fill-color','#fff','important');
+        el.style.setProperty('text-shadow','none','important');
+        el.style.setProperty('background','none','important');
         el.removeAttribute('data-f2w-role-decorated');
         el.removeAttribute('data-f2w-role');
       }
@@ -1700,4 +1704,5 @@ function f2wDebounce(fn,wait=140){
 })();
 // f2w-force-save:account-identity-js-v54:1788220759
 // f2w-force-save:white-usernames-recent10-v59:1788221542
+// f2w-force-save:roleless-inline-white-v64:1788222358
  

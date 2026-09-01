@@ -425,12 +425,12 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=59-1788221542">
+  <link rel="stylesheet" href="/final-v35.css?v=64-1788222358">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=62-1788221977">
-  <script src="/global-header-chat-v1.js?v=62-1788221977" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=64-1788222358">
+  <script src="/global-header-chat-v1.js?v=64-1788222358" defer></script>
 
 <style id="forum-v30-design">
 .f2w-forum-page{background:radial-gradient(circle at 88% 7%,rgba(229,9,20,.075),transparent 30%),#020b14!important}
@@ -568,7 +568,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <i class="fa-solid fa-search"></i>
           <input
             id="movie-search"
-            name="flix2watch_title_lookup_query"
+           
             class="search-bar"
             type="search"
             placeholder="Search movies..."
@@ -579,7 +579,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             autocorrect="off"
             spellcheck="false"
             aria-label="Search movies and TV shows"
-            aria-autocomplete="none"
+            aria-autocomplete="one-time-code"
             data-form-type="search"
             data-lpignore="true"
             data-1p-ignore="true"
@@ -588,7 +588,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             data-keeper-ignore="true"
             readonly
             oninput="v18HeaderMovieSearch(this.value)"
-            onfocus="protectMovieSearchField(this)">
+            onfocus="protectMovieSearchField(this)" role="searchbox">
         </div>
 
         <div class="user-search-container" role="search">
@@ -596,7 +596,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <input
             type="search"
             id="user-search"
-            name="flix2watch_people_search_query"
+           
             class="user-search-bar"
             placeholder="Search users..."
             autocomplete="one-time-code"
@@ -606,7 +606,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             autocorrect="off"
             spellcheck="false"
             aria-label="Search Flix2Watch users"
-            aria-autocomplete="none"
+            aria-autocomplete="one-time-code"
             data-form-type="search"
             data-lpignore="true"
             data-1p-ignore="true"
@@ -616,7 +616,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             readonly
             oninput="handleUserSearchInput(this)"
             onfocus="protectUserSearchField(this)"
-          >
+           role="searchbox">
           <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
             <i class="fa-solid fa-arrow-right"></i>
           </button>
@@ -709,7 +709,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
     <section class="forum-v30-center">
       <div class="forum-v30-toolbar">
-        <label><i class="fa-solid fa-magnifying-glass"></i><input id="forum-search" type="search" placeholder="Search discussions..." autocomplete="off" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other"></label>
+        <label><i class="fa-solid fa-magnifying-glass"></i><input id="forum-search" type="search" placeholder="Search discussions..." autocomplete="one-time-code" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="search" role="searchbox" inputmode="search" data-protonpass-ignore="true"></label>
         <select id="forum-category-select">
           <option value="all">All categories</option><option value="general">General</option><option value="movies">Movies</option>
           <option value="tv">TV Shows</option><option value="reviews">Reviews</option><option value="recommendations">Recommendations</option><option value="off-topic">Off-topic</option>
@@ -953,7 +953,7 @@ boot();
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=59-1788221542" defer></script>
+  <script src="/final-v35.js?v=64-1788222358" defer></script>
 
 <script id="forum-v30-runtime">
 (() => {
@@ -1432,4 +1432,6 @@ boot();
 <!-- f2w-force-save:auth-modal-lock-v60:1788221799:forum/index.html -->
 <!-- f2w-force-save:v60-auth-cache:1788221799:forum/index.html -->
 <!-- f2w-force-save:text-input-cache-v62:1788221977:forum/index.html -->
+<!-- f2w-force-save:v63-search-isolation:1788222324:forum/index.html -->
+<!-- f2w-force-save:v64-cache:1788222358:forum/index.html -->
  
