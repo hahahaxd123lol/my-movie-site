@@ -2582,4 +2582,36 @@ body.f2w-main-page > header .f2w-action-cluster{
 }
 /* f2w-force-save:header-staff-gap-v116:1788295578 */
 
+/* ============================================================
+   F2W v119 — NOTIFICATIONS / STAFF CONTROL HARD GAP
+   ============================================================ */
+body.f2w-main-page > header .f2w-action-cluster{
+  gap:10px!important;
+  column-gap:10px!important;
+}
+
+body.f2w-main-page > header #notification-wrap{
+  margin-right:6px!important;
+}
+
+body.f2w-main-page > header #staff-control-nav{
+  margin-left:6px!important;
+}
+
+/* Constrained desktop widths still keep a visible gap. */
+@media(min-width:1181px) and (max-width:1650px){
+  body.f2w-main-page > header .f2w-action-cluster{
+    gap:9px!important;
+    column-gap:9px!important;
+  }
+  body.f2w-main-page > header #notification-wrap{
+    margin-right:5px!important;
+  }
+  body.f2w-main-page > header #staff-control-nav{
+    margin-left:5px!important;
+  }
+}
+
+/* f2w-force-save:header-action-gap-v119:1788296897 */
+
  
