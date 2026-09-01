@@ -378,6 +378,8 @@ function f2wDebounce(fn,wait=140){
   }
 
   /* ---------- role name effects ---------- */
+  window.__f2wRoleCacheV103=window.__f2wRoleCacheV103||new Map();
+
   function roleClass(role){return ROLE_PRIORITY.includes(role)?`f2w-role-${role}`:'';}
   function clearRoleEffect(el){
     if(!el)return;
@@ -426,6 +428,11 @@ function f2wDebounce(fn,wait=140){
     el.classList.remove('f2w-no-role-name');
     el.classList.add('f2w-role-name',`f2w-role-${role}`);
     el.dataset.f2wRoleDecorated='1';
+    el.dataset.f2wResolvedRole=role;
+    try{
+      const key=String(username||el.dataset.username||el.dataset.f2wUsername||'').trim().toLowerCase();
+      if(key)window.__f2wRoleCacheV103?.set(key,role);
+    }catch{}
     el.dataset.f2wRole=role;
     if(username)el.dataset.username=String(username).replace(/^@/,'');
     el.style.setProperty('--f2w-particles-url','url("https://i.ibb.co/HC3GW9B/Particles.gif")');
@@ -1938,4 +1945,5 @@ function f2wDebounce(fn,wait=140){
 })();
 // f2w-force-save:dm-display-name-particles-js-v89:1788227613
 // f2w-force-save:display-name-only-role-decoration-v90:1788227716
+// f2w-force-save:role-stability-v103:1788289090
  

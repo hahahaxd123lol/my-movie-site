@@ -2513,4 +2513,94 @@ body.f2w-main-page > header .user-search-name.f2w-role-name::after {
 }
 
 /* f2w-force-save:restored-catalog-grid-v97:1788281880 */
+
+/* ============================================================
+   F2W v103 — STABLE ROLE DISPLAY NAMES + WHITE PARTICLES
+   ============================================================ */
+
+/* Never animate role text colour. This removes white/red flicker. */
+.f2w-role-name,
+.f2w-role-name * {
+  transition:none!important;
+  animation:none!important;
+}
+
+/* Highest role decides letters. */
+.f2w-role-owner      {--role-main:#ff2638!important;--f2w-role-color:#ff2638!important;}
+.f2w-role-staff      {--role-main:#c05cff!important;--f2w-role-color:#c05cff!important;}
+.f2w-role-moderator  {--role-main:#62b4ff!important;--f2w-role-color:#62b4ff!important;}
+.f2w-role-support    {--role-main:#32c8ff!important;--f2w-role-color:#32c8ff!important;}
+.f2w-role-developer  {--role-main:#31d9ad!important;--f2w-role-color:#31d9ad!important;}
+.f2w-role-verified   {--role-main:#579dff!important;--f2w-role-color:#579dff!important;}
+.f2w-role-contributor{--role-main:#ffc13d!important;--f2w-role-color:#ffc13d!important;}
+.f2w-role-curator    {--role-main:#ff6be1!important;--f2w-role-color:#ff6be1!important;}
+
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  background:none!important;
+  background-image:none!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+}
+
+/* Particles are permanently WHITE and sit around the whole display name. */
+.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-.18em!important;
+  right:-.28em!important;
+  bottom:-.18em!important;
+  left:-.28em!important;
+  pointer-events:none!important;
+  z-index:3!important;
+  background-image:url("https://i.ibb.co/HC3GW9B/Particles.gif")!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:112% 145%!important;
+  filter:grayscale(1) saturate(0) brightness(4.5) contrast(1.25)!important;
+  mix-blend-mode:screen!important;
+  opacity:.96!important;
+  animation:none!important;
+}
+
+.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* No-role display names are plain white and never sparkle. */
+.f2w-no-role-name {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:none!important;
+  background-image:none!important;
+  text-shadow:none!important;
+}
+.f2w-no-role-name::before,
+.f2w-no-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Compact sites stay word-bound, never full-row/banner. */
+.user-search-name.f2w-role-name,
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+[data-f2w-dm-display-name].f2w-role-name {
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+
+/* f2w-force-save:stable-role-display-v103:1788289090 */
+
  
