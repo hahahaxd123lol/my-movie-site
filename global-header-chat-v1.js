@@ -1870,12 +1870,12 @@
 // f2w-force-save:autocomplete-display-name-v83:1788226300
 
 /* ============================================================
-   F2W v107 — SITE-WIDE MOVIE SEARCH AUTHORITY
+   F2W v111 — DEDICATED SITE-WIDE MOVIE SEARCH PAGE
    ============================================================ */
 (() => {
   'use strict';
-  if(window.__f2wMovieSearchV107)return;
-  window.__f2wMovieSearchV107=true;
+  if(window.__f2wMovieSearchV111)return;
+  window.__f2wMovieSearchV111=true;
 
   let navigating=false;
 
@@ -1909,7 +1909,8 @@
     hideAutocomplete(input);
     navigating=true;
 
-    location.assign(`/home/?search=${encodeURIComponent(query)}&page=1`);
+    // Real dedicated page. Same tab/window.
+    location.assign(`/movies/search/?q=${encodeURIComponent(query)}&page=1`);
     return false;
   }
 
@@ -1939,7 +1940,7 @@
 
   window.addEventListener('pageshow',()=>{navigating=false;},{passive:true});
 })();
-// f2w-force-save:movie-search-v107:1788289786
+// f2w-force-save:dedicated-movie-search-v111:1788290601
 
 /* ============================================================
    F2W v91 — SITE-WIDE GENRE NAVIGATION
@@ -2302,4 +2303,5 @@ window.f2wOpenGuestDmAuthV98=function(mode){
 // f2w-force-save:dedicated-user-search-route-v104:1788289281
 // f2w-force-save:user-search-route-v106:1788289648
 // f2w-force-save:movie-search-sitewide-v107:1788289786
+// f2w-force-save:movie-search-route-v111:1788290601
  

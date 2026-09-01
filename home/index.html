@@ -2355,7 +2355,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
-  <script src="/global-header-chat-v1.js?v=109-1788290239" defer></script>
+  <script src="/global-header-chat-v1.js?v=111-1788290601" defer></script>
 
   <style id="f2w-mobile-login-above-featured">
     /* Mobile/tablet home layout: keep the login/signup card above Featured. */
@@ -2601,6 +2601,18 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 }
 /* f2w-force-save:home-quick-auth-feedback-v93:1788229371 */
 </style>
+
+
+<script id="f2w-old-movie-search-redirect-v111">
+(() => {
+  const params=new URLSearchParams(location.search);
+  const q=String(params.get('search')||'').trim();
+  if(!q)return;
+  const page=Math.max(1,Number(params.get('page'))||1);
+  location.replace(`/movies/search/?q=${encodeURIComponent(q)}&page=${page}`);
+})();
+/* f2w-force-save:old-movie-search-redirect-v111:1788290601 */
+</script>
 
 </head>
 
@@ -8573,4 +8585,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:movie-search-results-v109:1788290239 -->
 <!-- f2w-force-save:v109-cache:1788290239:home/index.html -->
 <!-- f2w-force-save:v110-cache:1788290464:home/index.html -->
+<!-- f2w-force-save:home-search-redirect-v111:1788290601 -->
+<!-- f2w-force-save:v111-cache:1788290601:home/index.html -->
  
