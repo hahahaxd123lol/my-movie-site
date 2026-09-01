@@ -1578,4 +1578,86 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:debounce-role-decorate-v33:1788217440
 // f2w-force-save:mandatory-username-v40:1788218691
 // f2w-force-save:guest-header-sync-v44:1788219651
+
+/* ============================================================
+   F2W v54 — ACCOUNT IDENTITY RESTORE
+   ============================================================ */
+(() => {
+  'use strict';
+  let running=false;
+
+  async function refreshAccountIdentityV54(){
+    if(running)return;
+    running=true;
+    try{
+      const client=(typeof db==='function'?db():null) || window.f2wSupabase || window.supabaseClient;
+      if(!client?.auth)return;
+
+      const {data:{session}}=await client.auth.getSession();
+      const user=session?.user;
+      if(!user)return;
+
+      const emailEl=document.getElementById('account-user-email');
+      const usernameEl=document.getElementById('account-user-username');
+      const roleEl=document.getElementById('account-user-role');
+
+      if(emailEl)emailEl.textContent=user.email||user.user_metadata?.email||'Signed-in user';
+
+      let username=String(
+        user.user_metadata?.username ||
+        user.user_metadata?.chat_alias ||
+        localStorage.getItem('f2w_profile_username_v24') ||
+        ''
+      ).trim().replace(/^@/,'');
+
+      try{
+        const {data:profile}=await client
+          .from('profiles')
+          .select('username,display_name')
+          .eq('user_id',user.id)
+          .maybeSingle();
+
+        if(profile?.username){
+          username=String(profile.username).trim().replace(/^@/,'');
+          try{localStorage.setItem('f2w_profile_username_v24',username)}catch{}
+        }
+      }catch{}
+
+      if(usernameEl){
+        usernameEl.textContent=username?`@${username}`:'@username';
+        usernameEl.dataset.username=username;
+        usernameEl.dataset.f2wPlainText=usernameEl.textContent;
+      }
+
+      // Do not overwrite the role resolver; just repaint the name once its role is known.
+      const roleLabel=String(roleEl?.textContent||'').trim().toLowerCase();
+      const role=
+        roleLabel.includes('owner')?'owner':
+        roleLabel.includes('staff')?'staff':
+        roleLabel.includes('moderator')?'moderator':
+        roleLabel.includes('support')?'support':
+        roleLabel.includes('developer')?'developer':
+        roleLabel.includes('verified')?'verified':
+        roleLabel.includes('contributor')?'contributor':
+        roleLabel.includes('curator')?'curator':'';
+
+      if(usernameEl && role && typeof window.f2wPaintRoleName==='function'){
+        window.f2wPaintRoleName(usernameEl,role,username);
+      }
+    }catch(error){
+      console.warn('Account identity refresh failed:',error?.message||error);
+    }finally{
+      running=false;
+    }
+  }
+
+  window.refreshAccountIdentityV54=refreshAccountIdentityV54;
+
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('#account-btn'))setTimeout(refreshAccountIdentityV54,0);
+  },{capture:true,passive:true});
+
+  window.addEventListener('pageshow',()=>setTimeout(refreshAccountIdentityV54,0),{passive:true});
+})();
+// f2w-force-save:account-identity-js-v54:1788220759
  

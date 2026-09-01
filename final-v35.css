@@ -1231,3 +1231,35 @@ body.f2w-main-page .watch-auth-card {
 }
 /* f2w-force-save:profile-edit-center-fallback-v52:1788220545 */
  
+
+/* ============================================================
+   F2W v54 — ACCOUNT IDENTITY DETAILS
+   ============================================================ */
+.account-user-box > div:last-child {
+  min-width:0!important;
+}
+.account-user-email {
+  color:#eef4fb!important;
+  font-size:.78rem!important;
+  font-weight:800!important;
+  line-height:1.25!important;
+  overflow-wrap:anywhere!important;
+}
+.account-user-username {
+  display:block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  margin-top:3px!important;
+  color:#9fb0c4!important;
+  font-size:.72rem!important;
+  font-weight:750!important;
+  line-height:1.25!important;
+}
+.account-user-role {
+  margin-top:4px!important;
+  font-size:.62rem!important;
+  font-weight:900!important;
+  letter-spacing:.08em!important;
+}
+/* f2w-force-save:account-details-css-v54:1788220759 */
+ 

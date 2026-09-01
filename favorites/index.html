@@ -2526,7 +2526,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=52-1788220545">
+  <link rel="stylesheet" href="/final-v35.css?v=54-1788220759">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=50-1788220357">
@@ -2872,6 +2872,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div>
             
             
+            <div class="account-user-email" id="account-user-email">Signed-in user</div>
+            <div class="account-user-username" id="account-user-username">@username</div>
             <div class="account-role" id="account-user-role">MEMBER</div>
             <div class="account-owner-note" id="account-owner-note" style="display:none;"><i class="fa-solid fa-crown"></i> WEBSITE OWNER</div>
           </div>
@@ -3766,8 +3768,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       loggedOut.style.display='none';
       loggedIn.style.display='block';
 
-      email.textContent=currentUser.email||'Signed-in user';
-      usernameEl.textContent=`@${isCurrentUserOwner()?'josh':(getAccountUsername()||'username')}`;
+      if(email)email.textContent=currentUser.email||'Signed-in user';
+      if(usernameEl)usernameEl.textContent=`@${isCurrentUserOwner()?'josh':(getAccountUsername()||'username')}`;
 
       let roleText='MEMBER';
       let roleColor='var(--accent)';
@@ -5591,7 +5593,7 @@ setTimeout(loadLibraryFavorites,0);
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=44-1788219651" defer></script>
+  <script src="/final-v35.js?v=54-1788220759" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:favorites:86de6ac719 -->
@@ -5640,4 +5642,6 @@ setTimeout(loadLibraryFavorites,0);
 <!-- f2w-force-save:v44-header-cache:1788219651:favorites/index.html -->
 <!-- f2w-force-save:v50-cache:1788220357:favorites/index.html -->
 <!-- f2w-force-save:v52-profile-edit-cache:1788220545:favorites/index.html -->
+<!-- f2w-force-save:account-details-markup-v54:1788220759:favorites/index.html -->
+<!-- f2w-force-save:account-details-cache-v54:1788220759:favorites/index.html -->
  
