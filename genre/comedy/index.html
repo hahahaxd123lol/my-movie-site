@@ -2351,7 +2351,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=94-1788280907">
+  <link rel="stylesheet" href="/final-v35.css?v=97-1788281880">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=94-1788280907">
@@ -3131,6 +3131,12 @@ body.f2w-dedicated-genre-v94 #section-title { margin-top:12px!important; }
 
     
   
+
+
+    <div class="movie-grid" id="movie-grid" aria-live="polite">
+      <p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:42px;">Loading titles...</p>
+    </div>
+    <div class="catalog-pagination" id="catalog-pagination" aria-label="Catalogue pages"></div>
 
 <div class="home-extra">
 
@@ -8151,6 +8157,32 @@ body.f2w-auth-v67-open {
 })();
 </script>
 
+
+<script id="f2w-genre-grid-safety-v97">
+(() => {
+  'use strict';
+  const run=()=>{
+    const fixed=window.__F2W_FIXED_GENRE_V94;
+    const grid=document.getElementById('movie-grid');
+    const pager=document.getElementById('catalog-pagination');
+    if(!fixed||!grid||!pager)return;
+
+    const page=Math.max(1,Number(new URLSearchParams(location.search).get('page'))||1);
+
+    // Dedicated genre pages always re-enter their fixed genre after all old startup handlers.
+    setTimeout(()=>{
+      try{window.f2wOpenGenreV91?.(fixed.id,page,false);}catch(error){
+        console.error('Dedicated genre load failed:',error);
+      }
+    },120);
+  };
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});
+  else run();
+})();
+/* f2w-force-save:genre-grid-safety-v97:1788281880 */
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
@@ -8250,4 +8282,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v93-cache:1788229371:home/index.html -->
 <!-- f2w-force-save:genre-comedy-v94:1788280907 -->
 <!-- f2w-force-save:v94-links:1788280907:genre/comedy/index.html -->
+<!-- f2w-force-save:genre-grid-v97:1788281880:genre/comedy/index.html -->
+<!-- f2w-force-save:v97-cache:1788281880:genre/comedy/index.html -->
  

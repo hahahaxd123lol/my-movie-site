@@ -2498,3 +2498,19 @@ body.f2w-main-page > header .user-search-name.f2w-role-name::after {
 
 /* f2w-force-save:display-name-only-particles-css-v90:1788227716 */
  
+
+/* ============================================================
+   F2W v97 — RESTORED MAIN CATALOGUE GRID
+   ============================================================ */
+#movie-grid.movie-grid {
+  min-height:260px!important;
+  width:100%!important;
+}
+
+#catalog-pagination.catalog-pagination {
+  width:100%!important;
+  margin-top:24px!important;
+}
+
+/* f2w-force-save:restored-catalog-grid-v97:1788281880 */
+ 
