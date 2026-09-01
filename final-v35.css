@@ -1320,3 +1320,65 @@ body.f2w-main-page .watch-auth-card {
 
 /* f2w-force-save:roleless-usernames-white-final-v64:1788222358 */
  
+
+/* ============================================================
+   F2W v75 — FORCE ROLE PARTICLES TO RENDER WHITE
+   The role colour stays on the letters only.
+   The Particles.gif layer is rendered separately and forced white.
+   ============================================================ */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  background-image:none!important;
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  text-shadow:0 2px 2px color-mix(in srgb, var(--role-main,var(--f2w-role-color,#fff)) 55%, transparent),
+              0 0 6px color-mix(in srgb, var(--role-main,var(--f2w-role-color,#fff)) 28%, transparent)!important;
+}
+.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  inset:-0.08em -0.18em!important;
+  display:block!important;
+  pointer-events:none!important;
+  border-radius:.22em!important;
+  background-image:var(--f2w-particles-url,url('https://i.ibb.co/HC3GW9B/Particles.gif'))!important;
+  background-repeat:repeat-x!important;
+  background-position:center center!important;
+  background-size:3.55em auto!important;
+  background-color:transparent!important;
+  filter:grayscale(1) brightness(3.4) contrast(1.2)!important;
+  mix-blend-mode:screen!important;
+  opacity:.98!important;
+  animation:none!important;
+  z-index:2!important;
+}
+.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  background-size:4.4em auto!important;
+}
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before,
+[data-f2w-role-decorated="1"].f2w-role-name::before {
+  background-size:3.0em auto!important;
+}
+/* Never tint the particle layer with role colour or blend from older systems. */
+.f2w-role-name,
+.f2w-role-name::before,
+.f2w-role-name::after {
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+/* f2w-force-save:role-particles-white-v75:1788224563 */
+ 
