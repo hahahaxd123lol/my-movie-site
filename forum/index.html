@@ -139,6 +139,7 @@ html{overflow-y:scroll}
 header{border-bottom:1px solid var(--line);background:rgba(5,5,8,.9);backdrop-filter:blur(18px)}.top{max-width:1050px;margin:auto;padding:13px 20px;display:flex;align-items:center;gap:14px}.top img{width:96px}.top a{margin-left:auto;color:#fff;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:.6rem}
 main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p{color:var(--muted);font-size:.66rem;line-height:1.5}.card{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:16px;margin-top:14px}label{display:block;color:var(--muted);font-size:.48rem;font-weight:800;margin:10px 0 5px}input,textarea{width:100%;border:1px solid var(--line);background:#08080d;color:#fff;border-radius:8px;padding:10px}textarea{min-height:110px}button{margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:#fff;color:#050507;font-weight:800;cursor:pointer}.ticket{border:1px solid var(--line);border-radius:11px;padding:12px;margin-top:10px}.msg{padding:8px;border:1px solid var(--line);border-radius:8px;margin:6px 0;background:#08080d}.msg.staff{border-color:rgba(168,85,247,.28)}.msg.owner{border-color:rgba(239,68,68,.28)}.msg small{display:block;color:var(--muted);font-size:.45rem;margin-bottom:4px}.msg div{font-size:.58rem;white-space:pre-wrap}.empty{padding:25px;text-align:center;color:var(--muted);font-size:.6rem}
 </style>
+  <link rel="stylesheet" href="/forum-v137.css?v=137">
   <link rel="preconnect" href="https://viqufxlcxwgboyxbdhjb.supabase.co" crossorigin>
   <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
   <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
@@ -847,7 +848,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <label>Title<input id="forum-compose-title" maxlength="120" placeholder="Give the discussion a clear title"></label>
         <label>Post<textarea id="forum-compose-body" maxlength="5000" placeholder="What do you want to talk about?"></textarea></label>
         <label class="forum-v30-check"><input id="forum-compose-spoiler" type="checkbox"> Contains spoilers</label>
-        
+        <div id="forum-compose-status" class="forum-v30-status" role="status" aria-live="polite"></div>
         <div class="forum-v30-modal-actions"><button type="button" class="forum-v30-secondary-button" data-close-composer>Cancel</button><button type="button" class="forum-v30-primary" id="forum-compose-submit">Post discussion</button></div>
       </div>
     </div>
@@ -855,8 +856,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
   <div class="forum-v30-modal" id="forum-thread-modal" hidden>
     <div class="forum-v30-modal-card forum-v30-thread-card">
-      <div class="forum-v30-modal-head"><div><span class="forum-v30-kicker">DISCUSSION</span><h2 id="forum-thread-title">Thread</h2></div><button type="button" data-close-thread><i class="fa-solid fa-xmark"></i></button></div>
-      
+      <div class="forum-v30-modal-head"><div><span class="forum-v30-kicker">DISCUSSION</span><h2 id="forum-thread-title">Thread</h2></div><button type="button" data-close-thread aria-label="Close discussion"><i class="fa-solid fa-xmark"></i></button></div>
+      <div id="forum-thread-detail"><div class="forum-v30-empty">Loading discussion…</div></div>
     </div>
   </div>
 </main>
@@ -1038,120 +1039,10 @@ boot();
   <script src="/realtime-v7.js" defer></script>
   <script src="/final-v35.js?v=134-1788313000" defer></script>
 
-<script id="forum-v30-runtime">
-(() => {
-  'use strict';
-  const db=window.supabase.createClient('https://viqufxlcxwgboyxbdhjb.supabase.co','sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge');
-  const S={user:null,threads:[],category:'all',sort:'hot',search:'',channel:null};
-  const $=id=>document.getElementById(id);
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  const ago=v=>{const d=Date.now()-new Date(v).getTime(),s=Math.max(0,Math.floor(d/1000));if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';if(s<604800)return Math.floor(s/86400)+'d ago';return new Date(v).toLocaleDateString()};
-  const cat=v=>({general:'General',movies:'Movies',tv:'TV Shows',reviews:'Reviews',recommendations:'Recommendations','off-topic':'Off-topic'}[v]||'General');
-  async function rpc(name,args={}){const {data,error}=await db.rpc(name,args);if(error)throw error;return data}
-  function toast(msg){let e=$('forum-v30-toast');if(!e){e=document.createElement('div');e.id='forum-v30-toast';e.className='forum-v30-toast';document.body.appendChild(e)}e.textContent=msg;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200)}
-
-  function rows(){
-    let a=[...S.threads];
-    if(S.category!=='all')a=a.filter(x=>x.category===S.category);
-    const q=S.search.trim().toLowerCase();
-    if(q)a=a.filter(x=>[x.title,x.body,x.username,x.display_name].some(v=>String(v||'').toLowerCase().includes(q)));
-    a.sort((x,y)=>S.sort==='new'?new Date(y.created_at)-new Date(x.created_at):
-      (Number(y.reply_count||0)*5+Number(y.view_count||0)*.08+new Date(y.updated_at||y.created_at).getTime()/1e12)-
-      (Number(x.reply_count||0)*5+Number(x.view_count||0)*.08+new Date(x.updated_at||x.created_at).getTime()/1e12));
-    return a;
-  }
-  function render(){
-    const host=$('forum-thread-feed'),a=rows();
-    if(!a.length){host.innerHTML='<div class="forum-v30-empty">No discussions match this filter yet.</div>';return}
-    host.innerHTML=a.map(x=>`<article class="forum-v30-thread"><button class="forum-v30-thread-main" type="button" data-thread="${esc(x.id)}"><span class="forum-v30-thread-icon"><i class="fa-solid ${x.is_spoiler?'fa-eye-slash':'fa-message'}"></i></span><span class="forum-v30-thread-copy"><span><span class="forum-v30-category">${esc(cat(x.category))}</span>${x.is_spoiler?'<span class="forum-v30-spoiler">SPOILER</span>':''}</span><strong>${esc(x.title)}</strong><small>by <span class="forum-v30-author" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</span> · ${esc(ago(x.created_at))}</small></span><span class="forum-v30-thread-stats"><span><i class="fa-regular fa-comment"></i><b>${Number(x.reply_count||0)}</b></span><span><i class="fa-regular fa-eye"></i><b>${Number(x.view_count||0)}</b></span></span></button></article>`).join('');
-    host.querySelectorAll('[data-thread]').forEach(b=>b.onclick=()=>openThread(b.dataset.thread));
-    window.decorateNames?.();
-  }
-  async function loadThreads(quiet=false){
-    try{
-      const data=await rpc('get_forum_threads_v30',{p_limit:100});
-      S.threads=Array.isArray(data)?data:[];
-      $('forum-thread-count').textContent=String(S.threads.length);
-      render();
-    }catch(e){$('forum-thread-feed').innerHTML=`<div class="forum-v30-empty">${esc(e.message||'Could not load discussions.')}</div>`}
-  }
-  async function loadRanks(){
-    const host=$('forum-rankings');
-    try{
-      const data=await rpc('get_public_leaderboard',{p_page:1,p_page_size:5,p_sort:'overall'});
-      const a=Array.isArray(data)?data:[];
-      host.innerHTML=a.length?a.map((x,i)=>`<a class="forum-v30-rank-row" href="/profile/@${encodeURIComponent(x.username||'')}"><span>#${i+1}</span><span class="forum-v30-rank-name" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</span><b>${Number(x.score||0)}</b></a>`).join('')+'<a class="forum-v30-rank-more" href="/leaderboard/">View full leaderboard →</a>':'<div class="forum-v30-empty">Rankings appear as members get active.</div>';
-      const colors={owner:'#ff2638',staff:'#c05cff',moderator:'#62b4ff',support:'#32c8ff',developer:'#31d9ad',verified:'#579dff',contributor:'#ffc13d',curator:'#ff6be1'};
-      host.querySelectorAll('.forum-v30-rank-name[data-role]').forEach(name=>{
-        const role=String(name.dataset.role||'').toLowerCase();
-        if(!colors[role])return;
-        name.classList.add('f2w-role-name',`f2w-role-${role}`);
-        name.style.setProperty('--f2w-role-color',colors[role]);
-        name.style.setProperty('color',colors[role],'important');
-        name.style.setProperty('-webkit-text-fill-color',colors[role],'important');
-      });
-      window.decorateNames?.();
-    }catch{host.innerHTML='<div class="forum-v30-empty">Rankings unavailable.</div>'}
-  }
-  function setCategory(v){S.category=v||'all';document.querySelectorAll('.forum-v30-nav.category').forEach(b=>b.classList.toggle('active',b.dataset.category===S.category));$('forum-category-select').value=S.category;render()}
-  function openComposer(){if(!S.user){window.openHeaderAuth?.('login');return}$('forum-composer').hidden=false;setTimeout(()=>$('forum-compose-title').focus(),20)}
-  function closeComposer(){$('forum-composer').hidden=true;$('forum-compose-status').textContent=''}
-  async function submitThread(){
-    const title=$('forum-compose-title').value.trim(),body=$('forum-compose-body').value.trim(),status=$('forum-compose-status'),btn=$('forum-compose-submit');
-    if(title.length<3||!body){status.textContent='Add a title and post first.';return}
-    btn.disabled=true;status.textContent='Posting discussion…';
-    try{
-      const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Posting timed out. Please try again.')),6000));
-      const request=rpc('create_forum_thread_v30',{p_title:title,p_body:body,p_category:$('forum-compose-category').value,p_is_spoiler:$('forum-compose-spoiler').checked});
-      const id=await Promise.race([request,timeout]);
-      $('forum-compose-title').value='';$('forum-compose-body').value='';$('forum-compose-spoiler').checked=false;
-      closeComposer();
-      await loadThreads(true);
-      toast('Discussion posted.');
-      if(id)await openThread(id);
-    }catch(e){
-      console.error('Discussion post failed:',e);
-      status.textContent=e.message||'Could not post discussion.';
-    }finally{btn.disabled=false}
-  }
-  async function openThread(id){
-    const modal=$('forum-thread-modal'),host=$('forum-thread-detail');modal.hidden=false;host.innerHTML='<div class="forum-v30-empty">Loading discussion…</div>';
-    try{
-      const x=await rpc('get_forum_thread_v30',{p_thread_id:id});if(!x)throw new Error('Thread not found');
-      $('forum-thread-title').textContent=x.title||'Discussion';
-      host.innerHTML=`<article class="forum-v30-thread-full"><div class="forum-v30-thread-full-meta"><span class="forum-v30-category">${esc(cat(x.category))}</span>${x.is_spoiler?'<span class="forum-v30-spoiler">SPOILER</span>':''}<span>${esc(ago(x.created_at))}</span></div><h3>${esc(x.title)}</h3><div class="forum-v30-thread-authorline">by <a href="/profile/@${encodeURIComponent(x.username||'')}" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</a></div><div class="forum-v30-thread-body">${esc(x.body).replace(/\n/g,'<br>')}</div></article><section class="forum-v30-replies"><strong>${Number(x.reply_count||0)} Replies</strong><div class="forum-v30-reply-list">${(x.replies||[]).map(r=>`<article class="forum-v30-reply"><div class="forum-v30-reply-head"><a href="/profile/@${encodeURIComponent(r.username||'')}" data-username="${esc(r.username||'')}" data-role="${esc(r.top_role||'')}">${esc(r.display_name||r.username||'Member')}</a><span>${esc(ago(r.created_at))}</span></div><div>${esc(r.body).replace(/\n/g,'<br>')}</div></article>`).join('')||'<div class="forum-v30-empty">No replies yet.</div>'}</div>${S.user?`<div class="forum-v30-reply-box"><textarea id="forum-reply-body" maxlength="3000" placeholder="Write a reply…"></textarea><div><button id="forum-reply-submit" type="button">Reply</button></div></div>`:'<div class="forum-v30-empty">Log in to join the discussion.</div>'}</section>`;
-      $('forum-reply-submit')?.addEventListener('click',()=>reply(id));window.decorateNames?.();loadThreads(true)
-    }catch(e){host.innerHTML=`<div class="forum-v30-empty">${esc(e.message||'Could not load discussion.')}</div>`}
-  }
-  async function reply(id){const input=$('forum-reply-body'),body=input?.value.trim()||'',status=$('forum-reply-status'),btn=$('forum-reply-submit');if(!body)return;btn.disabled=true;status.textContent='Sending…';try{await rpc('create_forum_reply_v30',{p_thread_id:id,p_body:body});await openThread(id);toast('Reply posted.')}catch(e){status.textContent=e.message||'Could not reply.'}finally{btn.disabled=false}}
-  function realtime(){
-    try{
-      let t=null;const refresh=()=>{clearTimeout(t);t=setTimeout(()=>{loadThreads(true);loadRanks()},70)};
-      S.channel=db.channel('forum-v30-live').on('postgres_changes',{event:'*',schema:'public',table:'forum_threads'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'forum_replies'},refresh).subscribe()
-    }catch(e){console.warn('Forum realtime unavailable',e)}
-  }
-  function bind(){
-    document.querySelectorAll('[data-new-thread]').forEach(b=>b.onclick=openComposer);
-    document.querySelectorAll('[data-close-composer]').forEach(b=>b.onclick=closeComposer);
-    document.querySelectorAll('[data-close-thread]').forEach(b=>b.onclick=()=>$('forum-thread-modal').hidden=true);
-    $('forum-compose-submit').onclick=submitThread;
-    $('forum-search').oninput=e=>{S.search=e.target.value;render()};
-    $('forum-category-select').onchange=e=>setCategory(e.target.value);
-    document.querySelectorAll('.forum-v30-nav.category').forEach(b=>b.onclick=()=>setCategory(b.dataset.category));
-    document.querySelectorAll('[data-sort]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-sort]').forEach(x=>x.classList.toggle('active',x===b));S.sort=b.dataset.sort;render()});
-    $('forum-my-profile').onclick=()=>window.openMyProfile?.();
-    $('forum-composer').onclick=e=>{if(e.target===e.currentTarget)closeComposer()};
-    $('forum-thread-modal').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.hidden=true};
-  }
-  async function boot(){
-    bind();
-    const {data:{session}}=await db.auth.getSession();S.user=session?.user||null;$('forum-account-state').textContent=S.user?'Member':'Guest';
-    await Promise.all([loadThreads(),loadRanks()]);realtime();
-    db.auth.onAuthStateChange((_e,s)=>{S.user=s?.user||null;$('forum-account-state').textContent=S.user?'Member':'Guest'})
-  }
-  boot();
-})();
+<script id="forum-v30-runtime-disabled">
+// Disabled by Forum v137. The old runtime had duplicated clients, missing modal nodes, and fragile posting.
 </script>
+<script src="/forum-v137.js?v=137" defer></script>
 
 
 <div class="account-modal" id="account-modal">
@@ -2793,6 +2684,7 @@ body.f2w-auth-v67-open {
 </style>
 
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
+<!-- f2w-force-save:forum-v137:20260902 -->
 </body></html>
 <!-- f2w-force-push-20260831-batch2:forum:16d129a193 -->
 <!-- f2w-update-marker: shared-chat-v7:forum -->
