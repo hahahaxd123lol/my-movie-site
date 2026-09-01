@@ -427,7 +427,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/global-header-v1.css?v=74-1788224239">
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=74-1788224239" defer></script>
+  <script src="/global-header-chat-v1.js?v=76-1788224745" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -1120,6 +1120,8 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
       grid.innerHTML='<div class="f2w-users-empty">Could not load user results right now.</div>';
     }
   }
+
+  window.loadDirectoryResults=loadDirectoryResults;
 
   window.ultraGo=href=>{window.location.href=href};
   window.openUltraCommand=()=>{window.location.href='/home/'};
@@ -2110,25 +2112,7 @@ body.f2w-auth-v67-open {
 </script>
 
 
-<script id="f2w-users-enter-search-v68">
-(() => {
-  'use strict';
-  const bind=()=>{
-    const input=document.getElementById('user-search');
-    if(!input || input.dataset.f2wUsersEnterV68)return;
-    input.dataset.f2wUsersEnterV68='1';
-    input.addEventListener('keydown',e=>{
-      if(e.key==='Enter'){
-        e.preventDefault();
-        if(typeof window.submitUserDirectorySearch==='function')window.submitUserDirectorySearch();
-      }
-    });
-  };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
-  else bind();
-})();
-// f2w-force-save:users-enter-search-v68:1788222895
-</script>
+
 
 
 <style id="f2w-header-hardlock-v69">
@@ -3429,4 +3413,6 @@ body.f2w-users-page .f2w-user-handle {
 <!-- f2w-force-save:users-v73:1788224087 -->
 <!-- f2w-force-save:footer-privacy-v74:1788224239:users/index.html -->
 <!-- f2w-force-save:role-particles-white-v75:1788224563:users/index.html -->
+<!-- f2w-force-save:users-enter-v76:1788224745 -->
+<!-- f2w-force-save:v76-cache:1788224745:users/index.html -->
  

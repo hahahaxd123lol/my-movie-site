@@ -1677,4 +1677,90 @@
   new MutationObserver(cleanup).observe(document.documentElement,{childList:true,subtree:true});
 })();
 // f2w-force-save:privacy-cleanup-js-v74:1788224239
+
+/* ============================================================
+   F2W v76 — USER SEARCH ENTER / DIRECTORY NAVIGATION HARD FIX
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wUserSearchEnterV76)return;
+  window.__f2wUserSearchEnterV76=true;
+
+  let navigating=false;
+
+  function cleanQuery(value){
+    return String(value||'').trim().replace(/[^A-Za-z0-9]/g,'').slice(0,30);
+  }
+
+  function closeSuggestions(input){
+    try{
+      const container=input?.closest?.('.user-search-container');
+      const results=container?.querySelector('.user-search-results') ||
+        document.getElementById('user-search-results');
+      if(results){
+        results.classList.remove('show');
+        results.innerHTML='';
+      }
+    }catch{}
+  }
+
+  function submit(page=1){
+    if(navigating)return false;
+
+    const input=document.getElementById('user-search');
+    const query=cleanQuery(input?.value);
+    if(!query)return false;
+
+    navigating=true;
+    closeSuggestions(input);
+
+    const target=`/users/?q=${encodeURIComponent(query)}&page=${Math.max(1,Number(page)||1)}`;
+
+    // Same URL: do not start a second navigation. Refresh results in-place.
+    const current=new URL(location.href);
+    if(current.pathname.replace(/\/+$/,'')==='/users' &&
+       current.searchParams.get('q')===query &&
+       Number(current.searchParams.get('page')||1)===Math.max(1,Number(page)||1)){
+      navigating=false;
+      try{window.loadDirectoryResults?.()}catch{}
+      return false;
+    }
+
+    location.assign(target);
+    return false;
+  }
+
+  window.submitUserDirectorySearch=submit;
+
+  /*
+   * Capture Enter BEFORE old autocomplete/page handlers.
+   * Previously one handler tried to open the first autocomplete profile while
+   * another tried to navigate to /users/, causing competing navigations and
+   * the browser to sit in a permanent loading state.
+   */
+  document.addEventListener('keydown',event=>{
+    const input=event.target?.closest?.('#user-search,.user-search-container input');
+    if(!input || event.key!=='Enter' || event.isComposing)return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    submit(1);
+  },true);
+
+  // Keep any Search Users arrow/button on pages that still show one working.
+  document.addEventListener('click',event=>{
+    const button=event.target?.closest?.(
+      '.user-search-submit,[data-user-search-submit],button[onclick*="submitUserDirectorySearch"]'
+    );
+    if(!button)return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    submit(1);
+  },true);
+
+  window.addEventListener('pageshow',()=>{navigating=false;},{passive:true});
+})();
+// f2w-force-save:user-search-enter-v76:1788224745
  
