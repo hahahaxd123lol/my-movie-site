@@ -1,0 +1,16 @@
+FLIX2WATCH v132
+
+1. Run leaderboard-resume-v132.sql in Supabase SQL Editor after the earlier migrations.
+2. Deploy this build.
+3. Hard-refresh/reopen once so cached JS/service-worker assets are replaced.
+
+Changes:
+- Fixed leaderboard tabs: Overall, Titles Watched, Watch Time, Ratings, Achievements now actually switch the RPC sort.
+- Selected leaderboard sort survives refresh in the URL.
+- XP is now watch-time dominated: 20 XP per watched minute, with titles/ratings/achievements secondary.
+- Watch player auth bootstrap now starts playback immediately instead of waiting for TMDB metadata to finish.
+- Metadata changing TMDB -> IMDb no longer reloads an already-running Flix2Watch API iframe.
+- Resume keys now use stable TMDB IDs, fixing positions disappearing due to IMDb/TMDB timing.
+- Added account-synced playback progress in Supabase, so resume works across browsers/devices.
+- Player progress saves are throttled (15s while playing, immediate on pause/seek/completion) to avoid hammering Supabase.
+- Returning to a title shows Continue / Start over when meaningful progress exists.

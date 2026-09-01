@@ -684,6 +684,29 @@ async function load(){
 window.openHeaderAuth=()=>location.href='/home/';window.openAccountModal=()=>location.href='/home/';
 let myUsername='';window.openMyProfile=()=>{if(myUsername){try{localStorage.setItem('f2w_profile_username_v24',myUsername)}catch{} location.href='/profile/?user='+encodeURIComponent(myUsername)}else location.href='/home/';};
 
+// v132: leaderboard sort tabs were rendered but never wired up. Keep the selected
+// metric in the URL so refresh/back-forward preserve the ranking the user chose.
+const allowedSorts=new Set(['overall','titles','watch','ratings','achievements']);
+try{
+  const requested=new URLSearchParams(location.search).get('sort');
+  if(allowedSorts.has(requested))sort=requested;
+}catch{}
+function syncSortTabs(){
+  document.querySelectorAll('#tabs .tab[data-sort]').forEach(btn=>{
+    const active=btn.dataset.sort===sort;
+    btn.classList.toggle('active',active);
+    btn.setAttribute('aria-pressed',active?'true':'false');
+  });
+}
+document.querySelectorAll('#tabs .tab[data-sort]').forEach(btn=>btn.addEventListener('click',()=>{
+  const next=String(btn.dataset.sort||'overall').toLowerCase();
+  if(!allowedSorts.has(next)||next===sort)return;
+  sort=next;page=1;syncSortTabs();
+  try{const u=new URL(location.href);u.searchParams.set('sort',sort);history.replaceState(null,'',u);}catch{}
+  load();
+}));
+syncSortTabs();
+
 document.getElementById('user-search')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitUserDirectorySearch()});
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){const shell=document.getElementById('f2w-shared-chat-shell');if(shell?.classList.contains('open')){try{document.getElementById('f2w-shared-chat-frame')?.contentWindow?.closeChat?.()}catch{}shell.classList.remove('open');shell.setAttribute('aria-hidden','true')}}});
@@ -725,7 +748,7 @@ load();setInterval(loadStats,30000);setInterval(heartbeat,30000);setInterval(loa
 <script src="/social-v34.js" defer></script>
 <script src="/interaction-v7.js" defer></script>
 <script src="/realtime-v7.js" defer></script>
-<script src="/final-v35.js?v=129-1788305400" defer></script>
+<script src="/final-v35.js?v=132-1788309000" defer></script>
 
 <div class="account-modal" id="account-modal">
     <div class="account-card">

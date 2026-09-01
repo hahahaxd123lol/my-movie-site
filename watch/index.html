@@ -751,6 +751,54 @@ html{overflow-y:scroll}
       filter:hue-rotate(110deg) saturate(1.55) brightness(1.05) drop-shadow(0 0 14px var(--accent-glow));
     }
 
+    // v132: account-synced resume state. Local storage makes repeat visits on
+    // this browser instant; Supabase keeps the same position across devices.
+    let f2wCloudResumeLoaded=false;
+    let f2wCloudResumeSaveTimer=0;
+    let f2wLastCloudResumeSave=0;
+    function f2wResumeSuffix(type=mediaType,s=1,e=1){return type==='tv'?`_s${Number(s||1)}e${Number(e||1)}`:'';}
+    function f2wResumeKey(type=mediaType,s=1,e=1){return `f2w_resume_${type}_${mediaId}${f2wResumeSuffix(type,s,e)}`;}
+    function f2wFmtResume(sec){sec=Math.max(0,Number(sec||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60);return h?`${h}h ${m}m`:`${m}m`;}
+    function f2wShowResumePrompt(seconds){
+      if(window.__f2wResumePromptShown||seconds<30)return;
+      window.__f2wResumePromptShown=true;
+      const box=document.createElement('div');
+      box.id='f2w-resume-prompt';
+      box.style.cssText='position:fixed;left:50%;top:88px;transform:translateX(-50%);z-index:2147483000;background:#071321;color:#fff;border:1px solid #d51b32;border-radius:12px;padding:12px 14px;box-shadow:0 15px 50px #000a;display:flex;gap:10px;align-items:center;font:700 12px Arial,sans-serif;max-width:calc(100vw - 24px)';
+      box.innerHTML=`<span>Continue where you left off at <b>${f2wFmtResume(seconds)}</b>?</span><button id="f2w-resume-continue" style="border:0;border-radius:8px;padding:8px 11px;background:#d51b32;color:white;font-weight:800;cursor:pointer">Continue</button><button id="f2w-resume-startover" style="border:1px solid #35506a;border-radius:8px;padding:8px 11px;background:#0a1928;color:#b8c8d8;font-weight:800;cursor:pointer">Start over</button>`;
+      document.body.appendChild(box);
+      box.querySelector('#f2w-resume-continue')?.addEventListener('click',()=>box.remove());
+      box.querySelector('#f2w-resume-startover')?.addEventListener('click',async()=>{
+        window.__f2wStartOverRequested=true;window.__f2wCloudResumeSeconds=0;
+        try{localStorage.removeItem(f2wResumeKey(mediaType,document.getElementById('season-select')?.value||1,document.getElementById('episode-select')?.value||1));}catch{}
+        try{await chatSupabase.rpc('clear_my_playback_progress_v132',{p_media_type:mediaType,p_media_id:Number(mediaId),p_season:Number(document.getElementById('season-select')?.value||1),p_episode:Number(document.getElementById('episode-select')?.value||1)});}catch{}
+        box.remove();lastLoadedPlaybackKey='';lastLoadedEmbedUrl='';loadPlayer();
+      });
+      setTimeout(()=>box?.remove(),12000);
+    }
+    async function f2wLoadCloudResume(){
+      if(f2wCloudResumeLoaded||!mediaId)return;
+      f2wCloudResumeLoaded=true;
+      try{
+        const {data:{session}}=await chatSupabase.auth.getSession();if(!session?.user)return;
+        const s=Number(document.getElementById('season-select')?.value||1),e=Number(document.getElementById('episode-select')?.value||1);
+        const {data,error}=await chatSupabase.rpc('get_my_playback_progress_v132',{p_media_type:mediaType,p_media_id:Number(mediaId),p_season:s,p_episode:e});
+        if(error)throw error;const row=Array.isArray(data)?data[0]:data;const sec=Number(row?.position_seconds||0);
+        if(sec>10){window.__f2wCloudResumeSeconds=sec;try{localStorage.setItem(f2wResumeKey(mediaType,s,e),String(sec));}catch{} f2wShowResumePrompt(sec);}
+      }catch(err){console.warn('Cloud resume unavailable:',err?.message||err);}
+    }
+    function f2wQueueCloudResumeSave(seconds,duration,status,s=1,e=1){
+      const now=Date.now();const immediate=status==='paused'||status==='seeked'||status==='completed';
+      if(!immediate&&now-f2wLastCloudResumeSave<15000)return;
+      clearTimeout(f2wCloudResumeSaveTimer);
+      f2wCloudResumeSaveTimer=setTimeout(async()=>{
+        f2wLastCloudResumeSave=Date.now();
+        try{await chatSupabase.rpc('save_my_playback_progress_v132',{p_media_type:mediaType,p_media_id:Number(mediaId),p_season:Number(s||1),p_episode:Number(e||1),p_position_seconds:Math.max(0,Math.floor(Number(seconds||0))),p_duration_seconds:Math.max(0,Math.floor(Number(duration||0))),p_completed:status==='completed'});}catch(err){console.warn('Cloud progress save unavailable:',err?.message||err);}
+      },immediate?0:250);
+    }
+    // Fetch cloud state in parallel; never block initial playback on Supabase.
+    setTimeout(f2wLoadCloudResume,0);
+
     // VidSrcMe player integration: save progress from its documented
     // postMessage PLAYER_EVENT payload. This does not change sources or react
     // to popup/new-tab activity; closing an external tab leaves playback intact.
@@ -768,15 +816,18 @@ html{overflow-y:scroll}
 
       const s = Number(info.season || 1);
       const e = Number(info.episode || 1);
-      const key = `f2w_vidsrcme_progress_${eventType}_${id}${eventType === 'tv' ? `_s${s}e${e}` : ''}`;
+      const key = f2wResumeKey(eventType,s,e);
+      const duration = Number(payload.data.player_duration || payload.data.duration || info.duration || 0);
 
       try {
         if ((status === 'playing' || status === 'paused' || status === 'seeked') && Number.isFinite(progress) && progress >= 0) {
           localStorage.setItem(key, String(progress));
+          window.__f2wCloudResumeSeconds=progress;
         } else if (status === 'completed') {
-          localStorage.removeItem(key);
+          localStorage.removeItem(key);window.__f2wCloudResumeSeconds=0;
         }
       } catch (_) {}
+      f2wQueueCloudResumeSave(progress,duration,status,s,e);
 
       // Keep Flix2Watch's own episode selectors in sync after VidSrcMe finishes
       // and auto-advances. We do not force any source switch.
@@ -6414,7 +6465,7 @@ if(currentUser){
     // Public visitors may browse the complete title/details page.
     // Playback stays locked quietly until they choose Log In/Create Account.
     setWatchPlaybackAccess(false);
-    setTimeout(()=>syncWatchPlaybackAccess({prompt:false}),0);
+    setTimeout(()=>syncWatchPlaybackAccess({reloadPlayer:true}),0);
   });
 
   chatSupabase.auth.onAuthStateChange((_event,session)=>{
@@ -6849,7 +6900,7 @@ if(currentUser){
       // particular, Flix2Watch API stores pause progress in localStorage; if we
       // rebuilt its URL with a new startAt value on every callback, pausing could
       // make the iframe refresh several times and resume by itself.
-      const playbackKey = [currentServer, mediaType, String(mediaId || ''), String(currentImdbId || ''), String(seasonNum), String(episodeNum)].join('|');
+      const playbackKey = [currentServer, mediaType, String(mediaId || ''), String(seasonNum), String(episodeNum)].join('|');
       const liveSrc = iframe.getAttribute('src') || '';
       const isRealPlayerLoaded = liveSrc && !liveSrc.startsWith('data:text/html');
       if (lastLoadedPlaybackKey === playbackKey && isRealPlayerLoaded) {
@@ -6870,9 +6921,12 @@ if(currentUser){
           // Restore VidSrcMe position when we have one. The provider accepts
           // startAt in seconds and sends PLAYER_EVENT progress messages back.
           try {
-            const progressKey = `f2w_vidsrcme_progress_${mediaType}_${currentImdbId || mediaId}${mediaType === 'tv' ? `_s${seasonNum}e${episodeNum}` : ''}`;
-            const saved = Number(localStorage.getItem(progressKey) || 0);
-            if (Number.isFinite(saved) && saved > 10) embedUrl += `&startAt=${Math.floor(saved)}`;
+            // v132: use the stable TMDB id for local resume. The old code switched
+            // between TMDB and IMDb depending on metadata timing, which made saved
+            // positions appear to vanish on a later visit.
+            const progressKey = `f2w_resume_${mediaType}_${mediaId}${mediaType === 'tv' ? `_s${seasonNum}e${episodeNum}` : ''}`;
+            const saved = Math.max(Number(localStorage.getItem(progressKey) || 0), Number(window.__f2wCloudResumeSeconds || 0));
+            if (Number.isFinite(saved) && saved > 10 && !window.__f2wStartOverRequested) embedUrl += `&startAt=${Math.floor(saved)}`;
           } catch (_) {}
           break;
         }
@@ -7029,15 +7083,18 @@ if(currentUser){
 
       const s = Number(info.season || 1);
       const e = Number(info.episode || 1);
-      const key = `f2w_vidsrcme_progress_${eventType}_${id}${eventType === 'tv' ? `_s${s}e${e}` : ''}`;
+      const key = f2wResumeKey(eventType,s,e);
+      const duration = Number(payload.data.player_duration || payload.data.duration || info.duration || 0);
 
       try {
         if ((status === 'playing' || status === 'paused' || status === 'seeked') && Number.isFinite(progress) && progress >= 0) {
           localStorage.setItem(key, String(progress));
+          window.__f2wCloudResumeSeconds=progress;
         } else if (status === 'completed') {
-          localStorage.removeItem(key);
+          localStorage.removeItem(key);window.__f2wCloudResumeSeconds=0;
         }
       } catch (_) {}
+      f2wQueueCloudResumeSave(progress,duration,status,s,e);
 
       // Keep Flix2Watch's own episode selectors in sync after VidSrcMe finishes
       // and auto-advances. We do not force any source switch.
