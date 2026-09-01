@@ -2367,3 +2367,25 @@ body.f2w-main-page > header .user-search-container::before {
 
 /* f2w-force-save:user-search-arrow-fix-v66:1788222669 */
  
+
+/* ============================================================
+   F2W v72 — LOGIN / SIGN UP HEADER ICONS
+   ============================================================ */
+body.f2w-main-page > header #header-login-btn,
+body.f2w-main-page > header #header-signup-btn {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  white-space:nowrap!important;
+}
+
+body.f2w-main-page > header #header-login-btn > i,
+body.f2w-main-page > header #header-signup-btn > i {
+  flex:0 0 auto!important;
+  font-size:.88em!important;
+  line-height:1!important;
+}
+
+/* f2w-force-save:auth-button-icons-css-v72:1788223976 */
+ 
