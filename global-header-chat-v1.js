@@ -1763,4 +1763,91 @@
   window.addEventListener('pageshow',()=>{navigating=false;},{passive:true});
 })();
 // f2w-force-save:user-search-enter-v76:1788224745
+
+/* ============================================================
+   F2W v79 — USER DIRECTORY PREFIX SEARCH, NO PAGE NAVIGATION LOOP
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wUsersPrefixSearchV79)return;
+  window.__f2wUsersPrefixSearchV79=true;
+
+  let running=false;
+
+  function clean(value){
+    return String(value||'')
+      .trim()
+      .replace(/[^A-Za-z0-9]/g,'')
+      .slice(0,30);
+  }
+
+  function closeSuggestions(input){
+    const host=input?.closest?.('.user-search-container')?.querySelector('.user-search-results')
+      || document.getElementById('user-search-results');
+    if(host){
+      host.classList.remove('show');
+      host.innerHTML='';
+    }
+  }
+
+  async function submitPrefix(){
+    const input=document.getElementById('user-search');
+    const query=clean(input?.value);
+    if(!query || running)return false;
+
+    closeSuggestions(input);
+
+    // The Users page now searches IN PLACE. No location.assign, no reload,
+    // no service-worker navigation, no infinite-loading race.
+    if(location.pathname.replace(/\/+$/,'')==='/users'){
+      running=true;
+      try{
+        const url=new URL(location.href);
+        url.searchParams.set('q',query);
+        url.searchParams.set('page','1');
+        history.replaceState({f2wUsersPrefix:true},'',url.pathname+'?'+url.searchParams.toString());
+
+        if(typeof window.loadDirectoryResults==='function'){
+          await window.loadDirectoryResults();
+        }
+      }catch(error){
+        console.error('Users prefix search failed:',error);
+      }finally{
+        running=false;
+      }
+      return false;
+    }
+
+    // Other pages only need one normal navigation to the directory.
+    location.href=`/users/?q=${encodeURIComponent(query)}&page=1`;
+    return false;
+  }
+
+  window.submitUserDirectorySearch=submitPrefix;
+
+  // Capture Enter before every older handler.
+  document.addEventListener('keydown',event=>{
+    const input=event.target?.closest?.('#user-search,.user-search-container input');
+    if(!input || event.key!=='Enter' || event.isComposing)return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    submitPrefix();
+  },true);
+
+  // Search arrow/button follows the exact same code path.
+  document.addEventListener('click',event=>{
+    const button=event.target?.closest?.(
+      '.user-search-submit,[data-user-search-submit],button[onclick*="submitUserDirectorySearch"]'
+    );
+    if(!button)return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    submitPrefix();
+  },true);
+})();
+// f2w-force-save:users-prefix-search-v79:1788225124
  

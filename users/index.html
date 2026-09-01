@@ -427,7 +427,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/global-header-v1.css?v=74-1788224239">
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=76-1788224745" defer></script>
+  <script src="/global-header-chat-v1.js?v=79-1788225124" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -876,7 +876,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
 <main class="f2w-users-main">
   <section class="f2w-users-hero">
     <h1><i class="fa-solid fa-users" style="color:var(--accent)"></i> User Search</h1>
-    <p>Search Flix2Watch usernames. Results include usernames that start with your search, with multiple pages when there are more matches.</p>
+    <p>Search Flix2Watch usernames. Results only include usernames that START with what you type. Up to 30 results appear per page.</p>
   </section>
 
   <div class="f2w-users-summary" id="users-summary">Enter a username search above.</div>
@@ -1006,11 +1006,18 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
     </a>`;
   }
 
-  function goDirectoryPage(page){
+  async function goDirectoryPage(page){
     const params=new URLSearchParams(window.location.search);
-    const query=String(params.get('q')||'').replace(/[^A-Za-z0-9]/g,'');
+    const query=String(params.get('q')||'').replace(/[^A-Za-z0-9]/g,'').slice(0,30);
     if(!query)return;
-    window.location.href=`/users/?q=${encodeURIComponent(query)}&page=${Math.max(1,page)}`;
+
+    const targetPage=Math.max(1,Number(page)||1);
+    const url=new URL(window.location.href);
+    url.searchParams.set('q',query);
+    url.searchParams.set('page',String(targetPage));
+    history.replaceState({f2wUsersPage:true},'',url.pathname+'?'+url.searchParams.toString());
+    await loadDirectoryResults();
+    window.scrollTo({top:0,left:0,behavior:'auto'});
   }
 
   function renderPagination(page,totalPages){
@@ -1064,7 +1071,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
 
   async function loadDirectoryResults(){
     const params=new URLSearchParams(window.location.search);
-    const query=String(params.get('q')||'').trim().replace(/[^A-Za-z0-9]/g,'');
+    const query=String(params.get('q')||'').trim().replace(/[^A-Za-z0-9]/g,'').slice(0,30);
     const page=Math.max(1,Number(params.get('page'))||1);
     const grid=document.getElementById('users-grid');
     const summary=document.getElementById('users-summary');
@@ -1102,8 +1109,15 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
         return String(a.username||'').localeCompare(String(b.username||''),undefined,{sensitivity:'base'});
       });
 
-      const total=Number(count||0);
+      const total=Number.isFinite(Number(count))?Number(count):rows.length;
       const totalPages=Math.max(1,Math.ceil(total/USERS_PER_PAGE));
+      // f2w v79 page clamp: never navigate/reload just because page is out of range.
+      if(page>totalPages && total>0){
+        const url=new URL(window.location.href);
+        url.searchParams.set('page','1');
+        history.replaceState({f2wUsersClamp:true},'',url.pathname+'?'+url.searchParams.toString());
+        return loadDirectoryResults();
+      }
 
       summary.textContent=total
         ? `${total} user${total===1?'':'s'} found beginning with “${query}” · page ${Math.min(page,totalPages)} of ${totalPages}`
@@ -3417,4 +3431,6 @@ body.f2w-users-page .f2w-user-handle {
 <!-- f2w-force-save:v76-cache:1788224745:users/index.html -->
 <!-- f2w-force-save:v77-role-particles:1788224897:users/index.html -->
 <!-- f2w-force-save:v78-cache:1788224965:users/index.html -->
+<!-- f2w-force-save:users-prefix-v79:1788225124 -->
+<!-- f2w-force-save:v79-cache:1788225124:users/index.html -->
  
