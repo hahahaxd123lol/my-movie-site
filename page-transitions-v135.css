@@ -1,0 +1,40 @@
+/* Flix2Watch v135 — site-wide page transitions */
+:root{
+  --f2w-page-enter-ms: 850ms;
+  --f2w-page-exit-ms: 150ms;
+}
+
+/* Fade each newly loaded document in without delaying navigation itself. */
+html.f2w-transition-boot body,
+html:not(.f2w-transition-ready) body{
+  opacity:0;
+}
+html.f2w-transition-ready body{
+  opacity:1;
+  animation:f2wPageEnter var(--f2w-page-enter-ms) cubic-bezier(.16,1,.3,1) both;
+}
+html.f2w-transition-leaving body{
+  pointer-events:none!important;
+  animation:f2wPageExit var(--f2w-page-exit-ms) ease-out both!important;
+}
+@keyframes f2wPageEnter{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:none}
+}
+@keyframes f2wPageExit{
+  from{opacity:1}
+  to{opacity:.08}
+}
+
+/* Native cross-document view transitions where supported. */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:f2wPageExit var(--f2w-page-exit-ms) ease-out both}
+::view-transition-new(root){animation:f2wPageEnter var(--f2w-page-enter-ms) cubic-bezier(.16,1,.3,1) both}
+
+@media (prefers-reduced-motion:reduce){
+  :root{--f2w-page-enter-ms:1ms;--f2w-page-exit-ms:1ms}
+  html.f2w-transition-ready body,
+  html.f2w-transition-leaving body,
+  ::view-transition-old(root),
+  ::view-transition-new(root){animation-duration:1ms!important;transform:none!important}
+}

@@ -1,0 +1,20 @@
+Flix2Watch v135 — site-wide smooth page transitions
+
+What changed
+- Every HTML page now gets the same transition bootstrap, CSS and JS.
+- New pages fade/settle in smoothly (~0.85 seconds, close to the requested one-second feel).
+- Normal same-origin links get a very short ~0.15s fade-out before navigation, so clicks still feel immediate instead of adding a full second of delay.
+- Header buttons or other programmatic navigation remain untouched; the destination page still fades in consistently.
+- Back/forward navigation recovers correctly through the pageshow event.
+- External links, downloads, hash links, Ctrl/Cmd-click, Shift-click and new-tab links are not intercepted.
+- Reduced-motion accessibility is respected.
+- Native cross-document View Transitions are enabled on browsers that support them, with the CSS/JS animation as a fallback.
+- The service-worker cache was bumped to v135 and now pre-caches the transition assets.
+
+Supabase
+- No SQL changes are required for v135.
+
+Deploy
+1. Upload/deploy this v135 build.
+2. Hard refresh or fully reopen Flix2Watch once so the v135 service worker replaces the previous cached shell/assets.
+3. Navigate between Home, titles, profiles, Chat, leaderboard, forum, watch pages, etc. Each newly loaded page should fade in smoothly without slowing normal page logic.
