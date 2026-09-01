@@ -419,15 +419,15 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=64-1788222358">
+  <link rel="stylesheet" href="/final-v35.css?v=71-1788223881">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/responsive-v7.css">
   <link rel="stylesheet" href="/final-v9.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=66-1788222669">
+  <link rel="stylesheet" href="/global-header-v1.css?v=71-1788223881">
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=70-1788223711" defer></script>
+  <script src="/global-header-chat-v1.js?v=71-1788223881" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -996,8 +996,8 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
       ? `<img src="${escapeProfileHTML(profile.avatar_url)}" alt="">`
       : escapeProfileHTML(profileInitials(profile.username));
 
-    return `<a class="f2w-user-card" href="/profile/?user=${encodeURIComponent(profile.username||'')}">
-      <div class="f2w-user-avatar">${profile.avatar_url?`<img src="${escapeProfileHTML(profile.avatar_url)}" alt="">`:avatar}</div>
+    return `<a class="f2w-user-card" href="/profile/?user=${encodeURIComponent(profile.username||'')}" aria-label="Open @${username}'s public profile">
+      <div class="f2w-user-avatar">${profile.avatar_url?`<img src="${escapeProfileHTML(profile.avatar_url)}" alt="${display} profile picture" loading="lazy" decoding="async">`:avatar}</div>
       <div class="f2w-user-copy">
         <div class="f2w-user-display">${display}</div>
         <div class="f2w-user-handle">@${username}</div>
@@ -1150,7 +1150,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
     window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
   }
 </script>
-  <script src="/final-v35.js?v=70-1788223711" defer></script>
+  <script src="/final-v35.js?v=71-1788223881" defer></script>
 
 <div class="account-modal" id="account-modal">
     <div class="account-card">
@@ -1949,15 +1949,18 @@ body.f2w-auth-v67-open {
 
   function lock(){
     if(locked)return;
-    savedY=window.scrollY||0;
+    savedY=window.scrollY||window.pageYOffset||0;
     locked=true;
     document.documentElement.classList.add('f2w-auth-v67-open');
     document.body.classList.add('f2w-auth-v67-open');
-    document.body.style.setProperty('position','fixed','important');
-    document.body.style.setProperty('top',`-${savedY}px`,'important');
-    document.body.style.setProperty('left','0','important');
-    document.body.style.setProperty('right','0','important');
-    document.body.style.setProperty('width','100%','important');
+
+    // v71 USERS fix: do NOT make the body position:fixed.
+    // Short directory pages were becoming the containing/clipping surface
+    // for the viewport auth overlay. Lock scrolling only.
+    document.documentElement.style.setProperty('overflow','hidden','important');
+    document.body.style.setProperty('overflow','hidden','important');
+    document.documentElement.style.setProperty('height','100%','important');
+    document.body.style.setProperty('min-height','100dvh','important');
   }
 
   function unlock(){
@@ -1965,11 +1968,10 @@ body.f2w-auth-v67-open {
     locked=false;
     document.documentElement.classList.remove('f2w-auth-v67-open');
     document.body.classList.remove('f2w-auth-v67-open');
-    document.body.style.removeProperty('position');
-    document.body.style.removeProperty('top');
-    document.body.style.removeProperty('left');
-    document.body.style.removeProperty('right');
-    document.body.style.removeProperty('width');
+    document.documentElement.style.removeProperty('overflow');
+    document.body.style.removeProperty('overflow');
+    document.documentElement.style.removeProperty('height');
+    document.body.style.removeProperty('min-height');
     window.scrollTo({top:savedY,left:0,behavior:'auto'});
   }
 
@@ -2878,6 +2880,216 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-spacing-v70:1788223711 */
 </style>
 
+
+<style id="f2w-users-auth-and-cards-v71">
+/* ============================================================
+   F2W v71 — USERS PAGE: FULL AUTH POPUP + READABLE RESULT CARDS
+   ============================================================ */
+
+/* The auth popup must cover the ENTIRE browser viewport on this short page. */
+body.f2w-users-page #account-modal {
+  position:fixed!important;
+  inset:0!important;
+  top:0!important;
+  right:0!important;
+  bottom:0!important;
+  left:0!important;
+  width:100%!important;
+  min-width:100%!important;
+  max-width:none!important;
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:18px!important;
+  z-index:2147483647!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  transform:none!important;
+  translate:none!important;
+  contain:none!important;
+}
+
+body.f2w-users-page #account-modal.open {
+  display:flex!important;
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+}
+
+body.f2w-users-page #account-modal .account-card {
+  position:relative!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+  width:min(540px,calc(100vw - 36px))!important;
+  min-width:0!important;
+  max-width:540px!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  overflow:auto!important;
+  transform:none!important;
+  translate:none!important;
+}
+
+/* Keep Login/Create Account as the same swipey two-mode card used elsewhere. */
+body.f2w-users-page #account-modal .account-tabs {
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:5px!important;
+}
+
+body.f2w-users-page #account-modal .account-tab {
+  min-height:42px!important;
+}
+
+/* -------- User result layout -------- */
+body.f2w-users-page .f2w-users-main {
+  max-width:1500px!important;
+  margin:0 auto!important;
+  padding:28px 30px 72px!important;
+}
+
+body.f2w-users-page .f2w-users-grid {
+  display:grid!important;
+  grid-template-columns:minmax(0,760px)!important;
+  gap:14px!important;
+  align-items:start!important;
+}
+
+body.f2w-users-page .f2w-user-card {
+  width:100%!important;
+  min-width:0!important;
+  min-height:132px!important;
+  padding:18px 20px!important;
+  gap:18px!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+
+body.f2w-users-page .f2w-user-avatar {
+  flex:0 0 80px!important;
+  width:80px!important;
+  min-width:80px!important;
+  max-width:80px!important;
+  height:80px!important;
+  min-height:80px!important;
+  max-height:80px!important;
+  aspect-ratio:1 / 1!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  display:grid!important;
+  place-items:center!important;
+}
+
+body.f2w-users-page .f2w-user-avatar > img {
+  width:100%!important;
+  min-width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  max-height:100%!important;
+  aspect-ratio:1 / 1!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:50%!important;
+  display:block!important;
+  transform:none!important;
+}
+
+body.f2w-users-page .f2w-user-copy {
+  flex:1 1 auto!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  gap:5px!important;
+}
+
+body.f2w-users-page .f2w-user-display {
+  margin:0!important;
+  font-size:1.18rem!important;
+  line-height:1.22!important;
+  font-weight:900!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+body.f2w-users-page .f2w-user-handle {
+  margin:0!important;
+  font-size:.88rem!important;
+  line-height:1.3!important;
+  font-weight:800!important;
+  color:#a9bacb!important;
+  -webkit-text-fill-color:#a9bacb!important;
+}
+
+body.f2w-users-page .f2w-user-bio {
+  margin-top:2px!important;
+  font-size:.78rem!important;
+  line-height:1.45!important;
+  color:#8499ae!important;
+}
+
+body.f2w-users-page .f2w-users-summary {
+  margin:14px 0 10px!important;
+  font-size:.80rem!important;
+  line-height:1.45!important;
+}
+
+/* No floating users-search arrow on the directory page. Enter performs search. */
+body.f2w-users-page > header .user-search-submit {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+@media(max-width:760px){
+  body.f2w-users-page #account-modal {
+    padding:12px!important;
+  }
+  body.f2w-users-page #account-modal .account-card {
+    width:min(94vw,500px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+  body.f2w-users-page .f2w-users-main {
+    padding:20px 14px 52px!important;
+  }
+  body.f2w-users-page .f2w-users-grid {
+    grid-template-columns:1fr!important;
+  }
+  body.f2w-users-page .f2w-user-card {
+    min-height:112px!important;
+    padding:14px!important;
+    gap:14px!important;
+  }
+  body.f2w-users-page .f2w-user-avatar {
+    flex-basis:68px!important;
+    width:68px!important;
+    min-width:68px!important;
+    max-width:68px!important;
+    height:68px!important;
+    min-height:68px!important;
+    max-height:68px!important;
+  }
+  body.f2w-users-page .f2w-user-display {
+    font-size:1.02rem!important;
+  }
+}
+
+/* f2w-force-save:users-auth-cards-v71:1788223881 */
+</style>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:users:01c6b68a68 -->
@@ -2943,4 +3155,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v69-header:1788223204:users/index.html -->
 <!-- f2w-force-save:v70-cache:1788223711:users/index.html -->
 <!-- f2w-force-save:canonical-account-v70:users/index.html -->
+<!-- f2w-force-save:users-v71:1788223881 -->
  
