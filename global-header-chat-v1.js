@@ -361,7 +361,7 @@
   'use strict';
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/sw-v34.js?v=126-1788301800',{scope:'/'})
+    navigator.serviceWorker.register('/sw-v34.js?v=128-1788304200',{scope:'/'})
       .catch(error=>console.warn('F2W service worker registration failed:',error));
   },{once:true,passive:true});
 })();
@@ -2536,3 +2536,4 @@ window.f2wOpenGuestDmAuthV98=function(mode){
 // f2w-force-save:notifications-v125:1788300576
 
  
+// f2w-force-save:v128-instant-profile-presence:1788304200

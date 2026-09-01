@@ -1,5 +1,5 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v126-1788301800';
+const CACHE='f2w-v128-1788304200';
 const CORE=[
   '/home/','/favorites/','/profile/','/support/','/chat/',
   '/leaderboard/','/forum/','/users/',
@@ -86,3 +86,4 @@ self.addEventListener('fetch',event=>{
 });
 // f2w-force-save:service-worker-network-first-v58:1788221340
  
+// f2w-force-save:v128-instant-profile-presence:1788304200

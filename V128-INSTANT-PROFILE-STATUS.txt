@@ -1,0 +1,18 @@
+Flix2Watch v128 — instant profile presence
+
+What changed
+- Profile presence no longer waits behind auth hydration / username checks / the delayed app boot.
+- The status check starts as soon as a cached or freshly fetched profile user_id is available.
+- Presence now reads the indexed user_presence row directly first, with get_public_profile_presence kept as a compatibility fallback.
+- Last known presence is cached locally and painted synchronously on repeat profile visits.
+- Cached Online is recalculated from online_until, so an expired heartbeat is not shown as online forever.
+- Realtime user_presence updates and the existing 30-second heartbeat remain in place.
+- Service-worker/cache versions were bumped so the new JS replaces old cached assets after deployment.
+
+Supabase SQL
+- No new SQL migration is required for v128 if v126/v127 was already applied.
+- This relies on the existing public select policy/index for public.user_presence from the earlier presence migration.
+
+Deploy
+1. Deploy the contents of this build.
+2. Hard refresh once (or close/reopen the site) so the v128 service worker takes over.

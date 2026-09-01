@@ -1180,6 +1180,73 @@ function f2wDebounce(fn,wait=140){
 
   let f2wProfilePresenceGenerationV108=0;
   const f2wProfilePresenceCacheV108=new Map();
+  const F2W_PRESENCE_CACHE_PREFIX='f2w_presence_snapshot_v128:';
+
+  function profilePresenceStateV128(row){
+    const lastSeen=row?.last_seen_at||null;
+    const onlineUntil=row?.online_until||null;
+    const online=Boolean(row?.online ?? (onlineUntil && new Date(onlineUntil).getTime()>Date.now()));
+    const text=online
+      ? 'Online'
+      : lastSeen
+        ? `Last online ${formatRelative(lastSeen)}`
+        : 'Offline';
+    return {online,text,last_seen_at:lastSeen,online_until:onlineUntil};
+  }
+
+  function paintProfilePresenceV128(badge,state){
+    if(!badge||!state)return;
+    badge.classList.toggle('online',Boolean(state.online));
+    badge.classList.toggle('offline',!state.online);
+    const label=badge.querySelector('span');
+    if(label)label.textContent=state.text;
+  }
+
+  function cachedProfilePresenceV128(userId){
+    let state=f2wProfilePresenceCacheV108.get(userId)||null;
+    if(state)return state;
+    try{
+      const raw=localStorage.getItem(F2W_PRESENCE_CACHE_PREFIX+userId);
+      if(!raw)return null;
+      const saved=JSON.parse(raw);
+      // Recalculate online from online_until so a stale cached "Online" never
+      // stays online after its heartbeat window has expired.
+      state=profilePresenceStateV128(saved);
+      f2wProfilePresenceCacheV108.set(userId,state);
+      return state;
+    }catch{return null}
+  }
+
+  function saveProfilePresenceV128(userId,state){
+    f2wProfilePresenceCacheV108.set(userId,state);
+    try{
+      localStorage.setItem(F2W_PRESENCE_CACHE_PREFIX+userId,JSON.stringify({
+        last_seen_at:state.last_seen_at||null,
+        online_until:state.online_until||null,
+        saved_at:Date.now()
+      }));
+    }catch{}
+  }
+
+  async function fetchProfilePresenceV128(profile){
+    const client=db();
+    if(client){
+      // Fast path: user_presence is publicly readable and indexed by user_id.
+      // This avoids waiting on an RPC just to paint one tiny profile badge.
+      try{
+        const {data,error}=await client
+          .from('user_presence')
+          .select('last_seen_at,online_until')
+          .eq('user_id',profile.user_id)
+          .maybeSingle();
+        if(!error)return data||{last_seen_at:null,online_until:null};
+      }catch{}
+    }
+
+    // Compatibility fallback for installations that only expose the RPC.
+    const rows=await rpc('get_public_profile_presence',{p_user_id:profile.user_id});
+    return Array.isArray(rows)?(rows[0]||null):rows;
+  }
 
   async function renderProfilePresence(){
     if(!location.pathname.startsWith('/profile'))return;
@@ -1190,43 +1257,29 @@ function f2wDebounce(fn,wait=140){
     const userId=String(profile.user_id);
     const requestId=++f2wProfilePresenceGenerationV108;
 
-    const cached=f2wProfilePresenceCacheV108.get(userId);
-    if(cached){
-      badge.classList.toggle('online',cached.online);
-      badge.classList.toggle('offline',!cached.online);
-      badge.querySelector('span').textContent=cached.text;
-    }
+    // Paint the last known state synchronously. On repeat visits this removes
+    // the visible "Checking status…" wait completely.
+    const cached=cachedProfilePresenceV128(userId);
+    if(cached)paintProfilePresenceV128(badge,cached);
 
     try{
-      const rows=await rpc('get_public_profile_presence',{p_user_id:profile.user_id});
+      const row=await fetchProfilePresenceV128(profile);
       if(requestId!==f2wProfilePresenceGenerationV108)return;
 
-      const row=Array.isArray(rows)?rows[0]:rows;
-      const online=Boolean(row?.online);
-      const text=online
-        ? 'Online'
-        : row?.last_seen_at
-          ? `Last online ${formatRelative(row.last_seen_at)}`
-          : 'Offline';
-
-      f2wProfilePresenceCacheV108.set(userId,{online,text});
-
-      badge.classList.toggle('online',online);
-      badge.classList.toggle('offline',!online);
-      badge.querySelector('span').textContent=text;
+      const state=profilePresenceStateV128(row);
+      saveProfilePresenceV128(userId,state);
+      paintProfilePresenceV128(badge,state);
     }catch{
       if(requestId!==f2wProfilePresenceGenerationV108)return;
 
-      // Do NOT convert an RPC/network failure into a false "Offline".
-      // Keep last known state; if none exists, show neutral unavailable text.
-      const previous=f2wProfilePresenceCacheV108.get(userId);
+      // Never turn a temporary network error into a false Offline state.
+      const previous=cachedProfilePresenceV128(userId);
       if(previous){
-        badge.classList.toggle('online',previous.online);
-        badge.classList.toggle('offline',!previous.online);
-        badge.querySelector('span').textContent=previous.text;
+        paintProfilePresenceV128(badge,previous);
       }else{
         badge.classList.remove('online','offline');
-        badge.querySelector('span').textContent='Status unavailable';
+        const label=badge.querySelector('span');
+        if(label)label.textContent='Status unavailable';
       }
     }
   }
@@ -1678,8 +1731,29 @@ function f2wDebounce(fn,wait=140){
   }
 
   /* ---------- boot ---------- */
+  function bootProfilePresenceFastV128(){
+    if(!location.pathname.startsWith('/profile'))return;
+    let attempts=0;
+    const tryPaint=()=>{
+      attempts++;
+      const profile=viewedProfileObject();
+      if(profile?.user_id){
+        renderProfilePresence();
+        return true;
+      }
+      return false;
+    };
+    if(tryPaint())return;
+    const timer=setInterval(()=>{
+      if(tryPaint()||attempts>=120)clearInterval(timer);
+    },25);
+  }
+
   async function boot(){
     forceRedLogo();addLeaderboardNav();hardenRouting();installDmSearch();reorderSourceButtons();
+    // Presence is public data. Do not make the profile badge wait behind auth
+    // hydration, username checks, chat prewarming, or the old 350ms boot delay.
+    bootProfilePresenceFastV128();
     installAuthAbuseGuard();
     await syncAuthUI();
     await enforceUsernameGate();
@@ -2220,3 +2294,5 @@ function f2wDebounce(fn,wait=140){
   idle(()=>['/home/','/movies/','/tv/','/chat/','/profile/'].forEach(prefetch));
 })();
 // f2w-force-save:v126-dm-presence-performance
+
+// f2w-force-save:v128-instant-profile-presence:1788304200

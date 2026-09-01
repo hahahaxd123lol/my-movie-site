@@ -3330,7 +3330,7 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=125-1788300576" defer></script>
+  <script src="/global-header-chat-v1.js?v=128-1788304200" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -6473,6 +6473,9 @@ setTimeout(loadLibraryFavorites,0);
             f2wProfileResolvedUsername=String(parsed.profile.username||username).toLowerCase();
             renderViewedProfile();
             renderViewedFavorites();
+            // v128: profile identity is already known from cache; start the
+            // public presence lookup now instead of waiting for full app boot.
+            try{window.renderProfilePresence?.();}catch{}
           }
         }
       }catch{}
@@ -6615,6 +6618,7 @@ setTimeout(loadLibraryFavorites,0);
 
       renderViewedProfile();
       renderViewedFavorites();
+      try{window.renderProfilePresence?.();}catch{}
       loadViewedProfileRoleBadge();
 
     }catch(error){
@@ -8673,7 +8677,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=126-1788301800" defer></script>
+  <script src="/final-v35.js?v=128-1788304200" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10471,3 +10475,4 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v125-cache:1788300576:profile/index.html -->
 <!-- f2w-force-save:social-list-v125fix -->
  
+<!-- f2w-force-save:v128-instant-profile-presence:1788304200 -->
