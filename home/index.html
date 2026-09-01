@@ -5229,13 +5229,119 @@ if(currentUser){
     }
   }
 
+  async function f2wLoadInitialTrendingV102(){
+    if(window.__f2wInitialTrendingV102)return;
+    window.__f2wInitialTrendingV102=true;
+
+    const params=new URLSearchParams(location.search);
+    if(params.get('search')||params.get('genre')||params.get('tab'))return;
+
+    const target=document.getElementById('movie-grid');
+    if(!target)return;
+
+    catalogMode='trending';
+    catalogGenreId=null;
+    catalogQuery='';
+    catalogPage=1;
+
+    const title=document.getElementById('section-title');
+    if(title)title.textContent='Trending Today';
+
+    const url=`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&page=1`;
+
+    try{
+      // Local cache renders synchronously if this user has visited recently.
+      const cached=f2wReadCatalogCacheV101(url,30*60*1000);
+      if(cached?.results?.length){
+        const items=cached.results
+          .filter(item=>item&&item.media_type!=='person'&&item.poster_path)
+          .slice(0,20);
+
+        displayMedia(items,false);
+        catalogTotalPages=Math.max(1,Math.ceil(Number(cached.total_results||items.length)/CATALOG_PAGE_SIZE));
+        renderCatalogPagination();
+
+        // Refresh cache quietly after paint.
+        setTimeout(()=>f2wRefreshTrendingV102(url),0);
+        return;
+      }
+
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),4500);
+
+      let response;
+      let data;
+      try{
+        response=await fetch(url,{
+          cache:'default',
+          signal:controller.signal,
+          priority:'high'
+        });
+        data=await response.json().catch(()=>({}));
+      }finally{
+        clearTimeout(timer);
+      }
+
+      if(!response?.ok || !Array.isArray(data?.results)){
+        throw new Error(data?.status_message||'Trending request failed');
+      }
+
+      f2wWriteCatalogCacheV101(url,data);
+
+      const items=data.results
+        .filter(item=>item&&item.media_type!=='person'&&item.poster_path)
+        .slice(0,20);
+
+      displayMedia(items,false);
+      catalogTotalPages=Math.max(1,Math.ceil(Number(data.total_results||items.length)/CATALOG_PAGE_SIZE));
+      renderCatalogPagination();
+
+      // Remaining 10 cards are optional and load only after first paint.
+      setTimeout(()=>f2wCompleteTrendingPageV102(1,items),0);
+    }catch(error){
+      console.warn('Fast Trending request failed; using normal catalogue loader.',error);
+      window.__f2wInitialTrendingV102=false;
+      loadCatalogPage(1,false);
+    }
+  }
+
+  window.f2wLoadInitialTrendingV102=f2wLoadInitialTrendingV102;
+
+  async function f2wRefreshTrendingV102(url){
+    try{
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),4500);
+      try{
+        const response=await fetch(url,{cache:'no-cache',signal:controller.signal});
+        const data=await response.json().catch(()=>({}));
+        if(response.ok&&Array.isArray(data?.results))f2wWriteCatalogCacheV101(url,data);
+      }finally{
+        clearTimeout(timer);
+      }
+    }catch{}
+  }
+
+  async function f2wCompleteTrendingPageV102(page,firstItems){
+    if(page!==1||catalogMode!=='trending')return;
+    try{
+      const url=`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&page=2`;
+      const {response,data}=await f2wFetchJsonV101(url,4500);
+      if(!response?.ok||catalogMode!=='trending')return;
+
+      const second=(Array.isArray(data?.results)?data.results:[])
+        .filter(item=>item&&item.media_type!=='person'&&item.poster_path);
+
+      const full=[...firstItems,...second].slice(0,CATALOG_PAGE_SIZE);
+      displayMedia(full,false);
+    }catch{}
+  }
+
   async function loadCatalogPage(page=1,scrollToGrid=false){
     const requestId=++catalogRequestGeneration;
     const targetPage=Math.max(1,Number(page)||1);
 
-    // v99: staff-curation data is optional. Never block Trending/genre titles on it.
-    // Kick it off in the background and continue loading TMDB immediately.
-    try{ ensurePublicContentOps(); }catch{}
+    // v102: first paint belongs to TMDB only. Optional Supabase curation
+    // starts later so it cannot compete with Trending Today on slow/TV browsers.
     if(requestId!==catalogRequestGeneration)return;
 
     if(scrollToGrid)scrollCatalogToTop('smooth');
@@ -5290,8 +5396,13 @@ if(currentUser){
           return !publicBlockedMediaKeys.has(`${type}:${item.id}`);
         });
 
-      if(visibleFromFirst.length&&catalogPage===1&&!window.v19FeaturedReady){
-        setupHeroBanner(visibleFromFirst[0]);
+      if(
+        visibleFromFirst.length &&
+        catalogPage===1 &&
+        !window.v19FeaturedReady &&
+        typeof window.setupHeroBanner==='function'
+      ){
+        try{ window.setupHeroBanner(visibleFromFirst[0]); }catch{}
       }
 
       // Paint immediately — usually 20 titles on page 1.
@@ -5446,7 +5557,12 @@ if(currentUser){
       tv:'Trending TV Series'
     };
     document.getElementById('section-title').textContent=labels[category]||'Browse';
-    loadCatalogPage(1,false);
+    if(category==='trending'){
+      window.__f2wInitialTrendingV102=false;
+      f2wLoadInitialTrendingV102();
+    }else{
+      loadCatalogPage(1,false);
+    }
   }
 
 
@@ -5652,7 +5768,15 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
       setGenreSortVisibility(false);
       catalogQuery='';
       document.getElementById('section-title').textContent='Trending Today';
-      loadCatalogPage(requestedPage,false);
+
+      if(requestedPage===1){
+        f2wLoadInitialTrendingV102();
+      }else{
+        loadCatalogPage(requestedPage,false);
+      }
+
+      // Optional curation can start after first paint, not before it.
+      setTimeout(()=>{ try{ensurePublicContentOps();}catch{} },1500);
     }
   });
 
@@ -8209,35 +8333,28 @@ body.f2w-auth-v67-open {
 </script>
 
 
-<script id="f2w-catalog-watchdog-v99">
+
+<script id="f2w-trending-start-safety-v102">
 (() => {
-  'use strict';
-  if(window.__f2wCatalogWatchdogV99)return;
-  window.__f2wCatalogWatchdogV99=true;
+  const start=()=>{
+    const params=new URLSearchParams(location.search);
+    if(params.get('search')||params.get('genre')||params.get('tab'))return;
 
-  function isStillLoading(){
-    const grid=document.getElementById('movie-grid');
-    return Boolean(grid && /Loading titles/i.test(grid.textContent||''));
-  }
+    setTimeout(()=>{
+      const grid=document.getElementById('movie-grid');
+      if(!grid)return;
 
-  function retry(){
-    if(!isStillLoading())return;
-    try{
-      if(window.__F2W_FIXED_GENRE_V94){
-        const fixed=window.__F2W_FIXED_GENRE_V94;
-        const page=Math.max(1,Number(new URLSearchParams(location.search).get('page'))||1);
-        window.f2wOpenGenreV91?.(fixed.id,page,false);
-      }else if(typeof window.loadCatalogPage==='function'){
-        window.loadCatalogPage(1,false);
+      const empty=/Loading titles/i.test(grid.textContent||'') || grid.children.length===0;
+      if(empty){
+        try{window.f2wLoadInitialTrendingV102?.();}catch{}
       }
-    }catch(error){
-      console.warn('Catalogue retry failed:',error);
-    }
-  }
+    },250);
+  };
 
-  setTimeout(retry,10000);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
 })();
-/* f2w-force-save:catalog-watchdog-v99:1788282758 */
+/* f2w-force-save:trending-start-safety-v102:1788288758 */
 </script>
 
 </body>
@@ -8345,4 +8462,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:native-transition-off-v100:1788283039:home/index.html -->
 <!-- f2w-force-save:v100-cache:1788283039:home/index.html -->
 <!-- f2w-force-save:fast-trending-v101:1788283755:home/index.html -->
+<!-- f2w-force-save:home-trending-v102:1788288758 -->
  
