@@ -7066,20 +7066,26 @@ renderViewedProfile();
     setProfileStatus('Uploading profile picture...');
 
     try{
-      const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-      const objectPath=`${currentUser.id}/avatar-${Date.now()}.${ext}`;
+      // Keep Supabase storage tiny: resize in-browser, keep ONE object per user,
+      // and store only its short public URL in the profiles table.
+      const bitmap=await createImageBitmap(file);
+      const max=256;
+      const scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height));
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(bitmap.width*scale));
+      canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+      canvas.getContext('2d',{alpha:true}).drawImage(bitmap,0,0,canvas.width,canvas.height);
+      bitmap.close?.();
+      const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Could not optimise image')),'image/webp',0.76));
+      const objectPath=`${currentUser.id}/avatar.webp`;
 
       const {error:uploadError}=await chatSupabase.storage
         .from('profile-avatars')
-        .upload(objectPath,file,{upsert:false,contentType:file.type});
-
+        .upload(objectPath,blob,{upsert:true,contentType:'image/webp',cacheControl:'31536000'});
       if(uploadError)throw uploadError;
 
-      const {data:publicData}=chatSupabase.storage
-        .from('profile-avatars')
-        .getPublicUrl(objectPath);
-
-      const avatarUrl=publicData.publicUrl;
+      const {data:publicData}=chatSupabase.storage.from('profile-avatars').getPublicUrl(objectPath);
+      const avatarUrl=`${publicData.publicUrl}?v=${Date.now()}`;
 
       const {data,error}=await chatSupabase
         .from('profiles')
@@ -8667,7 +8673,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=125-1788300576" defer></script>
+  <script src="/final-v35.js?v=126-1788301800" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10291,7 +10297,9 @@ body.f2w-auth-v67-open {
         const {data:auth}=await client.auth.getUser();
         const user=auth?.user;
         if(!user)return;
-        const {error}=await client.from('profiles').update({avatar_url:'',updated_at:new Date().toISOString()}).eq('user_id',user.id);
+        // Remove the actual stored object as well as the tiny URL reference.
+        try{await client.storage.from('profile-avatars').remove([`${user.id}/avatar.webp`])}catch{}
+        const {error}=await client.from('profiles').update({avatar_url:null,updated_at:new Date().toISOString()}).eq('user_id',user.id);
         if(error)throw error;
         try{
           if(typeof viewedProfile!=='undefined'&&viewedProfile){
@@ -10300,7 +10308,7 @@ body.f2w-auth-v67-open {
             renderViewedProfile?.();
           }
           setProfileStatus?.('Profile picture removed.');
-        }catch{location.reload()}
+        }catch{}
       }catch(error){
         try{setProfileStatus?.(error?.message||'Could not remove profile picture.',true)}catch{}
       }

@@ -1314,7 +1314,11 @@ function f2wDebounce(fn,wait=140){
         .on('postgres_changes',{event:'*',schema:'public',table:'user_presence',filter:`user_id=eq.${profile.user_id}`},()=>renderProfilePresence())
         .on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity',filter:`user_id=eq.${profile.user_id}`},()=>renderProfileActivity())
         .on('postgres_changes',{event:'*',schema:'public',table:'profile_comments',filter:`profile_user_id=eq.${profile.user_id}`},()=>renderProfileComments())
-        .on('postgres_changes',{event:'*',schema:'public',table:'profiles',filter:`user_id=eq.${profile.user_id}`},()=>setTimeout(()=>location.reload(),180))
+        .on('postgres_changes',{event:'*',schema:'public',table:'profiles',filter:`user_id=eq.${profile.user_id}`},()=>{
+          // Never hard-reload a profile just because its avatar/profile changed.
+          // That reload race was producing the blank Offline-only profile screen.
+          setTimeout(()=>{ try{ window.loadViewedProfile?.(); }catch{}; try{ renderProfilePresence(); }catch{} },80);
+        })
         .on('postgres_changes',{event:'*',schema:'public',table:'profile_role_assignments',filter:`user_id=eq.${profile.user_id}`},()=>{
           document.querySelectorAll('[data-f2w-role-checked]').forEach(el=>delete el.dataset.f2wRoleChecked);
           decorateNames();
@@ -1325,7 +1329,6 @@ function f2wDebounce(fn,wait=140){
     if(profileUiTimer)clearInterval(profileUiTimer);
     profileUiTimer=setInterval(()=>{
       renderProfilePresence();
-      renderProfileActivity();
     },30000);
   }
 
@@ -2081,3 +2084,139 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:v125-shared:1788300576
 
  
+
+/* ============================================================
+   F2W v126 — FAST DIRECT MESSAGES + SHARED DELETION TIMER
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wDmV126)return;
+  window.__f2wDmV126=true;
+
+  const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  let client=null, me=null, activeId='', activeOther=null, dmChannel=null, sending=false;
+
+  function db(){
+    if(client)return client;
+    try{client=window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null}catch{}
+    return client;
+  }
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const rel=v=>{const d=Math.max(0,Date.now()-new Date(v).getTime());if(d<60000)return'now';if(d<3600000)return`${Math.floor(d/60000)}m`;if(d<86400000)return`${Math.floor(d/3600000)}h`;return`${Math.floor(d/86400000)}d`};
+  const label=v=>({after_viewing:'After viewing','24h':'24 hours','1w':'1 week','1m':'1 month'}[v]||'24 hours');
+
+  async function session(){
+    const c=db();if(!c)return null;
+    const {data}=await c.auth.getSession();me=data?.session?.user||null;return me;
+  }
+  async function call(name,args={}){const c=db();if(!c)throw new Error('Database unavailable');const {data,error}=await c.rpc(name,args);if(error)throw error;return data}
+
+  function ensureRetentionUI(){
+    const head=document.getElementById('v17-dm-thread-head');if(!head||document.getElementById('f2w-dm-retention-v126'))return;
+    const wrap=document.createElement('div');wrap.id='f2w-dm-retention-v126';wrap.style.cssText='margin-left:auto;display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end';
+    wrap.innerHTML='<label style="font-size:.58rem;opacity:.7;text-transform:uppercase;letter-spacing:.08em">Delete</label><select id="f2w-dm-retention-select-v126" style="background:#111827;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:6px 8px;font-size:.7rem"><option value="after_viewing">After viewing</option><option value="24h">24 hours</option><option value="1w">1 week</option><option value="1m">1 month</option></select>';
+    head.appendChild(wrap);
+    wrap.querySelector('select').addEventListener('change',async e=>{
+      if(!activeId)return;
+      e.target.disabled=true;
+      try{await call('set_dm_retention_v126',{p_conversation_id:activeId,p_retention:e.target.value});await loadThread()}catch(err){alert(err.message||'Could not change deletion time')}
+      finally{e.target.disabled=false}
+    });
+  }
+
+  function subscribe(){
+    const c=db();if(!c||!activeId)return;
+    try{if(dmChannel)c.removeChannel(dmChannel)}catch{}
+    dmChannel=c.channel(`f2w-dm-v126-${activeId}`)
+      .on('postgres_changes',{event:'*',schema:'public',table:'f2w_dm_messages_v126',filter:`conversation_id=eq.${activeId}`},()=>{loadThread();refreshDirectMessages()})
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'f2w_dm_conversations_v126',filter:`id=eq.${activeId}`},()=>{loadThread();refreshDirectMessages()})
+      .subscribe();
+  }
+
+  async function loadThread(){
+    if(!activeId)return;
+    ensureRetentionUI();
+    const host=document.getElementById('v17-dm-messages');if(!host)return;
+    try{
+      const rows=await call('get_dm_messages_v126',{p_conversation_id:activeId,p_limit:120});
+      const list=Array.isArray(rows)?rows:[];
+      const retention=list[0]?.retention||activeOther?.retention||'24h';
+      const sel=document.getElementById('f2w-dm-retention-select-v126');if(sel)sel.value=retention;
+      const sub=document.querySelector('#v17-dm-thread-head span');if(sub)sub.textContent=`Messages delete ${label(retention).toLowerCase()}. This setting applies to both people.`;
+      host.innerHTML=list.length?list.map(m=>m.kind==='system'
+        ? `<div class="v17-dm-empty" style="margin:7px auto;max-width:90%">${esc(m.body)}</div>`
+        : `<div class="v17-dm-message ${String(m.sender_user_id)===String(me?.id)?'own':''}" data-id="${esc(m.id)}"><div>${esc(m.body)}</div><small>${rel(m.created_at)}</small></div>`).join('')
+        : '<div class="v17-dm-empty">No messages yet. Say hello.</div>';
+      host.scrollTop=host.scrollHeight;
+    }catch(err){host.innerHTML=`<div class="v17-dm-empty">${esc(err.message||'Messages unavailable')}</div>`}
+  }
+
+  async function selectConversation(row){
+    activeId=row.conversation_id;activeOther=row;
+    const head=document.getElementById('v17-dm-thread-head');
+    if(head){const d=head.querySelector(':scope > div');if(d)d.innerHTML=`<strong>${esc(row.display_name||'@'+row.username)}</strong><span>@${esc(row.username)}</span>`}
+    ensureRetentionUI();
+    const input=document.getElementById('v17-dm-input'),send=document.getElementById('v17-dm-send');if(input)input.disabled=false;if(send)send.disabled=false;
+    document.querySelectorAll('#v17-dm-conversations .v17-dm-conversation').forEach(x=>x.classList.toggle('active',x.dataset.id===activeId));
+    subscribe();await loadThread();input?.focus();
+  }
+
+  async function refreshDirectMessages(){
+    await session();
+    const host=document.getElementById('v17-dm-conversations');if(!host)return;
+    if(!me){host.innerHTML='<div class="v17-dm-empty">Sign in to use direct messages.</div>';return}
+    try{
+      const rows=await call('get_my_dm_conversations_v126');const list=Array.isArray(rows)?rows:[];
+      host.innerHTML=list.length?list.map(r=>`<button type="button" class="v17-dm-conversation ${r.conversation_id===activeId?'active':''}" data-id="${esc(r.conversation_id)}"><span class="v17-dm-avatar">${r.avatar_url?`<img src="${esc(r.avatar_url)}" alt="" loading="lazy" decoding="async">`:'<i class="fa-solid fa-user"></i>'}</span><span class="v17-dm-conversation-copy"><strong data-f2w-dm-display-name="1">${esc(r.display_name||'@'+r.username)}</strong><span>${esc(r.last_message||'No messages yet')}</span></span><span class="v17-dm-conversation-meta"><small>${r.last_message_at?rel(r.last_message_at):''}</small></span></button>`).join(''):'<div class="v17-dm-empty">No conversations yet.</div>';
+      host.querySelectorAll('.v17-dm-conversation').forEach((el,i)=>el.onclick=()=>selectConversation(list[i]));
+    }catch(err){host.innerHTML=`<div class="v17-dm-empty">${esc(err.message||'Could not load messages')}</div>`}
+  }
+
+  async function openDirectMessage(username){
+    if(!await session()){try{window.openAccountModal?.()}catch{};return}
+    try{await window.openChat?.()}catch{}
+    try{window.switchChatMode?.('dm')}catch{}
+    const id=await call('open_dm_conversation_v126',{p_other_username:String(username||'').replace(/^@/,'')});
+    await refreshDirectMessages();
+    const rows=await call('get_my_dm_conversations_v126');const row=(rows||[]).find(r=>r.conversation_id===id);if(row)await selectConversation(row);
+  }
+
+  async function sendDirectMessage(){
+    const input=document.getElementById('v17-dm-input');const button=document.getElementById('v17-dm-send');
+    const body=String(input?.value||'').trim();if(!activeId||!body||sending)return;
+    sending=true;if(button)button.disabled=true;
+    const optimisticId='local-'+Date.now();
+    const host=document.getElementById('v17-dm-messages');
+    if(host){if(host.querySelector('.v17-dm-empty'))host.innerHTML='';host.insertAdjacentHTML('beforeend',`<div class="v17-dm-message own" data-id="${optimisticId}"><div>${esc(body)}</div><small>sending…</small></div>`);host.scrollTop=host.scrollHeight}
+    if(input)input.value='';
+    try{await call('send_dm_message_v126',{p_conversation_id:activeId,p_body:body});await loadThread();refreshDirectMessages()}
+    catch(err){host?.querySelector(`[data-id="${optimisticId}"]`)?.remove();if(input)input.value=body;alert(err.message||'Message failed')}
+    finally{sending=false;if(button)button.disabled=false;input?.focus()}
+  }
+
+  window.refreshDirectMessages=refreshDirectMessages;
+  window.openDirectMessage=openDirectMessage;
+  window.sendDirectMessage=sendDirectMessage;
+  document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&document.activeElement?.id==='v17-dm-input'){e.preventDefault();sendDirectMessage()}});
+  document.addEventListener('click',e=>{if(e.target.closest?.('#v17-chat-dm-tab'))setTimeout(refreshDirectMessages,0)});
+})();
+
+/* ============================================================
+   F2W v126 — LOW-COST NAVIGATION PREWARM
+   Prefetch likely next pages on intent/idle, not every page at once.
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wPrefetchV126)return;window.__f2wPrefetchV126=true;
+  const seen=new Set(), MAX=8;
+  function prefetch(href){
+    if(seen.size>=MAX)return;
+    try{const u=new URL(href,location.href);if(u.origin!==location.origin||u.href===location.href||seen.has(u.href))return;seen.add(u.href);const l=document.createElement('link');l.rel='prefetch';l.as='document';l.href=u.href;document.head.appendChild(l)}catch{}
+  }
+  document.addEventListener('pointerover',e=>{const a=e.target.closest?.('a[href]');if(a)prefetch(a.href)},{passive:true});
+  document.addEventListener('touchstart',e=>{const a=e.target.closest?.('a[href]');if(a)prefetch(a.href)},{passive:true});
+  const idle=window.requestIdleCallback||((fn)=>setTimeout(fn,1200));
+  idle(()=>['/home/','/movies/','/tv/','/chat/','/profile/'].forEach(prefetch));
+})();
+// f2w-force-save:v126-dm-presence-performance

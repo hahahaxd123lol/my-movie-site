@@ -1,5 +1,5 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v58-1788221340';
+const CACHE='f2w-v126-1788301800';
 const CORE=[
   '/home/','/favorites/','/profile/','/support/','/chat/',
   '/leaderboard/','/forum/','/users/',
@@ -50,12 +50,19 @@ async function navigationResponse(request){
   const cached=await cache.match(request,{ignoreSearch:false});
   if(cached)return cached;
 
-  if(new URL(request.url).pathname==='/profile/'){
+  const path=new URL(request.url).pathname;
+  // Friendly profile URLs (/profile/@name) use the same profile shell.
+  // Without this, the service worker returned the literal word "Offline"
+  // whenever navigation fallback was needed for an offline user/profile route.
+  if(path==='/profile/' || path==='/profile' || /^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){
     const shell=await cache.match('/profile/');
     if(shell)return shell;
   }
 
-  return new Response('Offline',{status:503,headers:{'Content-Type':'text/plain'}});
+  // Prefer the cached home shell over a blank one-word failure page.
+  const home=await cache.match('/home/');
+  if(home)return home;
+  return new Response('Temporarily unavailable',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
 }
 
 self.addEventListener('fetch',event=>{

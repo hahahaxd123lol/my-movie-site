@@ -1,0 +1,31 @@
+FLIX2WATCH v126 APPLY ORDER
+
+1) In Supabase SQL Editor run the entire file:
+   site-realtime-dm-performance-v126.sql
+
+   This fixes the exact get_profile_comments_v17 error on your production schema
+   where profile_comments.id is BIGINT, and installs the direct-message backend,
+   shared deletion timers, indexes, RPCs and realtime tables.
+
+2) Deploy the full site bundle in this zip.
+
+3) Hard refresh once / close and reopen the tab so the updated service worker
+   (v126 cache) takes control. Friendly /profile/@username routes now fall back to
+   the profile shell instead of the service worker returning the literal "Offline" page.
+
+WHAT CHANGED
+- get_profile_comments_v17 now returns bigint id to match your current table.
+- add/delete profile comment RPCs are bigint-compatible too.
+- Presence heartbeat stays at 30 seconds sitewide for signed-in visible tabs.
+- Profile presence refreshes every 30 seconds; activity no longer needlessly re-queries every 30s.
+- Profile updates no longer force a full page reload (this was causing profile/Offline races).
+- Duplicate profile social request removed.
+- Direct messages now have working open/list/send/realtime functions.
+- DM send is optimistic: message appears immediately, then server confirms it.
+- Shared per-conversation deletion setting: after viewing / 24h / 1 week / 1 month.
+- Changing deletion setting creates a visible system message so the other person knows.
+- Old DM rows are purged with a low-frequency indexed cleanup job when pg_cron exists.
+- Profile photos are resized to max 256px WebP in-browser and overwrite one object per user.
+  The database stores only the URL, not image bytes; removing a photo removes the object too.
+- Navigation uses intent/idle prefetch with a hard cap instead of hammering every page at once.
+- New service-worker cache version prevents stale JS from surviving deployment.
