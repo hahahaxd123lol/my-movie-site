@@ -2526,11 +2526,11 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=123-1788298849">
+  <link rel="stylesheet" href="/final-v35.css?v=125-1788300576">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=123-1788298849">
-  <script src="/global-header-chat-v1.js?v=124-1788299294" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
+  <script src="/global-header-chat-v1.js?v=125-1788300576" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -3267,7 +3267,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
     if(username){
       try{localStorage.setItem('f2w_profile_username_v24',username);}catch{}
-      window.location.href=`/profile/?user=${encodeURIComponent(username)}`;
+      window.location.href=`/profile/@${encodeURIComponent(username)}`;
       return;
     }
 
@@ -3276,7 +3276,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     }catch{}
 
     if(username){
-      window.location.href=`/profile/?user=${encodeURIComponent(username)}`;
+      window.location.href=`/profile/@${encodeURIComponent(username)}`;
       return;
     }
 
@@ -3291,7 +3291,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       username=String(data?.username||'').trim();
       if(username){
         try{localStorage.setItem('f2w_profile_username_v24',username);}catch{}
-        window.location.href=`/profile/?user=${encodeURIComponent(username)}`;
+        window.location.href=`/profile/@${encodeURIComponent(username)}`;
         return;
       }
     }catch(error){
@@ -3304,7 +3304,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   function openPublicProfile(username){
     const clean=String(username||'').trim();
     if(!clean)return;
-    window.location.href=`/profile/?user=${encodeURIComponent(clean)}`;
+    window.location.href=`/profile/@${encodeURIComponent(clean)}`;
   }
 
   function profileInitials(username){
@@ -5593,7 +5593,7 @@ setTimeout(loadLibraryFavorites,0);
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=124-1788299294" defer></script>
+  <script src="/final-v35.js?v=125-1788300576" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -7211,4 +7211,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v121-cache:1788297958:favorites/index.html -->
 <!-- f2w-force-save:v123-cache:1788298849:favorites/index.html -->
 <!-- f2w-force-save:v124-cache:1788299294:favorites/index.html -->
+<!-- f2w-force-save:v125-cache:1788300576:favorites/index.html -->
  

@@ -2351,11 +2351,11 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=123-1788298849">
+  <link rel="stylesheet" href="/final-v35.css?v=125-1788300576">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=123-1788298849">
-  <script src="/global-header-chat-v1.js?v=124-1788299294" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
+  <script src="/global-header-chat-v1.js?v=125-1788300576" defer></script>
 
   <style id="f2w-mobile-login-above-featured">
     /* Mobile/tablet home layout: keep the login/signup card above Featured. */
@@ -2613,6 +2613,17 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 })();
 /* f2w-force-save:old-movie-search-redirect-v111:1788290601 */
 </script>
+
+
+<style id="f2w-home-bounty-v125-css">
+#recently-viewed-section{margin:26px 0 30px!important;padding:0!important;max-width:none!important;text-align:left!important}
+#recently-viewed-section .section-heading-row{text-align:left!important}
+#recently-viewed-section .section-heading-copy{text-align:left!important}
+#recently-viewed-section .recent-strip{text-align:left!important}
+.hero-actions .btn-secondary,.hero-actions a,.hero-actions button{cursor:pointer!important}
+#hero-banner .hero-actions *{cursor:pointer!important}
+/* f2w-force-save:home-bounty-css-v125:1788300576 */
+</style>
 
 </head>
 
@@ -3137,6 +3148,18 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     </div>
     <div class="catalog-pagination" id="catalog-pagination" aria-label="Catalogue pages"></div>
 
+<section class="recent-section" id="recently-viewed-section">
+    <div class="section-heading-row">
+      <div class="section-heading-copy">
+        <div class="section-kicker">Pick up where you left off</div>
+        <h2>Recently Viewed</h2>
+        <p>Quick access to the movies and series you opened most recently on this device.</p>
+      </div>
+      <span class="glass-chip"><i class="fa-solid fa-clock-rotate-left"></i> Device history</span>
+    </div>
+    <div class="recent-strip" id="recently-viewed-strip"></div>
+  </section>
+
 <div class="home-extra">
 
 <section class="extra-section" aria-labelledby="popular-movies-title">
@@ -3218,17 +3241,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           </button>
         </div>
       </section>
-<section class="recent-section" id="recently-viewed-section">
-    <div class="section-heading-row">
-      <div class="section-heading-copy">
-        <div class="section-kicker">Pick up where you left off</div>
-        <h2>Recently Viewed</h2>
-        <p>Quick access to the movies and series you opened most recently on this device.</p>
-      </div>
-      <span class="glass-chip"><i class="fa-solid fa-clock-rotate-left"></i> Device history</span>
-    </div>
-    
-  </section>
+
 
 
       
@@ -3612,7 +3625,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
     if(username){
       try{localStorage.setItem('f2w_profile_username_v24',username);}catch{}
-      window.location.href=`/profile/?user=${encodeURIComponent(username)}`;
+      window.location.href=`/profile/@${encodeURIComponent(username)}`;
       return;
     }
 
@@ -3621,7 +3634,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     }catch{}
 
     if(username){
-      window.location.href=`/profile/?user=${encodeURIComponent(username)}`;
+      window.location.href=`/profile/@${encodeURIComponent(username)}`;
       return;
     }
 
@@ -3636,7 +3649,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       username=String(data?.username||'').trim();
       if(username){
         try{localStorage.setItem('f2w_profile_username_v24',username);}catch{}
-        window.location.href=`/profile/?user=${encodeURIComponent(username)}`;
+        window.location.href=`/profile/@${encodeURIComponent(username)}`;
         return;
       }
     }catch(error){
@@ -3649,7 +3662,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   function openPublicProfile(username){
     const clean=String(username||'').trim();
     if(!clean)return;
-    window.location.href=`/profile/?user=${encodeURIComponent(clean)}`;
+    window.location.href=`/profile/@${encodeURIComponent(clean)}`;
   }
 
   function profileInitials(username){
@@ -5166,6 +5179,9 @@ if(currentUser){
         if(catalogMode==='search'&&catalogQuery){
           f2wLoadMovieSearchV109(catalogQuery,page);
           requestAnimationFrame(()=>scrollCatalogToTop('auto'));
+        }else if(catalogMode==='movie'||catalogMode==='tv'){
+          f2wLoadHomeCategoryV125(catalogMode,page);
+          requestAnimationFrame(()=>scrollCatalogToTop('auto'));
         }else{
           loadCatalogPage(page,true);
         }
@@ -5559,28 +5575,51 @@ if(currentUser){
     });
   }
 
+  async function f2wLoadHomeCategoryV125(category,page=1){
+    const requestId=++catalogRequestGeneration;
+    const mode=category==='movie'?'movie':category==='tv'?'tv':'trending';
+    currentMode=mode;catalogMode=mode;catalogGenreId=null;catalogQuery='';catalogPage=Math.max(1,Number(page)||1);
+    const labels={trending:'Trending Today',movie:'Trending Movies',tv:'Trending TV Series'};
+    document.getElementById('section-title').textContent=labels[mode];
+    grid.innerHTML='<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:42px;">Loading titles…</p>';
+
+    const endpoint=mode==='movie'
+      ? `https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}&page=${catalogPage}`
+      : mode==='tv'
+        ? `https://api.themoviedb.org/3/trending/tv/day?api_key=${API_KEY}&page=${catalogPage}`
+        : `https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&page=${catalogPage}`;
+
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),5000);
+    try{
+      const response=await fetch(endpoint,{cache:'default',signal:controller.signal});
+      const data=await response.json().catch(()=>({}));
+      if(requestId!==catalogRequestGeneration)return;
+      if(!response.ok||!Array.isArray(data.results))throw new Error(data?.status_message||'Could not load titles.');
+      const rows=data.results.filter(x=>x&&x.media_type!=='person'&&x.poster_path);
+      displayMedia(rows,false);
+      catalogTotalPages=Math.min(500,Math.max(1,Number(data.total_pages)||1));
+      renderCatalogPagination();
+      const url=new URL(location.href);
+      url.searchParams.delete('genre');url.searchParams.delete('search');
+      if(mode==='trending')url.searchParams.delete('tab');else url.searchParams.set('tab',mode);
+      if(catalogPage>1)url.searchParams.set('page',String(catalogPage));else url.searchParams.delete('page');
+      history.replaceState(null,'',url);
+    }catch(error){
+      if(requestId!==catalogRequestGeneration)return;
+      grid.innerHTML='<p style="color:#f87171;grid-column:1/-1;text-align:center;padding:42px;">Could not load titles right now.</p>';
+    }finally{clearTimeout(timer)}
+  }
+
   function switchCategory(category,btn){
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     if(btn)btn.classList.add('active');
-
-    currentMode=category;
-    catalogMode=category;
-    catalogGenreId=null;
     setGenreSortVisibility(false);
-    catalogQuery='';
-    catalogPage=1;
-
-    const labels={
-      trending:'Trending Today',
-      movie:'Trending Movies',
-      tv:'Trending TV Series'
-    };
-    document.getElementById('section-title').textContent=labels[category]||'Browse';
     if(category==='trending'){
       window.__f2wInitialTrendingV102=false;
       f2wLoadInitialTrendingV102();
     }else{
-      loadCatalogPage(1,false);
+      f2wLoadHomeCategoryV125(category,1);
     }
   }
 
@@ -6915,7 +6954,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=124-1788299294" defer></script>
+  <script src="/final-v35.js?v=125-1788300576" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -8534,7 +8573,7 @@ body.f2w-auth-v67-open {
   function restart(){
     clearInterval(timer);
     if(slides.length>1){
-      timer=setInterval(()=>render(index+1),9000);
+      timer=setInterval(()=>render(index+1),5000);
     }
   }
 
@@ -8760,4 +8799,7 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v121-cache:1788297958:home/index.html -->
 <!-- f2w-force-save:v123-cache:1788298849:home/index.html -->
 <!-- f2w-force-save:v124-cache:1788299294:home/index.html -->
+<!-- f2w-force-save:home-bounty-v125:1788300576 -->
+<!-- f2w-force-save:v125-cache:1788300576:home/index.html -->
+<!-- f2w-force-save:recent-strip-v125fix -->
  

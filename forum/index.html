@@ -425,12 +425,12 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=123-1788298849">
+  <link rel="stylesheet" href="/final-v35.css?v=125-1788300576">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=123-1788298849">
-  <script src="/global-header-chat-v1.js?v=124-1788299294" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
+  <script src="/global-header-chat-v1.js?v=125-1788300576" defer></script>
 
 <style id="forum-v30-design">
 .f2w-forum-page{background:radial-gradient(circle at 88% 7%,rgba(229,9,20,.075),transparent 30%),#020b14!important}
@@ -570,6 +570,29 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   }
 }
 /* f2w-force-save:forum-hero-buttons-v78:1788224965 */
+</style>
+
+
+<style id="f2w-forum-bounty-v125-css">
+#forum-v30-app,#forum-v30-app button,#forum-v30-app input,#forum-v30-app select,#forum-v30-app textarea{
+  font-family:'Poppins',sans-serif!important;
+}
+#forum-v30-app h1,#forum-v30-app h2,#forum-v30-app h3,
+#forum-v30-app .forum-v30-primary,#forum-v30-app .forum-v30-hero-actions button{
+  font-family:'Poppins',sans-serif!important;
+  letter-spacing:0!important;
+}
+.forum-v30-category,.forum-v30-kicker{font-family:'Poppins',sans-serif!important}
+.forum-v30-rank-name.f2w-role-name{
+  position:relative!important;display:inline-block!important;width:max-content!important;overflow:visible!important;
+  color:var(--f2w-role-color,#fff)!important;-webkit-text-fill-color:var(--f2w-role-color,#fff)!important;
+}
+.forum-v30-rank-name.f2w-role-name::before{
+  content:""!important;position:absolute!important;inset:-.22em -.32em!important;pointer-events:none!important;
+  background:url("https://i.ibb.co/HC3GW9B/Particles.gif") center/100% 100% no-repeat!important;
+  filter:grayscale(1) saturate(0) brightness(5.4) contrast(1.45)!important;mix-blend-mode:screen!important;
+}
+/* f2w-force-save:forum-bounty-css-v125:1788300576 */
 </style>
 
 </head>
@@ -1008,7 +1031,7 @@ boot();
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=124-1788299294" defer></script>
+  <script src="/final-v35.js?v=125-1788300576" defer></script>
 
 <script id="forum-v30-runtime">
 (() => {
@@ -1052,7 +1075,16 @@ boot();
     try{
       const data=await rpc('get_public_leaderboard',{p_page:1,p_page_size:5,p_sort:'overall'});
       const a=Array.isArray(data)?data:[];
-      host.innerHTML=a.length?a.map((x,i)=>`<a class="forum-v30-rank-row" href="/profile/?user=${encodeURIComponent(x.username||'')}"><span>#${i+1}</span><span class="forum-v30-rank-name" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</span><b>${Number(x.score||0)}</b></a>`).join('')+'<a class="forum-v30-rank-more" href="/leaderboard/">View full leaderboard →</a>':'<div class="forum-v30-empty">Rankings appear as members get active.</div>';
+      host.innerHTML=a.length?a.map((x,i)=>`<a class="forum-v30-rank-row" href="/profile/@${encodeURIComponent(x.username||'')}"><span>#${i+1}</span><span class="forum-v30-rank-name" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</span><b>${Number(x.score||0)}</b></a>`).join('')+'<a class="forum-v30-rank-more" href="/leaderboard/">View full leaderboard →</a>':'<div class="forum-v30-empty">Rankings appear as members get active.</div>';
+      const colors={owner:'#ff2638',staff:'#c05cff',moderator:'#62b4ff',support:'#32c8ff',developer:'#31d9ad',verified:'#579dff',contributor:'#ffc13d',curator:'#ff6be1'};
+      host.querySelectorAll('.forum-v30-rank-name[data-role]').forEach(name=>{
+        const role=String(name.dataset.role||'').toLowerCase();
+        if(!colors[role])return;
+        name.classList.add('f2w-role-name',`f2w-role-${role}`);
+        name.style.setProperty('--f2w-role-color',colors[role]);
+        name.style.setProperty('color',colors[role],'important');
+        name.style.setProperty('-webkit-text-fill-color',colors[role],'important');
+      });
       window.decorateNames?.();
     }catch{host.innerHTML='<div class="forum-v30-empty">Rankings unavailable.</div>'}
   }
@@ -1061,19 +1093,28 @@ boot();
   function closeComposer(){$('forum-composer').hidden=true;$('forum-compose-status').textContent=''}
   async function submitThread(){
     const title=$('forum-compose-title').value.trim(),body=$('forum-compose-body').value.trim(),status=$('forum-compose-status'),btn=$('forum-compose-submit');
-    if(!title||!body){status.textContent='Add a title and post first.';return}
-    btn.disabled=true;status.textContent='Posting…';
+    if(title.length<3||!body){status.textContent='Add a title and post first.';return}
+    btn.disabled=true;status.textContent='Posting discussion…';
     try{
-      const id=await rpc('create_forum_thread_v30',{p_title:title,p_body:body,p_category:$('forum-compose-category').value,p_is_spoiler:$('forum-compose-spoiler').checked});
-      $('forum-compose-title').value='';$('forum-compose-body').value='';$('forum-compose-spoiler').checked=false;closeComposer();await loadThreads(true);toast('Discussion posted.');if(id)openThread(id)
-    }catch(e){status.textContent=e.message||'Could not post.'}finally{btn.disabled=false}
+      const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Posting timed out. Please try again.')),6000));
+      const request=rpc('create_forum_thread_v30',{p_title:title,p_body:body,p_category:$('forum-compose-category').value,p_is_spoiler:$('forum-compose-spoiler').checked});
+      const id=await Promise.race([request,timeout]);
+      $('forum-compose-title').value='';$('forum-compose-body').value='';$('forum-compose-spoiler').checked=false;
+      closeComposer();
+      await loadThreads(true);
+      toast('Discussion posted.');
+      if(id)await openThread(id);
+    }catch(e){
+      console.error('Discussion post failed:',e);
+      status.textContent=e.message||'Could not post discussion.';
+    }finally{btn.disabled=false}
   }
   async function openThread(id){
     const modal=$('forum-thread-modal'),host=$('forum-thread-detail');modal.hidden=false;host.innerHTML='<div class="forum-v30-empty">Loading discussion…</div>';
     try{
       const x=await rpc('get_forum_thread_v30',{p_thread_id:id});if(!x)throw new Error('Thread not found');
       $('forum-thread-title').textContent=x.title||'Discussion';
-      host.innerHTML=`<article class="forum-v30-thread-full"><div class="forum-v30-thread-full-meta"><span class="forum-v30-category">${esc(cat(x.category))}</span>${x.is_spoiler?'<span class="forum-v30-spoiler">SPOILER</span>':''}<span>${esc(ago(x.created_at))}</span></div><h3>${esc(x.title)}</h3><div class="forum-v30-thread-authorline">by <a href="/profile/?user=${encodeURIComponent(x.username||'')}" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</a></div><div class="forum-v30-thread-body">${esc(x.body).replace(/\n/g,'<br>')}</div></article><section class="forum-v30-replies"><strong>${Number(x.reply_count||0)} Replies</strong><div class="forum-v30-reply-list">${(x.replies||[]).map(r=>`<article class="forum-v30-reply"><div class="forum-v30-reply-head"><a href="/profile/?user=${encodeURIComponent(r.username||'')}" data-username="${esc(r.username||'')}" data-role="${esc(r.top_role||'')}">${esc(r.display_name||r.username||'Member')}</a><span>${esc(ago(r.created_at))}</span></div><div>${esc(r.body).replace(/\n/g,'<br>')}</div></article>`).join('')||'<div class="forum-v30-empty">No replies yet.</div>'}</div>${S.user?`<div class="forum-v30-reply-box"><textarea id="forum-reply-body" maxlength="3000" placeholder="Write a reply…"></textarea><div><button id="forum-reply-submit" type="button">Reply</button></div></div>`:'<div class="forum-v30-empty">Log in to join the discussion.</div>'}</section>`;
+      host.innerHTML=`<article class="forum-v30-thread-full"><div class="forum-v30-thread-full-meta"><span class="forum-v30-category">${esc(cat(x.category))}</span>${x.is_spoiler?'<span class="forum-v30-spoiler">SPOILER</span>':''}<span>${esc(ago(x.created_at))}</span></div><h3>${esc(x.title)}</h3><div class="forum-v30-thread-authorline">by <a href="/profile/@${encodeURIComponent(x.username||'')}" data-username="${esc(x.username||'')}" data-role="${esc(x.top_role||'')}">${esc(x.display_name||x.username||'Member')}</a></div><div class="forum-v30-thread-body">${esc(x.body).replace(/\n/g,'<br>')}</div></article><section class="forum-v30-replies"><strong>${Number(x.reply_count||0)} Replies</strong><div class="forum-v30-reply-list">${(x.replies||[]).map(r=>`<article class="forum-v30-reply"><div class="forum-v30-reply-head"><a href="/profile/@${encodeURIComponent(r.username||'')}" data-username="${esc(r.username||'')}" data-role="${esc(r.top_role||'')}">${esc(r.display_name||r.username||'Member')}</a><span>${esc(ago(r.created_at))}</span></div><div>${esc(r.body).replace(/\n/g,'<br>')}</div></article>`).join('')||'<div class="forum-v30-empty">No replies yet.</div>'}</div>${S.user?`<div class="forum-v30-reply-box"><textarea id="forum-reply-body" maxlength="3000" placeholder="Write a reply…"></textarea><div><button id="forum-reply-submit" type="button">Reply</button></div></div>`:'<div class="forum-v30-empty">Log in to join the discussion.</div>'}</section>`;
       $('forum-reply-submit')?.addEventListener('click',()=>reply(id));window.decorateNames?.();loadThreads(true)
     }catch(e){host.innerHTML=`<div class="forum-v30-empty">${esc(e.message||'Could not load discussion.')}</div>`}
   }
@@ -2857,4 +2898,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v121-cache:1788297958:forum/index.html -->
 <!-- f2w-force-save:v123-cache:1788298849:forum/index.html -->
 <!-- f2w-force-save:v124-cache:1788299294:forum/index.html -->
+<!-- f2w-force-save:forum-bounty-v125:1788300576 -->
+<!-- f2w-force-save:v125-cache:1788300576:forum/index.html -->
  

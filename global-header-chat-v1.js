@@ -2456,4 +2456,83 @@ window.f2wOpenGuestDmAuthV98=function(mode){
 // f2w-force-save:autocomplete-role-v112:1788290771
 // f2w-force-save:operational-staff-nav-v116:1788295578
 // f2w-force-save:chat-close-overlay-v117:1788295984
+
+/* ============================================================
+   F2W v125 — SITE-WIDE NOTIFICATIONS AUTHORITY
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wNotificationsV125)return;
+  window.__f2wNotificationsV125=true;
+
+  const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  let client=null,channel=null;
+
+  function db(){
+    if(client)return client;
+    if(!window.supabase?.createClient)return null;
+    client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    return client;
+  }
+  function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+  function relative(v){const ms=Math.max(0,Date.now()-new Date(v).getTime());if(ms<60000)return'just now';if(ms<3600000)return Math.floor(ms/60000)+'m ago';if(ms<86400000)return Math.floor(ms/3600000)+'h ago';return Math.floor(ms/86400000)+'d ago'}
+
+  async function load(){
+    const c=db();const list=document.getElementById('notification-list');const count=document.getElementById('notification-count');
+    if(!c?.rpc||!list)return;
+    try{
+      const {data,error}=await c.rpc('get_my_notifications_v125',{p_limit:60});
+      if(error)throw error;
+      const rows=Array.isArray(data)?data:[];
+      const unread=rows.filter(x=>!x.read_at).length;
+      if(count){count.textContent=String(unread);count.hidden=!unread}
+      list.innerHTML=rows.length?rows.map(n=>`<a class="f2w-v125-notification ${n.read_at?'read':'unread'}" href="${esc(n.link||'#')}">
+        <strong>${esc(n.title||'Notification')}</strong>
+        <span>${esc(n.message||'')}</span>
+        <small>${esc(relative(n.created_at))}</small>
+      </a>`).join(''):'<div class="v17-notification-empty">No notifications yet.</div>';
+    }catch(error){
+      list.innerHTML='<div class="v17-notification-empty">Notifications are unavailable right now.</div>';
+    }
+  }
+
+  window.toggleNotifications=function(event){
+    event?.preventDefault?.();event?.stopPropagation?.();
+    const menu=document.getElementById('notification-menu');if(!menu)return;
+    menu.hidden=!menu.hidden;
+    if(!menu.hidden)load();
+  };
+
+  window.markAllNotificationsRead=async function(){
+    const c=db();if(!c?.rpc)return;
+    try{
+      const {error}=await c.rpc('mark_my_notifications_read_v125');
+      if(error)throw error;
+      await load();
+    }catch(error){console.warn('Mark all notifications read failed:',error)}
+  };
+
+  async function subscribe(){
+    const c=db();if(!c?.auth)return;
+    const {data}=await c.auth.getSession().catch(()=>({data:{session:null}}));
+    const uid=data?.session?.user?.id;if(!uid)return;
+    try{if(channel)c.removeChannel(channel)}catch{}
+    try{
+      channel=c.channel(`f2w-notify-v125-${uid}`)
+        .on('postgres_changes',{event:'*',schema:'public',table:'f2w_notifications_v125',filter:`user_id=eq.${uid}`},load)
+        .subscribe();
+    }catch{}
+    load();
+  }
+
+  document.addEventListener('click',e=>{
+    const menu=document.getElementById('notification-menu');
+    if(menu&&!menu.hidden&&!e.target.closest('#notification-wrap'))menu.hidden=true;
+  });
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',subscribe,{once:true});else subscribe();
+})();
+// f2w-force-save:notifications-v125:1788300576
+
  

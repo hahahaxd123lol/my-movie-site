@@ -2937,10 +2937,10 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=123-1788298849">
+  <link rel="stylesheet" href="/final-v35.css?v=125-1788300576">
   <!-- Unified Watch-page header + preloaded chat -->
-  <link rel="stylesheet" href="/global-header-v1.css?v=123-1788298849">
-  <script src="/global-header-chat-v1.js?v=124-1788299294" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
+  <script src="/global-header-chat-v1.js?v=125-1788300576" defer></script>
 
 
 
@@ -3943,6 +3943,26 @@ body.f2w-cinema-v117 #f2w-dim-lights-v117{
 /* f2w-force-save:rating-v117-css:1788295984 */
 </style>
 
+
+<style id="f2w-dim-lights-v125-css">
+#f2w-cinema-overlay-v125{
+  position:fixed!important;inset:0!important;z-index:2147480000!important;
+  background:rgba(0,0,0,.86)!important;opacity:0!important;pointer-events:none!important;
+  transition:opacity .18s ease!important;
+}
+body.f2w-cinema-v125 #f2w-cinema-overlay-v125{opacity:1!important}
+body.f2w-cinema-v125 .player-wrapper,
+body.f2w-cinema-v125 #flix-player-container,
+body.f2w-cinema-v125 .player-header-bar{
+  position:relative!important;z-index:2147480100!important;
+}
+body.f2w-cinema-v125 #f2w-dim-lights-v117{
+  position:relative!important;z-index:2147480200!important;
+  border-color:#ff3344!important;
+}
+/* f2w-force-save:dim-lights-css-v125:1788300576 */
+</style>
+
 </head>
 <body class="theme-red f2w-main-page f2w-watch-page watch-locked">
 <header>
@@ -4846,7 +4866,7 @@ body.f2w-cinema-v117 #f2w-dim-lights-v117{
 
     if(username){
       try{localStorage.setItem('f2w_profile_username_v24',username);}catch{}
-      window.location.href=`/profile/?user=${encodeURIComponent(username)}`;
+      window.location.href=`/profile/@${encodeURIComponent(username)}`;
       return;
     }
 
@@ -4855,7 +4875,7 @@ body.f2w-cinema-v117 #f2w-dim-lights-v117{
     }catch{}
 
     if(username){
-      window.location.href=`/profile/?user=${encodeURIComponent(username)}`;
+      window.location.href=`/profile/@${encodeURIComponent(username)}`;
       return;
     }
 
@@ -4870,7 +4890,7 @@ body.f2w-cinema-v117 #f2w-dim-lights-v117{
       username=String(data?.username||'').trim();
       if(username){
         try{localStorage.setItem('f2w_profile_username_v24',username);}catch{}
-        window.location.href=`/profile/?user=${encodeURIComponent(username)}`;
+        window.location.href=`/profile/@${encodeURIComponent(username)}`;
         return;
       }
     }catch(error){
@@ -4883,7 +4903,7 @@ body.f2w-cinema-v117 #f2w-dim-lights-v117{
   function openPublicProfile(username){
     const clean=String(username||'').trim();
     if(!clean)return;
-    window.location.href=`/profile/?user=${encodeURIComponent(clean)}`;
+    window.location.href=`/profile/@${encodeURIComponent(clean)}`;
   }
 
   function profileInitials(username){
@@ -8318,7 +8338,7 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
 
-  <script src="/final-v35.js?v=124-1788299294" defer></script>
+  <script src="/final-v35.js?v=125-1788300576" defer></script>
 
 <style id="f2w-watch-tools-v47-css">
   .f2w-watch-toast-v47{
@@ -10332,28 +10352,6 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 </script>
 
 
-<script id="f2w-dim-lights-v117-js">
-(() => {
-  const bind=()=>{
-    const btn=document.getElementById('f2w-dim-lights-v117');
-    if(!btn||btn.dataset.bound==='1')return;
-    btn.dataset.bound='1';
-    btn.addEventListener('click',event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      const active=document.body.classList.toggle('f2w-cinema-v117');
-      btn.classList.toggle('active',active);
-      btn.setAttribute('aria-pressed',active?'true':'false');
-      try{f2wToast(active?'Cinema lights dimmed.':'Cinema lights restored.','fa-moon')}catch{}
-    },true);
-  };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-})();
-/* f2w-force-save:dim-lights-v117-js:1788295984 */
-</script>
-
-
 <script id="f2w-rating-v117-js">
 (() => {
   'use strict';
@@ -10443,6 +10441,74 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{bind();load()},{once:true});else{bind();load()}
 })();
 /* f2w-force-save:rating-v117-js:1788295984 */
+</script>
+
+
+<div id="f2w-cinema-overlay-v125" aria-hidden="true"></div>
+<script id="f2w-watch-bounty-v125-js">
+(() => {
+  'use strict';
+  const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  const client=window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+
+  function toast(text){
+    try{if(typeof f2wToast==='function')return f2wToast(text,'fa-moon')}catch{}
+    let el=document.getElementById('f2w-dim-toast-v125');
+    if(!el){el=document.createElement('div');el.id='f2w-dim-toast-v125';el.style.cssText='position:fixed;right:18px;top:88px;z-index:2147483647;padding:11px 14px;border:1px solid #354a61;border-radius:10px;background:#071522;color:#fff;font:700 12px Poppins,sans-serif;box-shadow:0 16px 40px rgba(0,0,0,.45)';document.body.appendChild(el)}
+    el.textContent=text;el.hidden=false;clearTimeout(el._t);el._t=setTimeout(()=>el.hidden=true,1800);
+  }
+
+  function bindDim(){
+    const btn=document.getElementById('f2w-dim-lights-v117');
+    if(!btn)return;
+    btn.dataset.bound='v125';
+    btn.onclick=null;
+    btn.addEventListener('click',e=>{
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      const active=document.body.classList.toggle('f2w-cinema-v125');
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-pressed',active?'true':'false');
+      btn.innerHTML=active?'<i class="fa-solid fa-sun"></i> Restore Lights':'<i class="fa-solid fa-moon"></i> Dim Lights';
+      toast(active?'Lights dimmed. Player stays bright.':'Lights restored.');
+    },true);
+  }
+
+  function identity(){
+    const p=new URLSearchParams(location.search);
+    return {id:Number(p.get('id')||0),type:p.get('type')==='tv'?'tv':'movie'};
+  }
+
+  function details(){
+    const title=String(document.getElementById('detail-title')?.textContent||'').trim();
+    const img=document.querySelector('#detail-poster img,.detail-poster img,#detail-poster,.poster img');
+    const src=String(img?.getAttribute?.('src')||'');
+    const match=src.match(/image\.tmdb\.org\/t\/p\/[^/]+(\/[^?]+)/i);
+    return {title:(!title||/loading/i.test(title))?'':title,poster:match?.[1]||''};
+  }
+
+  async function pingWatching(){
+    if(!client?.rpc||document.visibilityState!=='visible')return;
+    const {data}=await client.auth.getSession().catch(()=>({data:{session:null}}));
+    if(!data?.session?.user)return;
+    const {id,type}=identity();if(!id)return;
+    const d=details();
+    if(!d.title)return;
+    try{
+      await client.rpc('touch_current_watching_v125',{
+        p_media_type:type,p_media_id:id,p_title:d.title.slice(0,250),p_poster_path:d.poster||null
+      });
+    }catch(error){console.warn('Current watching heartbeat unavailable:',error?.message||error)}
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{bindDim();setTimeout(pingWatching,1800);setInterval(pingWatching,30000)},{once:true});
+  }else{
+    bindDim();setTimeout(pingWatching,1800);setInterval(pingWatching,30000);
+  }
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pingWatching()});
+})();
+/* f2w-force-save:watch-bounty-v125:1788300576 */
 </script>
 
 </body>
@@ -10567,4 +10633,6 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 <!-- f2w-force-save:v121-cache:1788297958:watch/index.html -->
 <!-- f2w-force-save:v123-cache:1788298849:watch/index.html -->
 <!-- f2w-force-save:v124-cache:1788299294:watch/index.html -->
+<!-- f2w-force-save:watch-bounty-v125:1788300576 -->
+<!-- f2w-force-save:v125-cache:1788300576:watch/index.html -->
  

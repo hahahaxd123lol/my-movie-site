@@ -618,14 +618,14 @@ function f2wDebounce(fn,wait=140){
         }
         last=now;
 
-        if(visibleMs>=5000 || (location.pathname+location.search)!==startPath){
+        if(visibleMs>=30000 || (location.pathname+location.search)!==startPath){
           clearInterval(timer);
           resolve();
         }
       },250);
     });
 
-    if(visibleMs<5000 || !authUser || (location.pathname+location.search)!==startPath)return;
+    if(visibleMs<30000 || !authUser || (location.pathname+location.search)!==startPath)return;
 
     let title=String(document.getElementById('detail-title')?.textContent||'').trim();
     if(!title||/loading title|loading\.\.\./i.test(title)){
@@ -1982,4 +1982,102 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:profile-presence-stable-v108:1788290088
 // f2w-force-save:sitewide-user-identities-v116:1788295578
 // f2w-force-save:profile-bio-v124:1788299294
+
+/* ============================================================
+   F2W v125 — FRIENDLY PROFILE LINKS + LOCAL RECENT VIEWED
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wV125Shared)return;
+  window.__f2wV125Shared=true;
+
+  function friendlyProfileHref(href){
+    try{
+      const url=new URL(href,location.origin);
+      if(url.origin!==location.origin)return href;
+      if(url.pathname!=='/profile/'&&url.pathname!=='/profile')return href;
+      const username=String(url.searchParams.get('user')||'').trim();
+      if(!/^[A-Za-z0-9]+$/.test(username))return href;
+      return `/profile/@${encodeURIComponent(username)}`;
+    }catch{return href}
+  }
+
+  function rewriteProfileLinks(root=document){
+    root.querySelectorAll?.('a[href*="/profile/?user="],a[href*="/profile?user="]').forEach(a=>{
+      const next=friendlyProfileHref(a.getAttribute('href')||'');
+      if(next)a.setAttribute('href',next);
+    });
+  }
+
+  rewriteProfileLinks();
+  const linkObserver=new MutationObserver(muts=>{
+    for(const m of muts){
+      for(const node of m.addedNodes){
+        if(node instanceof Element){
+          if(node.matches?.('a[href*="/profile/?user="],a[href*="/profile?user="]')){
+            const next=friendlyProfileHref(node.getAttribute('href')||'');
+            if(next)node.setAttribute('href',next);
+          }
+          rewriteProfileLinks(node);
+        }
+      }
+    }
+  });
+  if(document.documentElement)linkObserver.observe(document.documentElement,{subtree:true,childList:true});
+
+  document.addEventListener('click',event=>{
+    const a=event.target?.closest?.('a[href*="/profile/?user="],a[href*="/profile?user="]');
+    if(!a)return;
+    const next=friendlyProfileHref(a.href);
+    if(next&&next!==a.getAttribute('href'))a.setAttribute('href',next);
+  },true);
+
+  function localRecentKey(){return 'flix2watch_recently_viewed'}
+
+  function storeLocalRecent(){
+    if(!location.pathname.startsWith('/watch'))return;
+    const params=new URLSearchParams(location.search);
+    const id=Number(params.get('id')||0);
+    const type=params.get('type')==='tv'?'tv':'movie';
+    if(!id)return;
+
+    let tries=0;
+    const timer=setInterval(()=>{
+      tries++;
+      const title=String(
+        document.getElementById('detail-title')?.textContent||
+        document.querySelector('h1')?.textContent||
+        ''
+      ).trim();
+      const img=document.querySelector('#detail-poster img,.detail-poster img,#detail-poster,.poster img');
+      const src=String(img?.getAttribute?.('src')||'');
+      const match=src.match(/image\.tmdb\.org\/t\/p\/[^/]+(\/[^?]+)/i);
+      const poster_path=match?.[1]||'';
+
+      if(title && !/loading/i.test(title)){
+        clearInterval(timer);
+        try{
+          const rows=JSON.parse(localStorage.getItem(localRecentKey())||'[]');
+          const list=Array.isArray(rows)?rows:[];
+          const next={
+            id,type,title:title.slice(0,250),poster_path,
+            viewed_at:new Date().toISOString()
+          };
+          const dedup=list.filter(x=>!(String(x.id)===String(id)&&String(x.type)===type));
+          localStorage.setItem(localRecentKey(),JSON.stringify([next,...dedup].slice(0,24)));
+        }catch{}
+      }else if(tries>=12){
+        clearInterval(timer);
+      }
+    },250);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',storeLocalRecent,{once:true});
+  }else{
+    storeLocalRecent();
+  }
+})();
+// f2w-force-save:v125-shared:1788300576
+
  
