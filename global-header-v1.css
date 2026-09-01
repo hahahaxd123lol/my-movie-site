@@ -2524,3 +2524,34 @@ body.f2w-main-page .presence {
 
 /* f2w-force-save:auth-feedback-css-v92:1788228465 */
  
+
+/* ============================================================
+   F2W v93 — NO STALE GREY AUTH LAYERS / TV SCROLL SAFETY
+   ============================================================ */
+#account-modal:not(.open):not(.f2w-auth-v67):not(.f2w-auth-hard-open-v58):not(.f2w-auth-modal-open-v60) {
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+#account-modal.open,
+#account-modal.f2w-auth-v67,
+#account-modal.f2w-auth-hard-open-v58,
+#account-modal.f2w-auth-modal-open-v60 {
+  visibility:visible!important;
+  opacity:1!important;
+}
+
+/* contain:paint was causing fixed overlays and some TV-browser scroll/focus bugs. */
+html.f2w-page-ready body {
+  contain:none!important;
+}
+
+/* A restored signed-in page must always be normally scrollable. */
+body.f2w-authenticated:not(.f2w-profile-editor-open-v87) {
+  overflow-y:auto!important;
+}
+
+/* f2w-force-save:no-stale-auth-dim-v93:1788229371 */
+ 

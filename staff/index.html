@@ -816,9 +816,9 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=92-1788228465">
+  <link rel="stylesheet" href="/global-header-v1.css?v=93-1788229371">
   <script src="/seo-v17.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=92-1788228465" defer></script>
+  <script src="/global-header-chat-v1.js?v=93-1788229371" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -1363,7 +1363,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 const SUPABASE_URL="https://viqufxlcxwgboyxbdhjb.supabase.co";
 const SUPABASE_KEY="sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge";
 const API_KEY="925c48dd6e24fd5e975fe224238bbb45";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let staffContext=null;
 let currentSnapshot=null;
 const allPermissions=[
@@ -2658,7 +2658,7 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js?v=90-1788227716" defer>
+  <script src="/final-v35.js?v=93-1788229371" defer>
 document.getElementById('staff-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='staff-ticket-modal')closeStaffTicketModal()});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('staff-ticket-modal')?.hidden)closeStaffTicketModal()});
 document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendStaffTicketReply()}});
@@ -4406,4 +4406,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v90-cache:1788227716:staff/index.html -->
 <!-- f2w-force-save:v91-cache:1788228094:staff/index.html -->
 <!-- f2w-force-save:v92-cache:1788228465:staff/index.html -->
+<!-- f2w-force-save:v93-cache:1788229371:staff/index.html -->
  

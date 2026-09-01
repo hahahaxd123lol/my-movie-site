@@ -424,10 +424,10 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/responsive-v7.css">
   <link rel="stylesheet" href="/final-v9.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=92-1788228465">
+  <link rel="stylesheet" href="/global-header-v1.css?v=93-1788229371">
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=92-1788228465" defer></script>
+  <script src="/global-header-chat-v1.js?v=93-1788229371" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -889,7 +889,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
 <script>
   const SUPABASE_URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
   const SUPABASE_KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
-  const chatSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const chatSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 
   let userSearchRequestId=0;
   let userSearchDebounceTimer=null;
@@ -1179,7 +1179,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
     window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
   }
 </script>
-  <script src="/final-v35.js?v=90-1788227716" defer></script>
+  <script src="/final-v35.js?v=93-1788229371" defer></script>
 
 <div class="account-modal" id="account-modal">
     <div class="account-card">
@@ -3459,4 +3459,5 @@ body.f2w-users-page .f2w-user-handle {
 <!-- f2w-force-save:v90-cache:1788227716:users/index.html -->
 <!-- f2w-force-save:v91-cache:1788228094:users/index.html -->
 <!-- f2w-force-save:v92-cache:1788228465:users/index.html -->
+<!-- f2w-force-save:v93-cache:1788229371:users/index.html -->
  

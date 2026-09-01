@@ -478,7 +478,7 @@
     try{if(window.supabaseClient?.auth)return window.supabaseClient;}catch{}
     try{
       if(!fallbackClient && window.supabase?.createClient){
-        fallbackClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+        fallbackClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
       }
     }catch{}
     return fallbackClient;
@@ -890,7 +890,7 @@
     try{if(window.supabaseClient?.from)return window.supabaseClient;}catch{}
     try{
       if(!fallbackClient && window.supabase?.createClient){
-        fallbackClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+        fallbackClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
       }
     }catch{}
     return fallbackClient;
@@ -1487,7 +1487,7 @@
     try{if(window.supabaseClient?.auth)return window.supabaseClient;}catch{}
     try{
       if(!client && window.supabase?.createClient){
-        client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+        client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
       }
     }catch{}
     return client;
@@ -2007,4 +2007,276 @@
 })();
 // f2w-force-save:genre-navigation-v91:1788228094
 // f2w-force-save:auth-session-stability-v92:1788228465
+
+/* ============================================================
+   F2W v93 — ONE AUTH SUBMIT PATH + DURABLE SESSION RECOVERY
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wAuthAuthorityV93)return;
+  window.__f2wAuthAuthorityV93=true;
+
+  let busy=false;
+
+  function client(){
+    try{if(window.chatSupabase?.auth)return window.chatSupabase;}catch{}
+    try{if(window.f2wSupabase?.auth)return window.f2wSupabase;}catch{}
+    try{if(window.supabaseClient?.auth)return window.supabaseClient;}catch{}
+    try{
+      if(window.supabase?.createClient){
+        window.__f2wPersistentClientV93 ||= window.supabase.createClient(
+          'https://viqufxlcxwgboyxbdhjb.supabase.co',
+          'sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge',
+          {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+        );
+        return window.__f2wPersistentClientV93;
+      }
+    }catch{}
+    return null;
+  }
+
+  function modalMode(){
+    return document.getElementById('account-signup-tab')?.classList.contains('active')
+      ? 'signup' : 'login';
+  }
+
+  function message(text,error=false,success=false){
+    const el=document.getElementById('account-message');
+    if(!el)return;
+    el.textContent=String(text||'');
+    el.dataset.state=error?'error':(success?'success':'working');
+    el.style.color=error?'#ff6977':(success?'#53e39b':'#9aadc1');
+    el.style.display='block';
+    el.style.visibility='visible';
+    el.style.opacity='1';
+  }
+
+  function clearAllAuthLocks({closeModal=false}={}){
+    const root=document.documentElement;
+    const body=document.body;
+
+    [
+      'f2w-auth-open-v56','f2w-auth-v67-open','f2w-auth-open-v60',
+      'f2w-auth-modal-open','f2w-auth-hard-open'
+    ].forEach(cls=>{
+      root.classList.remove(cls);
+      body?.classList.remove(cls);
+    });
+
+    root.style.removeProperty('overflow');
+    root.style.removeProperty('height');
+
+    if(body){
+      ['overflow','position','top','left','right','width','height','min-height']
+        .forEach(prop=>body.style.removeProperty(prop));
+    }
+
+    if(closeModal){
+      const modal=document.getElementById('account-modal');
+      if(modal){
+        modal.classList.remove('open','f2w-auth-v67','f2w-auth-hard-open-v58','f2w-auth-modal-open-v60');
+        modal.setAttribute('aria-hidden','true');
+        modal.setAttribute('inert','');
+        modal.style.removeProperty('display');
+      }
+
+      const dialog=document.getElementById('f2w-users-auth-dialog-v73');
+      try{if(dialog?.open)dialog.close();}catch{}
+    }
+  }
+
+  function friendly(error){
+    const raw=String(error?.message||error||'').trim();
+    if(/invalid login credentials|invalid credentials|email or password/i.test(raw))
+      return 'Incorrect username/email or password.';
+    if(/email not confirmed/i.test(raw))
+      return 'Confirm your email address before logging in.';
+    if(/already registered|already been registered|user already registered/i.test(raw))
+      return 'An account with that email already exists.';
+    if(/rate limit|too many requests/i.test(raw))
+      return 'Too many attempts. Wait a moment and try again.';
+    return raw||'Authentication failed.';
+  }
+
+  async function submit(){
+    if(busy)return false;
+    const c=client();
+    if(!c?.auth){
+      message('Authentication is still loading. Try again in a moment.',true);
+      return false;
+    }
+
+    const mode=modalMode();
+    const identifier=String(document.getElementById('account-email')?.value||'').trim();
+    const password=String(document.getElementById('account-password')?.value||'');
+    const username=String(document.getElementById('account-username')?.value||'').trim();
+    const confirm=String(document.getElementById('account-confirm')?.value||'');
+    const button=document.getElementById('account-submit');
+
+    if(mode==='login' && (!identifier||!password)){
+      message('Enter your username/email and password.',true);
+      return false;
+    }
+    if(mode==='signup'){
+      if(!/^[A-Za-z0-9]{2,30}$/.test(username)){
+        message('Username must be 2–30 letters or numbers.',true);return false;
+      }
+      if(!identifier.includes('@')){message('Enter a valid email address.',true);return false;}
+      if(password.length<6){message('Password must be at least 6 characters.',true);return false;}
+      if(password!==confirm){message('Passwords do not match.',true);return false;}
+    }
+
+    busy=true;
+    if(button){
+      button.disabled=true;
+      button.dataset.f2wBusy='1';
+      button.innerHTML=mode==='signup'
+        ? '<i class="fa-solid fa-circle-notch fa-spin"></i> Creating account…'
+        : '<i class="fa-solid fa-circle-notch fa-spin"></i> Logging in…';
+    }
+    message(mode==='signup'?'Creating your account…':'Logging in…');
+
+    try{
+      let result;
+
+      if(mode==='login'){
+        if(typeof window.f2wLoginIdentifier==='function'){
+          result=await window.f2wLoginIdentifier(identifier,password);
+        }else{
+          result=await c.auth.signInWithPassword({email:identifier,password});
+        }
+        if(result?.error)throw result.error;
+      }else{
+        try{await window.__f2wAbuseGuard?.preflight?.();}catch(error){throw error;}
+        const {data,error}=await c.auth.signUp({
+          email:identifier,
+          password,
+          options:{data:{username,chat_alias:username}}
+        });
+        if(error)throw error;
+        result={data,error:null};
+        if(!data?.session){
+          message('Account created. Check your email if confirmation is required.',false,true);
+          return false;
+        }
+      }
+
+      const sessionResult=await c.auth.getSession();
+      const session=sessionResult?.data?.session||result?.data?.session||null;
+      const user=session?.user||result?.data?.user||null;
+      if(!user)throw new Error('The account session could not be restored.');
+
+      try{window.currentUser=user;}catch{}
+      try{window.currentUser=user;}catch{}
+
+      message(mode==='signup'?'Account created and signed in.':'Logged in successfully.',false,true);
+
+      window.dispatchEvent(new CustomEvent('f2w:auth-success',{
+        detail:{mode,user,session}
+      }));
+      window.dispatchEvent(new CustomEvent('f2w:auth-session-ready',{
+        detail:{user,session}
+      }));
+
+      try{await window.f2wRefreshAccountV70?.();}catch{}
+      try{window.refreshAccountUI?.();}catch{}
+
+      // Give TVs/slow browsers one paint showing success, then remove all dimming.
+      setTimeout(()=>{
+        clearAllAuthLocks({closeModal:true});
+      },220);
+
+      return false;
+    }catch(error){
+      console.error('Auth failed:',error);
+      message(friendly(error),true);
+      return false;
+    }finally{
+      busy=false;
+      if(button){
+        button.disabled=false;
+        delete button.dataset.f2wBusy;
+        button.textContent=modalMode()==='signup'?'Create Account':'Log In';
+      }
+    }
+  }
+
+  // CAPTURE phase wins over every legacy onclick/page-local submit function.
+  document.addEventListener('click',event=>{
+    const button=event.target?.closest?.('#account-submit');
+    if(!button)return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    submit();
+  },true);
+
+  document.addEventListener('keydown',event=>{
+    if(event.key!=='Enter'||event.isComposing)return;
+    if(!event.target?.closest?.('#account-modal'))return;
+    if(event.target?.tagName==='TEXTAREA')return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    submit();
+  },true);
+
+  async function recoverSession(){
+    const c=client();
+    if(!c?.auth)return null;
+
+    try{c.auth.startAutoRefresh?.();}catch{}
+
+    try{
+      const {data}=await c.auth.getSession();
+      const session=data?.session||null;
+      if(session?.user){
+        try{window.currentUser=session.user;}catch{}
+
+        // On page boot a valid session must NEVER leave a stale grey auth layer.
+        clearAllAuthLocks({closeModal:true});
+
+        document.body?.classList.add('f2w-authenticated');
+        window.dispatchEvent(new CustomEvent('f2w:auth-session-ready',{
+          detail:{user:session.user,session}
+        }));
+        try{await window.f2wRefreshAccountV70?.();}catch{}
+        try{window.refreshAccountUI?.();}catch{}
+      }
+      return session;
+    }catch(error){
+      console.warn('Session recovery failed:',error);
+      return null;
+    }
+  }
+
+  function boot(){
+    recoverSession();
+    const c=client();
+    if(c?.auth?.onAuthStateChange && !window.__f2wAuthStateV93){
+      window.__f2wAuthStateV93=true;
+      c.auth.onAuthStateChange((event,session)=>{
+        if(session?.user){
+          try{window.currentUser=session.user;}catch{}
+          if(event==='SIGNED_IN'||event==='TOKEN_REFRESHED'||event==='INITIAL_SESSION'){
+            clearAllAuthLocks({closeModal:event!=='SIGNED_IN'});
+          }
+        }
+      });
+    }
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+
+  window.addEventListener('pageshow',recoverSession,{passive:true});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible')recoverSession();
+  },{passive:true});
+  window.addEventListener('focus',recoverSession,{passive:true});
+
+  window.f2wSubmitAuthV93=submit;
+  window.f2wClearAuthLocksV93=clearAllAuthLocks;
+})();
+// f2w-force-save:auth-authority-v93:1788229371
  

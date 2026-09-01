@@ -2354,8 +2354,8 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <link rel="stylesheet" href="/final-v35.css?v=90-1788227716">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=92-1788228465">
-  <script src="/global-header-chat-v1.js?v=92-1788228465" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=93-1788229371">
+  <script src="/global-header-chat-v1.js?v=93-1788229371" defer></script>
 
   <style id="f2w-mobile-login-above-featured">
     /* Mobile/tablet home layout: keep the login/signup card above Featured. */
@@ -2575,6 +2575,31 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 }
 
 /* f2w-force-save:home-carousel-controls-v41:1788219230 */
+</style>
+
+
+<style id="f2w-home-quick-auth-feedback-v93">
+.f2w-quick-auth-message {
+  display:block!important;
+  min-height:18px!important;
+  margin:8px 2px 0!important;
+  font-size:.69rem!important;
+  line-height:1.35!important;
+  font-weight:800!important;
+  color:#93a6bb!important;
+  text-align:left!important;
+}
+.f2w-quick-auth-message.error { color:#ff6977!important; }
+.f2w-quick-auth-message.success { color:#53e39b!important; }
+.f2w-quick-auth-message:empty {
+  min-height:0!important;
+  margin-top:0!important;
+}
+.f2w-quick-login-btn[data-f2w-busy="1"] {
+  cursor:wait!important;
+  opacity:.9!important;
+}
+/* f2w-force-save:home-quick-auth-feedback-v93:1788229371 */
 </style>
 
 </head>
@@ -2992,6 +3017,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
                 <input id="home-quick-password" type="password" autocomplete="current-password" placeholder="Password">
               </label>
               <button class="f2w-quick-login-btn" id="home-quick-login-btn" type="button" onclick="quickHomeLogin()">Login <i class="fa-solid fa-chevron-right"></i></button>
+              <div class="f2w-quick-auth-message" id="home-quick-login-message" role="status" aria-live="polite"></div>
               <div class="f2w-quick-oauth">
                 <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span></button>
                 <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span></button>
@@ -3019,6 +3045,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
               </label>
               <div class="f2w-inline-signup-rule">A-Z and 0-9 only for usernames. Passwords need at least 6 characters.</div>
               <button class="f2w-quick-login-btn" id="home-quick-signup-btn" type="button" onclick="quickHomeSignup()">Create Account <i class="fa-solid fa-chevron-right"></i></button>
+              <div class="f2w-quick-auth-message" id="home-quick-signup-message" role="status" aria-live="polite"></div>
               <div class="f2w-quick-oauth">
                 <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign up with Google</span></button>
                 <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign up with Discord</span></button>
@@ -3338,7 +3365,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   const CHAT_API_URL = 'https://viqufxlcxwgboyxbdhjb.supabase.co/functions/v1/rapid-worker';
   const OWNER_UUID = 'f5454804-a2a6-4602-9086-51cf51f11c77';
 
-  const chatSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const chatSupabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const grid = document.getElementById('movie-grid');
 
   let currentMode = 'trending';
@@ -4050,7 +4077,15 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         show('Account created. Check your email to confirm it, then log in.');
       }
     }catch(error){
-      show(error?.message||'Could not create account.',true);
+      {
+      const raw=String(error?.message||'');
+      const friendly=/already registered|already been registered|user already registered/i.test(raw)
+        ? 'An account with that email already exists.'
+        : (/rate limit|too many requests/i.test(raw)
+          ? 'Too many attempts. Wait a moment and try again.'
+          : (raw||'Could not create account.'));
+      show(friendly,true);
+    }
     }finally{
       if(button)button.disabled=false;
       requestAnimationFrame(sizeHomeQuickAuth);
@@ -4063,35 +4098,62 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     const message=document.getElementById('home-quick-login-message');
     const button=document.getElementById('home-quick-login-btn');
 
+    const show=(text,error=false)=>{
+      if(!message)return;
+      message.textContent=text;
+      message.classList.toggle('error',error);
+      message.classList.toggle('success',!error&&Boolean(text));
+      requestAnimationFrame(sizeHomeQuickAuth);
+    };
+
     if(!email||!password){
-      if(message){
-        message.textContent='Enter your email and password.';
-        message.classList.add('error');
-      }
+      show('Enter your username/email and password.',true);
       return;
     }
 
-    if(button)button.disabled=true;
-    if(message){
-      message.textContent='Signing in…';
-      message.classList.remove('error');
+    if(button){
+      button.disabled=true;
+      button.dataset.f2wBusy='1';
+      button.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Logging in…';
     }
+    show('Logging in…');
 
     try{
-      const {error}=await window.f2wLoginIdentifier(email,password);
-      if(error)throw error;
+      const result=await window.f2wLoginIdentifier(email,password);
+      if(result?.error)throw result.error;
 
-      if(message){
-        message.textContent='Logged in.';
-        message.classList.remove('error');
-      }
+      const {data:sessionData}=await chatSupabase.auth.getSession();
+      const user=result?.data?.user||sessionData?.session?.user||null;
+      if(!user)throw new Error('The login session could not be restored.');
+
+      currentUser=user;
+      try{window.currentUser=user;}catch{}
+      refreshAccountUI();
+      show('Logged in successfully.');
+
+      window.dispatchEvent(new CustomEvent('f2w:auth-success',{
+        detail:{mode:'login',user,session:sessionData?.session||result?.data?.session||null}
+      }));
+
+      setTimeout(()=>{
+        document.querySelector('.f2w-guest-rail')?.setAttribute('hidden','');
+        document.body.classList.add('f2w-authenticated');
+      },120);
     }catch(error){
-      if(message){
-        message.textContent=error.message||'Login failed.';
-        message.classList.add('error');
-      }
+      const raw=String(error?.message||'');
+      const friendly=/invalid login credentials|invalid credentials|email or password/i.test(raw)
+        ? 'Incorrect username/email or password.'
+        : (/email not confirmed/i.test(raw)
+          ? 'Confirm your email address before logging in.'
+          : (raw||'Login failed.'));
+      show(friendly,true);
     }finally{
-      if(button)button.disabled=false;
+      if(button){
+        button.disabled=false;
+        delete button.dataset.f2wBusy;
+        button.innerHTML='Login <i class="fa-solid fa-chevron-right"></i>';
+      }
+      requestAnimationFrame(sizeHomeQuickAuth);
     }
   }
 
@@ -5030,6 +5092,7 @@ if(currentUser){
   let catalogGenreId=null;
   let catalogGenreSort='popularity.desc';
   let catalogLoading=false;
+  let catalogRequestGeneration=0;
 
   function catalogueEndpoint(tmdbPage){
     if(catalogMode==='genre'&&catalogGenreId){
@@ -5111,32 +5174,53 @@ if(currentUser){
   }
 
   async function loadCatalogPage(page=1,scrollToGrid=false){
-    if(catalogLoading)return;
+    const requestId=++catalogRequestGeneration;
+    const targetPage=Math.max(1,Number(page)||1);
 
     await ensurePublicContentOps();
+    if(requestId!==catalogRequestGeneration)return;
 
-    if(scrollToGrid){
-      scrollCatalogToTop('smooth');
-    }
+    if(scrollToGrid)scrollCatalogToTop('smooth');
 
     catalogLoading=true;
-    catalogPage=Math.max(1,Number(page)||1);
+    catalogPage=targetPage;
+
+    // Snapshot exactly what this request is supposed to load.
+    const mode=catalogMode;
+    const genreId=catalogGenreId;
+    const query=catalogQuery;
+    const genreSort=catalogGenreSort;
+
+    const endpoint=(tmdbPage)=>{
+      if(mode==='genre'&&genreId){
+        const extra=genreSort==='vote_average.desc'?'&vote_count.gte=50':'';
+        return `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&language=en-US&page=${tmdbPage}&sort_by=${encodeURIComponent(genreSort)}&include_adult=false${extra}`;
+      }
+      if(mode==='movie')return `https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}&page=${tmdbPage}`;
+      if(mode==='tv')return `https://api.themoviedb.org/3/trending/tv/day?api_key=${API_KEY}&page=${tmdbPage}`;
+      if(mode==='search')return `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${tmdbPage}&include_adult=false`;
+      return `https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&page=${tmdbPage}`;
+    };
 
     grid.innerHTML='<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:42px;">Loading titles...</p>';
 
     try{
-      const startIndex=(catalogPage-1)*CATALOG_PAGE_SIZE;
+      const startIndex=(targetPage-1)*CATALOG_PAGE_SIZE;
       const firstTmdbPage=Math.floor(startIndex/20)+1;
       const offset=startIndex%20;
       const secondTmdbPage=firstTmdbPage+1;
 
       const [r1,r2]=await Promise.all([
-        fetch(catalogueEndpoint(firstTmdbPage)),
-        fetch(catalogueEndpoint(secondTmdbPage))
+        fetch(endpoint(firstTmdbPage),{cache:'no-store'}),
+        fetch(endpoint(secondTmdbPage),{cache:'no-store'})
       ]);
 
-      const [d1,d2]=await Promise.all([r1.json(),r2.json()]);
+      const [d1,d2]=await Promise.all([
+        r1.json().catch(()=>({})),
+        r2.json().catch(()=>({}))
+      ]);
 
+      if(requestId!==catalogRequestGeneration)return;
       if(!r1.ok)throw new Error(d1?.status_message||'Could not load catalogue.');
 
       const items1=Array.isArray(d1.results)?d1.results:[];
@@ -5154,98 +5238,45 @@ if(currentUser){
       const totalResults=Number(d1.total_results||0);
       catalogTotalPages=Math.max(1,Math.ceil(totalResults/CATALOG_PAGE_SIZE));
       catalogTotalPages=Math.min(catalogTotalPages,334);
-      catalogPage=Math.min(catalogPage,catalogTotalPages);
+      catalogPage=Math.min(targetPage,catalogTotalPages);
 
       if(pageItems.length&&catalogPage===1&&!window.v19FeaturedReady){
         setupHeroBanner(pageItems[0]);
       }
+
       displayMedia(pageItems,false);
       renderCatalogPagination();
 
+      // URL mirrors the request that actually won.
       const url=new URL(window.location.href);
-      if(catalogMode==='genre'&&catalogGenreId){
-        url.searchParams.set('genre',String(catalogGenreId));
+      if(mode==='genre'&&genreId){
+        url.searchParams.set('genre',String(genreId));
+        url.searchParams.delete('search');
       }else{
         url.searchParams.delete('genre');
       }
 
-      if(catalogMode==='search'&&catalogQuery){
-        url.searchParams.set('search',catalogQuery);
-      }else{
+      if(mode==='search'&&query){
+        url.searchParams.set('search',query);
+        url.searchParams.delete('genre');
+      }else if(mode!=='search'){
         url.searchParams.delete('search');
       }
 
-      if(catalogPage>1){
-        url.searchParams.set('page',String(catalogPage));
-      }else{
-        url.searchParams.delete('page');
-      }
+      if(catalogPage>1)url.searchParams.set('page',String(catalogPage));
+      else url.searchParams.delete('page');
+
       history.replaceState(null,'',url);
 
-      if(scrollToGrid){
-        // Correct the final position after posters/pagination have re-rendered.
-        requestAnimationFrame(()=>scrollCatalogToTop('auto'));
-      }
+      if(scrollToGrid)requestAnimationFrame(()=>scrollCatalogToTop('auto'));
     }catch(error){
+      if(requestId!==catalogRequestGeneration)return;
       console.error(error);
       grid.innerHTML='<p style="color:#f87171;grid-column:1/-1;text-align:center;padding:42px;">Could not load titles right now.</p>';
       document.getElementById('catalog-pagination').innerHTML='';
     }finally{
-      catalogLoading=false;
+      if(requestId===catalogRequestGeneration)catalogLoading=false;
     }
-  }
-
-  function fetchMedia(url,title){
-    document.getElementById('section-title').textContent=title;
-
-    if(url.includes('/trending/movie/')){
-      catalogMode='movie';
-    }else if(url.includes('/trending/tv/')){
-      catalogMode='tv';
-    }else if(url.includes('/search/multi')){
-      catalogMode='search';
-      try{
-        catalogQuery=new URL(url).searchParams.get('query')||'';
-      }catch{}
-    }else{
-      catalogMode='trending';
-    }
-
-    catalogGenreId=null;
-    catalogPage=1;
-    loadCatalogPage(1,false);
-  }
-
-  function setupHeroBanner(item){
-    if(!item)return;
-
-    const type=item.media_type||(item.title?'movie':'tv');
-    const title=item.title||item.name;
-
-    if(item.backdrop_path){
-      document.getElementById('hero-banner').style.backgroundImage=
-        `url('https://image.tmdb.org/t/p/original${item.backdrop_path}')`;
-    }
-
-    document.getElementById('hero-title').textContent=title;
-    document.getElementById('hero-overview').textContent=
-      item.overview||'No description available in stream payload.';
-
-    const heroMeta=document.getElementById('hero-meta');
-    if(heroMeta){
-      const date=item.release_date||item.first_air_date||'';
-      const year=date?String(date).slice(0,4):'';
-      const typeLabel=type==='tv'?'TV Series':'Movie';
-      const score=Number(item.vote_average||0);
-      heroMeta.innerHTML=[
-        year?`<span>${year}</span>`:'',
-        `<span>${typeLabel}</span>`,
-        score?`<span>${score.toFixed(1)} / 10</span>`:''
-      ].filter(Boolean).join('');
-    }
-
-    document.getElementById('hero-link').href=
-      `/watch/?id=${item.id}&type=${type}`;
   }
 
   function displayMedia(items,append=false){
@@ -5414,15 +5445,7 @@ if(currentUser){
     url.searchParams.set('page',String(catalogPage));
     history.replaceState({f2wGenreV91:true},'',url.pathname+'?'+url.searchParams.toString());
 
-    // If an older catalogue request is finishing, wait for it to release its lock,
-    // then load the selected genre. This prevents the "genre opens Home/Trending"
-    // race that was happening after navigation.
-    let waits=0;
-    while(catalogLoading && waits<40){
-      await new Promise(resolve=>setTimeout(resolve,50));
-      waits++;
-    }
-
+    // v93: latest-request-wins loader cancels stale Trending/search renders.
     await loadCatalogPage(catalogPage,scrollToGrid);
     return true;
   }
@@ -6569,7 +6592,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=90-1788227716" defer></script>
+  <script src="/final-v35.js?v=93-1788229371" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -8192,4 +8215,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:home-genre-v91:1788228094 -->
 <!-- f2w-force-save:v91-cache:1788228094:home/index.html -->
 <!-- f2w-force-save:v92-cache:1788228465:home/index.html -->
+<!-- f2w-force-save:home-v93:1788229371 -->
+<!-- f2w-force-save:v93-cache:1788229371:home/index.html -->
  

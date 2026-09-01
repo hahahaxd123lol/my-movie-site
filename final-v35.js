@@ -34,7 +34,7 @@ function f2wDebounce(fn,wait=140){
     if(fallbackClient)return fallbackClient;
     try{
       if(window.supabase?.createClient){
-        fallbackClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+        fallbackClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
         return fallbackClient;
       }
     }catch{}

@@ -2939,8 +2939,8 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/social-v34.js" defer></script>
   <link rel="stylesheet" href="/final-v35.css?v=90-1788227716">
   <!-- Unified Watch-page header + preloaded chat -->
-  <link rel="stylesheet" href="/global-header-v1.css?v=92-1788228465">
-  <script src="/global-header-chat-v1.js?v=92-1788228465" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=93-1788229371">
+  <script src="/global-header-chat-v1.js?v=93-1788229371" defer></script>
 
 
 
@@ -4529,7 +4529,7 @@ button[onclick*="Next Source"] {
   const CHAT_API_URL = 'https://viqufxlcxwgboyxbdhjb.supabase.co/functions/v1/rapid-worker';
   const OWNER_UUID = 'f5454804-a2a6-4602-9086-51cf51f11c77';
 
-  const chatSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const chatSupabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   let currentUser = null;
   let accountMode = 'login';
   let chatAlias = '';
@@ -8232,7 +8232,7 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
 
-  <script src="/final-v35.js?v=90-1788227716" defer></script>
+  <script src="/final-v35.js?v=93-1788229371" defer></script>
 
 <style id="f2w-watch-tools-v47-css">
   .f2w-watch-toast-v47{
@@ -10073,6 +10073,113 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:watch-auth-success-v92:1788228465 */
 </script>
 
+
+<style id="f2w-watch-tv-unlock-v93">
+body.watch-authenticated #watch-login-overlay {
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+html:has(body.watch-authenticated),
+body.watch-authenticated {
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  position:static!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:100dvh!important;
+}
+
+body.watch-authenticated #flix-player-container {
+  pointer-events:auto!important;
+}
+
+body.watch-authenticated .flix-fullscreen-overlay-btn {
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+
+/* f2w-force-save:watch-tv-unlock-css-v93:1788229371 */
+</style>
+
+<script id="f2w-watch-tv-unlock-v93-js">
+(() => {
+  'use strict';
+  if(window.__f2wWatchTvUnlockV93)return;
+  window.__f2wWatchTvUnlockV93=true;
+
+  function clearLocks(){
+    try{window.f2wClearAuthLocksV93?.({closeModal:true});}catch{}
+
+    [
+      'f2w-auth-open-v60','f2w-auth-open-v56','f2w-auth-v67-open'
+    ].forEach(cls=>{
+      document.documentElement.classList.remove(cls);
+      document.body.classList.remove(cls);
+    });
+
+    ['position','top','left','right','width','height','overflow']
+      .forEach(prop=>document.body.style.removeProperty(prop));
+    document.documentElement.style.removeProperty('overflow');
+  }
+
+  async function unlock(){
+    let session=null;
+    try{
+      const {data}=await chatSupabase.auth.getSession();
+      session=data?.session||null;
+    }catch{}
+
+    if(!session?.user)return false;
+
+    window.currentUser=session.user;
+    currentUser=session.user;
+
+    setWatchPlaybackAccess(true);
+    clearLocks();
+
+    const overlay=document.getElementById('watch-login-overlay');
+    if(overlay){
+      overlay.hidden=true;
+      overlay.style.display='none';
+      overlay.setAttribute('aria-hidden','true');
+    }
+
+    const fs=document.getElementById('flix-fullscreen-overlay-btn');
+    if(fs){
+      fs.tabIndex=0;
+      fs.setAttribute('role','button');
+      fs.setAttribute('aria-label','Fullscreen player');
+    }
+
+    // Do not force a duplicate src assignment; loadPlayer already has a same-src guard.
+    if(mediaId){
+      try{loadPlayer();}catch{}
+    }
+    return true;
+  }
+
+  window.addEventListener('f2w:auth-success',()=>setTimeout(unlock,0));
+  window.addEventListener('f2w:auth-session-ready',()=>setTimeout(unlock,0));
+  window.addEventListener('pageshow',()=>setTimeout(unlock,0),{passive:true});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible')setTimeout(unlock,0);
+  },{passive:true});
+
+  setTimeout(unlock,0);
+})();
+/* f2w-force-save:watch-tv-unlock-js-v93:1788229371 */
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
@@ -10165,4 +10272,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v91-cache:1788228094:watch/index.html -->
 <!-- f2w-force-save:watch-auth-v92:1788228465 -->
 <!-- f2w-force-save:v92-cache:1788228465:watch/index.html -->
+<!-- f2w-force-save:watch-tv-v93:1788229371 -->
+<!-- f2w-force-save:v93-cache:1788229371:watch/index.html -->
  
