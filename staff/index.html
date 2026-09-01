@@ -799,7 +799,7 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=120-1788297036">
+  <link rel="stylesheet" href="/final-v35.css?v=121-1788297958">
 
 <style id="staff-v36-support-tickets">
   #panel-support .card{overflow:hidden}
@@ -819,9 +819,9 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=120-1788297036">
+  <link rel="stylesheet" href="/global-header-v1.css?v=121-1788297958">
   <script src="/seo-v17.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=120-1788297036" defer></script>
+  <script src="/global-header-chat-v1.js?v=121-1788297958" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -874,6 +874,63 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   color:#9fb0c4!important;
 }
 /* f2w-force-save:staff-settings-status-v120:1788297036 */
+</style>
+
+
+<style id="f2w-realtime-enforcement-v121-css">
+.staff-switch{
+  display:inline-block!important;
+  position:relative!important;
+  width:48px!important;
+  height:26px!important;
+  min-width:48px!important;
+  cursor:pointer!important;
+}
+.staff-switch input{
+  position:absolute!important;
+  opacity:0!important;
+  width:1px!important;
+  height:1px!important;
+  pointer-events:none!important;
+}
+.staff-switch > span{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  border-radius:999px!important;
+  background:#1c2938!important;
+  border:1px solid #344961!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)!important;
+  transition:.16s ease!important;
+}
+.staff-switch > span::before{
+  content:""!important;
+  position:absolute!important;
+  width:18px!important;
+  height:18px!important;
+  left:3px!important;
+  top:3px!important;
+  border-radius:50%!important;
+  background:#9aa9bb!important;
+  transition:.16s ease!important;
+}
+.staff-switch input:checked + span{
+  background:rgba(229,9,20,.30)!important;
+  border-color:#e50914!important;
+  box-shadow:0 0 18px rgba(229,9,20,.18)!important;
+}
+.staff-switch input:checked + span::before{
+  transform:translateX(22px)!important;
+  background:#fff!important;
+}
+.staff-switch input:disabled + span{
+  opacity:.38!important;
+  cursor:not-allowed!important;
+}
+.instant-row:has(.staff-switch input:not(:disabled)){
+  border-color:#2c4158!important;
+}
+/* f2w-force-save:realtime-enforcement-css-v121:1788297958 */
 </style>
 
 </head>
@@ -1144,10 +1201,10 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div class="card moderation-action-card">
             <div class="card-head"><strong>Instant restrictions</strong><span>Realtime / autosave</span></div>
             <div class="instant-controls">
-              <div class="instant-row"><div class="instant-copy"><strong>Public chat ban</strong><span>Blocks public chat sending only.</span></div><label class="staff-switch"><input id="quick-public-chat-ban" type="checkbox" data-action="public-chat-ban" onchange="applyInstantRestriction(this)"></label></div>
-              <div class="instant-row"><div class="instant-copy"><strong>Chat mute</strong><span>Temporarily stops chat messages.</span></div><label class="staff-switch"><input id="quick-chat-mute" type="checkbox" data-action="chat-mute" onchange="applyInstantRestriction(this)"></label></div>
-              <div class="instant-row danger"><div class="instant-copy"><strong>Site suspension</strong><span>Locks the website immediately while the user remains signed in.</span></div><label class="staff-switch"><input id="quick-site-suspension" type="checkbox" data-action="site-suspension" onchange="applyInstantRestriction(this)"></label></div>
-              <div class="instant-row danger"><div class="instant-copy"><strong>Account login ban</strong><span>Signs the account out and blocks future password login.</span></div><label class="staff-switch"><input id="quick-account-ban" type="checkbox" data-action="account-ban" onchange="applyInstantRestriction(this)"></label></div>
+              <div class="instant-row"><div class="instant-copy"><strong>Public chat ban</strong><span>Blocks public chat sending only.</span></div><label class="staff-switch"><input id="quick-public-chat-ban" type="checkbox" data-action="public-chat-ban" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
+              <div class="instant-row"><div class="instant-copy"><strong>Chat mute</strong><span>Temporarily stops chat messages.</span></div><label class="staff-switch"><input id="quick-chat-mute" type="checkbox" data-action="chat-mute" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
+              <div class="instant-row danger"><div class="instant-copy"><strong>Site suspension</strong><span>Locks the website immediately while the user remains signed in.</span></div><label class="staff-switch"><input id="quick-site-suspension" type="checkbox" data-action="site-suspension" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
+              <div class="instant-row danger"><div class="instant-copy"><strong>Account login ban</strong><span>Signs the account out and blocks future password login.</span></div><label class="staff-switch"><input id="quick-account-ban" type="checkbox" data-action="account-ban" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
             </div>
             <div class="moderation-meta"><div class="field"><label>REASON SHOWN TO USER / AUDIT</label><input id="quick-restriction-reason" maxlength="500" placeholder="Optional reason"></div><div class="field"><label>EXPIRY</label><select id="quick-restriction-expiry"><option value="0">No expiry</option><option value="10">10 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option></select></div></div>
             <div class="moderation-status" id="moderation-status"><strong>No account selected.</strong> Search a username to load live restriction state.</div>
@@ -1739,49 +1796,72 @@ function clearModerationTarget(){
 }
 async function loadQuickModerationState(){
   const userId=currentSnapshot?.profile?.user_id;
-  if(!userId){setQuickControlsEnabled(false);return}
-  const role=staffContext?.role;
+  if(!userId){
+    setQuickControlsEnabled(false);
+    return;
+  }
+
+  const role=String(staffContext?.role||'');
   const canModerate=['owner','staff','moderator'].includes(role);
   const canFullSite=['owner','staff'].includes(role);
 
-  // Always populate the controls from the existing Staff snapshot first.
-  // This keeps the Staff page usable on databases that pre-date the V35
-  // quick-moderation helper RPC instead of disabling every switch.
+  const controls={
+    publicChat:document.getElementById('quick-public-chat-ban'),
+    mute:document.getElementById('quick-chat-mute'),
+    site:document.getElementById('quick-site-suspension'),
+    account:document.getElementById('quick-account-ban')
+  };
+
   const snapshotBan=currentSnapshot?.ban;
   const snapshotMute=currentSnapshot?.mute;
-  const banActive=Boolean(snapshotBan && (!snapshotBan.expires_at || new Date(snapshotBan.expires_at).getTime()>Date.now()));
-  const muteActive=Boolean(snapshotMute && (!snapshotMute.expires_at || new Date(snapshotMute.expires_at).getTime()>Date.now()));
+  const now=Date.now();
+  const banActive=Boolean(snapshotBan && (!snapshotBan.expires_at || new Date(snapshotBan.expires_at).getTime()>now));
+  const muteActive=Boolean(snapshotMute && (!snapshotMute.expires_at || new Date(snapshotMute.expires_at).getTime()>now));
 
-  document.getElementById('quick-site-suspension').checked=banActive;
-  document.getElementById('quick-chat-mute').checked=muteActive;
-  document.getElementById('quick-public-chat-ban').checked=false;
-  document.getElementById('quick-account-ban').checked=false;
+  if(controls.publicChat)controls.publicChat.checked=false;
+  if(controls.mute)controls.mute.checked=muteActive;
+  if(controls.site)controls.site.checked=banActive;
+  if(controls.account)controls.account.checked=banActive;
 
-  document.getElementById('quick-public-chat-ban').disabled=!canModerate;
-  document.getElementById('quick-chat-mute').disabled=!canModerate;
-  document.getElementById('quick-site-suspension').disabled=!canFullSite;
-  document.getElementById('quick-account-ban').disabled=!canFullSite;
+  if(controls.publicChat)controls.publicChat.disabled=!canModerate;
+  if(controls.mute)controls.mute.disabled=!canModerate;
+  if(controls.site)controls.site.disabled=!canFullSite;
+  if(controls.account)controls.account.disabled=!canFullSite;
 
   const p=currentSnapshot.profile;
-  document.getElementById('moderation-target-profile').innerHTML=`<div class="target-profile"><img class="target-avatar" src="${esc(p.avatar_url||'/android-chrome-192x192-v16.png')}" alt=""><div class="target-profile-copy"><strong>@${esc(p.username)}</strong><span>${esc(p.display_name||'No display name')} · ${esc(currentSnapshot.role||'member')}</span></div></div>`;
+  const target=document.getElementById('moderation-target-profile');
+  if(target){
+    target.innerHTML=`<div class="target-profile"><img class="target-avatar" src="${esc(p.avatar_url||'/android-chrome-192x192-v16.png')}" alt=""><div class="target-profile-copy"><strong>@${esc(p.username)}</strong><span>${esc(p.display_name||'No display name')} · ${esc(currentSnapshot.role||'member')}</span></div></div>`;
+  }
+
+  const status=document.getElementById('moderation-status');
 
   try{
     const state=await rpc('staff_get_quick_moderation',{p_user_id:userId});
-    document.getElementById('quick-public-chat-ban').checked=Boolean(state?.public_chat_banned);
-    document.getElementById('quick-chat-mute').checked=Boolean(state?.muted);
-    document.getElementById('quick-site-suspension').checked=Boolean(state?.site_suspended);
-    document.getElementById('quick-account-ban').checked=Boolean(state?.account_banned);
-    document.getElementById('moderation-status').innerHTML=`<strong>Live state loaded.</strong> Switches write instantly. Account events are delivered through Supabase Realtime when the site guard is connected.`;
+
+    if(controls.publicChat)controls.publicChat.checked=Boolean(state?.public_chat_banned);
+    if(controls.mute)controls.mute.checked=Boolean(state?.muted);
+    if(controls.site)controls.site.checked=Boolean(state?.site_suspended);
+    if(controls.account)controls.account.checked=Boolean(state?.account_banned);
+
+    if(status){
+      status.innerHTML='<strong>Live state loaded.</strong> Use the switches above; changes apply instantly and autosave.';
+    }
   }catch(e){
-    // Older DBs may not have staff_get_quick_moderation yet. Do not break the
-    // Staff page: site suspension and mute state come from the existing snapshot.
-    const missingHelper=/staff_get_quick_moderation|schema cache|Could not find the function/i.test(String(e?.message||''));
-    if(missingHelper){
-      document.getElementById('moderation-status').innerHTML=`<strong>Ready.</strong> Existing moderation state loaded. Actions autosave immediately.`;
-    }else{
-      document.getElementById('moderation-status').innerHTML=`<strong>Live state partially loaded.</strong> ${esc(e.message)}`;
+    const missing=/staff_get_quick_moderation|schema cache|Could not find the function/i.test(String(e?.message||''));
+
+    if(status){
+      status.innerHTML=missing
+        ? '<strong>Base state loaded.</strong> Run <code>realtime-account-enforcement-v121.sql</code> to enable the full four-switch live-state helper.'
+        : `<strong>Live state partially loaded.</strong> ${esc(e?.message||'Unknown error')}`;
     }
   }
+
+  // Re-assert permissions after the async state request.
+  if(controls.publicChat)controls.publicChat.disabled=!canModerate;
+  if(controls.mute)controls.mute.disabled=!canModerate;
+  if(controls.site)controls.site.disabled=!canFullSite;
+  if(controls.account)controls.account.disabled=!canFullSite;
 }
 async function applyInstantRestriction(input){
   const userId=currentSnapshot?.profile?.user_id;
@@ -2012,15 +2092,43 @@ async function updateReport(id,status){
 }
 
 async function inspectUser(){
-  const username=document.getElementById('user-target').value.trim();
+  const username=document.getElementById('user-target')?.value.trim();
   if(!username)return;
+
+  const sync=document.getElementById('moderation-sync-label');
+  const status=document.getElementById('moderation-status');
+  if(sync)sync.textContent='Loading account…';
+  if(status)status.innerHTML='<strong>Loading live state…</strong> Reading current restrictions for this account.';
+  setQuickControlsEnabled(false);
+
   try{
     currentSnapshot=await rpc('get_staff_user_snapshot',{p_username:username});
-    if(!currentSnapshot){document.getElementById('user-snapshot').innerHTML='<div class="notice">User not found.</div>';return}
+
+    if(!currentSnapshot?.profile?.user_id){
+      currentSnapshot=null;
+      document.getElementById('moderation-target-profile').innerHTML='';
+      document.getElementById('user-snapshot').innerHTML='<div class="notice">User not found.</div>';
+      if(status)status.innerHTML='<strong>User not found.</strong> Check the username and try again.';
+      if(sync)sync.textContent='No target';
+      return;
+    }
+
     renderUserSnapshot();
     await loadQuickModerationState();
-    if(staffContext.role==='owner')await renderPermissions();
-  }catch(e){toast(e.message)}
+
+    if(staffContext.role==='owner'){
+      await renderPermissions();
+    }
+
+    if(sync)sync.textContent='Realtime / autosave';
+  }catch(e){
+    console.error('Account enforcement load failed:',e);
+    currentSnapshot=null;
+    setQuickControlsEnabled(false);
+    if(status)status.innerHTML=`<strong>Could not load account state.</strong> ${esc(e?.message||'Unknown error')}`;
+    if(sync)sync.textContent='Load failed';
+    toast(e?.message||'Could not load account');
+  }
 }
 function renderUserSnapshot(){
   const s=currentSnapshot,p=s.profile;
@@ -2704,7 +2812,7 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js?v=120-1788297036" defer>
+  <script src="/final-v35.js?v=121-1788297958" defer>
 document.getElementById('staff-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='staff-ticket-modal')closeStaffTicketModal()});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('staff-ticket-modal')?.hidden)closeStaffTicketModal()});
 document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendStaffTicketReply()}});
@@ -4478,4 +4586,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v119-cache:1788296897:staff/index.html -->
 <!-- f2w-force-save:staff-null-fix-v120:1788297036 -->
 <!-- f2w-force-save:v120-cache:1788297036:staff/index.html -->
+<!-- f2w-force-save:realtime-enforcement-v121:1788297958 -->
+<!-- f2w-force-save:v121-cache:1788297958:staff/index.html -->
  
