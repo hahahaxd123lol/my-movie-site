@@ -2195,3 +2195,26 @@ body.f2w-auth-open-v60 {
 
 /* f2w-force-save:auth-modal-lock-css-v60:1788221799 */
  
+
+/* ============================================================
+   F2W v62 — NORMAL SEARCH/TEXT INPUTS
+   ============================================================ */
+body.f2w-main-page input[type="search"]:not(#account-modal input),
+body.f2w-main-page .user-search-container input,
+body.f2w-main-page .movie-search-container input,
+body.f2w-main-page .forum-search input {
+  -webkit-text-security:none!important;
+  appearance:none!important;
+}
+
+body.f2w-main-page input[type="search"]::-webkit-credentials-auto-fill-button,
+body.f2w-main-page input[type="search"]::-webkit-contacts-auto-fill-button {
+  visibility:hidden!important;
+  display:none!important;
+  pointer-events:none!important;
+  position:absolute!important;
+  right:0!important;
+}
+
+/* f2w-force-save:text-input-css-v62:1788221977 */
+ 

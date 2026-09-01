@@ -943,4 +943,66 @@
 // f2w-force-save:sw-v58-register:1788221340
 // f2w-force-save:user-search-role-hook-v59:1788221542
 // f2w-force-save:auth-modal-lock-register-v60:1788221799
+
+/* ============================================================
+   F2W v62 — NORMAL TEXT INPUTS / NO PASSWORD-MANAGER MISCLASSIFICATION
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wTextInputGuardV62)return;
+  window.__f2wTextInputGuardV62=true;
+
+  const NON_AUTH_SELECTORS = [
+    '#movie-search',
+    '#user-search',
+    '#forum-search',
+    '#forum-search-input',
+    '#v35-dm-user-search',
+    '.movie-search-container input',
+    '.user-search-container input',
+    '.forum-search input',
+    'input[data-f2w-search]',
+    'input[type="search"]'
+  ].join(',');
+
+  function harden(input){
+    if(!input || input.closest?.('#account-modal'))return;
+    if(input.matches?.('input[type="password"],input[type="email"]'))return;
+
+    // These are ordinary search/text fields, not credentials.
+    input.type = 'search';
+    input.autocomplete = 'off';
+    input.setAttribute('autocapitalize','none');
+    input.setAttribute('spellcheck','false');
+    input.setAttribute('data-lpignore','true');
+    input.setAttribute('data-1p-ignore','true');
+    input.setAttribute('data-bwignore','true');
+    input.setAttribute('data-form-type','other');
+    input.setAttribute('aria-autocomplete', input.id==='user-search' ? 'list' : 'none');
+
+    // Remove credential-ish names that trigger browser password managers.
+    const name=String(input.getAttribute('name')||'').toLowerCase();
+    if(/user|email|login|pass|account/.test(name)){
+      input.setAttribute('name',`f2w_search_${input.id||'field'}`);
+    }
+  }
+
+  function hardenAll(){
+    document.querySelectorAll(NON_AUTH_SELECTORS).forEach(harden);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',hardenAll,{once:true});
+  } else {
+    hardenAll();
+  }
+
+  new MutationObserver(hardenAll).observe(document.documentElement,{childList:true,subtree:true});
+
+  document.addEventListener('focusin',e=>{
+    const input=e.target.closest?.(NON_AUTH_SELECTORS);
+    if(input)harden(input);
+  },true);
+})();
+// f2w-force-save:text-input-guard-v62:1788221977
  
