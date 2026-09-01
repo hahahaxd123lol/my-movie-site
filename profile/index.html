@@ -3326,11 +3326,11 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=110-1788290464">
+  <link rel="stylesheet" href="/final-v35.css?v=112-1788290771">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
-  <script src="/global-header-chat-v1.js?v=111-1788290601" defer></script>
+  <script src="/global-header-chat-v1.js?v=112-1788290771" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -3677,6 +3677,50 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 }
 
 /* f2w-force-save:profile-role-visual-authority-v110:1788290464 */
+</style>
+
+
+<style id="f2w-profile-particles-v112">
+#profile-hero .profile-name-row,
+#profile-hero .profile-name-row > *,
+#profile-hero .profile-copy,
+#profile-hero .profile-copy > *{
+  overflow:visible!important;
+}
+#profile-name.f2w-role-name{
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  color:var(--f2w-profile-role-color,#fff)!important;
+  -webkit-text-fill-color:var(--f2w-profile-role-color,#fff)!important;
+}
+#profile-name.f2w-role-name::before{
+  content:""!important;
+  position:absolute!important;
+  left:-.42em!important;
+  right:-.42em!important;
+  top:-.34em!important;
+  bottom:-.34em!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  background-image:url("https://i.ibb.co/HC3GW9B/Particles.gif")!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:100% 100%!important;
+  filter:grayscale(1) saturate(0) brightness(5.4) contrast(1.45)!important;
+  mix-blend-mode:screen!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+#profile-name.f2w-role-name::after{
+  content:none!important;
+  display:none!important;
+}
+/* f2w-force-save:profile-particles-v112 */
 </style>
 
 </head>
@@ -8477,7 +8521,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=110-1788290464" defer></script>
+  <script src="/final-v35.js?v=112-1788290771" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10094,4 +10138,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:profile-role-v110:1788290464 -->
 <!-- f2w-force-save:v110-cache:1788290464:profile/index.html -->
 <!-- f2w-force-save:v111-cache:1788290601:profile/index.html -->
+<!-- f2w-force-save:v112-cache:1788290771:profile/index.html -->
+<!-- f2w-force-save:profile-particles-v112 -->
  

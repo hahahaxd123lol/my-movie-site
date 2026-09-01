@@ -2733,4 +2733,61 @@ body.f2w-main-page > header .user-search-name.f2w-role-name::after {
   -webkit-text-fill-color:var(--f2w-profile-role-color,var(--f2w-role-color,#fff))!important;
 }
 /* f2w-force-save:profile-role-fallback-v110:1788290464 */
+
+/* ============================================================
+   F2W v112 — AUTOCOMPLETE ROLE DISPLAY-NAME EFFECT
+   ============================================================ */
+.user-search-result .user-search-name.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  color:var(--f2w-role-color,#fff)!important;
+  -webkit-text-fill-color:var(--f2w-role-color,#fff)!important;
+  background:none!important;
+  background-image:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+.user-search-result .user-search-name.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  inset:-.20em -.28em!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  background-image:url("https://i.ibb.co/HC3GW9B/Particles.gif")!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:100% 100%!important;
+  filter:grayscale(1) saturate(0) brightness(5.2) contrast(1.4)!important;
+  mix-blend-mode:screen!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+.user-search-result .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* @username stays plain, always. */
+.user-search-result .user-search-sub {
+  color:#8ea2b8!important;
+  -webkit-text-fill-color:#8ea2b8!important;
+  background:none!important;
+  background-image:none!important;
+}
+
+.user-search-result .user-search-sub::before,
+.user-search-result .user-search-sub::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* f2w-force-save:autocomplete-role-css-v112:1788290771 */
+
  

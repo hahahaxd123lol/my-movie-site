@@ -992,6 +992,8 @@
         </button>`;
       }).join('');
 
+      try{window.f2wDecorateAutocompleteRolesV112?.(results);}catch{}
+
       results.querySelectorAll('.user-search-result').forEach(button=>{
         button.addEventListener('pointerdown',e=>{
           e.preventDefault();
@@ -2304,4 +2306,136 @@ window.f2wOpenGuestDmAuthV98=function(mode){
 // f2w-force-save:user-search-route-v106:1788289648
 // f2w-force-save:movie-search-sitewide-v107:1788289786
 // f2w-force-save:movie-search-route-v111:1788290601
+
+/* ============================================================
+   F2W v112 — USER AUTOCOMPLETE ROLE COLOR / WHITE PARTICLES
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wAutocompleteRoleV112)return;
+  window.__f2wAutocompleteRoleV112=true;
+
+  const OWNER_ID='f5454804-a2a6-4602-9086-51cf51f11c77';
+  const ROLE_ORDER=['owner','staff','moderator','support','developer','verified','contributor','curator'];
+  const ROLE_COLORS={
+    owner:'#ff2638',
+    staff:'#c05cff',
+    moderator:'#62b4ff',
+    support:'#32c8ff',
+    developer:'#31d9ad',
+    verified:'#579dff',
+    contributor:'#ffc13d',
+    curator:'#ff6be1'
+  };
+
+  const cache=new Map();
+
+  function client(){
+    try{if(window.chatSupabase?.rpc)return window.chatSupabase;}catch{}
+    try{if(window.f2wSupabase?.rpc)return window.f2wSupabase;}catch{}
+    try{if(window.supabaseClient?.rpc)return window.supabaseClient;}catch{}
+    return null;
+  }
+
+  function validRole(value){
+    value=String(value||'').toLowerCase();
+    return ROLE_ORDER.includes(value)?value:'';
+  }
+
+  function paint(nameEl,role){
+    role=validRole(role);
+    if(!nameEl||!role)return;
+
+    ROLE_ORDER.forEach(r=>nameEl.classList.remove(`f2w-role-${r}`));
+    nameEl.classList.remove('f2w-no-role-name');
+    nameEl.classList.add('f2w-role-name',`f2w-role-${role}`);
+    nameEl.dataset.f2wRole=role;
+    nameEl.dataset.f2wRoleDecorated='1';
+    const color=ROLE_COLORS[role];
+    nameEl.style.setProperty('--f2w-role-color',color);
+    nameEl.style.setProperty('color',color,'important');
+    nameEl.style.setProperty('-webkit-text-fill-color',color,'important');
+  }
+
+  async function resolveRole(username){
+    const key=String(username||'').trim().toLowerCase();
+    if(!key)return '';
+    if(cache.has(key))return cache.get(key);
+
+    if(key==='josh'){
+      cache.set(key,'owner');
+      return 'owner';
+    }
+
+    const c=client();
+    if(!c)return '';
+
+    try{
+      const {data,error}=await c.rpc('get_public_name_effects',{p_usernames:[username]});
+      if(!error && Array.isArray(data)){
+        const row=data.find(item=>String(item?.username||'').toLowerCase()===key)||data[0];
+        const role=validRole(row?.top_role||row?.role_key||row?.role);
+        if(role){
+          cache.set(key,role);
+          return role;
+        }
+      }
+    }catch{}
+
+    try{
+      const {data,error}=await c.rpc('get_public_profile_role',{p_username:username});
+      if(!error){
+        const row=Array.isArray(data)?data[0]:data;
+        const role=validRole(row?.top_role||row?.role_key||row?.role||row);
+        if(role){
+          cache.set(key,role);
+          return role;
+        }
+      }
+    }catch{}
+
+    cache.set(key,'');
+    return '';
+  }
+
+  async function decorateAutocomplete(root=document){
+    const rows=[...root.querySelectorAll?.('.user-search-result')||[]];
+    await Promise.all(rows.map(async row=>{
+      const username=String(row.dataset.username||'').trim();
+      const name=row.querySelector('.user-search-name');
+      if(!username||!name)return;
+
+      const cached=cache.get(username.toLowerCase());
+      if(cached){
+        paint(name,cached);
+        return;
+      }
+
+      const role=await resolveRole(username);
+      if(role)paint(name,role);
+    }));
+  }
+
+  window.f2wDecorateAutocompleteRolesV112=decorateAutocomplete;
+
+  const observer=new MutationObserver(mutations=>{
+    for(const m of mutations){
+      for(const node of m.addedNodes){
+        if(!(node instanceof Element))continue;
+        if(node.matches?.('.user-search-result') || node.querySelector?.('.user-search-result')){
+          decorateAutocomplete(node.parentElement||document);
+        }
+      }
+    }
+  });
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{
+      observer.observe(document.documentElement,{childList:true,subtree:true});
+    },{once:true});
+  }else{
+    observer.observe(document.documentElement,{childList:true,subtree:true});
+  }
+})();
+// f2w-force-save:autocomplete-role-v112:1788290771
  
