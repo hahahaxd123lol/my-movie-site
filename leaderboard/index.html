@@ -581,73 +581,105 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 <section class="stats"><div class="stat"><span>Registered players</span><strong id="count">—</strong></div><div class="stat"><span>Online now</span><strong id="online">—</strong></div><div class="stat"><span>Combined watch time</span><strong id="watch">—</strong></div><div class="stat"><span>Current page</span><strong id="pageStat">1 / 1</strong></div></section>
 <section class="podium" id="podium"></section>
 <div class="toolbar"><div class="tabs" id="tabs"><button class="tab active" data-sort="overall"><i class="fa-solid fa-fire"></i> Overall</button><button class="tab" data-sort="titles">Titles Watched</button><button class="tab" data-sort="watch">Watch Time</button><button class="tab" data-sort="ratings">Ratings</button><button class="tab" data-sort="achievements">Achievements</button></div><div class="status-note" id="updated">Connecting to realtime…</div></div>
-<section class="rank-list" id="list"></section></main>
+<section class="rank-list" id="list"></section><div class="pager" id="pager" aria-label="Leaderboard pages"></div>
+</main>
 <script>
 (()=>{'use strict';const URL='https://viqufxlcxwgboyxbdhjb.supabase.co',KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge',LOGO='/flix2watch-logo-red-v34.png';const db=window.supabase.createClient(URL,KEY);let page=1,sort='overall',busy=false;const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const fmt=n=>Intl.NumberFormat().format(Number(n||0));const time=m=>{m=Number(m||0);if(m<60)return `${fmt(m)}m`;const h=Math.floor(m/60);return h<1000?`${fmt(h)}h ${m%60}m`:`${fmt(h)}h`};const role=r=>r?`<span class="role">${esc(r)}</span>`:'';const profile=u=>location.href='/profile/?user='+encodeURIComponent(u);
 function pod(r,place){if(!r)return '';return `<article class="podium-card ${place===1?'first':''}" data-user="${esc(r.username)}"><div class="pod-rank">#${place}</div>${place===1?'<div class="crown"><i class="fa-solid fa-crown"></i></div>':''}<div class="avatar-wrap"><img class="avatar" src="${esc(r.avatar_url||LOGO)}" onerror="this.src='${LOGO}'"><i class="presence ${r.online?'on':''}"></i></div><h3>${esc(r.display_name||r.username)}</h3><div class="handle">@${esc(r.username)}</div>${role(r.top_role)}<div class="score">${fmt(r.score)} XP</div></article>`}
 function row(r){return `<article class="rank-row"><div class="rank-no">#${fmt(r.rank_no)}</div><div class="user" data-user="${esc(r.username)}"><img src="${esc(r.avatar_url||LOGO)}" onerror="this.src='${LOGO}'"><div class="user-copy"><strong>${esc(r.display_name||r.username)} ${r.online?'<i class="fa-solid fa-circle" style="font-size:7px;color:#28e78d"></i>':''}</strong><small>@${esc(r.username)} ${r.top_role?'· '+esc(r.top_role):''}</small></div></div><div class="metric"><b>${fmt(r.titles_watched)}</b><span>Titles</span></div><div class="metric hide-md"><b>${time(r.watch_minutes)}</b><span>Watch time</span></div><div class="metric hide-md"><b>${fmt(r.ratings_count)}</b><span>Ratings</span></div><div class="metric"><b>${fmt(r.achievements)}</b><span>Badges</span></div><div class="row-score">${fmt(r.score)} XP</div><div class="chev"><i class="fa-solid fa-chevron-right"></i></div></article>`}
 function bindProfiles(){document.querySelectorAll('[data-user]').forEach(x=>x.onclick=()=>profile(x.dataset.user))}
-function pager(total){const pages=Math.max(1,Math.ceil(total/25));$('#pageStat').textContent=`${page} / ${pages}`;let h=`<button class="pagebtn" data-p="${page-1}" ${page===1?'disabled':''}><i class="fa-solid fa-chevron-left"></i></button>`;for(let p=Math.max(1,page-2);p<=Math.min(pages,page+2);p++)h+=`<button class="pagebtn ${p===page?'active':''}" data-p="${p}">${p}</button>`;h+=`<button class="pagebtn" data-p="${page+1}" ${page===pages?'disabled':''}><i class="fa-solid fa-chevron-right"></i></button>`;$('#pager').innerHTML=h;$('#pager').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{page=+b.dataset.p;load()})}
-async function loadStats(){try{const {data,error}=await db.rpc('get_public_leaderboard_stats');if(error)throw error;const r=Array.isArray(data)?data[0]:data;if(!r)return;$('#count').textContent=fmt(r.registered_players);$('#online').textContent=fmt(r.online_now);$('#watch').textContent=time(r.combined_watch_minutes);}catch(e){console.warn('Leaderboard stats unavailable:',e?.message||e)}}
-async function load(){if(busy)return;busy=true;$('#updated').textContent='Refreshing live rankings…';try{const [{data,error}]=await Promise.all([db.rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:sort}),loadStats()]);if(error)throw error;const rows=data||[],total=Number(rows[0]?.total_count||0);$('#list').innerHTML=rows.map(row).join('')||'<div class="empty">No ranked profiles yet.</div>';pager(total);bindProfiles();if(page===1){const top=rows.slice(0,3);$('#podium').innerHTML=pod(top[1],2)+pod(top[0],1)+pod(top[2],3);bindProfiles()}$('#updated').textContent='Live · updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}catch(e){$('#list').innerHTML=`<div class="empty error"><b>Leaderboard backend needs one quick update.</b><br><br>${esc(e.message)}<br><br>Run <b>realtime-profile-leaderboard-v17.sql</b> in Supabase SQL Editor, then refresh this page.</div>`;$('#podium').innerHTML='';$('#updated').textContent='Backend update required';}finally{busy=false}}
-$('#tabs').onclick=e=>{const b=e.target.closest('[data-sort]');if(!b)return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));sort=b.dataset.sort;page=1;load()};
-const themes=['theme-red','theme-blue','theme-green','theme-purple','theme-cyan','theme-pink','theme-orange','theme-gold','theme-amber','theme-matrix','theme-ice','theme-midnight'];let currentTheme=localStorage.getItem('flix2watch-theme')||'theme-red';document.body.classList.add(currentTheme);
-window.setTheme=(name,cls)=>{document.body.classList.remove(...themes);document.body.classList.add(cls);currentTheme=cls;localStorage.setItem('flix2watch-theme',cls);const m=document.getElementById('theme-menu');if(m){m.hidden=true;m.setAttribute('aria-hidden','true')}};
-window.toggleDropdown=id=>{const m=document.getElementById(id);if(!m)return;m.hidden=!m.hidden;m.setAttribute('aria-hidden',m.hidden?'true':'false')};
-window.toggleF2WGenreMenu=e=>{e?.stopPropagation();const m=document.getElementById('f2w-genre-menu');if(m)m.classList.toggle('open')};
-window.toggleF2WMobileMenu=()=>document.querySelector('.header-tools')?.classList.toggle('mobile-open');
-window.v18HeaderMovieSearch=v=>{};window.protectMovieSearchField=el=>{if(el.readOnly){el.readOnly=false;setTimeout(()=>el.focus(),0)}};window.protectUserSearchField=el=>{if(el.readOnly){el.readOnly=false;setTimeout(()=>el.focus(),0)}};
-window.submitUserDirectorySearch=()=>{const el=document.getElementById('user-search');const q=el?.value.trim().replace(/^@/,'');if(q)location.href='/profile/?user='+encodeURIComponent(q)};
-window.handleUserSearchInput=()=>{};
-window.openChat=()=>{
-  const shell=document.getElementById('f2w-shared-chat-shell');
-  const frame=document.getElementById('f2w-shared-chat-frame');
-  if(!shell||!frame)return;
-  shell.classList.add('open');
-  shell.setAttribute('aria-hidden','false');
+function pager(total){
+  const pages=Math.max(1,Math.ceil(total/25));
+  const pageStat=$('#pageStat');
+  if(pageStat)pageStat.textContent=`${page} / ${pages}`;
 
-  const boot=()=>{
-    let attempts=0;
-    const timer=setInterval(()=>{
-      attempts++;
-      try{
-        const w=frame.contentWindow,d=frame.contentDocument;
-        if(!w||!d)return;
-        if(typeof w.openChat!=='function'){if(attempts>120)clearInterval(timer);return;}
-        clearInterval(timer);
+  const host=$('#pager');
+  if(!host)return;
 
-        // The iframe is same-origin, so use the site's real chat implementation
-        // and hide the surrounding Home page rather than recreating chat here.
-        let st=d.getElementById('f2w-leaderboard-chat-bridge-style');
-        if(!st){
-          st=d.createElement('style');
-          st.id='f2w-leaderboard-chat-bridge-style';
-          st.textContent=`html,body{background:transparent!important;overflow:hidden!important} body>*:not(#chat-modal):not(script):not(style){display:none!important} #chat-modal{z-index:2147483647!important}`;
-          (d.head||d.documentElement).appendChild(st);
-        }
+  let h=`<button class="pagebtn" data-p="${page-1}" ${page===1?'disabled':''}><i class="fa-solid fa-chevron-left"></i></button>`;
+  for(let p=Math.max(1,page-2);p<=Math.min(pages,page+2);p++){
+    h+=`<button class="pagebtn ${p===page?'active':''}" data-p="${p}">${p}</button>`;
+  }
+  h+=`<button class="pagebtn" data-p="${page+1}" ${page===pages?'disabled':''}><i class="fa-solid fa-chevron-right"></i></button>`;
+  host.innerHTML=h;
+  host.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{
+    page=+b.dataset.p;
+    load();
+  });
+}
 
-        const originalClose=w.closeChat;
-        if(!w.__f2wLeaderboardChatCloseWrapped){
-          w.__f2wLeaderboardChatCloseWrapped=true;
-          w.closeChat=function(){
-            try{if(typeof originalClose==='function')originalClose.call(w)}catch{}
-            shell.classList.remove('open');
-            shell.setAttribute('aria-hidden','true');
-          };
-        }
-        w.openChat();
-      }catch(err){
-        clearInterval(timer);
-        shell.classList.remove('open');
-        shell.setAttribute('aria-hidden','true');
-        console.error('Could not open shared chat',err);
-      }
-    },100);
-  };
+async function loadStats(){
+  try{
+    const {data,error}=await db.rpc('get_public_leaderboard_stats');
+    if(error)throw error;
+    const r=Array.isArray(data)?data[0]:data;
+    if(!r)return;
 
-  if(frame.dataset.loaded==='1'){boot();return;}
-  frame.onload=()=>{frame.dataset.loaded='1';boot()};
-  frame.src='/home/';
+    const count=$('#count'),online=$('#online'),watch=$('#watch');
+    if(count)count.textContent=fmt(r.registered_players);
+    if(online)online.textContent=fmt(r.online_now);
+    if(watch)watch.textContent=time(r.combined_watch_minutes);
+  }catch(e){
+    console.warn('Leaderboard stats unavailable:',e?.message||e);
+  }
+}
+
+async function load(){
+  if(busy)return;
+  busy=true;
+
+  const updated=$('#updated');
+  const listHost=$('#list');
+  const podiumHost=$('#podium');
+  if(updated)updated.textContent='Refreshing live rankings…';
+
+  try{
+    const [{data,error}]=await Promise.all([
+      db.rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:sort}),
+      loadStats()
+    ]);
+    if(error)throw error;
+
+    const rows=Array.isArray(data)?data:[];
+    const total=Number(rows[0]?.total_count||0);
+
+    if(listHost){
+      listHost.innerHTML=rows.map(row).join('')||'<div class="empty">No ranked profiles yet.</div>';
+    }
+
+    pager(total);
+    bindProfiles();
+
+    if(page===1 && podiumHost){
+      const top=rows.slice(0,3);
+      podiumHost.innerHTML=pod(top[1],2)+pod(top[0],1)+pod(top[2],3);
+      bindProfiles();
+    }else if(podiumHost && page!==1){
+      podiumHost.innerHTML='';
+    }
+
+    if(updated){
+      updated.textContent='Live · updated '+new Date().toLocaleTimeString([],{
+        hour:'2-digit',
+        minute:'2-digit'
+      });
+    }
+  }catch(e){
+    console.error('Leaderboard load failed:',e);
+
+    if(listHost){
+      listHost.innerHTML=`<div class="empty error">
+        <b>Could not refresh rankings.</b><br><br>
+        ${esc(e?.message||'Unknown leaderboard error.')}<br><br>
+        Try refreshing the page. If the error persists, check the leaderboard RPCs in Supabase.
+      </div>`;
+    }
+
+    if(podiumHost)podiumHost.innerHTML='';
+    if(updated)updated.textContent='Leaderboard temporarily unavailable';
+  }finally{
+    busy=false;
+  }
 };
 window.openHeaderAuth=()=>location.href='/home/';window.openAccountModal=()=>location.href='/home/';
 let myUsername='';window.openMyProfile=()=>{if(myUsername){try{localStorage.setItem('f2w_profile_username_v24',myUsername)}catch{} location.href='/profile/?user='+encodeURIComponent(myUsername)}else location.href='/home/';};
@@ -1072,4 +1104,5 @@ load();setInterval(loadStats,10000);setInterval(heartbeat,15000);setInterval(loa
 <!-- f2w-force-save:v59-cache:1788221542:leaderboard/index.html -->
 <!-- f2w-force-save:auth-modal-lock-v60:1788221799:leaderboard/index.html -->
 <!-- f2w-force-save:v60-auth-cache:1788221799:leaderboard/index.html -->
+<!-- f2w-force-save:leaderboard-nullfix-v61:1788221928 -->
  
