@@ -1870,12 +1870,12 @@
 // f2w-force-save:autocomplete-display-name-v83:1788226300
 
 /* ============================================================
-   F2W v84 — MOVIE SEARCH ENTER = RESULTS PAGE, NEVER TOP RESULT
+   F2W v107 — SITE-WIDE MOVIE SEARCH AUTHORITY
    ============================================================ */
 (() => {
   'use strict';
-  if(window.__f2wMovieSearchResultsV84)return;
-  window.__f2wMovieSearchResultsV84=true;
+  if(window.__f2wMovieSearchV107)return;
+  window.__f2wMovieSearchV107=true;
 
   let navigating=false;
 
@@ -1883,44 +1883,53 @@
     return String(value||'').trim().replace(/\s+/g,' ').slice(0,120);
   }
 
+  function findInput(){
+    return document.getElementById('movie-search')
+      || document.querySelector('.movie-search-container input[type="search"],.movie-search-container input');
+  }
+
+  function hideAutocomplete(input){
+    try{
+      const host=input?.closest?.('.movie-search-container')?.querySelector('.movie-search-results')
+        || document.getElementById('movie-search-results');
+      if(host){
+        host.classList.remove('show');
+        host.innerHTML='';
+      }
+    }catch{}
+  }
+
   function submit(){
     if(navigating)return false;
 
-    const input=document.getElementById('movie-search');
+    const input=findInput();
     const query=clean(input?.value);
     if(!query)return false;
 
+    hideAutocomplete(input);
     navigating=true;
 
-    // Search Movies always opens the catalogue results page.
-    // It does NOT choose/open the first autocomplete result.
-    const target=`/home/?search=${encodeURIComponent(query)}&page=1`;
-
-    if(location.pathname.replace(/\/+$/,'')==='/home'){
-      const current=new URL(location.href);
-      const currentQuery=String(current.searchParams.get('search')||'').trim();
-      if(currentQuery===query){
-        current.searchParams.set('page','1');
-        history.replaceState({f2wMovieSearch:true},'',current.pathname+'?'+current.searchParams.toString());
-
-        if(typeof window.searchMedia==='function'){
-          window.searchMedia(query);
-        }
-        navigating=false;
-        return false;
-      }
-    }
-
-    location.assign(target);
+    location.assign(`/home/?search=${encodeURIComponent(query)}&page=1`);
     return false;
   }
 
   window.submitMovieDirectorySearch=submit;
 
-  // Capture Enter before any older autocomplete handlers can select result #1.
   document.addEventListener('keydown',event=>{
-    const input=event.target?.closest?.('#movie-search,.search-container input');
+    const input=event.target?.closest?.('#movie-search,.movie-search-container input');
     if(!input || event.key!=='Enter' || event.isComposing)return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    submit();
+  },true);
+
+  document.addEventListener('click',event=>{
+    const button=event.target?.closest?.(
+      '.movie-search-submit,[data-movie-search-submit],button[onclick*="submitMovieDirectorySearch"]'
+    );
+    if(!button)return;
 
     event.preventDefault();
     event.stopPropagation();
@@ -1930,7 +1939,7 @@
 
   window.addEventListener('pageshow',()=>{navigating=false;},{passive:true});
 })();
-// f2w-force-save:movie-search-results-v84:1788226452
+// f2w-force-save:movie-search-v107:1788289786
 
 /* ============================================================
    F2W v91 — SITE-WIDE GENRE NAVIGATION
@@ -2292,4 +2301,5 @@ window.f2wOpenGuestDmAuthV98=function(mode){
 // f2w-force-save:guest-dm-auth-opener-v98:1788282202
 // f2w-force-save:dedicated-user-search-route-v104:1788289281
 // f2w-force-save:user-search-route-v106:1788289648
+// f2w-force-save:movie-search-sitewide-v107:1788289786
  

@@ -2355,7 +2355,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
-  <script src="/global-header-chat-v1.js?v=106-1788289648" defer></script>
+  <script src="/global-header-chat-v1.js?v=107-1788289786" defer></script>
 
   <style id="f2w-mobile-login-above-featured">
     /* Mobile/tablet home layout: keep the login/signup card above Featured. */
@@ -8357,6 +8357,40 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:trending-start-safety-v102:1788288758 */
 </script>
 
+
+<script id="f2w-movie-search-route-safety-v107">
+(() => {
+  'use strict';
+  const run=()=>{
+    const q=String(new URLSearchParams(location.search).get('search')||'').trim();
+    if(!q)return;
+
+    const input=document.getElementById('movie-search');
+    if(input)input.value=q;
+
+    const title=document.getElementById('section-title');
+    if(title)title.textContent=`Search Results for “${q}”`;
+
+    setTimeout(()=>{
+      try{
+        if(typeof window.searchMedia==='function'){
+          window.searchMedia(q);
+        }
+      }catch(error){
+        console.warn('Movie search route safety failed:',error);
+      }
+    },120);
+  };
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',run,{once:true});
+  }else{
+    run();
+  }
+})();
+/* f2w-force-save:movie-search-route-safety-v107:1788289786 */
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
@@ -8467,4 +8501,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v104-cache:1788289281:home/index.html -->
 <!-- f2w-force-save:v105-cache:1788289468:home/index.html -->
 <!-- f2w-force-save:v106-cache:1788289648:home/index.html -->
+<!-- f2w-force-save:home-movie-search-v107:1788289786 -->
+<!-- f2w-force-save:v107-cache:1788289786:home/index.html -->
  
