@@ -2471,3 +2471,169 @@ window.f2wOpenGuestDmAuthV98=function(mode){
 
  
 // f2w-force-save:v128-instant-profile-presence:1788304200
+
+/* ============================================================
+   Flix2Watch v143 — wide-screen / TV header polish
+   Keeps search fields readable and action controls detached.
+   ============================================================ */
+(()=>{
+  'use strict';
+
+  const STYLE_ID='f2w-tv-header-v143';
+  const CSS=`
+@media (min-width:1700px) {
+  body.f2w-main-page > header {
+    padding-left:18px!important;
+    padding-right:18px!important;
+    gap:14px!important;
+  }
+
+  body.f2w-main-page > header > .header-tools {
+    display:grid!important;
+    grid-template-columns:max-content minmax(520px,1fr) max-content!important;
+    grid-template-rows:44px!important;
+    column-gap:14px!important;
+    justify-content:stretch!important;
+    width:auto!important;
+    min-width:0!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    width:max-content!important;
+    min-width:0!important;
+    gap:3px!important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    width:100%!important;
+    min-width:520px!important;
+    max-width:760px!important;
+    grid-template-columns:minmax(240px,1fr) minmax(240px,1fr)!important;
+    gap:12px!important;
+    margin:0!important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container {
+    min-width:240px!important;
+    width:100%!important;
+  }
+
+  body.f2w-main-page > header #movie-search,
+  body.f2w-main-page > header #user-search {
+    width:100%!important;
+    min-width:0!important;
+    font-size:11px!important;
+    letter-spacing:.01em!important;
+    text-overflow:clip!important;
+    white-space:nowrap!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    position:static!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    gap:10px!important;
+    margin-left:0!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > * {
+    position:static!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:74px!important;
+    max-width:none!important;
+    margin:0!important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    width:auto!important;
+    min-width:104px!important;
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+
+  body.f2w-main-page > header #favorites-nav-btn { min-width:92px!important; }
+  body.f2w-main-page > header #profile-nav-btn { min-width:82px!important; }
+  body.f2w-main-page > header #support-nav-btn { min-width:86px!important; }
+  body.f2w-main-page > header #account-btn,
+  body.f2w-main-page > header #header-login-btn { min-width:88px!important; }
+  body.f2w-main-page > header #header-signup-btn { min-width:104px!important; }
+  body.f2w-main-page > header #notification-wrap,
+  body.f2w-main-page > header #notification-btn { width:auto!important; min-width:118px!important; }
+  body.f2w-main-page > header #staff-control-nav { width:auto!important; min-width:138px!important; }
+
+  /* Hidden auth-state controls collapse completely instead of reserving empty grid slots. */
+  body.f2w-main-page > header .f2w-action-cluster > [hidden],
+  body.f2w-main-page.f2w-authenticated > header #header-login-btn,
+  body.f2w-main-page.f2w-authenticated > header #header-signup-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #account-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #notification-wrap,
+  body.f2w-main-page:not(.f2w-authenticated) > header #staff-control-nav {
+    display:none!important;
+  }
+}
+
+@media (min-width:2200px) {
+  body.f2w-main-page > header .f2w-search-pair {
+    min-width:660px!important;
+    max-width:900px!important;
+    grid-template-columns:minmax(300px,1fr) minmax(300px,1fr)!important;
+  }
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container { min-width:300px!important; }
+  body.f2w-main-page > header #movie-search,
+  body.f2w-main-page > header #user-search { font-size:12px!important; }
+}
+`;
+
+  function installStyle(){
+    if(document.getElementById(STYLE_ID))return;
+    const style=document.createElement('style');
+    style.id=STYLE_ID;
+    style.textContent=CSS;
+    (document.head||document.documentElement).appendChild(style);
+  }
+
+  function fixLabels(root=document){
+    const movie=root.querySelector?.('#movie-search');
+    if(movie){
+      movie.placeholder='Search movies';
+      movie.setAttribute('aria-label','Search movies and TV shows');
+      movie.setAttribute('title','Search movies');
+    }
+    const users=root.querySelector?.('#user-search');
+    if(users){
+      users.placeholder='Search users';
+      users.setAttribute('aria-label','Search Flix2Watch users');
+      users.setAttribute('title','Search users');
+    }
+  }
+
+  function boot(){
+    installStyle();
+    fixLabels();
+    const observer=new MutationObserver(mutations=>{
+      for(const mutation of mutations){
+        for(const node of mutation.addedNodes){
+          if(node.nodeType!==1)continue;
+          if(node.matches?.('#movie-search,#user-search') || node.querySelector?.('#movie-search,#user-search')){
+            fixLabels(document);
+            return;
+          }
+        }
+      }
+    });
+    observer.observe(document.documentElement,{childList:true,subtree:true});
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+})();
+// f2w-force-save:tv-header-v143:20260902

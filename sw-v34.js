@@ -1,5 +1,5 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v141-genre-sort-20260902';
+const CACHE='f2w-v143-tv-header-20260902';
 const CORE=[
   '/home/','/favorites/','/profile/','/support/','/chat/',
   '/leaderboard/','/forum/','/users/',
