@@ -1,0 +1,15 @@
+FLIX2WATCH v138 — XP LEADERBOARD FIX
+
+1. Run leaderboard-xp-v138.sql in Supabase SQL Editor.
+2. Deploy this complete v138 site build.
+3. Hard-refresh/reopen once so the v138 service worker replaces the old leaderboard JS.
+
+WHAT CHANGED
+- Every leaderboard position is now ranked ONLY by XP, highest XP first.
+- Old Titles/Watch Time/Ratings/Achievements sort modes can no longer put a lower-XP user above a higher-XP user.
+- Watch time remains the biggest XP source: 20 XP per tracked watch minute.
+- Titles watched is now reconstructed from both profile_title_activity and actual profile_watch_time title rows.
+  This fixes accounts that had watch time but incorrectly showed 0 titles watched.
+- Ties use watch time, then titles watched, then username only as deterministic tie-breakers.
+- The leaderboard page now labels the ranking as XP Ranking; the other metrics remain visible as stats, not alternate rankings.
+- Legacy site-wide leaderboard code also forces the canonical XP order.

@@ -585,7 +585,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 <main><section class="hero"><div class="kicker"><i class="fa-solid fa-trophy"></i> Flix2Watch Competitive Rankings</div><h1>Community Leaderboard</h1><p>Every watch, rating and achievement pushes the rankings forward. See who is climbing, who is online and who owns the top of Flix2Watch right now.</p><div class="live-pill"><i class="fa-solid fa-circle"></i> LIVE RANKINGS</div></section>
 <section class="stats"><div class="stat"><span>Registered players</span><strong id="count">—</strong></div><div class="stat"><span>Online now</span><strong id="online">—</strong></div><div class="stat"><span>Combined watch time</span><strong id="watch">—</strong></div><div class="stat"><span>Current page</span><strong id="pageStat">1 / 1</strong></div></section>
 <section class="podium" id="podium"></section>
-<div class="toolbar"><div class="tabs" id="tabs"><button class="tab active" data-sort="overall"><i class="fa-solid fa-fire"></i> Overall</button><button class="tab" data-sort="titles">Titles Watched</button><button class="tab" data-sort="watch">Watch Time</button><button class="tab" data-sort="ratings">Ratings</button><button class="tab" data-sort="achievements">Achievements</button></div><div class="status-note" id="updated">Connecting to realtime…</div></div>
+<div class="toolbar"><div class="tabs" id="tabs"><button class="tab active" data-sort="overall" aria-pressed="true"><i class="fa-solid fa-bolt"></i> XP Ranking</button><span class="tab">Titles Watched</span><span class="tab">Watch Time</span><span class="tab">Ratings</span><span class="tab">Achievements</span></div><div class="status-note" id="updated">Connecting to realtime…</div></div>
 <section class="rank-list" id="list"></section><div class="pager" id="pager" aria-label="Leaderboard pages"></div>
 </main>
 <script>
@@ -640,7 +640,7 @@ async function load(){
 
   try{
     const [{data,error}]=await Promise.all([
-      db.rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:sort}),
+      db.rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:'overall'}),
       loadStats()
     ]);
     if(error)throw error;
@@ -689,29 +689,10 @@ async function load(){
 window.openHeaderAuth=()=>location.href='/home/';window.openAccountModal=()=>location.href='/home/';
 let myUsername='';window.openMyProfile=()=>{if(myUsername){try{localStorage.setItem('f2w_profile_username_v24',myUsername)}catch{} location.href='/profile/?user='+encodeURIComponent(myUsername)}else location.href='/home/';};
 
-// v132: leaderboard sort tabs were rendered but never wired up. Keep the selected
-// metric in the URL so refresh/back-forward preserve the ranking the user chose.
-const allowedSorts=new Set(['overall','titles','watch','ratings','achievements']);
-try{
-  const requested=new URLSearchParams(location.search).get('sort');
-  if(allowedSorts.has(requested))sort=requested;
-}catch{}
-function syncSortTabs(){
-  document.querySelectorAll('#tabs .tab[data-sort]').forEach(btn=>{
-    const active=btn.dataset.sort===sort;
-    btn.classList.toggle('active',active);
-    btn.setAttribute('aria-pressed',active?'true':'false');
-  });
-}
-document.querySelectorAll('#tabs .tab[data-sort]').forEach(btn=>btn.addEventListener('click',()=>{
-  const next=String(btn.dataset.sort||'overall').toLowerCase();
-  if(!allowedSorts.has(next)||next===sort)return;
-  sort=next;page=1;syncSortTabs();
-  try{const u=new URL(location.href);u.searchParams.set('sort',sort);history.replaceState(null,'',u);}catch{}
-  load();
-}));
-syncSortTabs();
-
+// v138: leaderboard rank is XP-only, site-wide. The metric chips are informational
+// and never change a user's position. Old ?sort= URLs are normalized to XP ranking.
+sort='overall';
+try{const u=new URL(location.href);u.searchParams.delete('sort');history.replaceState(null,'',u)}catch{}
 document.getElementById('user-search')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitUserDirectorySearch()});
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){const shell=document.getElementById('f2w-shared-chat-shell');if(shell?.classList.contains('open')){try{document.getElementById('f2w-shared-chat-frame')?.contentWindow?.closeChat?.()}catch{}shell.classList.remove('open');shell.setAttribute('aria-hidden','true')}}});

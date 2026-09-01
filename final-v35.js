@@ -1409,9 +1409,9 @@ function f2wDebounce(fn,wait=140){
   let leaderboardPage=1;let leaderboardSort='overall';
   async function loadLeaderboard(page=leaderboardPage,sort=leaderboardSort){
     const host=document.getElementById('v35-leaderboard-list');if(!host)return;
-    leaderboardPage=page;leaderboardSort=sort;host.innerHTML='<div class="empty">Loading live ranking…</div>';
+    leaderboardPage=page;leaderboardSort='overall';host.innerHTML='<div class="empty">Loading live ranking…</div>';
     try{
-      const rows=await rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:sort});
+      const rows=await rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:'overall'});
       const list=Array.isArray(rows)?rows:[];const total=Number(list[0]?.total_count||0);const pageCount=Math.max(1,Math.ceil(total/25));
       const count=document.getElementById('v35-registered-count');if(count)count.textContent=String(total);
       const showing=document.getElementById('v35-showing');if(showing)showing.textContent=total?`${(page-1)*25+1}–${Math.min(page*25,total)}`:'0';
@@ -1439,7 +1439,7 @@ function f2wDebounce(fn,wait=140){
     if(document.body?.dataset.f2wPage!=='leaderboard')return;
     document.querySelectorAll('.f2w-leader-tab').forEach(btn=>btn.onclick=()=>{
       document.querySelectorAll('.f2w-leader-tab').forEach(x=>x.classList.toggle('active',x===btn));
-      loadLeaderboard(1,btn.dataset.sort||'overall');
+      loadLeaderboard(1,'overall');
     });
     loadLeaderboard(1,'overall');
 
