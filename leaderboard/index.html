@@ -129,6 +129,8 @@ main{max-width:1420px;margin:auto;padding:28px 24px 70px}.hero{position:relative
 @media(max-width:1100px){.rank-row{grid-template-columns:55px minmax(220px,1fr) repeat(2,100px) 110px 30px}.metric.hide-md{display:none}}@media(max-width:760px){.hero{padding:25px 20px}.live-pill{position:static;display:inline-block;margin-top:16px}.stats{grid-template-columns:1fr 1fr}.podium{grid-template-columns:1fr}.podium-card.first{order:-1}.toolbar{display:block}.tabs{margin-bottom:10px}.rank-row{grid-template-columns:45px minmax(0,1fr) 80px 25px;padding:10px}.metric{display:none}.row-score{font-size:15px}.user img{width:44px;height:44px}main{padding:18px 12px 55px}}
 </style>
 
+<link rel="stylesheet" href="/leaderboard-v140.css?v=140-20260902">
+
 <style id="f2w-header-v21-critical">
     /* V21: final, cache-resistant desktop header authority */
     @media (min-width: 1181px) {
@@ -582,141 +584,41 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 <div class="f2w-shared-chat-shell" id="f2w-shared-chat-shell" aria-hidden="true">
   <iframe class="f2w-shared-chat-frame" id="f2w-shared-chat-frame" title="Flix2Watch Chat" src="about:blank" allow="clipboard-write"></iframe>
 </div>
-<main><section class="hero"><div class="kicker"><i class="fa-solid fa-trophy"></i> Flix2Watch Competitive Rankings</div><h1>Community Leaderboard</h1><p>Every watch, rating and achievement pushes the rankings forward. See who is climbing, who is online and who owns the top of Flix2Watch right now.</p><div class="live-pill"><i class="fa-solid fa-circle"></i> LIVE RANKINGS</div></section>
-<section class="stats"><div class="stat"><span>Registered players</span><strong id="count">—</strong></div><div class="stat"><span>Online now</span><strong id="online">—</strong></div><div class="stat"><span>Combined watch time</span><strong id="watch">—</strong></div><div class="stat"><span>Current page</span><strong id="pageStat">1 / 1</strong></div></section>
+<main>
+<section class="lb140-hero">
+  <div class="lb140-hero-top">
+    <div><div class="lb140-kicker"><i class="fa-solid fa-trophy"></i> Flix2Watch Competitive Rankings</div><h1 class="lb140-title">Community Leaderboard</h1><p class="lb140-copy">The leaderboard is ranked by XP only. Watch time is the biggest XP source, while titles, ratings and achievements add bonus XP. Metric tabs let you inspect the numbers without changing anyone's rank.</p></div>
+    <div class="lb140-live"><i class="fa-solid fa-circle"></i><span>30 SECOND LIVE UPDATE</span></div>
+  </div>
+  <div class="lb140-xp-rules">
+    <div class="lb140-xp-rule"><b>+20 XP</b><span>Per minute watched</span></div>
+    <div class="lb140-xp-rule"><b>+5 XP</b><span>Per unique title</span></div>
+    <div class="lb140-xp-rule"><b>+10 XP</b><span>Per rating</span></div>
+    <div class="lb140-xp-rule"><b>+25 XP</b><span>Per achievement</span></div>
+  </div>
+</section>
+<section class="lb140-stats">
+  <div class="lb140-stat"><span>Registered players</span><strong id="count">—</strong><em>All ranked accounts</em></div>
+  <div class="lb140-stat"><span>Online now</span><strong id="online">—</strong><em>Based on active presence</em></div>
+  <div class="lb140-stat"><span>Combined watch time</span><strong id="watch">—</strong><em>Community total</em></div>
+  <div class="lb140-stat"><span>Leaderboard page</span><strong id="pageStat">1 / 1</strong><em>25 players per page</em></div>
+</section>
+<div class="lb140-section-head"><div><h2>Top of Flix2Watch</h2><p>The top three accounts by XP.</p></div><div class="lb140-refresh-meta"><span id="lb140-countdown">Next update 30s</span><button type="button" id="lb140-refresh-btn"><i class="fa-solid fa-rotate"></i> Refresh now</button></div></div>
 <section class="podium" id="podium"></section>
-<div class="toolbar"><div class="tabs" id="tabs"><button class="tab active" data-sort="overall" aria-pressed="true"><i class="fa-solid fa-bolt"></i> XP Ranking</button><span class="tab">Titles Watched</span><span class="tab">Watch Time</span><span class="tab">Ratings</span><span class="tab">Achievements</span></div><div class="status-note" id="updated">Connecting to realtime…</div></div>
-<section class="rank-list" id="list"></section><div class="pager" id="pager" aria-label="Leaderboard pages"></div>
+<div class="lb140-toolbar">
+  <div class="lb140-tabs" id="tabs" role="tablist" aria-label="Leaderboard metric view">
+    <button class="lb140-tab active" type="button" data-view="xp" aria-pressed="true"><i class="fa-solid fa-bolt"></i> XP Ranking</button>
+    <button class="lb140-tab" type="button" data-view="titles" aria-pressed="false"><i class="fa-solid fa-film"></i> Titles Watched</button>
+    <button class="lb140-tab" type="button" data-view="watch" aria-pressed="false"><i class="fa-solid fa-clock"></i> Watch Time</button>
+    <button class="lb140-tab" type="button" data-view="ratings" aria-pressed="false"><i class="fa-solid fa-star"></i> Ratings</button>
+    <button class="lb140-tab" type="button" data-view="achievements" aria-pressed="false"><i class="fa-solid fa-medal"></i> Achievements</button>
+  </div>
+  <div class="lb140-toolbar-right"><div class="lb140-filter"><i class="fa-solid fa-magnifying-glass"></i><input id="lb140-filter" type="search" placeholder="Filter this page…" autocomplete="off"></div><div class="status-note" id="updated">Loading rankings…</div></div>
+</div>
+<div class="lb140-view-note" id="lb140-view-note">Viewing <b>XP</b>. <span class="xp-lock"><i class="fa-solid fa-lock"></i> Rank order always stays XP-based.</span></div>
+<section class="rank-list" id="list"></section><div id="lb140-filter-empty" class="lb140-empty-filter" hidden>No matching player on this page.</div><div class="pager" id="pager" aria-label="Leaderboard pages"></div>
 </main>
-<script>
-(()=>{'use strict';const URL='https://viqufxlcxwgboyxbdhjb.supabase.co',KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge',LOGO='/flix2watch-logo-red-v34.png';const db=window.supabase.createClient(URL,KEY);let page=1,sort='overall',busy=false;const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const fmt=n=>Intl.NumberFormat().format(Number(n||0));const time=m=>{m=Number(m||0);if(m<60)return `${fmt(m)}m`;const h=Math.floor(m/60);return h<1000?`${fmt(h)}h ${m%60}m`:`${fmt(h)}h`};const role=r=>r?`<span class="role">${esc(r)}</span>`:'';const profile=u=>location.href='/profile/?user='+encodeURIComponent(u);
-function pod(r,place){if(!r)return '';return `<article class="podium-card ${place===1?'first':''}" data-user="${esc(r.username)}"><div class="pod-rank">#${place}</div>${place===1?'<div class="crown"><i class="fa-solid fa-crown"></i></div>':''}<div class="avatar-wrap"><img class="avatar" src="${esc(r.avatar_url||LOGO)}" onerror="this.src='${LOGO}'"><i class="presence ${r.online?'on':''}"></i></div><h3>${esc(r.display_name||r.username)}</h3><div class="handle">@${esc(r.username)}</div>${role(r.top_role)}<div class="score">${fmt(r.score)} XP</div></article>`}
-function row(r){return `<article class="rank-row"><div class="rank-no">#${fmt(r.rank_no)}</div><div class="user" data-user="${esc(r.username)}"><img src="${esc(r.avatar_url||LOGO)}" onerror="this.src='${LOGO}'"><div class="user-copy"><strong>${esc(r.display_name||r.username)} ${r.online?'<i class="fa-solid fa-circle" style="font-size:7px;color:#28e78d"></i>':''}</strong><small>@${esc(r.username)} ${r.top_role?'· '+esc(r.top_role):''}</small></div></div><div class="metric"><b>${fmt(r.titles_watched)}</b><span>Titles</span></div><div class="metric hide-md"><b>${time(r.watch_minutes)}</b><span>Watch time</span></div><div class="metric hide-md"><b>${fmt(r.ratings_count)}</b><span>Ratings</span></div><div class="metric"><b>${fmt(r.achievements)}</b><span>Badges</span></div><div class="row-score">${fmt(r.score)} XP</div><div class="chev"><i class="fa-solid fa-chevron-right"></i></div></article>`}
-function bindProfiles(){document.querySelectorAll('[data-user]').forEach(x=>x.onclick=()=>profile(x.dataset.user))}
-function pager(total){
-  const pages=Math.max(1,Math.ceil(total/25));
-  const pageStat=$('#pageStat');
-  if(pageStat)pageStat.textContent=`${page} / ${pages}`;
-
-  const host=$('#pager');
-  if(!host)return;
-
-  let h=`<button class="pagebtn" data-p="${page-1}" ${page===1?'disabled':''}><i class="fa-solid fa-chevron-left"></i></button>`;
-  for(let p=Math.max(1,page-2);p<=Math.min(pages,page+2);p++){
-    h+=`<button class="pagebtn ${p===page?'active':''}" data-p="${p}">${p}</button>`;
-  }
-  h+=`<button class="pagebtn" data-p="${page+1}" ${page===pages?'disabled':''}><i class="fa-solid fa-chevron-right"></i></button>`;
-  host.innerHTML=h;
-  host.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{
-    page=+b.dataset.p;
-    load();
-  });
-}
-
-async function loadStats(){
-  try{
-    const {data,error}=await db.rpc('get_public_leaderboard_stats');
-    if(error)throw error;
-    const r=Array.isArray(data)?data[0]:data;
-    if(!r)return;
-
-    const count=$('#count'),online=$('#online'),watch=$('#watch');
-    if(count)count.textContent=fmt(r.registered_players);
-    if(online)online.textContent=fmt(r.online_now);
-    if(watch)watch.textContent=time(r.combined_watch_minutes);
-  }catch(e){
-    console.warn('Leaderboard stats unavailable:',e?.message||e);
-  }
-}
-
-async function load(){
-  if(busy)return;
-  busy=true;
-
-  const updated=$('#updated');
-  const listHost=$('#list');
-  const podiumHost=$('#podium');
-  if(updated)updated.textContent='Refreshing live rankings…';
-
-  try{
-    const [{data,error}]=await Promise.all([
-      db.rpc('get_public_leaderboard',{p_page:page,p_page_size:25,p_sort:'overall'}),
-      loadStats()
-    ]);
-    if(error)throw error;
-
-    const rows=Array.isArray(data)?data:[];
-    const total=Number(rows[0]?.total_count||0);
-
-    if(listHost){
-      listHost.innerHTML=rows.map(row).join('')||'<div class="empty">No ranked profiles yet.</div>';
-    }
-
-    pager(total);
-    bindProfiles();
-
-    if(page===1 && podiumHost){
-      const top=rows.slice(0,3);
-      podiumHost.innerHTML=pod(top[1],2)+pod(top[0],1)+pod(top[2],3);
-      bindProfiles();
-    }else if(podiumHost && page!==1){
-      podiumHost.innerHTML='';
-    }
-
-    if(updated){
-      updated.textContent='Live · updated '+new Date().toLocaleTimeString([],{
-        hour:'2-digit',
-        minute:'2-digit'
-      });
-    }
-  }catch(e){
-    console.error('Leaderboard load failed:',e);
-
-    if(listHost){
-      listHost.innerHTML=`<div class="empty error">
-        <b>Could not refresh rankings.</b><br><br>
-        ${esc(e?.message||'Unknown leaderboard error.')}<br><br>
-        Try refreshing the page. If the error persists, check the leaderboard RPCs in Supabase.
-      </div>`;
-    }
-
-    if(podiumHost)podiumHost.innerHTML='';
-    if(updated)updated.textContent='Leaderboard temporarily unavailable';
-  }finally{
-    busy=false;
-  }
-};
-window.openHeaderAuth=()=>location.href='/home/';window.openAccountModal=()=>location.href='/home/';
-let myUsername='';window.openMyProfile=()=>{if(myUsername){try{localStorage.setItem('f2w_profile_username_v24',myUsername)}catch{} location.href='/profile/?user='+encodeURIComponent(myUsername)}else location.href='/home/';};
-
-// v138: leaderboard rank is XP-only, site-wide. The metric chips are informational
-// and never change a user's position. Old ?sort= URLs are normalized to XP ranking.
-sort='overall';
-try{const u=new URL(location.href);u.searchParams.delete('sort');history.replaceState(null,'',u)}catch{}
-document.getElementById('user-search')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitUserDirectorySearch()});
-
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){const shell=document.getElementById('f2w-shared-chat-shell');if(shell?.classList.contains('open')){try{document.getElementById('f2w-shared-chat-frame')?.contentWindow?.closeChat?.()}catch{}shell.classList.remove('open');shell.setAttribute('aria-hidden','true')}}});
-document.addEventListener('click',e=>{if(!e.target.closest('.f2w-genre-wrap'))document.getElementById('f2w-genre-menu')?.classList.remove('open');if(!e.target.closest('.dropdown-wrapper')){const m=document.getElementById('theme-menu');if(m){m.hidden=true;m.setAttribute('aria-hidden','true')}}});
-db.auth.getUser().then(async({data})=>{const logged=!!data?.user;for(const id of ['favorites-nav-btn','profile-nav-btn','support-nav-btn','account-btn']){const el=document.getElementById(id);if(el)el.style.display=logged?'':'none'}const li=document.getElementById('header-login-btn'),su=document.getElementById('header-signup-btn');if(li)li.style.display=logged?'none':'';if(su)su.style.display=logged?'none':'';if(logged){const {data:p}=await db.from('profiles').select('username').eq('user_id',data.user.id).maybeSingle();myUsername=p?.username||''}});
-let timer;const refresh=()=>{clearTimeout(timer);timer=setTimeout(()=>{load();loadStats()},180)};
-let lbPresenceSession='';
-async function heartbeat(){
-  try{
-    const {data:{session}}=await db.auth.getSession();
-    if(!session?.user||document.visibilityState==='hidden')return;
-    if(!lbPresenceSession){
-      lbPresenceSession=sessionStorage.getItem('f2w_presence_session_v17')||crypto.randomUUID();
-      sessionStorage.setItem('f2w_presence_session_v17',lbPresenceSession);
-    }
-    const {error}=await db.rpc('touch_presence_v17',{p_session_id:lbPresenceSession});
-    if(error)await db.rpc('touch_presence');
-  }catch{}
-}
-try{db.channel('leaderboard-v3-live').on('postgres_changes',{event:'*',schema:'public',table:'profiles'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'user_presence'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_watch_time'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'user_ratings'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'profile_role_assignments'},refresh).subscribe(s=>{if(s==='SUBSCRIBED')$('#updated').textContent='Realtime connected'})}catch{}
-heartbeat();document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();loadStats()}});db.auth.onAuthStateChange(()=>{setTimeout(()=>{heartbeat();loadStats()},50)});
-load();setInterval(loadStats,30000);setInterval(heartbeat,30000);setInterval(load,30000);
-})();
-</script>
+<script src="/leaderboard-v140.js?v=140-20260902" defer></script>
 <script src="/silent-account-v16.js"></script>
 <script src="/account-guard-v16.js" defer></script>
 <script src="/approved-ui-v12.js" defer></script>
