@@ -1603,4 +1603,98 @@ body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-secondar
 }
 
 /* f2w-force-save:forum-hero-buttons-v80:1788225203 */
- 
+
+/* ============================================================
+   F2W v81 — TIGHT COMPACT ROLE PARTICLES SITE-WIDE
+   Keep the white particle GIF hugging the actual display name,
+   especially in compact rows like Forum rankings/autocomplete/chat.
+   ============================================================ */
+.f2w-role-name {
+  display:inline-block!important;
+  width:fit-content!important;
+  max-width:max-content!important;
+  min-width:0!important;
+  line-height:1.02!important;
+  white-space:nowrap!important;
+  vertical-align:baseline!important;
+  justify-self:start!important;
+  align-self:center!important;
+  overflow:visible!important;
+}
+
+.f2w-role-name::before {
+  top:-1px!important;
+  right:-3px!important;
+  bottom:-1px!important;
+  left:-3px!important;
+  border-radius:2px!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  opacity:.93!important;
+}
+
+/* Compact surfaces: clamp extra width so particles never span the row/card. */
+.forum-v30-rank-row .forum-v30-rank-name.f2w-role-name,
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.user-search-name.f2w-role-name,
+.f2w-dm-result [data-f2w-username].f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  display:inline-block!important;
+  width:auto!important;
+  max-width:max-content!important;
+  min-width:0!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  justify-self:start!important;
+  align-self:center!important;
+}
+
+.forum-v30-rank-row .forum-v30-rank-name.f2w-role-name::before,
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before,
+.user-search-name.f2w-role-name::before,
+.f2w-dm-result [data-f2w-username].f2w-role-name::before,
+[data-f2w-role-decorated="1"].f2w-role-name::before {
+  top:-1px!important;
+  right:-3px!important;
+  bottom:-1px!important;
+  left:-3px!important;
+  border-radius:2px!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+}
+
+/* Forum rankings: ultra-tight to match the profile look in a tiny row. */
+.forum-v30-rank-row .forum-v30-rank-name.f2w-role-name {
+  font-size:inherit!important;
+  line-height:1!important;
+  padding:0!important;
+}
+
+.forum-v30-rank-row .forum-v30-rank-name.f2w-role-name::before {
+  top:-1px!important;
+  right:-2px!important;
+  bottom:-1px!important;
+  left:-2px!important;
+  opacity:.9!important;
+}
+
+/* Profile still keeps a slightly roomier box because the text is bigger. */
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  top:-2px!important;
+  right:-4px!important;
+  bottom:-2px!important;
+  left:-4px!important;
+}
+
+/* f2w-force-save:tight-compact-role-particles-v81:1788225523 */
+
