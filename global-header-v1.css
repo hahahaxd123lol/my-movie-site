@@ -1517,31 +1517,6 @@ html.f2w-page-ready body {
   transition:opacity 1.35s cubic-bezier(.22,.61,.36,1)!important;
 }
 
-/* Native same-origin navigation transitions where supported.
-   Root-only opacity is cheaper than animating multiple page sections. */
-@view-transition {
-  navigation:auto;
-}
-::view-transition-old(root) {
-  animation:f2wV33FadeOut .10s linear both!important;
-}
-::view-transition-new(root) {
-  animation:f2wV33FadeIn 1.35s cubic-bezier(.22,.61,.36,1) both!important;
-}
-::view-transition-group(root) {
-  animation-duration:1.35s!important;
-  animation-timing-function:cubic-bezier(.22,.61,.36,1)!important;
-}
-
-/* Keep the header geometry frozen while the page opacity changes. */
-::view-transition-group(f2w-header) {
-  animation-duration:0s!important;
-}
-::view-transition-old(f2w-header),
-::view-transition-new(f2w-header) {
-  animation:none!important;
-}
-
 /* Retire old child/section reveal animations. */
 html.f2w-page-ready body.f2w-main-page > main,
 html.f2w-page-ready body.f2w-main-page > .page,
@@ -1580,10 +1555,7 @@ html.f2w-page-ready body {
     transition:none!important;
     will-change:auto!important;
   }
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation:none!important;
-  }
+  
 }
 
 /* f2w-force-save:smooth-page-fade-v33:1788217440 */
@@ -2554,4 +2526,46 @@ body.f2w-authenticated:not(.f2w-profile-editor-open-v87) {
 }
 
 /* f2w-force-save:no-stale-auth-dim-v93:1788229371 */
+
+/* ============================================================
+   F2W v100 — DARK PAGE FADE / NO WHITE NAVIGATION BAR
+   ============================================================ */
+html,
+html.f2w-page-enter,
+html.f2w-page-ready {
+  background:#020914!important;
+  background-color:#020914!important;
+}
+
+body,
+body.f2w-main-page {
+  background-color:#020914!important;
+}
+
+/*
+ * The native cross-document View Transition snapshot was causing a white
+ * horizontal flash/strip between the fixed header and incoming page content.
+ * v100 uses ONLY the existing 1.35s body opacity fade.
+ */
+html.f2w-page-enter body {
+  opacity:0!important;
+}
+
+html.f2w-page-ready body {
+  opacity:1!important;
+  transition:opacity 1.35s cubic-bezier(.22,.61,.36,1)!important;
+  background-color:#020914!important;
+}
+
+/* Never expose the browser's default white canvas while the body is transparent. */
+html.f2w-page-enter::before {
+  content:""!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:-1!important;
+  background:#020914!important;
+  pointer-events:none!important;
+}
+
+/* f2w-force-save:no-white-navigation-flash-v100:1788283039 */
  
