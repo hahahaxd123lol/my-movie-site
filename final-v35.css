@@ -1263,3 +1263,29 @@ body.f2w-main-page .watch-auth-card {
 }
 /* f2w-force-save:account-details-css-v54:1788220759 */
  
+
+/* ============================================================
+   F2W v59 — PLAIN USERNAMES ARE WHITE
+   Role names keep their role colour + white Particles.gif.
+   Presence/online/offline styling is untouched.
+   ============================================================ */
+.f2w-no-role-name,
+.user-search-name:not(.f2w-role-name),
+.chat-user:not(.f2w-role-name),
+.chat-username:not(.f2w-role-name),
+.comment-author:not(.f2w-role-name),
+.leaderboard-username:not(.f2w-role-name),
+.profile-username:not(.f2w-role-name),
+.user-name:not(.f2w-role-name),
+.display-name:not(.f2w-role-name),
+.forum-v30-author:not(.f2w-role-name),
+.forum-v30-rank-name:not(.f2w-role-name) {
+  color:#fff!important;
+  text-shadow:none!important;
+  background-image:none!important;
+  background:none!important;
+  filter:none!important;
+}
+
+/* f2w-force-save:plain-usernames-white-v59:1788221542 */
+ 

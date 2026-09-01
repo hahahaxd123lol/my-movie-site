@@ -858,7 +858,7 @@
         return `<button class="user-search-result" type="button" role="option" data-username="${safe}">
           ${avatar}
           <span class="user-search-copy">
-            <strong class="user-search-name">@${safe}</strong>
+            <strong class="user-search-name" data-f2w-username="${safe}">@${safe}</strong>
             <span class="user-search-sub">View public profile</span>
           </span>
           <i class="fa-solid fa-arrow-right"></i>
@@ -941,4 +941,5 @@
 })();
 // f2w-force-save:user-autocomplete-v57:1788221142
 // f2w-force-save:sw-v58-register:1788221340
+// f2w-force-save:user-search-role-hook-v59:1788221542
  

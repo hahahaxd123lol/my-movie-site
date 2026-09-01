@@ -434,18 +434,18 @@ function f2wDebounce(fn,wait=140){
       '.user-name',
       '.display-name',
       '.forum-v30-author',
-      '.forum-v30-rank-name'
+      '.forum-v30-rank-name',
+      '.user-search-name'
     ].join(',');
 
     const nodes=[...document.querySelectorAll(selector)].filter(Boolean);
     if(!nodes.length)return;
 
-    // Current account modal does NOT need to wait for the public-role RPC.
-    // Its role is already resolved by the existing auth/staff system.
     const accountName=document.getElementById('account-user-username');
     const accountRole=String(document.getElementById('account-user-role')?.textContent||'').trim().toLowerCase();
     if(accountName && ['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(accountRole)){
       const username=String(accountName.dataset.username||accountName.textContent||'').trim().replace(/^@/,'');
+      accountName.classList.remove('f2w-no-role-name');
       if(!accountName.dataset.f2wRoleDecorated || accountName.dataset.f2wRole!==accountRole){
         accountName.dataset.f2wPlainText=accountName.querySelector('.f2w-role-name-text')?.textContent||accountName.textContent;
         paintRoleName(accountName,accountRole,username);
@@ -459,8 +459,9 @@ function f2wDebounce(fn,wait=140){
       el.dataset.username||
       el.dataset.f2wUsername||
       el.getAttribute('data-user')||
+      el.textContent||
       ''
-    ).trim().replace(/^@/,'')).filter(Boolean))];
+    ).trim().replace(/^@/,'').split(/\s+/)[0]).filter(Boolean))];
 
     let effects={};
     if(usernames.length){
@@ -486,12 +487,26 @@ function f2wDebounce(fn,wait=140){
         el.dataset.username||
         el.dataset.f2wUsername||
         el.getAttribute('data-user')||
+        el.textContent||
         ''
-      ).trim().replace(/^@/,'');
-      let role=String(el.dataset.role||effects[username.toLowerCase()]||'').trim().toLowerCase();
+      ).trim().replace(/^@/,'').split(/\s+/)[0];
 
+      let role=String(el.dataset.role||effects[username.toLowerCase()]||'').trim().toLowerCase();
       if(String(el.dataset.userId||el.getAttribute('data-user-id')||'')==='f5454804-a2a6-4602-9086-51cf51f11c77')role='owner';
-      if(role)paintRoleName(el,role,username);
+
+      if(role){
+        el.classList.remove('f2w-no-role-name');
+        paintRoleName(el,role,username);
+      }else{
+        el.classList.remove(
+          'f2w-role-name','f2w-role-owner','f2w-role-staff','f2w-role-moderator',
+          'f2w-role-support','f2w-role-developer','f2w-role-verified',
+          'f2w-role-contributor','f2w-role-curator'
+        );
+        el.classList.add('f2w-no-role-name');
+        el.removeAttribute('data-f2w-role-decorated');
+        el.removeAttribute('data-f2w-role');
+      }
     });
   }
   window.decorateNames=decorateNames;
@@ -531,6 +546,7 @@ function f2wDebounce(fn,wait=140){
   /* ---------- watch: record clicked titles, no duplicates + watch time ---------- */
   async function recordWatchOpen(){
     if(!authUser||!location.pathname.startsWith('/watch'))return;
+
     const params=new URLSearchParams(location.search);
     const mediaId=Number(params.get('id'));
     const mediaType=params.get('type')==='tv'?'tv':'movie';
@@ -539,24 +555,42 @@ function f2wDebounce(fn,wait=140){
     const key=`${authUser.id}:${mediaType}:${mediaId}`;
     if(watchOpenRecordedKey===key)return;
 
-    let title='',poster='';
-    for(let i=0;i<40&&!title;i++){
-      title=String(document.getElementById('detail-title')?.textContent||'').trim();
-      const img=document.querySelector('#detail-poster img,.detail-poster img,.poster img,img[alt*="poster" i]');
-      poster=String(img?.getAttribute('src')||'');
-      if(!title||/loading title|loading\.\.\./i.test(title)){
-        title='';
-        await new Promise(resolve=>setTimeout(resolve,250));
-      }
-    }
-    if(!title)title=`${mediaType==='tv'?'TV':'Movie'} #${mediaId}`;
+    const startPath=location.pathname+location.search;
+    let visibleMs=0;
+    let last=performance.now();
 
+    // Count time only while this Watch page is actually visible.
+    // A quick click-through will not enter Recently Watched.
+    await new Promise(resolve=>{
+      const timer=setInterval(()=>{
+        const now=performance.now();
+        if(document.visibilityState==='visible' && (location.pathname+location.search)===startPath){
+          visibleMs+=Math.max(0,now-last);
+        }
+        last=now;
+
+        if(visibleMs>=5000 || (location.pathname+location.search)!==startPath){
+          clearInterval(timer);
+          resolve();
+        }
+      },250);
+    });
+
+    if(visibleMs<5000 || !authUser || (location.pathname+location.search)!==startPath)return;
+
+    let title=String(document.getElementById('detail-title')?.textContent||'').trim();
+    if(!title||/loading title|loading\.\.\./i.test(title)){
+      title=`${mediaType==='tv'?'TV':'Movie'} #${mediaId}`;
+    }
+
+    const img=document.querySelector('#detail-poster img,.detail-poster img,.poster img,img[alt*="poster" i]');
+    const poster=String(img?.getAttribute('src')||'');
     let posterPath=null;
     const match=poster.match(/image\.tmdb\.org\/t\/p\/[^/]+(\/[^?]+)/i);
     if(match)posterPath=match[1];
 
     try{
-      await rpc('record_title_open',{
+      await rpc('record_recent_view_v59',{
         p_media_type:mediaType,
         p_media_id:mediaId,
         p_title:title.slice(0,250),
@@ -564,7 +598,7 @@ function f2wDebounce(fn,wait=140){
       });
       watchOpenRecordedKey=key;
     }catch(error){
-      console.warn('Title-open tracking unavailable:',error?.message||error);
+      console.warn('Recently Watched tracking unavailable:',error?.message||error);
     }
   }
 
@@ -734,12 +768,10 @@ function f2wDebounce(fn,wait=140){
   /* ---------- profile activity + richer profile editor ---------- */
   function viewedProfileObject(){try{return typeof viewedProfile!=='undefined'?viewedProfile:null}catch{return null}}
   function isOwnProfile(profile){return Boolean(profile&&authUser&&String(profile.user_id)===String(authUser.id));}
-
   async function renderProfileActivity(){
     if(!location.pathname.startsWith('/profile'))return;
     const profile=viewedProfileObject();if(!profile?.user_id)return;
     const host=document.getElementById('v17-profile-recently-watched');if(!host)return;
-    const client=db();if(!client)return;
 
     if(profile.is_private&&!isOwnProfile(profile)){
       host.innerHTML='<div class="f2w-profile-empty">Recently watched is private.</div>';
@@ -747,34 +779,41 @@ function f2wDebounce(fn,wait=140){
     }
 
     try{
-      const {data,error}=await client
-        .from('profile_title_activity')
-        .select('media_type,media_id,title,poster_path,last_opened_at,open_count')
-        .eq('user_id',profile.user_id)
-        .order('last_opened_at',{ascending:false})
-        .limit(12);
-      if(error)throw error;
+      const rows=await rpc('get_profile_recent_views_v59',{
+        p_user_id:profile.user_id,
+        p_limit:10
+      });
+      const data=Array.isArray(rows)?rows:[];
 
-      host.innerHTML=(data||[]).length
+      host.innerHTML=data.length
         ? `<div class="f2w-recently-watched-grid">${data.map(row=>`
             <a class="f2w-recent-watch-card" href="/watch/?id=${encodeURIComponent(row.media_id)}&type=${encodeURIComponent(row.media_type)}">
-              <img src="${row.poster_path?`https://image.tmdb.org/t/p/w342${esc(row.poster_path)}`:RED_LOGO}" alt="" loading="lazy" onerror="this.src='${RED_LOGO}'">
+              <img src="${row.poster_path?`https://image.tmdb.org/t/p/w342${esc(row.poster_path)}`:RED_LOGO}" alt="" loading="lazy" decoding="async" onerror="this.src='${RED_LOGO}'">
               <div>
-                <strong>${esc(row.title)}</strong>
-                <span>${row.media_type==='tv'?'TV':'Movie'} · ${formatRelative(row.last_opened_at)}</span>
+                <strong>${esc(row.title||`${row.media_type==='tv'?'TV':'Movie'} #${row.media_id}`)}</strong>
+                <span>${row.media_type==='tv'?'TV':'Movie'} · ${formatRelative(row.viewed_at)}</span>
               </div>
             </a>`).join('')}</div>`
-        : '<div class="f2w-profile-empty">No titles opened yet.</div>';
+        : '<div class="f2w-profile-empty">No recently viewed titles yet.</div>';
     }catch(error){
       host.innerHTML='<div class="f2w-profile-empty">Recently watched is unavailable right now.</div>';
       console.warn('Recently watched unavailable:',error?.message||error);
     }
   }
-
   function subscribeProfileActivity(userId){
     const client=db();if(!client||activityChannel?.topic?.includes(userId))return;
     try{if(activityChannel)client.removeChannel(activityChannel)}catch{}
-    try{activityChannel=client.channel(`v35-profile-activity-${userId}`).on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity',filter:`user_id=eq.${userId}`},()=>renderProfileActivity()).subscribe()}catch{}
+    try{
+      activityChannel=client
+        .channel(`v59-profile-recent-${userId}`)
+        .on('postgres_changes',{
+          event:'*',
+          schema:'public',
+          table:'profile_recent_views_v59',
+          filter:`user_id=eq.${userId}`
+        },()=>renderProfileActivity())
+        .subscribe();
+    }catch{}
   }
 
   function formatRelative(value){
@@ -1046,7 +1085,7 @@ function f2wDebounce(fn,wait=140){
       section.id='v17-profile-recent-panel';
       section.innerHTML=`<div class="profile-v16-panel-head">
         <h2><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent)"></i> Recently Watched</h2>
-        <span>Titles opened on Flix2Watch · no duplicates</span>
+        <span>Titles viewed for 5+ seconds · latest 10 only</span>
       </div>
       <div id="v17-profile-recently-watched"><div class="f2w-profile-empty">Loading recent titles…</div></div>`;
       badges.after(section);
@@ -1660,4 +1699,5 @@ function f2wDebounce(fn,wait=140){
   window.addEventListener('pageshow',()=>setTimeout(refreshAccountIdentityV54,0),{passive:true});
 })();
 // f2w-force-save:account-identity-js-v54:1788220759
+// f2w-force-save:white-usernames-recent10-v59:1788221542
  
