@@ -835,7 +835,7 @@
     try{
       const {data,error}=await c
         .from('profiles')
-        .select('username,avatar_url')
+        .select('username,display_name,avatar_url')
         .not('username','is',null)
         .ilike('username',`${query}%`)
         .order('username',{ascending:true})
@@ -855,10 +855,12 @@
         const avatar=profile.avatar_url
           ? `<img class="user-search-avatar" src="${esc(profile.avatar_url)}" alt="" loading="lazy" decoding="async">`
           : `<span class="user-search-avatar fallback">${esc(initials(username))}</span>`;
+        const displayName=String(profile.display_name||username||'Member').trim();
         return `<button class="user-search-result" type="button" role="option" data-username="${safe}">
           ${avatar}
           <span class="user-search-copy">
-            <strong class="user-search-name" data-f2w-username="${safe}">@${safe}</strong>
+            <strong class="user-search-name" data-f2w-username="${safe}">${esc(displayName)}</strong>
+            <span class="user-search-handle">@${safe}</span>
             <span class="user-search-sub">View public profile</span>
           </span>
           <i class="fa-solid fa-arrow-right"></i>
@@ -908,12 +910,9 @@
 
     input.addEventListener('keydown',e=>{
       if(e.key==='Escape')hideResults(input);
-      if(e.key==='Enter'){
-        const first=ensureResults(input)?.querySelector('.user-search-result');
-        if(first){
-          e.preventDefault();
-          openProfile(first.dataset.username);
-        }
+      if(e.key==='Enter'&&!e.isComposing){
+        e.preventDefault();
+        window.submitUserDirectorySearch?.();
       }
     });
 
@@ -1678,176 +1677,88 @@
 })();
 // f2w-force-save:privacy-cleanup-js-v74:1788224239
 
+
 /* ============================================================
-   F2W v76 — USER SEARCH ENTER / DIRECTORY NAVIGATION HARD FIX
+   F2W v82 — ONE USER SEARCH ENTER/ARROW HANDLER ONLY
    ============================================================ */
 (() => {
   'use strict';
-  if(window.__f2wUserSearchEnterV76)return;
-  window.__f2wUserSearchEnterV76=true;
+  if(window.__f2wUserSearchV82)return;
+  window.__f2wUserSearchV82=true;
 
-  let navigating=false;
+  let busy=false;
 
-  function cleanQuery(value){
+  function clean(value){
     return String(value||'').trim().replace(/[^A-Za-z0-9]/g,'').slice(0,30);
   }
 
-  function closeSuggestions(input){
-    try{
-      const container=input?.closest?.('.user-search-container');
-      const results=container?.querySelector('.user-search-results') ||
-        document.getElementById('user-search-results');
-      if(results){
-        results.classList.remove('show');
-        results.innerHTML='';
-      }
-    }catch{}
-  }
-
-  function submit(page=1){
-    if(navigating)return false;
-
-    const input=document.getElementById('user-search');
-    const query=cleanQuery(input?.value);
-    if(!query)return false;
-
-    navigating=true;
-    closeSuggestions(input);
-
-    const target=`/users/?q=${encodeURIComponent(query)}&page=${Math.max(1,Number(page)||1)}`;
-
-    // Same URL: do not start a second navigation. Refresh results in-place.
-    const current=new URL(location.href);
-    if(current.pathname.replace(/\/+$/,'')==='/users' &&
-       current.searchParams.get('q')===query &&
-       Number(current.searchParams.get('page')||1)===Math.max(1,Number(page)||1)){
-      navigating=false;
-      try{window.loadDirectoryResults?.()}catch{}
-      return false;
-    }
-
-    location.assign(target);
-    return false;
-  }
-
-  window.submitUserDirectorySearch=submit;
-
-  /*
-   * Capture Enter BEFORE old autocomplete/page handlers.
-   * Previously one handler tried to open the first autocomplete profile while
-   * another tried to navigate to /users/, causing competing navigations and
-   * the browser to sit in a permanent loading state.
-   */
-  document.addEventListener('keydown',event=>{
-    const input=event.target?.closest?.('#user-search,.user-search-container input');
-    if(!input || event.key!=='Enter' || event.isComposing)return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    submit(1);
-  },true);
-
-  // Keep any Search Users arrow/button on pages that still show one working.
-  document.addEventListener('click',event=>{
-    const button=event.target?.closest?.(
-      '.user-search-submit,[data-user-search-submit],button[onclick*="submitUserDirectorySearch"]'
-    );
-    if(!button)return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    submit(1);
-  },true);
-
-  window.addEventListener('pageshow',()=>{navigating=false;},{passive:true});
-})();
-// f2w-force-save:user-search-enter-v76:1788224745
-
-/* ============================================================
-   F2W v79 — USER DIRECTORY PREFIX SEARCH, NO PAGE NAVIGATION LOOP
-   ============================================================ */
-(() => {
-  'use strict';
-  if(window.__f2wUsersPrefixSearchV79)return;
-  window.__f2wUsersPrefixSearchV79=true;
-
-  let running=false;
-
-  function clean(value){
-    return String(value||'')
-      .trim()
-      .replace(/[^A-Za-z0-9]/g,'')
-      .slice(0,30);
-  }
-
-  function closeSuggestions(input){
+  function hideAutocomplete(input){
     const host=input?.closest?.('.user-search-container')?.querySelector('.user-search-results')
       || document.getElementById('user-search-results');
-    if(host){
-      host.classList.remove('show');
-      host.innerHTML='';
-    }
+    if(host){ host.classList.remove('show'); host.innerHTML=''; }
   }
 
-  async function submitPrefix(){
+  async function runDirectorySearch(){
     const input=document.getElementById('user-search');
     const query=clean(input?.value);
-    if(!query || running)return false;
+    if(!query || busy)return false;
 
-    closeSuggestions(input);
+    hideAutocomplete(input);
 
-    // The Users page now searches IN PLACE. No location.assign, no reload,
-    // no service-worker navigation, no infinite-loading race.
-    if(location.pathname.replace(/\/+$/,'')==='/users'){
-      running=true;
+    const onUsers=location.pathname.replace(/\/+$/,'')==='/users';
+    if(onUsers){
+      busy=true;
       try{
         const url=new URL(location.href);
         url.searchParams.set('q',query);
         url.searchParams.set('page','1');
-        history.replaceState({f2wUsersPrefix:true},'',url.pathname+'?'+url.searchParams.toString());
+        history.replaceState({f2wUsersSearch:true},'',url.pathname+'?'+url.searchParams.toString());
 
         if(typeof window.loadDirectoryResults==='function'){
           await window.loadDirectoryResults();
+        } else {
+          throw new Error('User directory loader is unavailable.');
         }
       }catch(error){
-        console.error('Users prefix search failed:',error);
+        console.error('User directory search failed:',error);
+        const grid=document.getElementById('users-grid');
+        const summary=document.getElementById('users-summary');
+        if(summary)summary.textContent='Could not load user results.';
+        if(grid)grid.innerHTML='<div class="f2w-users-empty">Search failed. Please try again.</div>';
       }finally{
-        running=false;
+        busy=false;
       }
       return false;
     }
 
-    // Other pages only need one normal navigation to the directory.
-    location.href=`/users/?q=${encodeURIComponent(query)}&page=1`;
+    // From every other page, navigate exactly once.
+    location.assign(`/users/?q=${encodeURIComponent(query)}&page=1`);
     return false;
   }
 
-  window.submitUserDirectorySearch=submitPrefix;
+  window.submitUserDirectorySearch=runDirectorySearch;
 
-  // Capture Enter before every older handler.
+  // Capture Enter before any older target-level autocomplete listener.
   document.addEventListener('keydown',event=>{
     const input=event.target?.closest?.('#user-search,.user-search-container input');
     if(!input || event.key!=='Enter' || event.isComposing)return;
-
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
-    submitPrefix();
+    runDirectorySearch();
   },true);
 
-  // Search arrow/button follows the exact same code path.
+  // Arrow/button uses the exact same function.
   document.addEventListener('click',event=>{
-    const button=event.target?.closest?.(
-      '.user-search-submit,[data-user-search-submit],button[onclick*="submitUserDirectorySearch"]'
-    );
+    const button=event.target?.closest?.('.user-search-submit,[data-user-search-submit],button[onclick*="submitUserDirectorySearch"]');
     if(!button)return;
-
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
-    submitPrefix();
+    runDirectorySearch();
   },true);
 })();
-// f2w-force-save:users-prefix-search-v79:1788225124
+// f2w-force-save:user-search-single-handler-v82:1788225709
+// f2w-force-save:user-search-v82:1788225709
+// f2w-force-save:autocomplete-display-name-v83:1788226300
  

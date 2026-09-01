@@ -1698,3 +1698,260 @@ body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-secondar
 
 /* f2w-force-save:tight-compact-role-particles-v81:1788225523 */
 
+/* ============================================================
+   F2W v82 — PARTICLES ONLY INSIDE THE DISPLAY-NAME BOX
+   No particles may fly across rows/cards. Same compact effect site-wide.
+   ============================================================ */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1.05!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  vertical-align:baseline!important;
+  background:none!important;
+  isolation:isolate!important;
+}
+
+.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  pointer-events:none!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  background-color:transparent!important;
+  filter:grayscale(1) brightness(3.4) contrast(1.15)!important;
+  mix-blend-mode:screen!important;
+  opacity:.92!important;
+  border-radius:0!important;
+  z-index:2!important;
+  animation:none!important;
+  box-shadow:none!important;
+}
+
+.f2w-role-name::after,
+.f2w-role-fairy-dust,
+.f2w-role-fairy-dust *,
+.f2w-name-effect::before,
+.f2w-name-effect::after {
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+
+/* Compact name locations use ONLY their own text width, never the parent row width. */
+.user-search-name.f2w-role-name,
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.profile-username.f2w-role-name,
+.display-name.f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  align-self:auto!important;
+  justify-self:start!important;
+}
+
+.user-search-name.f2w-role-name::before,
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before,
+.profile-username.f2w-role-name::before,
+.display-name.f2w-role-name::before,
+[data-f2w-role-decorated="1"].f2w-role-name::before {
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  background-size:100% 100%!important;
+}
+
+/* Profile uses the exact same compact rule; larger text naturally gives a larger GIF area. */
+#profile-name.f2w-role-name,
+.profile-name.f2w-role-name {
+  overflow:hidden!important;
+}
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  background-size:100% 100%!important;
+}
+
+/* f2w-force-save:display-name-only-particles-v82:1788225709 */
+
+/* ============================================================
+   F2W v83 — ROLE COLOUR + WHITE PARTICLES ON DISPLAY NAME ONLY
+   The actual name element owns the GIF. No pseudo-layer banners.
+   ============================================================ */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1.08!important;
+  white-space:nowrap!important;
+  vertical-align:baseline!important;
+  overflow:visible!important;
+
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  text-shadow:
+    0 1px 2px var(--role-shadow,rgba(255,255,255,.55)),
+    0 0 5px var(--role-shadow,rgba(255,255,255,.35))!important;
+
+  /* The GIF is attached DIRECTLY to the text-width box. */
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  background-color:transparent!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+/* Completely retire pseudo particle layers site-wide. */
+.f2w-role-name::before,
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after,
+.f2w-role-fairy-dust,
+.f2w-role-fairy-dust * {
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  box-shadow:none!important;
+  animation:none!important;
+}
+
+/* Correct highest-role letter colours. */
+.f2w-role-owner {
+  --role-main:#ff2638!important;
+  --role-shadow:rgba(255,38,56,.86)!important;
+}
+.f2w-role-staff {
+  --role-main:#c05cff!important;
+  --role-shadow:rgba(192,92,255,.86)!important;
+}
+.f2w-role-moderator {
+  --role-main:#62b4ff!important;
+  --role-shadow:rgba(98,180,255,.84)!important;
+}
+.f2w-role-support {
+  --role-main:#32c8ff!important;
+  --role-shadow:rgba(50,200,255,.82)!important;
+}
+.f2w-role-developer {
+  --role-main:#31d9ad!important;
+  --role-shadow:rgba(49,217,173,.82)!important;
+}
+.f2w-role-verified {
+  --role-main:#579dff!important;
+  --role-shadow:rgba(87,157,255,.82)!important;
+}
+.f2w-role-contributor {
+  --role-main:#ffc13d!important;
+  --role-shadow:rgba(255,193,61,.82)!important;
+}
+.f2w-role-curator {
+  --role-main:#ff6be1!important;
+  --role-shadow:rgba(255,107,225,.82)!important;
+}
+
+/* Header autocomplete: ONLY display name gets role effect.
+   @username and "View public profile" remain normal text. */
+body.f2w-main-page > header .user-search-copy {
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  overflow:hidden!important;
+}
+
+body.f2w-main-page > header .user-search-name {
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  line-height:1.12!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name {
+  overflow:visible!important;
+  flex:0 0 auto!important;
+  align-self:flex-start!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:100% 100%!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::before,
+body.f2w-main-page > header .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+body.f2w-main-page > header .user-search-handle {
+  display:block!important;
+  margin-top:2px!important;
+  color:#9aacc0!important;
+  -webkit-text-fill-color:#9aacc0!important;
+  font-size:.66rem!important;
+  font-weight:750!important;
+  line-height:1.2!important;
+  background:none!important;
+  text-shadow:none!important;
+}
+
+body.f2w-main-page > header .user-search-sub {
+  margin-top:2px!important;
+  background:none!important;
+  text-shadow:none!important;
+}
+
+/* Compact surfaces stay text-width only — never parent/card width. */
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.profile-name.f2w-role-name,
+#profile-name.f2w-role-name,
+.display-name.f2w-role-name {
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+}
+
+/* f2w-force-save:display-name-role-effect-v83:1788226300 */
+ 

@@ -413,6 +413,17 @@ function f2wDebounce(fn,wait=140){
     }
 
     allowed.forEach(r=>el.classList.remove(`f2w-role-${r}`));
+
+    // v83: a name may have been painted white while role data was still loading.
+    // Remove those old inline !important values BEFORE applying the real role.
+    el.style.removeProperty('color');
+    el.style.removeProperty('-webkit-text-fill-color');
+    el.style.removeProperty('text-shadow');
+    el.style.removeProperty('background');
+    el.style.removeProperty('background-image');
+    el.style.removeProperty('filter');
+
+    el.classList.remove('f2w-no-role-name');
     el.classList.add('f2w-role-name',`f2w-role-${role}`);
     el.dataset.f2wRoleDecorated='1';
     el.dataset.f2wRole=role;
@@ -1706,4 +1717,5 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:white-usernames-recent10-v59:1788221542
 // f2w-force-save:roleless-inline-white-v64:1788222358
 // f2w-force-save:profile-links-stable-v70:1788223711
+// f2w-force-save:role-inline-reset-v83:1788226300
  
