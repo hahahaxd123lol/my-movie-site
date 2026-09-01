@@ -1,15 +1,17 @@
--- ============================================================
--- FLIX2WATCH PROFILE EDITOR v22
--- RUN ONCE IN SUPABASE SQL EDITOR
--- ============================================================
+-- Flix2Watch v124 — fix Edit Profile bio NOT NULL conflict
+-- Run in Supabase SQL Editor.
+
+-- Keep existing NOT NULL semantics: blank bios are stored as an empty string,
+-- not NULL.
+alter table public.profiles
+  alter column bio set default '';
+
+update public.profiles
+set bio=''
+where bio is null;
 
 alter table public.profiles
-  add column if not exists snapchat_username text,
-  add column if not exists reddit_username text,
-  add column if not exists steam_profile text,
-  add column if not exists tiktok_username text,
-  add column if not exists favorite_movie_tmdb_id bigint,
-  add column if not exists favorite_movie_poster_path text;
+  alter column bio set not null;
 
 create or replace function public.update_my_profile_v22(
   p_display_name text default null,
@@ -69,7 +71,11 @@ begin
       status_text=nullif(left(trim(coalesce(p_status_text,'')),80),''),
       pronouns=nullif(left(trim(coalesce(p_pronouns,'')),40),''),
       favorite_movie_text=nullif(left(trim(coalesce(p_favorite_movie_text,'')),120),''),
-      favorite_movie_tmdb_id=case when p_favorite_movie_tmdb_id is not null and p_favorite_movie_tmdb_id>0 then p_favorite_movie_tmdb_id else null end,
+      favorite_movie_tmdb_id=case
+        when p_favorite_movie_tmdb_id is not null and p_favorite_movie_tmdb_id>0
+          then p_favorite_movie_tmdb_id
+        else null
+      end,
       favorite_movie_poster_path=nullif(left(trim(coalesce(p_favorite_movie_poster_path,'')),300),''),
       profile_quote=nullif(left(trim(coalesce(p_profile_quote,'')),180),''),
       updated_at=now()
@@ -89,6 +95,5 @@ grant execute on function public.update_my_profile_v22(
 
 notify pgrst,'reload schema';
 
--- f2w-force-save:profile-editor-sql-v22:1788214990
 -- f2w-force-save:profile-bio-not-null-v124:1788299294
  
