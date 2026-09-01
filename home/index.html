@@ -2355,7 +2355,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=88-1788227370">
-  <script src="/global-header-chat-v1.js?v=84-1788226452" defer></script>
+  <script src="/global-header-chat-v1.js?v=91-1788228094" defer></script>
 
   <style id="f2w-mobile-login-above-featured">
     /* Mobile/tablet home layout: keep the login/signup card above Featured. */
@@ -5032,7 +5032,7 @@ if(currentUser){
   let catalogLoading=false;
 
   function catalogueEndpoint(tmdbPage){
-    if(catalogMode==='genre'){
+    if(catalogMode==='genre'&&catalogGenreId){
       const extra=catalogGenreSort==='vote_average.desc'
         ? '&vote_count.gte=50'
         : '';
@@ -5357,7 +5357,7 @@ if(currentUser){
 
     if(catalogMode==='genre'&&catalogGenreId){
       catalogPage=1;
-      loadCatalogPage(1,false);
+      f2wOpenGenreV91(catalogGenreId,1,false);
     }
   }
 
@@ -5382,29 +5382,55 @@ if(currentUser){
     37:'Western'
   };
 
-  function switchGenre(id,btn){
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  async function f2wOpenGenreV91(id,page=1,scrollToGrid=false){
+    id=Number(id);
+    if(!genreNames[id])return false;
 
-    if(btn){
-      btn.classList.add('active');
-    }else{
-      const matchingTopButton=[...document.querySelectorAll('.tab-btn')]
-        .find(button=>button.getAttribute('onclick')===`switchGenre(${id},this)`);
-      if(matchingTopButton)matchingTopButton.classList.add('active');
-    }
-
+    // One authoritative genre state. Nothing else is allowed to leave this
+    // request in Trending mode.
     currentMode='genre';
     catalogMode='genre';
-    catalogGenreId=Number(id);
+    catalogGenreId=id;
     catalogQuery='';
-    catalogPage=1;
+    catalogPage=Math.max(1,Number(page)||1);
+    catalogGenreSort='popularity.desc';
+
     setGenreSortVisibility(true);
 
     const sortSelect=document.getElementById('genre-sort-select');
     if(sortSelect)sortSelect.value=catalogGenreSort;
 
-    document.getElementById('section-title').textContent=`${genreNames[id]||'Movies'} Movies`;
-    loadCatalogPage(1,false);
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+
+    const sectionTitle=document.getElementById('section-title');
+    if(sectionTitle) sectionTitle.textContent=`${genreNames[id]} Movies`;
+
+    // Keep URL truthful and remove mutually-exclusive search/tab params.
+    const url=new URL(location.href);
+    url.pathname='/home/';
+    url.searchParams.delete('search');
+    url.searchParams.delete('tab');
+    url.searchParams.set('genre',String(id));
+    url.searchParams.set('page',String(catalogPage));
+    history.replaceState({f2wGenreV91:true},'',url.pathname+'?'+url.searchParams.toString());
+
+    // If an older catalogue request is finishing, wait for it to release its lock,
+    // then load the selected genre. This prevents the "genre opens Home/Trending"
+    // race that was happening after navigation.
+    let waits=0;
+    while(catalogLoading && waits<40){
+      await new Promise(resolve=>setTimeout(resolve,50));
+      waits++;
+    }
+
+    await loadCatalogPage(catalogPage,scrollToGrid);
+    return true;
+  }
+  window.f2wOpenGenreV91=f2wOpenGenreV91;
+
+  function switchGenre(id,btn){
+    if(btn)btn.classList.add('active');
+    f2wOpenGenreV91(id,1,false);
   }
 
   let mediaSearchDebounceTimer=null;
@@ -5501,23 +5527,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
       document.getElementById('section-title').textContent=`Search: "${requestedSearch}"`;
       loadCatalogPage(requestedPage,false);
     }else if(requestedGenre&&genreNames[requestedGenre]){
-      currentMode='genre';
-      catalogMode='genre';
-      catalogGenreId=requestedGenre;
-      setGenreSortVisibility(true);
-
-      const sortSelect=document.getElementById('genre-sort-select');
-      if(sortSelect)sortSelect.value=catalogGenreSort;
-      document.getElementById('section-title').textContent=`${genreNames[requestedGenre]} Movies`;
-
-      const matchingTopButton=[...document.querySelectorAll('.tab-btn')]
-        .find(button=>button.getAttribute('onclick')===`switchGenre(${requestedGenre},this)`);
-      if(matchingTopButton){
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-        matchingTopButton.classList.add('active');
-      }
-
-      loadCatalogPage(requestedPage,false);
+      f2wOpenGenreV91(requestedGenre,requestedPage,false);
     }else if(requestedTab==='movie'||requestedTab==='tv'){
       const activeTab=[...document.querySelectorAll('.tab-btn')]
         .find(button=>button.getAttribute('onclick')===`switchCategory('${requestedTab}',this)`);
@@ -5629,7 +5639,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
   }
 
   function browseGenreFromBottom(genreId){
-    switchGenre(genreId,null);
+    f2wOpenGenreV91(genreId,1,true);
 
     const grid=document.getElementById('movie-grid');
     if(grid){
@@ -8064,6 +8074,29 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-spacing-v70:1788223711 */
 </style>
 
+
+<script id="f2w-genre-reassert-v91">
+(() => {
+  const run=()=>{
+    const params=new URLSearchParams(location.search);
+    const genre=Number(params.get('genre'));
+    const page=Math.max(1,Number(params.get('page'))||1);
+    if(!genre)return;
+
+    // Run after legacy DOMContentLoaded handlers; the helper waits for any
+    // in-flight old catalogue request before loading the requested genre.
+    setTimeout(()=>window.f2wOpenGenreV91?.(genre,page,false),80);
+  };
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',run,{once:true});
+  }else{
+    run();
+  }
+})();
+/* f2w-force-save:genre-reassert-v91:1788228094 */
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
@@ -8156,4 +8189,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v88-cache:1788227370:home/index.html -->
 <!-- f2w-force-save:v89-cache:1788227613:home/index.html -->
 <!-- f2w-force-save:v90-cache:1788227716:home/index.html -->
+<!-- f2w-force-save:home-genre-v91:1788228094 -->
+<!-- f2w-force-save:v91-cache:1788228094:home/index.html -->
  

@@ -1824,4 +1824,61 @@
   window.addEventListener('pageshow',()=>{navigating=false;},{passive:true});
 })();
 // f2w-force-save:movie-search-results-v84:1788226452
+
+/* ============================================================
+   F2W v91 — SITE-WIDE GENRE NAVIGATION
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wGenreNavigationV91)return;
+  window.__f2wGenreNavigationV91=true;
+
+  const GENRES = new Set([
+    '28','35','27','878','53','80','10749','16','99',
+    '14','12','18','10751','9648','36','10402','10752','37'
+  ]);
+
+  function openGenre(id){
+    id=String(id||'').replace(/[^0-9]/g,'');
+    if(!GENRES.has(id))return false;
+
+    const target=`/home/?genre=${encodeURIComponent(id)}&page=1`;
+
+    // On Home, switch the catalogue in place without reloading the whole site.
+    if(location.pathname.replace(/\/+$/,'')==='/home' &&
+       typeof window.f2wOpenGenreV91==='function'){
+      window.f2wOpenGenreV91(Number(id),1,true);
+      return false;
+    }
+
+    location.href=target;
+    return false;
+  }
+
+  window.f2wNavigateGenreV91=openGenre;
+
+  document.addEventListener('click',event=>{
+    const link=event.target?.closest?.(
+      '.f2w-genre-menu a[href*="genre="], a[data-f2w-genre]'
+    );
+    if(!link)return;
+
+    let genre='';
+    try{
+      const url=new URL(link.href,location.origin);
+      genre=url.searchParams.get('genre')||link.dataset.f2wGenre||'';
+    }catch{
+      genre=link.dataset.f2wGenre||'';
+    }
+
+    genre=String(genre).replace(/[^0-9]/g,'');
+    if(!GENRES.has(genre))return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    openGenre(genre);
+  },true);
+})();
+// f2w-force-save:genre-navigation-v91:1788228094
  
