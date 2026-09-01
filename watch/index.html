@@ -2937,10 +2937,10 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=54-1788220759">
+  <link rel="stylesheet" href="/final-v35.css?v=43-1788219527">
   <!-- Unified Watch-page header + preloaded chat -->
-  <link rel="stylesheet" href="/global-header-v1.css?v=50-1788220357">
-  <script src="/global-header-chat-v1.js?v=50-1788220357" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=44-1788219651">
+  <script src="/global-header-chat-v1.js?v=44-1788219651" defer></script>
 
 
 
@@ -3322,6 +3322,547 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 /* f2w-force-save:watch-login-compact-v43:1788219527 */
 </style>
 
+
+<style id="f2w-watch-login-compact-v46">
+/* F2W v46 — smaller Login to Watch card without making it tall/narrow */
+@media (min-width:601px) {
+  .watch-login-overlay {
+    padding:18px!important;
+  }
+
+  .watch-login-card {
+    width:min(400px,calc(100vw - 40px))!important;
+    max-width:400px!important;
+    padding:18px 20px 17px!important;
+    border-radius:14px!important;
+  }
+
+  .watch-login-card .lock-icon {
+    width:46px!important;
+    height:46px!important;
+    margin:0 auto 11px!important;
+    border-radius:13px!important;
+    font-size:1.05rem!important;
+  }
+
+  .watch-login-card h2 {
+    margin:0!important;
+    font-size:1.12rem!important;
+    line-height:1.15!important;
+  }
+
+  .watch-login-card p {
+    max-width:330px!important;
+    margin:7px auto 0!important;
+    font-size:.72rem!important;
+    line-height:1.42!important;
+  }
+
+  .watch-login-actions {
+    gap:8px!important;
+    margin-top:14px!important;
+    flex-wrap:nowrap!important;
+  }
+
+  .watch-login-actions button {
+    flex:1 1 0!important;
+    min-width:0!important;
+    min-height:38px!important;
+    height:38px!important;
+    padding:0 12px!important;
+    border-radius:8px!important;
+    font-size:.76rem!important;
+  }
+}
+
+@media (max-width:600px) {
+  .watch-login-overlay {
+    padding:14px!important;
+  }
+
+  .watch-login-card {
+    width:min(330px,calc(100vw - 28px))!important;
+    max-width:330px!important;
+    padding:15px 16px 14px!important;
+    border-radius:13px!important;
+  }
+
+  .watch-login-card .lock-icon {
+    width:42px!important;
+    height:42px!important;
+    margin:0 auto 9px!important;
+    border-radius:12px!important;
+    font-size:.95rem!important;
+  }
+
+  .watch-login-card h2 {
+    font-size:1rem!important;
+    line-height:1.15!important;
+  }
+
+  .watch-login-card p {
+    max-width:292px!important;
+    margin-top:6px!important;
+    font-size:.69rem!important;
+    line-height:1.38!important;
+  }
+
+  .watch-login-actions {
+    gap:7px!important;
+    margin-top:12px!important;
+    flex-wrap:nowrap!important;
+  }
+
+  .watch-login-actions button {
+    flex:1 1 0!important;
+    min-width:0!important;
+    min-height:36px!important;
+    height:36px!important;
+    padding:0 8px!important;
+    font-size:.72rem!important;
+  }
+}
+
+/* f2w-force-save:watch-login-compact-v46:1788219920 */
+</style>
+
+
+<style id="f2w-watch-controls-login-v48">
+/* ============================================================
+   F2W v48 — WATCH TOP CONTROLS + MUCH SMALLER LOGIN CARD
+   ============================================================ */
+
+/* Top-right player controls: larger/readable, but still compact. */
+.watch-player-shell .player-topbar button,
+#watch-player-shell .player-topbar button,
+.watch-player-header button,
+.player-header button,
+.watch-player-toolbar button,
+.player-toolbar button,
+button[onclick*="Login"],
+button[onclick*="Report"],
+button[onclick*="Next Source"] {
+  min-height:34px!important;
+  height:34px!important;
+  padding:0 12px!important;
+  border-radius:8px!important;
+  font-size:.72rem!important;
+  font-weight:800!important;
+  line-height:1!important;
+  gap:7px!important;
+}
+
+.watch-player-shell .player-topbar button i,
+#watch-player-shell .player-topbar button i,
+.watch-player-header button i,
+.player-header button i,
+.watch-player-toolbar button i,
+.player-toolbar button i {
+  font-size:.72rem!important;
+  width:12px!important;
+  min-width:12px!important;
+}
+
+/* Exact current Watch action buttons if present. */
+#watch-player-shell button,
+.watch-player-shell button {
+  text-rendering:geometricPrecision;
+}
+
+/* DESKTOP: shrink the entire Login to Watch card substantially. */
+@media (min-width:601px) {
+  .watch-login-overlay {
+    padding:12px!important;
+  }
+
+  .watch-login-card {
+    width:300px!important;
+    max-width:300px!important;
+    min-width:0!important;
+    padding:13px 14px 12px!important;
+    border-radius:12px!important;
+    box-sizing:border-box!important;
+  }
+
+  .watch-login-card .lock-icon {
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    min-height:36px!important;
+    margin:0 auto 8px!important;
+    border-radius:10px!important;
+    font-size:.8rem!important;
+  }
+
+  .watch-login-card h2 {
+    margin:0!important;
+    font-size:.92rem!important;
+    line-height:1.08!important;
+  }
+
+  .watch-login-card p {
+    width:auto!important;
+    max-width:260px!important;
+    margin:6px auto 0!important;
+    font-size:.61rem!important;
+    line-height:1.32!important;
+  }
+
+  .watch-login-actions {
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:6px!important;
+    margin-top:10px!important;
+  }
+
+  .watch-login-actions button {
+    flex:1 1 0!important;
+    min-width:0!important;
+    min-height:32px!important;
+    height:32px!important;
+    padding:0 8px!important;
+    border-radius:7px!important;
+    font-size:.66rem!important;
+    font-weight:800!important;
+  }
+}
+
+/* MOBILE: same proportions, scaled down a little further. */
+@media (max-width:600px) {
+  .watch-login-overlay {
+    padding:10px!important;
+  }
+
+  .watch-login-card {
+    width:min(276px,calc(100vw - 24px))!important;
+    max-width:276px!important;
+    min-width:0!important;
+    padding:12px 12px 11px!important;
+    border-radius:11px!important;
+  }
+
+  .watch-login-card .lock-icon {
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    min-height:34px!important;
+    margin:0 auto 7px!important;
+    border-radius:9px!important;
+    font-size:.76rem!important;
+  }
+
+  .watch-login-card h2 {
+    font-size:.87rem!important;
+    line-height:1.08!important;
+  }
+
+  .watch-login-card p {
+    max-width:242px!important;
+    margin:5px auto 0!important;
+    font-size:.59rem!important;
+    line-height:1.3!important;
+  }
+
+  .watch-login-actions {
+    gap:6px!important;
+    margin-top:9px!important;
+    flex-wrap:nowrap!important;
+  }
+
+  .watch-login-actions button {
+    min-height:31px!important;
+    height:31px!important;
+    padding:0 7px!important;
+    font-size:.64rem!important;
+  }
+}
+
+/* f2w-force-save:watch-controls-login-v48:1788220122 */
+</style>
+
+
+<style id="f2w-watch-login-controls-v49">
+/* ============================================================
+   F2W v49 — EXACT WATCH LOGIN + PLAYER HEADER CONTROL OVERRIDE
+   ============================================================ */
+
+/* REAL top-right player buttons */
+.player-header-actions .favorite-current-btn,
+.player-header-actions .fallback-trigger-btn {
+  min-height:38px!important;
+  height:38px!important;
+  padding:0 15px!important;
+  border-radius:8px!important;
+  font-size:.80rem!important;
+  font-weight:800!important;
+  line-height:1!important;
+  gap:8px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+}
+
+.player-header-actions .favorite-current-btn i,
+.player-header-actions .fallback-trigger-btn i {
+  font-size:.80rem!important;
+  width:13px!important;
+  min-width:13px!important;
+  line-height:1!important;
+}
+
+.player-header-actions {
+  gap:9px!important;
+}
+
+/* REAL login overlay/card selectors — higher specificity than old v4/v5 rules. */
+#watch-login-overlay {
+  padding:12px!important;
+}
+
+#watch-login-overlay .watch-login-card {
+  width:340px!important;
+  max-width:340px!important;
+  min-width:0!important;
+  padding:16px 17px 15px!important;
+  border-radius:13px!important;
+  box-sizing:border-box!important;
+  margin:auto!important;
+}
+
+#watch-login-overlay .watch-login-card .lock-icon {
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  min-height:40px!important;
+  margin:0 auto 9px!important;
+  padding:0!important;
+  border-radius:10px!important;
+  font-size:.88rem!important;
+  line-height:1!important;
+}
+
+#watch-login-overlay .watch-login-card h2 {
+  margin:0!important;
+  font-size:1.02rem!important;
+  line-height:1.08!important;
+  font-weight:800!important;
+}
+
+#watch-login-overlay .watch-login-card p {
+  width:auto!important;
+  max-width:292px!important;
+  margin:7px auto 0!important;
+  font-size:.66rem!important;
+  line-height:1.36!important;
+}
+
+#watch-login-overlay .watch-login-actions {
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  gap:7px!important;
+  margin-top:12px!important;
+}
+
+#watch-login-overlay .watch-login-actions button {
+  flex:1 1 0!important;
+  min-width:0!important;
+  width:auto!important;
+  min-height:35px!important;
+  height:35px!important;
+  padding:0 9px!important;
+  border-radius:7px!important;
+  font-size:.70rem!important;
+  font-weight:800!important;
+  line-height:1!important;
+}
+
+/* Override the old giant >=1800px rule as well. */
+@media (min-width:1800px) {
+  #watch-login-overlay .watch-login-card {
+    width:340px!important;
+    max-width:340px!important;
+    padding:16px 17px 15px!important;
+  }
+  #watch-login-overlay .watch-login-card .lock-icon {
+    width:40px!important;
+    height:40px!important;
+    font-size:.88rem!important;
+    margin-bottom:9px!important;
+  }
+  #watch-login-overlay .watch-login-card h2 {
+    font-size:1.02rem!important;
+  }
+  #watch-login-overlay .watch-login-card p {
+    max-width:292px!important;
+    font-size:.66rem!important;
+  }
+  #watch-login-overlay .watch-login-actions button {
+    min-width:0!important;
+    min-height:35px!important;
+    height:35px!important;
+    font-size:.70rem!important;
+  }
+}
+
+/* Mobile: genuinely smaller, same proportions. */
+@media (max-width:700px) {
+  #watch-login-overlay {
+    padding:10px!important;
+  }
+  #watch-login-overlay .watch-login-card {
+    width:min(290px,calc(100vw - 22px))!important;
+    max-width:290px!important;
+    padding:13px 13px 12px!important;
+    border-radius:11px!important;
+  }
+  #watch-login-overlay .watch-login-card .lock-icon {
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    min-height:34px!important;
+    margin-bottom:7px!important;
+    border-radius:9px!important;
+    font-size:.76rem!important;
+  }
+  #watch-login-overlay .watch-login-card h2 {
+    font-size:.90rem!important;
+  }
+  #watch-login-overlay .watch-login-card p {
+    max-width:252px!important;
+    margin-top:5px!important;
+    font-size:.60rem!important;
+    line-height:1.32!important;
+  }
+  #watch-login-overlay .watch-login-actions {
+    gap:6px!important;
+    margin-top:9px!important;
+  }
+  #watch-login-overlay .watch-login-actions button {
+    min-height:32px!important;
+    height:32px!important;
+    padding:0 7px!important;
+    font-size:.65rem!important;
+  }
+
+  .player-header-actions .favorite-current-btn,
+  .player-header-actions .fallback-trigger-btn {
+    min-height:36px!important;
+    height:36px!important;
+    padding:0 12px!important;
+    font-size:.75rem!important;
+    flex:0 1 auto!important;
+  }
+}
+
+/* f2w-force-save:watch-login-controls-v49:1788220302 */
+</style>
+
+
+<style id="f2w-watch-login-pc-v51">
+/* F2W v51 — PC Login to Watch: slightly larger than v49 */
+@media (min-width:701px) {
+  #watch-login-overlay .watch-login-card {
+    width:365px!important;
+    max-width:365px!important;
+    padding:17px 18px 16px!important;
+  }
+
+  #watch-login-overlay .watch-login-card .lock-icon {
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    min-height:42px!important;
+    margin-bottom:10px!important;
+    font-size:.92rem!important;
+  }
+
+  #watch-login-overlay .watch-login-card h2 {
+    font-size:1.08rem!important;
+  }
+
+  #watch-login-overlay .watch-login-card p {
+    max-width:312px!important;
+    font-size:.69rem!important;
+    line-height:1.38!important;
+  }
+
+  #watch-login-overlay .watch-login-actions {
+    margin-top:13px!important;
+    gap:8px!important;
+  }
+
+  #watch-login-overlay .watch-login-actions button {
+    min-height:36px!important;
+    height:36px!important;
+    font-size:.72rem!important;
+    padding:0 10px!important;
+  }
+}
+
+/* Keep the v49 mobile sizing untouched. */
+/* f2w-force-save:watch-login-pc-v51:1788220463 */
+</style>
+
+
+<style id="f2w-player-header-buttons-v53">
+/* F2W v53 — exact player header buttons, PC readable size */
+@media (min-width:761px) {
+  .player-header-bar {
+    min-height:58px!important;
+    padding-top:8px!important;
+    padding-bottom:8px!important;
+  }
+
+  .player-header-actions {
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:10px!important;
+    flex-wrap:nowrap!important;
+  }
+
+  .player-header-actions > #favorite-current-btn,
+  .player-header-actions > #report-playback-btn,
+  .player-header-actions > .fallback-trigger-btn {
+    height:42px!important;
+    min-height:42px!important;
+    padding:0 18px!important;
+    border-radius:9px!important;
+    font-size:.86rem!important;
+    font-weight:800!important;
+    line-height:1!important;
+    gap:9px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    white-space:nowrap!important;
+  }
+
+  .player-header-actions > #favorite-current-btn i,
+  .player-header-actions > #report-playback-btn i,
+  .player-header-actions > .fallback-trigger-btn i {
+    font-size:.86rem!important;
+    width:14px!important;
+    min-width:14px!important;
+    line-height:1!important;
+  }
+}
+
+@media (min-width:761px) and (max-width:1100px) {
+  .player-header-actions > #favorite-current-btn,
+  .player-header-actions > #report-playback-btn,
+  .player-header-actions > .fallback-trigger-btn {
+    height:40px!important;
+    min-height:40px!important;
+    padding:0 14px!important;
+    font-size:.80rem!important;
+  }
+}
+
+/* f2w-force-save:player-header-buttons-v53:1788220613 */
+</style>
+
 </head>
 <body class="theme-red f2w-main-page f2w-watch-page watch-locked">
 <header>
@@ -3619,8 +4160,6 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div>
             
             
-            <div class="account-user-email" id="account-user-email">Signed-in user</div>
-            <div class="account-user-username" id="account-user-username">@username</div>
             <div class="account-role" id="account-user-role">MEMBER</div>
             <div class="account-owner-note" id="account-owner-note" style="display:none;"><i class="fa-solid fa-crown"></i> WEBSITE OWNER</div>
           </div>
@@ -3705,14 +4244,14 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <i class="fa-solid fa-play" style="color:var(--accent);"></i> Flix2Watch Player
         </span>
         <div class="player-header-actions">
-          <button class="favorite-current-btn" id="favorite-current-btn" type="button" onclick="toggleCurrentFavorite()" disabled>
+          <button class="favorite-current-btn" id="favorite-current-btn" type="button" onclick="toggleCurrentFavorite()" disabled style="height:42px!important;min-height:42px!important;padding:0 18px!important;border-radius:9px!important;font-size:.86rem!important;font-weight:800!important;line-height:1!important;gap:9px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important">
             <i class="fa-regular fa-heart"></i>
             <span id="favorite-current-label">Save to Favorites</span>
           </button>
-          <button class="fallback-trigger-btn" id="report-playback-btn" type="button" onclick="reportCurrentPlayback()">
+          <button class="fallback-trigger-btn" id="report-playback-btn" type="button" onclick="reportCurrentPlayback()" style="height:42px!important;min-height:42px!important;padding:0 18px!important;border-radius:9px!important;font-size:.86rem!important;font-weight:800!important;line-height:1!important;gap:9px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important">
             <i class="fa-solid fa-flag"></i> Report Playback
           </button>
-          <button class="fallback-trigger-btn" onclick="tryNextServer()">
+          <button class="fallback-trigger-btn" onclick="tryNextServer()" style="height:42px!important;min-height:42px!important;padding:0 18px!important;border-radius:9px!important;font-size:.86rem!important;font-weight:800!important;line-height:1!important;gap:9px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important">
             <i class="fa-solid fa-rotate"></i> Try Next Source
           </button>
         </div>
@@ -3726,8 +4265,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             <h2>Log in to watch</h2>
             <p>Browse the full title page freely. Sign in or create a free account to unlock playback and sources. Flix2Watch does not require a subscription or payment; the account gate helps reduce automated abuse/scraping and supports account-level moderation.</p>
             <div class="watch-login-actions">
-              <button class="primary" type="button" onclick="openPlaybackAccount('login')">Log In</button>
-              <button type="button" onclick="openPlaybackAccount('signup')">Create Account</button>
+              <button class="primary" type="button" onclick="event.preventDefault();openPlaybackAccount('login');return false;">Log In</button>
+              <button type="button" onclick="event.preventDefault();openPlaybackAccount('signup');return false;">Create Account</button>
             </div>
           </div>
         </div>
@@ -4715,8 +5254,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       loggedOut.style.display='none';
       loggedIn.style.display='block';
 
-      if(email)email.textContent=currentUser.email||'Signed-in user';
-      if(usernameEl)usernameEl.textContent=`@${isCurrentUserOwner()?'josh':(getAccountUsername()||'username')}`;
+      email.textContent=currentUser.email||'Signed-in user';
+      usernameEl.textContent=`@${isCurrentUserOwner()?'josh':(getAccountUsername()||'username')}`;
 
       let roleText='MEMBER';
       let roleColor='var(--accent)';
@@ -5666,15 +6205,44 @@ if(currentUser){
   let watchPlaybackUnlocked=false;
 
   function openPlaybackAccount(mode='login'){
-    if(typeof showAccountMode==='function')showAccountMode(mode);
-    if(typeof setAccountMessage==='function'){
-      setAccountMessage(
-        mode==='signup'
-          ? 'Create an account to start watching.'
-          : 'Log in to start watching.'
-      );
+    const target=mode==='signup'?'signup':'login';
+
+    // Preferred path: use the same auth flow as the working top-header buttons.
+    try{
+      if(typeof window.openHeaderAuth==='function'){
+        window.openHeaderAuth(target);
+        return;
+      }
+    }catch(error){
+      console.warn('Header auth opener failed:',error);
     }
-    if(typeof openAccountModal==='function')openAccountModal();
+
+    // Fallback to the page-local Account modal.
+    try{
+      if(typeof showAccountMode==='function')showAccountMode(target);
+      if(typeof setAccountMessage==='function'){
+        setAccountMessage(
+          target==='signup'
+            ? 'Create an account to start watching.'
+            : 'Log in to start watching.'
+        );
+      }
+      if(typeof openAccountModal==='function'){
+        openAccountModal();
+        return;
+      }
+    }catch(error){
+      console.warn('Account modal opener failed:',error);
+    }
+
+    // Last-resort: click the actual header auth button.
+    const btn=document.getElementById(target==='signup'?'header-signup-btn':'header-login-btn');
+    if(btn){
+      btn.click();
+      return;
+    }
+
+    console.warn('No auth UI opener was available.');
   }
 
   function setWatchPlaybackAccess(allowed){
@@ -7662,7 +8230,249 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
 
-  <script src="/final-v35.js?v=54-1788220759" defer></script>
+  <script src="/final-v35.js?v=44-1788219651" defer></script>
+
+<style id="f2w-watch-tools-v47-css">
+  .f2w-watch-toast-v47{
+    position:fixed;right:18px;top:92px;z-index:2147483000;
+    min-width:220px;max-width:min(360px,calc(100vw - 28px));
+    padding:11px 13px;border:1px solid #2a425b;border-radius:10px;
+    background:#071522;color:#fff;font-size:.76rem;font-weight:750;
+    box-shadow:0 18px 55px rgba(0,0,0,.45);
+    opacity:0;transform:translateY(-6px);pointer-events:none;
+    transition:opacity .16s ease,transform .16s ease
+  }
+  .f2w-watch-toast-v47.show{opacity:1;transform:translateY(0)}
+  .f2w-watch-toast-v47.error{border-color:#6e2430;color:#ff8a95}
+
+  body.f2w-watch-dimmed::before{
+    content:"";position:fixed;inset:0;z-index:2147470000;
+    background:rgba(0,0,0,.76);pointer-events:none
+  }
+  body.f2w-watch-dimmed .watch-player-shell,
+  body.f2w-watch-dimmed #watch-player-shell,
+  body.f2w-watch-dimmed .player-shell,
+  body.f2w-watch-dimmed .video-player-wrap,
+  body.f2w-watch-dimmed .watch-player,
+  body.f2w-watch-dimmed iframe{
+    position:relative!important;z-index:2147471000!important
+  }
+
+  .watch-faq-list{display:grid!important;gap:9px!important}
+  .watch-faq-item{border:1px solid #21384f!important;border-radius:11px!important;background:#071522!important;overflow:hidden!important}
+  .watch-faq-question{width:100%!important;display:flex!important;justify-content:space-between!important;align-items:center!important;gap:12px!important;padding:13px 14px!important;margin:0!important;border:0!important;background:transparent!important;color:#fff!important;text-align:left!important;font-weight:800!important;cursor:pointer!important}
+  .watch-faq-answer{display:none;padding:0 14px 14px!important;color:#8da2bb!important;line-height:1.55!important;font-size:.76rem!important}
+  .watch-faq-item.open .watch-faq-answer{display:block!important}
+</style>
+
+<script id="f2w-watch-tools-v47">
+(() => {
+  'use strict';
+
+  const toast=(message,error=false)=>{
+    let el=document.getElementById('f2w-watch-toast-v47');
+    if(!el){
+      el=document.createElement('div');
+      el.id='f2w-watch-toast-v47';
+      el.className='f2w-watch-toast-v47';
+      document.body.appendChild(el);
+    }
+    el.textContent=String(message||'Done');
+    el.classList.toggle('error',!!error);
+    el.classList.add('show');
+    clearTimeout(el._timer);
+    el._timer=setTimeout(()=>el.classList.remove('show'),2600);
+  };
+
+  // ---------------- Dim lights ----------------
+  function findDimButton(){
+    return [...document.querySelectorAll('button,a')].find(el=>{
+      const t=(el.textContent||'').trim().toLowerCase();
+      return t.includes('dim lights') || t.includes('lights off') || t.includes('cinema mode');
+    });
+  }
+
+  function bindDimLights(){
+    const btn=findDimButton();
+    if(!btn || btn.dataset.f2wDimV47)return;
+    btn.dataset.f2wDimV47='1';
+    btn.addEventListener('click',e=>{
+      e.preventDefault();
+      const active=document.body.classList.toggle('f2w-watch-dimmed');
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-pressed',active?'true':'false');
+      toast(active?'Lights dimmed.':'Lights restored.');
+    });
+  }
+
+  // ---------------- Copy watch link ----------------
+  function findCopyButton(){
+    return [...document.querySelectorAll('button,a')].find(el=>{
+      const t=(el.textContent||'').trim().toLowerCase();
+      return t.includes('copy watch link') || t==='copy link' || t.includes('copy link');
+    });
+  }
+
+  async function copyCurrentWatchLink(){
+    const url=location.href;
+    try{
+      if(navigator.clipboard?.writeText){
+        await navigator.clipboard.writeText(url);
+      }else{
+        const ta=document.createElement('textarea');
+        ta.value=url;ta.setAttribute('readonly','');
+        ta.style.position='fixed';ta.style.opacity='0';
+        document.body.appendChild(ta);ta.select();
+        if(!document.execCommand('copy'))throw new Error('Copy failed');
+        ta.remove();
+      }
+      toast('Watch link copied.');
+    }catch(error){
+      toast('Could not copy the watch link.',true);
+    }
+  }
+
+  function bindCopyLink(){
+    const btn=findCopyButton();
+    if(!btn || btn.dataset.f2wCopyV47)return;
+    btn.dataset.f2wCopyV47='1';
+    btn.addEventListener('click',e=>{
+      e.preventDefault();
+      copyCurrentWatchLink();
+    });
+  }
+
+  // ---------------- Rating auth guard ----------------
+  function findRatingSaveButtons(){
+    return [...document.querySelectorAll('button')].filter(btn=>{
+      const t=(btn.textContent||'').trim().toLowerCase();
+      return t==='save rating' || t.includes('save rating');
+    });
+  }
+
+  async function getSession(){
+    try{
+      if(window.chatSupabase?.auth){
+        const {data}=await window.chatSupabase.auth.getSession();
+        return data?.session||null;
+      }
+      if(window.supabase && window.SUPABASE_URL && window.SUPABASE_KEY){
+        const client=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_KEY);
+        const {data}=await client.auth.getSession();
+        return data?.session||null;
+      }
+    }catch{}
+    return null;
+  }
+
+  function openAuthChoice(){
+    if(typeof window.openHeaderAuth==='function'){
+      window.openHeaderAuth('login');
+      return;
+    }
+    if(typeof window.openAccountModal==='function'){
+      window.openAccountModal('login');
+      return;
+    }
+    const login=document.getElementById('header-login-btn');
+    if(login){login.click();return;}
+    toast('Log in or create an account to save a rating.',true);
+  }
+
+  function bindRatingGuard(){
+    findRatingSaveButtons().forEach(btn=>{
+      if(btn.dataset.f2wRatingGuardV47)return;
+      btn.dataset.f2wRatingGuardV47='1';
+      btn.addEventListener('click',async e=>{
+        const session=await getSession();
+        if(session?.user)return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        toast('Log in or create an account to save your rating.');
+        openAuthChoice();
+      },true);
+    });
+  }
+
+  // ---------------- More FAQs ----------------
+  const extraFaqs=[
+    ['Why do I need an account to watch?','An account helps Flix2Watch apply account-level moderation, save ratings and favorites, and reduce automated abuse.'],
+    ['Do I need a subscription?','No. Flix2Watch does not require a paid subscription to use the site.'],
+    ['Why does a source sometimes fail?','Streaming sources are third-party services and can occasionally be offline, blocked, slow, or missing a title. Try Next Source when that happens.'],
+    ['What does Try Next Source do?','It switches the player to another available source for the same movie or episode without changing the title page.'],
+    ['Why is playback different between sources?','Each source controls its own player, subtitles, quality options and availability.'],
+    ['Does Flix2Watch host the video files?','The Watch page embeds third-party playback sources. Flix2Watch does not need to host the streamed video file itself.'],
+    ['How does Recently Watched work?','When you are logged in and open a movie or series, it can appear on your profile Recently Watched list. Only the most recent titles are kept.'],
+    ['How do ratings work?','Choose a star rating and save it while logged in. Your rating is associated with your account and can contribute to your profile activity.'],
+    ['Why can’t I save a rating while logged out?','Ratings are account data, so you need to log in or create an account before saving one.'],
+    ['What does Dim Lights do?','Dim Lights darkens the rest of the Watch page while keeping the player visible, giving you a cinema-style viewing mode.'],
+    ['What does Copy Watch Link do?','It copies the current Watch page URL to your clipboard so you can share or reopen the same title.'],
+    ['Will my player restart if I click page controls?','Normal page controls should not intentionally reload the same player source. Changing source can reload the player because a different embed is being loaded.']
+  ];
+
+  function addFaqs(){
+    const list=document.querySelector('.watch-faq-list');
+    if(!list || list.dataset.f2wFaqV47)return;
+    list.dataset.f2wFaqV47='1';
+    extraFaqs.forEach(([q,a])=>{
+      const item=document.createElement('div');
+      item.className='watch-faq-item';
+      item.innerHTML=`<button class="watch-faq-question" type="button"><span>${q}</span><i class="fa-solid fa-chevron-down"></i></button><div class="watch-faq-answer">${a}</div>`;
+      list.appendChild(item);
+    });
+  }
+
+  function bindFaqs(){
+    document.querySelectorAll('.watch-faq-item').forEach(item=>{
+      const q=item.querySelector('.watch-faq-question');
+      if(!q || q.dataset.f2wFaqBound)return;
+      q.dataset.f2wFaqBound='1';
+      q.addEventListener('click',()=>{
+        item.classList.toggle('open');
+        const icon=q.querySelector('i');
+        if(icon)icon.className=item.classList.contains('open')?'fa-solid fa-chevron-up':'fa-solid fa-chevron-down';
+      });
+    });
+  }
+
+  function init(){
+    bindDimLights();
+    bindCopyLink();
+    bindRatingGuard();
+    addFaqs();
+    bindFaqs();
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+
+  new MutationObserver(()=>init()).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+
+<script id="f2w-watch-auth-buttons-v55">
+(() => {
+  'use strict';
+  const bind=()=>{
+    const overlay=document.getElementById('watch-login-overlay');
+    if(!overlay)return;
+    const buttons=overlay.querySelectorAll('.watch-login-actions button');
+    const login=buttons[0],signup=buttons[1];
+    if(login && !login.dataset.f2wAuthV55){
+      login.dataset.f2wAuthV55='1';
+      login.addEventListener('click',e=>{e.preventDefault();window.openPlaybackAccount?.('login');});
+    }
+    if(signup && !signup.dataset.f2wAuthV55){
+      signup.dataset.f2wAuthV55='1';
+      signup.addEventListener('click',e=>{e.preventDefault();window.openPlaybackAccount?.('signup');});
+    }
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
+})();
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
@@ -7713,8 +8523,11 @@ if(currentUser){
 <!-- f2w-force-save:watch-login-box-v43:1788219527 -->
 <!-- f2w-force-save:v43-watch-auth-cache:1788219527:watch/index.html -->
 <!-- f2w-force-save:v44-header-cache:1788219651:watch/index.html -->
-<!-- f2w-force-save:v50-cache:1788220357:watch/index.html -->
-<!-- f2w-force-save:v52-profile-edit-cache:1788220545:watch/index.html -->
-<!-- f2w-force-save:account-details-markup-v54:1788220759:watch/index.html -->
-<!-- f2w-force-save:account-details-cache-v54:1788220759:watch/index.html -->
+<!-- f2w-force-save:watch-index-v46:1788219920 -->
+<!-- f2w-force-save:watch-tools-v47:1788219995 -->
+<!-- f2w-force-save:watch-index-v48:1788220122 -->
+<!-- f2w-force-save:watch-index-v49:1788220302 -->
+<!-- f2w-force-save:watch-index-v51:1788220463 -->
+<!-- f2w-force-save:watch-index-v53:1788220613 -->
+<!-- f2w-force-save:watch-login-buttons-v55:1788220839 -->
  
