@@ -2789,5 +2789,45 @@ body.f2w-main-page > header .user-search-name.f2w-role-name::after {
 }
 
 /* f2w-force-save:autocomplete-role-css-v112:1788290771 */
+/* ============================================================
+   F2W v116 — SITE-WIDE ROLE USERNAME + DISPLAY NAME PARTICLES
+   ============================================================ */
+.f2w-role-name{
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  color:var(--f2w-role-color,var(--f2w-profile-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--f2w-role-color,var(--f2w-profile-role-color,#fff))!important;
+  background:none!important;
+  background-image:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+.f2w-role-name::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-.24em -.34em!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  background:url("https://i.ibb.co/HC3GW9B/Particles.gif") center/100% 100% no-repeat!important;
+  filter:grayscale(1) saturate(0) brightness(5.35) contrast(1.45)!important;
+  mix-blend-mode:screen!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+.f2w-role-name::after{content:none!important;display:none!important}
+/* Keep effects compact to text nodes, never rows/cards. */
+.f2w-user-card.f2w-role-name,
+.user-search-result.f2w-role-name,
+.v17-dm-conversation.f2w-role-name,
+.leaderboard-row.f2w-role-name,
+.forum-v30-rank-row.f2w-role-name{
+  background-image:none!important;
+}
+/* f2w-force-save:sitewide-role-particles-v116:1788295578 */
 
  

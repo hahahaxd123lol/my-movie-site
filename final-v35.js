@@ -440,15 +440,21 @@ function f2wDebounce(fn,wait=140){
   window.f2wPaintRoleName=paintRoleName;
   async function decorateNames(){
     const selector=[
+      '#profile-name',
+      '#profile-username-line',
+      '#account-user-username',
       '.chat-user',
       '.chat-username',
       '.comment-author',
       '.leaderboard-username',
       '.user-name',
+      '.username',
       '.display-name',
+      '.f2w-user-handle',
+      '.user-search-name',
+      '.user-search-sub',
       '.forum-v30-author',
       '.forum-v30-rank-name',
-      '.user-search-name',
       '[data-f2w-dm-display-name]'
     ].join(',');
 
@@ -463,8 +469,8 @@ function f2wDebounce(fn,wait=140){
       '.f2w-user-card',
       '.forum-v30-rank-row',
       '.leaderboard-row',
-      '[data-username]:not(.user-search-name):not(.display-name):not(.chat-user):not(.chat-username):not(.comment-author):not(.leaderboard-username):not(.forum-v30-author):not(.forum-v30-rank-name):not([data-f2w-dm-display-name])',
-      '[data-f2w-username]:not(.user-search-name):not(.display-name):not(.chat-user):not(.chat-username):not(.comment-author):not(.leaderboard-username):not(.forum-v30-author):not(.forum-v30-rank-name):not([data-f2w-dm-display-name])'
+      '[data-username]:not(.user-search-name):not(.user-search-sub):not(.display-name):not(.username):not(.f2w-user-handle):not(.chat-user):not(.chat-username):not(.comment-author):not(.leaderboard-username):not(.forum-v30-author):not(.forum-v30-rank-name):not(#profile-name):not(#profile-username-line):not(#account-user-username):not([data-f2w-dm-display-name])',
+      '[data-f2w-username]:not(.user-search-name):not(.user-search-sub):not(.display-name):not(.username):not(.f2w-user-handle):not(.chat-user):not(.chat-username):not(.comment-author):not(.leaderboard-username):not(.forum-v30-author):not(.forum-v30-rank-name):not(#profile-name):not(#profile-username-line):not(#account-user-username):not([data-f2w-dm-display-name])'
     ].join(',');
 
     document.querySelectorAll(forbidden).forEach(node=>{
@@ -481,11 +487,6 @@ function f2wDebounce(fn,wait=140){
     if(!nodes.length)return;
 
     const accountName=document.getElementById('account-user-username');
-    if(accountName){
-      clearRoleEffect(accountName);
-      accountName.classList.remove('f2w-no-role-name');
-      accountName.style.removeProperty('--f2w-particles-url');
-    }
     const accountRole=String(document.getElementById('account-user-role')?.textContent||'').trim().toLowerCase();
     if(accountName && ['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(accountRole)){
       const username=String(accountName.dataset.username||accountName.textContent||'').trim().replace(/^@/,'');
@@ -1979,4 +1980,5 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:display-name-only-role-decoration-v90:1788227716
 // f2w-force-save:role-stability-v103:1788289090
 // f2w-force-save:profile-presence-stable-v108:1788290088
+// f2w-force-save:sitewide-user-identities-v116:1788295578
  

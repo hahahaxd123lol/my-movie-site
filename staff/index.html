@@ -164,6 +164,9 @@ html{overflow-y:scroll}
     .role-chip{display:none;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:.56rem;font-weight:800}
     .role-chip.owner{display:inline-flex;color:#ff2b3d;border:1px solid rgba(255,43,61,.45);background:rgba(255,43,61,.08)}
     .role-chip.staff{display:inline-flex;color:#a855f7;border:1px solid rgba(168,85,247,.45);background:rgba(168,85,247,.08)}
+    .role-chip.moderator{display:inline-flex;color:#62b4ff;border:1px solid rgba(98,180,255,.45);background:rgba(98,180,255,.08)}
+    .role-chip.support{display:inline-flex;color:#32c8ff;border:1px solid rgba(50,200,255,.45);background:rgba(50,200,255,.08)}
+    .role-chip.developer{display:inline-flex;color:#31d9ad;border:1px solid rgba(49,217,173,.45);background:rgba(49,217,173,.08)}
     .shell{max-width:1500px;margin:auto;padding:22px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px}
     aside{position:sticky;top:88px;align-self:start;border:1px solid var(--line);border-radius:15px;background:rgba(10,10,15,.84);padding:8px}
     .tab-btn{width:100%;display:flex;align-items:center;gap:9px;padding:11px;border:0;border-radius:9px;background:transparent;color:var(--muted);text-align:left;font-size:.62rem;font-weight:700}
@@ -796,7 +799,7 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=115-1788295289">
+  <link rel="stylesheet" href="/final-v35.css?v=116-1788295578">
 
 <style id="staff-v36-support-tickets">
   #panel-support .card{overflow:hidden}
@@ -816,9 +819,9 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
+  <link rel="stylesheet" href="/global-header-v1.css?v=116-1788295578">
   <script src="/seo-v17.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=115-1788295289" defer></script>
+  <script src="/global-header-chat-v1.js?v=116-1788295578" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -1605,7 +1608,7 @@ const PAGE_ROLE_TABS={
   staff:['overview','operations','reports','users','profiles','chat','announcements','homepage','streams','support','settings','audit'],
   moderator:['overview','operations','reports','users','chat','audit'],
   support:['overview','users','support'],
-  developer:['overview','operations','streams','audit']
+  developer:['overview','streams','audit']
 };
 async function resolveStaffPageContext(){
   let core={role:'member',username:'',permissions:[]};
@@ -1831,8 +1834,8 @@ async function boot(){
     return;
   }
 
-  staffContext=await rpc('get_staff_context');
-  if(!['owner','staff'].includes(staffContext?.role)){
+  staffContext=await resolveStaffPageContext();
+  if(!['owner','staff','moderator','support','developer'].includes(staffContext?.role)){
     window.location.replace('/home/');
     return;
   }
@@ -1878,17 +1881,17 @@ function applyPermissionUI(){
     let allowed=true;
 
     if(tab==='operations'){
-      allowed=['users_ban','users_mute','users_warn'].some(hasPerm)||staffContext?.role==='owner';
+      allowed=['users_ban','users_mute','users_warn'].some(pageRoleCan)||staffContext?.role==='owner';
     }else if(tab==='users'){
       allowed=[
         'users_ban','users_mute','users_warn','users_notes'
-      ].some(hasPerm)||staffContext?.role==='owner';
+      ].some(pageRoleCan)||staffContext?.role==='owner';
     }else if(tab==='profiles'){
-      allowed=hasPerm('profiles_manage')||hasPerm('profile_roles_manage');
+      allowed=pageRoleCan('profiles_manage')||pageRoleCan('profile_roles_manage');
     }else if(tab==='homepage'){
-      allowed=hasPerm('homepage_manage')||hasPerm('collections_manage');
+      allowed=pageRoleCan('homepage_manage')||pageRoleCan('collections_manage');
     }else if(permission){
-      allowed=hasPerm(permission);
+      allowed=pageRoleCan(permission);
     }
 
     btn.hidden=!allowed;
@@ -2658,7 +2661,7 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js?v=115-1788295289" defer>
+  <script src="/final-v35.js?v=116-1788295578" defer>
 document.getElementById('staff-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='staff-ticket-modal')closeStaffTicketModal()});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('staff-ticket-modal')?.hidden)closeStaffTicketModal()});
 document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendStaffTicketReply()}});
@@ -4425,4 +4428,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v113-cache:1788290934:staff/index.html -->
 <!-- f2w-force-save:v114-cache:1788291301:staff/index.html -->
 <!-- f2w-force-save:v115-cache:1788295289:staff/index.html -->
+<!-- f2w-force-save:role-scoped-staff-v116:1788295578 -->
+<!-- f2w-force-save:v116-cache:1788295578:staff/index.html -->
  

@@ -3326,11 +3326,11 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=115-1788295289">
+  <link rel="stylesheet" href="/final-v35.css?v=116-1788295578">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
-  <script src="/global-header-chat-v1.js?v=115-1788295289" defer></script>
+  <link rel="stylesheet" href="/global-header-v1.css?v=116-1788295578">
+  <script src="/global-header-chat-v1.js?v=116-1788295578" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -3723,6 +3723,41 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 /* f2w-force-save:profile-particles-v112 */
 </style>
 
+
+<style id="f2w-profile-both-identities-v116">
+#profile-name.f2w-role-name,
+#profile-username-line.f2w-role-name{
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  color:var(--f2w-profile-role-color,#fff)!important;
+  -webkit-text-fill-color:var(--f2w-profile-role-color,#fff)!important;
+  animation:none!important;
+  transition:none!important;
+}
+#profile-name.f2w-role-name::before,
+#profile-username-line.f2w-role-name::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-.30em -.40em!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  background:url("https://i.ibb.co/HC3GW9B/Particles.gif") center/100% 100% no-repeat!important;
+  filter:grayscale(1) saturate(0) brightness(5.4) contrast(1.45)!important;
+  mix-blend-mode:screen!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+#profile-name.f2w-role-name::after,
+#profile-username-line.f2w-role-name::after{content:none!important;display:none!important}
+#profile-username-line{overflow:visible!important;margin-top:6px!important}
+/* f2w-force-save:profile-both-identities-v116:1788295578 */
+</style>
+
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -4113,6 +4148,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
       <div class="profile-role-row" aria-label="Profile role">
         <span id="profile-role-badge" class="profile-role-badge" aria-live="off"></span>
       </div>
+      <div id="profile-username-line" class="profile-username-line username" aria-label="Username"></div>
       
       
       <div class="profile-social-actions">
@@ -6177,6 +6213,14 @@ setTimeout(loadLibraryFavorites,0);
       name.dataset.f2wPlainText=nextName;
     }
     name.dataset.username=nextUsername;
+    name.dataset.f2wUsername=nextUsername;
+
+    if(usernameLine){
+      const usernameText=`@${nextUsername}`;
+      if(usernameLine.textContent!==usernameText)usernameLine.textContent=usernameText;
+      usernameLine.dataset.username=nextUsername;
+      usernameLine.dataset.f2wUsername=nextUsername;
+    }
 
     const immediateRole=
       String(viewedProfile.user_id||'')==='f5454804-a2a6-4602-9086-51cf51f11c77'
@@ -7777,26 +7821,29 @@ renderViewedProfile();
 
   function paintProfileNameRoleV110(role){
     role=validRoleV110(role);
-    const name=document.getElementById('profile-name');
-    if(!name||!role)return;
+    if(!role)return;
 
-    F2W_ROLE_ORDER_V110.forEach(r=>name.classList.remove(`f2w-role-${r}`));
-    name.classList.remove('f2w-no-role-name');
-    name.classList.add('f2w-role-name',`f2w-role-${role}`);
-
-    name.dataset.f2wRole=role;
-    name.dataset.f2wRoleDecorated='1';
-    name.dataset.f2wResolvedRole=role;
-
-    // Inline variables are intentional: they make profile role colour immune
-    // to older white-name CSS rules elsewhere in the site.
     const color=F2W_ROLE_COLORS_V110[role];
-    name.style.setProperty('--f2w-profile-role-color',color);
-    name.style.setProperty('color',color,'important');
-    name.style.setProperty('-webkit-text-fill-color',color,'important');
-    name.style.removeProperty('background');
-    name.style.removeProperty('background-image');
-    name.style.removeProperty('filter');
+    const nodes=[
+      document.getElementById('profile-name'),
+      document.getElementById('profile-username-line')
+    ].filter(Boolean);
+
+    nodes.forEach(name=>{
+      F2W_ROLE_ORDER_V110.forEach(r=>name.classList.remove(`f2w-role-${r}`));
+      name.classList.remove('f2w-no-role-name');
+      name.classList.add('f2w-role-name',`f2w-role-${role}`);
+      name.dataset.f2wRole=role;
+      name.dataset.f2wRoleDecorated='1';
+      name.dataset.f2wResolvedRole=role;
+      name.style.setProperty('--f2w-profile-role-color',color);
+      name.style.setProperty('--f2w-role-color',color);
+      name.style.setProperty('color',color,'important');
+      name.style.setProperty('-webkit-text-fill-color',color,'important');
+      name.style.removeProperty('background');
+      name.style.removeProperty('background-image');
+      name.style.removeProperty('filter');
+    });
   }
 
   function renderStaticProfileRoleV110(role){
@@ -8521,7 +8568,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=115-1788295289" defer></script>
+  <script src="/final-v35.js?v=116-1788295578" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10143,4 +10190,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v113-cache:1788290934:profile/index.html -->
 <!-- f2w-force-save:v114-cache:1788291301:profile/index.html -->
 <!-- f2w-force-save:v115-cache:1788295289:profile/index.html -->
+<!-- f2w-force-save:profile-both-role-v116:1788295578 -->
+<!-- f2w-force-save:v116-cache:1788295578:profile/index.html -->
  

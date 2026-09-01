@@ -1614,7 +1614,7 @@
 
     if(notify)notify.style.display=logged?'block':'none';
 
-    const canStaff=['owner','staff'].includes(roleKey);
+    const canStaff=['owner','staff','moderator','support','developer'].includes(roleKey);
     if(staff){
       staff.hidden=!canStaff;
       staff.style.display=canStaff?'flex':'none';
@@ -1685,7 +1685,7 @@
       supportBtn.style.removeProperty('display');
     }
     if(staffBtn){
-      const allowed=['owner','staff'].includes(role.key);
+      const allowed=['owner','staff','moderator','support','developer'].includes(role.key);
       staffBtn.hidden=!allowed;
       staffBtn.style.display=allowed?'flex':'none';
       staffBtn.onclick=()=>{location.href='/staff/'};
@@ -2438,4 +2438,5 @@ window.f2wOpenGuestDmAuthV98=function(mode){
   }
 })();
 // f2w-force-save:autocomplete-role-v112:1788290771
+// f2w-force-save:operational-staff-nav-v116:1788295578
  

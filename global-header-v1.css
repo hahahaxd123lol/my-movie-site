@@ -2568,4 +2568,18 @@ html.f2w-page-enter::before {
 }
 
 /* f2w-force-save:no-white-navigation-flash-v100:1788283039 */
+/* ============================================================
+   F2W v116 — NOTIFICATIONS / STAFF BUTTON SEPARATION
+   ============================================================ */
+body.f2w-main-page > header #notification-wrap{
+  margin-right:9px!important;
+}
+body.f2w-main-page > header #staff-control-nav{
+  margin-left:0!important;
+}
+body.f2w-main-page > header .f2w-action-cluster{
+  column-gap:7px!important;
+}
+/* f2w-force-save:header-staff-gap-v116:1788295578 */
+
  
