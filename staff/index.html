@@ -816,9 +816,9 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=58-1788221340">
+  <link rel="stylesheet" href="/global-header-v1.css?v=60-1788221799">
   <script src="/seo-v17.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=59-1788221542" defer></script>
+  <script src="/global-header-chat-v1.js?v=60-1788221799" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -2756,20 +2756,58 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 /* f2w-force-save:auth-hardfix-css-v58:1788221340 */
 </style>
 
-<script id="f2w-auth-hardfix-v58">
+
+<script id="f2w-auth-modal-lock-v60">
 (() => {
   'use strict';
-  if(window.__f2wAuthHardfixV58)return;
-  window.__f2wAuthHardfixV58=true;
+  if(window.__f2wAuthModalLockV60)return;
+  window.__f2wAuthModalLockV60=true;
 
   let currentMode='login';
   let touchStartX=null;
+  let savedScrollY=0;
+  let bodyLocked=false;
 
   function modal(){
     return document.getElementById('account-modal');
   }
 
-  function setMode(mode){
+  function lockBackground(){
+    if(bodyLocked)return;
+    savedScrollY=window.scrollY||window.pageYOffset||0;
+    bodyLocked=true;
+
+    document.documentElement.classList.add('f2w-auth-open-v60');
+    document.body.classList.add('f2w-auth-open-v60');
+
+    Object.assign(document.body.style,{
+      position:'fixed',
+      top:`-${savedScrollY}px`,
+      left:'0',
+      right:'0',
+      width:'100%',
+      overflow:'hidden'
+    });
+  }
+
+  function unlockBackground(){
+    if(!bodyLocked)return;
+    bodyLocked=false;
+
+    document.documentElement.classList.remove('f2w-auth-open-v60');
+    document.body.classList.remove('f2w-auth-open-v60');
+
+    document.body.style.removeProperty('position');
+    document.body.style.removeProperty('top');
+    document.body.style.removeProperty('left');
+    document.body.style.removeProperty('right');
+    document.body.style.removeProperty('width');
+    document.body.style.removeProperty('overflow');
+
+    window.scrollTo({top:savedScrollY,left:0,behavior:'auto'});
+  }
+
+  function setMode(mode, animate=true){
     currentMode=mode==='signup'?'signup':'login';
 
     const loginTab=document.getElementById('account-login-tab');
@@ -2779,6 +2817,7 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
     const emailLabel=document.getElementById('account-email-label');
     const submit=document.getElementById('account-submit');
     const password=document.getElementById('account-password');
+    const card=modal()?.querySelector('.account-card');
 
     loginTab?.classList.toggle('active',currentMode==='login');
     signupTab?.classList.toggle('active',currentMode==='signup');
@@ -2796,6 +2835,16 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 
     const message=document.getElementById('account-message');
     if(message)message.textContent='';
+
+    if(card){
+      card.classList.remove('f2w-auth-swipe-left-v60','f2w-auth-swipe-right-v60');
+      if(animate){
+        requestAnimationFrame(()=>{
+          card.classList.add(currentMode==='signup'?'f2w-auth-swipe-left-v60':'f2w-auth-swipe-right-v60');
+          setTimeout(()=>card.classList.remove('f2w-auth-swipe-left-v60','f2w-auth-swipe-right-v60'),240);
+        });
+      }
+    }
   }
 
   function open(mode='login'){
@@ -2805,88 +2854,94 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
       return false;
     }
 
-    setMode(mode);
-    m.hidden=false;
-    m.classList.add('open','f2w-auth-hard-open-v58');
-    m.style.setProperty('display','flex','important');
-    document.documentElement.style.overflow='hidden';
+    lockBackground();
+    setMode(mode,false);
 
+    m.hidden=false;
+    m.classList.add('open','f2w-auth-modal-open-v60');
+    m.style.setProperty('display','flex','important');
+    m.setAttribute('aria-hidden','false');
+
+    // Focus without moving the underlying page.
     setTimeout(()=>{
       const field=document.getElementById(currentMode==='signup'?'account-username':'account-email');
-      field?.focus();
-    },50);
+      try{field?.focus({preventScroll:true})}catch{field?.focus()}
+    },80);
 
     return false;
   }
 
   function close(){
     const m=modal();
-    if(!m)return;
-    m.classList.remove('open','f2w-auth-hard-open-v58');
+    if(!m)return false;
+
+    m.classList.remove('open','f2w-auth-modal-open-v60');
     m.style.removeProperty('display');
-    document.documentElement.style.removeProperty('overflow');
+    m.setAttribute('aria-hidden','true');
+    unlockBackground();
+    return false;
   }
 
-  // Define these globals UNCONDITIONALLY. Older broken/stale versions cannot win.
   window.openHeaderAuth=open;
   window.f2wOpenAuth=open;
+  window.showAccountMode=(mode)=>setMode(mode,true);
+  window.closeAccountModal=close;
 
-  // Preserve the existing authenticated Account opener. For logged-out users,
-  // Account becomes the Login modal.
   const oldOpenAccount=typeof window.openAccountModal==='function' ? window.openAccountModal : null;
   window.openAccountModal=function(){
-    const loggedIn=document.body.classList.contains('f2w-authenticated');
-    if(loggedIn && oldOpenAccount){
-      try{ return oldOpenAccount(); }catch(error){ console.warn(error); }
+    if(document.body.classList.contains('f2w-authenticated') && oldOpenAccount){
+      try{return oldOpenAccount();}catch(error){console.warn(error)}
     }
     return open('login');
   };
 
-  window.showAccountMode=setMode;
-
-  function bindModal(){
+  function bind(){
     const m=modal();
-    if(!m || m.dataset.f2wHardAuthBoundV58)return;
-    m.dataset.f2wHardAuthBoundV58='1';
+    if(m && !m.dataset.f2wAuthModalV60){
+      m.dataset.f2wAuthModalV60='1';
 
-    m.addEventListener('click',e=>{
-      if(e.target===m)close();
-    });
+      m.addEventListener('click',e=>{
+        if(e.target===m){
+          e.preventDefault();
+          close();
+        }
+      });
 
-    m.querySelector('.chat-close')?.addEventListener('click',e=>{
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      close();
-    },true);
+      m.querySelector('.chat-close')?.addEventListener('click',e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        close();
+      },true);
 
-    document.getElementById('account-login-tab')?.addEventListener('click',e=>{
-      e.preventDefault();e.stopImmediatePropagation();setMode('login');
-    },true);
+      document.getElementById('account-login-tab')?.addEventListener('click',e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        setMode('login',true);
+      },true);
 
-    document.getElementById('account-signup-tab')?.addEventListener('click',e=>{
-      e.preventDefault();e.stopImmediatePropagation();setMode('signup');
-    },true);
+      document.getElementById('account-signup-tab')?.addEventListener('click',e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        setMode('signup',true);
+      },true);
 
-    const card=m.querySelector('.account-card');
-    card?.addEventListener('touchstart',e=>{
-      touchStartX=e.touches?.[0]?.clientX??null;
-    },{passive:true});
-    card?.addEventListener('touchend',e=>{
-      if(touchStartX==null)return;
-      const end=e.changedTouches?.[0]?.clientX??touchStartX;
-      const dx=end-touchStartX;
-      touchStartX=null;
-      if(Math.abs(dx)<55)return;
-      setMode(dx<0?'signup':'login');
-    },{passive:true});
-  }
-
-  function bindButtons(){
-    bindModal();
+      const card=m.querySelector('.account-card');
+      card?.addEventListener('touchstart',e=>{
+        touchStartX=e.touches?.[0]?.clientX??null;
+      },{passive:true});
+      card?.addEventListener('touchend',e=>{
+        if(touchStartX==null)return;
+        const end=e.changedTouches?.[0]?.clientX??touchStartX;
+        const dx=end-touchStartX;
+        touchStartX=null;
+        if(Math.abs(dx)<55)return;
+        setMode(dx<0?'signup':'login',true);
+      },{passive:true});
+    }
 
     document.querySelectorAll('#header-login-btn').forEach(btn=>{
-      if(btn.dataset.f2wHardAuthLoginV58)return;
-      btn.dataset.f2wHardAuthLoginV58='1';
+      if(btn.dataset.f2wAuthV60Login)return;
+      btn.dataset.f2wAuthV60Login='1';
       btn.addEventListener('click',e=>{
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -2895,8 +2950,8 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
     });
 
     document.querySelectorAll('#header-signup-btn').forEach(btn=>{
-      if(btn.dataset.f2wHardAuthSignupV58)return;
-      btn.dataset.f2wHardAuthSignupV58='1';
+      if(btn.dataset.f2wAuthV60Signup)return;
+      btn.dataset.f2wAuthV60Signup='1';
       btn.addEventListener('click',e=>{
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -2904,18 +2959,18 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
       },true);
     });
 
-    // Watch-page Login/Create Account buttons.
+    // Watch-page center auth buttons use the exact same popup.
     const watchOverlay=document.getElementById('watch-login-overlay');
     if(watchOverlay){
       const buttons=watchOverlay.querySelectorAll('.watch-login-actions button');
-      if(buttons[0] && !buttons[0].dataset.f2wHardAuthV58){
-        buttons[0].dataset.f2wHardAuthV58='1';
+      if(buttons[0] && !buttons[0].dataset.f2wAuthV60){
+        buttons[0].dataset.f2wAuthV60='1';
         buttons[0].addEventListener('click',e=>{
           e.preventDefault();e.stopImmediatePropagation();open('login');
         },true);
       }
-      if(buttons[1] && !buttons[1].dataset.f2wHardAuthV58){
-        buttons[1].dataset.f2wHardAuthV58='1';
+      if(buttons[1] && !buttons[1].dataset.f2wAuthV60){
+        buttons[1].dataset.f2wAuthV60='1';
         buttons[1].addEventListener('click',e=>{
           e.preventDefault();e.stopImmediatePropagation();open('signup');
         },true);
@@ -2923,17 +2978,23 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
     }
   }
 
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',bindButtons,{once:true});
-  } else {
-    bindButtons();
-  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
 
-  new MutationObserver(bindButtons).observe(document.documentElement,{childList:true,subtree:true});
-  window.addEventListener('pageshow',bindButtons,{passive:true});
+  window.addEventListener('pageshow',bind,{passive:true});
+  new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
+
+  // Escape closes modal without moving the page.
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape' && modal()?.classList.contains('f2w-auth-modal-open-v60')){
+      e.preventDefault();
+      close();
+    }
+  });
 })();
-// f2w-force-save:auth-hardfix-js-v58:1788221340
+// f2w-force-save:auth-modal-lock-v60:1788221799
 </script>
+
 
 </body>
 </html>
@@ -2987,4 +3048,6 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 <!-- f2w-force-save:v58-auth-hardfix:1788221340:staff/index.html -->
 <!-- f2w-force-save:v58-cache:1788221340:staff/index.html -->
 <!-- f2w-force-save:v59-cache:1788221542:staff/index.html -->
+<!-- f2w-force-save:auth-modal-lock-v60:1788221799:staff/index.html -->
+<!-- f2w-force-save:v60-auth-cache:1788221799:staff/index.html -->
  

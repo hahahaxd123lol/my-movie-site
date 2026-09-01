@@ -2122,3 +2122,76 @@ body.f2w-main-page > header .user-search-result > i {
 
 /* f2w-force-save:user-autocomplete-css-v57:1788221142 */
  
+
+/* ============================================================
+   F2W v60 — AUTH MODAL VIEWPORT LOCK
+   Popup stays centered; page behind it does not move.
+   ============================================================ */
+html.f2w-auth-open-v60,
+body.f2w-auth-open-v60 {
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+
+#account-modal.f2w-auth-modal-open-v60 {
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483600!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:18px!important;
+  overflow:hidden!important;
+  background:rgba(0,0,0,.82)!important;
+  backdrop-filter:blur(10px)!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+  transform:none!important;
+}
+
+#account-modal.f2w-auth-modal-open-v60 .account-card {
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  margin:0!important;
+  width:min(520px,calc(100vw - 36px))!important;
+  max-width:520px!important;
+  max-height:calc(100dvh - 36px)!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  box-sizing:border-box!important;
+}
+
+#account-modal .account-card.f2w-auth-swipe-left-v60 {
+  animation:f2wAuthSwipeLeftV60 .24s ease both!important;
+}
+#account-modal .account-card.f2w-auth-swipe-right-v60 {
+  animation:f2wAuthSwipeRightV60 .24s ease both!important;
+}
+@keyframes f2wAuthSwipeLeftV60 {
+  from{opacity:.72;transform:translateX(18px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes f2wAuthSwipeRightV60 {
+  from{opacity:.72;transform:translateX(-18px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+@media(max-width:600px){
+  #account-modal.f2w-auth-modal-open-v60 {
+    padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))!important;
+  }
+  #account-modal.f2w-auth-modal-open-v60 .account-card {
+    width:min(94vw,480px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+}
+
+/* f2w-force-save:auth-modal-lock-css-v60:1788221799 */
+ 

@@ -345,7 +345,7 @@
   'use strict';
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/sw-v34.js?v=58-1788221340',{scope:'/'})
+    navigator.serviceWorker.register('/sw-v34.js?v=60-1788221799',{scope:'/'})
       .catch(error=>console.warn('F2W service worker registration failed:',error));
   },{once:true,passive:true});
 })();
@@ -942,4 +942,5 @@
 // f2w-force-save:user-autocomplete-v57:1788221142
 // f2w-force-save:sw-v58-register:1788221340
 // f2w-force-save:user-search-role-hook-v59:1788221542
+// f2w-force-save:auth-modal-lock-register-v60:1788221799
  
