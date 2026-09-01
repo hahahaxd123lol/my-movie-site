@@ -1963,19 +1963,32 @@
     '14','12','18','10751','9648','36','10402','10752','37'
   ]);
 
+  const GENRE_PATHS = {
+    '28':'/genre/action/',
+    '35':'/genre/comedy/',
+    '27':'/genre/horror/',
+    '878':'/genre/sci-fi/',
+    '53':'/genre/thriller/',
+    '80':'/genre/crime/',
+    '10749':'/genre/romance/',
+    '16':'/genre/animation/',
+    '99':'/genre/documentary/',
+    '14':'/genre/fantasy/',
+    '12':'/genre/adventure/',
+    '18':'/genre/drama/',
+    '10751':'/genre/family/',
+    '9648':'/genre/mystery/',
+    '36':'/genre/history/',
+    '10402':'/genre/music/',
+    '10752':'/genre/war/',
+    '37':'/genre/western/'
+  };
+
   function openGenre(id){
     id=String(id||'').replace(/[^0-9]/g,'');
     if(!GENRES.has(id))return false;
 
-    const target=`/home/?genre=${encodeURIComponent(id)}&page=1`;
-
-    // On Home, switch the catalogue in place without reloading the whole site.
-    if(location.pathname.replace(/\/+$/,'')==='/home' &&
-       typeof window.f2wOpenGenreV91==='function'){
-      window.f2wOpenGenreV91(Number(id),1,true);
-      return false;
-    }
-
+    const target=GENRE_PATHS[id]||`/home/?genre=${encodeURIComponent(id)}&page=1`;
     location.href=target;
     return false;
   }
@@ -1984,7 +1997,7 @@
 
   document.addEventListener('click',event=>{
     const link=event.target?.closest?.(
-      '.f2w-genre-menu a[href*="genre="], a[data-f2w-genre]'
+      '.f2w-genre-menu a[href*="genre="], .f2w-genre-menu a[href^="/genre/"], a[data-f2w-genre]'
     );
     if(!link)return;
 
@@ -1992,6 +2005,10 @@
     try{
       const url=new URL(link.href,location.origin);
       genre=url.searchParams.get('genre')||link.dataset.f2wGenre||'';
+      if(!genre && url.pathname.startsWith('/genre/')){
+        const entry=Object.entries(GENRE_PATHS).find(([,path])=>path===url.pathname);
+        genre=entry?.[0]||'';
+      }
     }catch{
       genre=link.dataset.f2wGenre||'';
     }
@@ -2279,4 +2296,5 @@
   window.f2wClearAuthLocksV93=clearAllAuthLocks;
 })();
 // f2w-force-save:auth-authority-v93:1788229371
+// f2w-force-save:dedicated-genres-v94:1788280907
  

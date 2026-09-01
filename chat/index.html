@@ -2486,24 +2486,24 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
               <i class="fa-solid fa-location-dot"></i> Genres <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i>
             </button>
             <div class="f2w-genre-menu" id="f2w-genre-menu">
-              <a href="/home/?genre=28&page=1">Action</a>
-              <a href="/home/?genre=35&page=1">Comedy</a>
-              <a href="/home/?genre=27&page=1">Horror</a>
-              <a href="/home/?genre=878&page=1">Sci-Fi</a>
-              <a href="/home/?genre=53&page=1">Thriller</a>
-              <a href="/home/?genre=80&page=1">Crime</a>
-              <a href="/home/?genre=10749&page=1">Romance</a>
-              <a href="/home/?genre=16&page=1">Animation</a>
-              <a href="/home/?genre=99&page=1">Documentary</a>
-              <a href="/home/?genre=14&page=1">Fantasy</a>
-              <a href="/home/?genre=12&page=1">Adventure</a>
-              <a href="/home/?genre=18&page=1">Drama</a>
-              <a href="/home/?genre=10751&page=1">Family</a>
-              <a href="/home/?genre=9648&page=1">Mystery</a>
-              <a href="/home/?genre=36&page=1">History</a>
-              <a href="/home/?genre=10402&page=1">Music</a>
-              <a href="/home/?genre=10752&page=1">War</a>
-              <a href="/home/?genre=37&page=1">Western</a>
+              <a href="/genre/action/">Action</a>
+              <a href="/genre/comedy/">Comedy</a>
+              <a href="/genre/horror/">Horror</a>
+              <a href="/genre/sci-fi/">Sci-Fi</a>
+              <a href="/genre/thriller/">Thriller</a>
+              <a href="/genre/crime/">Crime</a>
+              <a href="/genre/romance/">Romance</a>
+              <a href="/genre/animation/">Animation</a>
+              <a href="/genre/documentary/">Documentary</a>
+              <a href="/genre/fantasy/">Fantasy</a>
+              <a href="/genre/adventure/">Adventure</a>
+              <a href="/genre/drama/">Drama</a>
+              <a href="/genre/family/">Family</a>
+              <a href="/genre/mystery/">Mystery</a>
+              <a href="/genre/history/">History</a>
+              <a href="/genre/music/">Music</a>
+              <a href="/genre/war/">War</a>
+              <a href="/genre/western/">Western</a>
             </div>
           </div>
 
@@ -3170,14 +3170,14 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         </div>
       </div>
       <div class="f2w-chip-grid">
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=53&page=1')"><i class="fa-solid fa-bolt"></i> Tense</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=35&page=1')"><i class="fa-solid fa-face-laugh"></i> Funny</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=27&page=1')"><i class="fa-solid fa-ghost"></i> Scary</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=10749&page=1')"><i class="fa-solid fa-heart"></i> Romantic</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=878&page=1')"><i class="fa-solid fa-rocket"></i> Futuristic</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=80&page=1')"><i class="fa-solid fa-user-secret"></i> Crime</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=16&page=1')"><i class="fa-solid fa-wand-magic-sparkles"></i> Animated</button>
-        <button class="f2w-mood-chip" onclick="ultraGo('/home/?genre=99&page=1')"><i class="fa-solid fa-earth-americas"></i> Real Stories</button>
+        <button class="f2w-mood-chip" onclick="ultraGo('/genre/thriller/')"><i class="fa-solid fa-bolt"></i> Tense</button>
+        <button class="f2w-mood-chip" onclick="ultraGo('/genre/comedy/')"><i class="fa-solid fa-face-laugh"></i> Funny</button>
+        <button class="f2w-mood-chip" onclick="ultraGo('/genre/horror/')"><i class="fa-solid fa-ghost"></i> Scary</button>
+        <button class="f2w-mood-chip" onclick="ultraGo('/genre/romance/')"><i class="fa-solid fa-heart"></i> Romantic</button>
+        <button class="f2w-mood-chip" onclick="ultraGo('/genre/sci-fi/')"><i class="fa-solid fa-rocket"></i> Futuristic</button>
+        <button class="f2w-mood-chip" onclick="ultraGo('/genre/crime/')"><i class="fa-solid fa-user-secret"></i> Crime</button>
+        <button class="f2w-mood-chip" onclick="ultraGo('/genre/animation/')"><i class="fa-solid fa-wand-magic-sparkles"></i> Animated</button>
+        <button class="f2w-mood-chip" onclick="ultraGo('/genre/documentary/')"><i class="fa-solid fa-earth-americas"></i> Real Stories</button>
       </div>
     </section>
 
@@ -5698,10 +5698,10 @@ if(currentUser){
 
   const ultraCommands=[
     {icon:'fa-house',title:'Home',sub:'Return to Flix2Watch home',url:'/home/'},
-    {icon:'fa-bolt',title:'Action movies',sub:'Browse action',url:'/home/?genre=28&page=1'},
-    {icon:'fa-face-laugh',title:'Comedy',sub:'Browse comedy',url:'/home/?genre=35&page=1'},
-    {icon:'fa-ghost',title:'Horror',sub:'Browse horror',url:'/home/?genre=27&page=1'},
-    {icon:'fa-rocket',title:'Sci-Fi',sub:'Browse science fiction',url:'/home/?genre=878&page=1'},
+    {icon:'fa-bolt',title:'Action movies',sub:'Browse action',url:'/genre/action/'},
+    {icon:'fa-face-laugh',title:'Comedy',sub:'Browse comedy',url:'/genre/comedy/'},
+    {icon:'fa-ghost',title:'Horror',sub:'Browse horror',url:'/genre/horror/'},
+    {icon:'fa-rocket',title:'Sci-Fi',sub:'Browse science fiction',url:'/genre/sci-fi/'},
     {icon:'fa-heart',title:'My Favorites',sub:'Open your saved library',action:ultraOpenFavorites},
     {icon:'fa-user',title:'My Profile',sub:'Open your public profile',action:ultraOpenProfile},
     {icon:'fa-comments',title:'Open Chat',sub:'Join the 24-hour public chat',action:()=>{closeUltraCommand();openChat()}},
@@ -8571,4 +8571,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v91-cache:1788228094:chat/index.html -->
 <!-- f2w-force-save:v92-cache:1788228465:chat/index.html -->
 <!-- f2w-force-save:v93-cache:1788229371:chat/index.html -->
+<!-- f2w-force-save:v94-links:1788280907:chat/index.html -->
  

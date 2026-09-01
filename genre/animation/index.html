@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<script id="f2w-profile-route-stability-v70">
-(() => {
-  const match=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
-  if(match){
-    location.replace('/profile/?user='+encodeURIComponent(match[1]));
-  }
-})();
-/* f2w-force-save:profile-route-stability-v70:1788223711 */
-</script>
-
 <script id="f2w-page-fade-boot-v33">
 (function(){
   try{
@@ -109,6 +98,11 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
 <link rel="dns-prefetch" href="//viqufxlcxwgboyxbdhjb.supabase.co">
 <link rel="preconnect" href="https://viqufxlcxwgboyxbdhjb.supabase.co" crossorigin>
 
+<script id="f2w-fixed-theme">
+try{localStorage.setItem('flix2watch_theme','theme-red');localStorage.setItem('josh_site_theme','theme-red');}catch(_e){}
+document.documentElement.dataset.flix2watchTheme='theme-red';
+</script>
+
   <script src="/popup-protection-v34.js"></script>
   <meta charset="UTF-8">
   <script id="v18-force-https">
@@ -130,7 +124,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Public Profiles | Flix2Watch</title>
+  <title>Animation Movies | Flix2Watch</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -161,7 +155,6 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   </script>
 
 <style>
-
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap');
 
     :root {
@@ -344,7 +337,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
     /* Detailed Flix2Watch logo with theme-aware accents */
     .logo-image{
       display:block;
-      height:78px;
+      height:96px;
       width:auto;
       object-fit:contain;
       filter:drop-shadow(0 0 14px var(--accent-glow));
@@ -831,380 +824,6 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
     }
 
 
-
-/* FAVORITES PAGE LAYOUT */
-
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap');
-
-    :root{
-      --bg-main:#020204;
-      --bg-card:#0b0b10;
-      --accent:#e50914;
-      --accent-glow:rgba(229,9,20,.48);
-      --text-main:#f8fafc;
-      --text-muted:#7b8494;
-      --font-heading:'Bebas Neue',sans-serif;
-      --font-body:'Poppins',sans-serif;
-      --font-mono:'JetBrains Mono',monospace;
-    }
-    body.theme-blue{--accent:#3b82f6;--accent-glow:rgba(59,130,246,.48)}
-    body.theme-green{--accent:#10b981;--accent-glow:rgba(16,185,129,.48)}
-    body.theme-purple{--accent:#8b5cf6;--accent-glow:rgba(139,92,246,.48)}
-    body.theme-amber{--accent:#f59e0b;--accent-glow:rgba(245,158,11,.48)}
-    body.theme-matrix{--accent:#00ff66;--accent-glow:rgba(0,255,102,.48)}
-
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      min-height:100vh;
-      background:
-        radial-gradient(circle at 50% -10%,var(--accent-glow),transparent 34%),
-        #020204;
-      color:var(--text-main);
-      font-family:var(--font-body);
-    }
-    button,input,select{font:inherit}
-    header{
-      position:sticky;
-      top:0;
-      z-index:100;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:18px;
-      padding:12px 30px;
-      background:rgba(2,2,4,.92);
-      backdrop-filter:blur(24px);
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .logo{display:flex;align-items:center;text-decoration:none}
-    .logo-image{
-      display:block;
-      height:82px;
-      width:auto;
-      object-fit:contain;
-      filter:drop-shadow(0 0 14px var(--accent-glow));
-    }
-    body.theme-blue .logo-image{filter:hue-rotate(210deg) saturate(1.25) drop-shadow(0 0 14px var(--accent-glow))}
-    body.theme-green .logo-image{filter:hue-rotate(105deg) saturate(1.35) drop-shadow(0 0 14px var(--accent-glow))}
-    body.theme-purple .logo-image{filter:hue-rotate(265deg) saturate(1.25) drop-shadow(0 0 14px var(--accent-glow))}
-    body.theme-amber .logo-image{filter:hue-rotate(42deg) saturate(1.3) brightness(1.04) drop-shadow(0 0 14px var(--accent-glow))}
-    body.theme-matrix .logo-image{filter:hue-rotate(110deg) saturate(1.55) brightness(1.05) drop-shadow(0 0 14px var(--accent-glow))}
-    .header-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-    .top-btn{
-      border:1px solid rgba(255,255,255,.11);
-      background:rgba(255,255,255,.045);
-      color:#fff;
-      text-decoration:none;
-      border-radius:8px;
-      padding:9px 13px;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:.72rem;
-      font-weight:600;
-      transition:.2s;
-    }
-    .top-btn:hover{
-      border-color:var(--accent);
-      box-shadow:0 0 13px var(--accent-glow);
-      transform:translateY(-1px);
-    }
-    .top-btn.primary{
-      background:var(--accent);
-      border-color:var(--accent);
-    }
-
-    main{max-width:1500px;margin:0 auto;padding:34px 32px 70px}
-    .library-head{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:22px;
-      margin-bottom:24px;
-      flex-wrap:wrap;
-    }
-    .eyebrow{
-      color:var(--accent);
-      font:700 .67rem var(--font-mono);
-      letter-spacing:1.5px;
-      margin-bottom:5px;
-    }
-    h1{
-      font-family:var(--font-heading);
-      font-size:clamp(2.8rem,6vw,5.4rem);
-      line-height:.9;
-      letter-spacing:1.5px;
-    }
-    .library-copy{
-      color:var(--text-muted);
-      max-width:700px;
-      margin-top:10px;
-      line-height:1.65;
-      font-size:.84rem;
-    }
-    .library-count{
-      color:#fff;
-      font:700 .72rem var(--font-mono);
-      border:1px solid rgba(255,255,255,.1);
-      background:rgba(255,255,255,.035);
-      border-radius:999px;
-      padding:8px 12px;
-    }
-
-    .controls{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin:0 0 26px;
-    }
-    .filter-btn{
-      border:1px solid rgba(255,255,255,.1);
-      background:rgba(255,255,255,.04);
-      color:#cbd5e1;
-      border-radius:999px;
-      padding:8px 14px;
-      cursor:pointer;
-      font-size:.7rem;
-      font-weight:600;
-    }
-    .filter-btn.active,
-    .filter-btn:hover{
-      color:#fff;
-      border-color:var(--accent);
-      background:color-mix(in srgb,var(--accent) 16%,transparent);
-    }
-    .search-wrap{
-      margin-left:auto;
-      position:relative;
-      min-width:min(100%,280px);
-    }
-    .search-wrap i{
-      position:absolute;
-      left:12px;
-      top:50%;
-      transform:translateY(-50%);
-      color:var(--text-muted);
-    }
-    .search-input{
-      width:100%;
-      background:rgba(255,255,255,.045);
-      border:1px solid rgba(255,255,255,.1);
-      color:#fff;
-      outline:none;
-      border-radius:9px;
-      padding:10px 12px 10px 35px;
-      font-size:.75rem;
-    }
-    .search-input:focus{border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
-
-    .favorites-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-      gap:22px 16px;
-    }
-    .favorite-card{
-      position:relative;
-      min-width:0;
-    }
-    .poster-shell{
-      position:relative;
-      aspect-ratio:2/3;
-      overflow:hidden;
-      border-radius:12px;
-      background:#09090d;
-      border:1px solid rgba(255,255,255,.08);
-      box-shadow:0 12px 28px rgba(0,0,0,.34);
-      transition:.23s ease;
-    }
-    .favorite-card:hover .poster-shell{
-      transform:translateY(-5px) scale(1.015);
-      border-color:color-mix(in srgb,var(--accent) 65%,rgba(255,255,255,.12));
-      box-shadow:0 18px 34px rgba(0,0,0,.55),0 0 18px var(--accent-glow);
-    }
-    .poster{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      background:#08080d;
-    }
-    .poster-overlay{
-      position:absolute;
-      inset:0;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-end;
-      padding:14px;
-      opacity:0;
-      transition:.22s;
-      background:linear-gradient(to top,rgba(0,0,0,.96) 0%,rgba(0,0,0,.52) 42%,transparent 72%);
-    }
-    .favorite-card:hover .poster-overlay{opacity:1}
-    .poster-actions{display:flex;gap:8px}
-    .poster-action{
-      flex:1;
-      border:0;
-      border-radius:8px;
-      padding:9px 8px;
-      cursor:pointer;
-      font-size:.69rem;
-      font-weight:700;
-    }
-    .poster-action.watch{background:#fff;color:#050505}
-    .poster-action.remove{background:rgba(229,9,20,.88);color:#fff}
-    .favorite-title{
-      margin-top:10px;
-      color:#fff;
-      font-size:.82rem;
-      font-weight:650;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .favorite-meta{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-top:4px;
-      color:var(--text-muted);
-      font-size:.65rem;
-    }
-    .type-pill{
-      color:var(--accent);
-      font:700 .58rem var(--font-mono);
-      text-transform:uppercase;
-      letter-spacing:.5px;
-    }
-    .rating{
-      color:#fbbf24;
-      font-weight:700;
-    }
-
-    .state-card{
-      grid-column:1/-1;
-      width:100%;
-      padding:62px 24px;
-      text-align:center;
-      border:1px dashed rgba(255,255,255,.1);
-      border-radius:14px;
-      background:rgba(255,255,255,.02);
-      overflow:hidden;
-    }
-    .state-card i{
-      font-size:2.4rem;
-      color:var(--accent);
-      margin-bottom:14px;
-      filter:drop-shadow(0 0 12px var(--accent-glow));
-    }
-    .state-card h2{
-      font-family:var(--font-heading);
-      font-size:2.2rem;
-      letter-spacing:.8px;
-    }
-    .state-card p{
-      width:min(100%,620px);
-      max-width:620px;
-      margin:10px auto 12px;
-      padding:0 12px;
-      color:var(--text-muted);
-      font-size:.8rem;
-      line-height:1.65;
-      text-align:center;
-      white-space:normal;
-      overflow-wrap:anywhere;
-    }
-
-    @media(max-width:800px){
-      header{padding:10px 16px}
-      .logo-image{height:65px}
-      main{padding:25px 18px 55px}
-      .favorites-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 11px}
-      .search-wrap{width:100%;margin-left:0}
-      .poster-overlay{opacity:1;background:linear-gradient(to top,rgba(0,0,0,.85),transparent 48%)}
-      .poster-actions{display:none}
-    }
-  
-    .browse-favorites-btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      min-width:210px;
-      margin-top:8px;
-      padding:12px 20px;
-      border-radius:10px;
-      border:1px solid color-mix(in srgb,var(--accent) 70%,rgba(255,255,255,.15));
-      background:linear-gradient(
-        135deg,
-        color-mix(in srgb,var(--accent) 88%,#000 12%),
-        color-mix(in srgb,var(--accent) 58%,#000 42%)
-      );
-      color:#fff;
-      text-decoration:none;
-      font-size:.78rem;
-      font-weight:700;
-      letter-spacing:.2px;
-      box-shadow:0 10px 24px rgba(0,0,0,.35),0 0 16px var(--accent-glow);
-      transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
-    }
-    .browse-favorites-btn:hover{
-      transform:translateY(-2px);
-      border-color:var(--accent);
-      box-shadow:0 14px 28px rgba(0,0,0,.45),0 0 22px var(--accent-glow);
-    }
-    .browse-favorites-btn i{
-      font-size:.82rem;
-    }
-
-
-    /* Final CTA alignment fix: override the empty-state icon styles */
-    .state-card .browse-favorites-btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:9px;
-      min-width:210px;
-      padding:12px 20px;
-      line-height:1;
-    }
-
-    .state-card .browse-favorites-btn i.fa-play{
-      color:#fff !important;
-      font-size:.76rem !important;
-      margin:0 !important;
-      padding:0 !important;
-      position:static !important;
-      top:auto !important;
-      width:auto !important;
-      height:auto !important;
-      line-height:1 !important;
-      display:inline-block !important;
-      filter:none !important;
-      transform:none !important;
-      vertical-align:middle !important;
-    }
-
-    .state-card .browse-favorites-btn span{
-      display:inline-block;
-      margin:0;
-      padding:0;
-      line-height:1;
-      color:#fff;
-    }
-
-
-  /* Favorites page top bar integration */
-  body{padding-top:0}
-  .header-tools{min-width:0}
-  .header-tools .search-container{min-width:220px}
-  @media(max-width:980px){
-    header{align-items:flex-start}
-    .header-tools{justify-content:flex-end}
-  }
-
-  
     /* ================= PUBLIC PROFILE NAV + USER SEARCH ================= */
     .user-search-container{
       position:relative;
@@ -1320,240 +939,129 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
     }
 
 
-    /* ================= PROFILE PAGE ================= */
-    .profile-page{
-      max-width:1450px;
-      margin:0 auto;
-      padding:36px 30px 70px;
-    }
-    .profile-hero{
-      position:relative;
-      overflow:hidden;
-      display:grid;
-      grid-template-columns:180px minmax(0,1fr);
-      gap:28px;
-      align-items:center;
-      padding:30px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:18px;
-      background:
-        radial-gradient(circle at 10% 10%,var(--accent-glow),transparent 28%),
-        linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.018));
-      box-shadow:0 24px 60px rgba(0,0,0,.3);
-    }
-    .profile-avatar-shell{
-      position:relative;
-      width:180px;
-      height:180px;
-    }
-    .profile-avatar{
-      width:180px;
-      height:180px;
-      border-radius:50%;
-      object-fit:cover;
-      border:3px solid color-mix(in srgb,var(--accent) 65%,white 5%);
-      background:#12121a;
-      box-shadow:0 0 26px var(--accent-glow);
-    }
-    .profile-avatar-fallback{
-      width:180px;
-      height:180px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      color:#fff;
-      font-size:3rem;
-      font-weight:800;
-      background:linear-gradient(135deg,var(--accent),#12121a 72%);
-      border:3px solid color-mix(in srgb,var(--accent) 65%,white 5%);
-      box-shadow:0 0 26px var(--accent-glow);
-    }
-    .avatar-edit-label{
-      display:none;
-      position:absolute;
-      right:8px;
-      bottom:8px;
-      width:44px;
-      height:44px;
-      border-radius:50%;
-      place-items:center;
-      color:#fff;
-      background:var(--accent);
-      border:2px solid #07070c;
-      cursor:pointer;
-      box-shadow:0 0 14px var(--accent-glow);
-    }
-    .profile-authenticated-owner .avatar-edit-label{display:grid}
-    .avatar-edit-label input{display:none}
-    .profile-eyebrow{
-      color:var(--accent);
-      font:700 .65rem var(--font-mono);
-      letter-spacing:1.4px;
-      margin-bottom:6px;
-    }
-    .profile-name{
-      font-family:var(--font-heading);
-      font-size:clamp(3rem,7vw,6rem);
-      line-height:.9;
-      letter-spacing:1px;
-    }
-    .profile-bio{
-      max-width:760px;
-      margin-top:14px;
-      color:#c3cad6;
-      font-size:.86rem;
-      line-height:1.7;
-      white-space:pre-wrap;
-      overflow-wrap:anywhere;
-    }
-    .profile-bio.empty{color:var(--text-muted);font-style:italic}
-    .profile-meta{
+
+    /* ================= 30-TITLE CATALOG PAGINATION ================= */
+    .catalog-pagination{
       display:flex;
-      gap:9px;
+      justify-content:center;
+      align-items:center;
       flex-wrap:wrap;
-      margin-top:16px;
-    }
-    .profile-chip{
-      padding:7px 10px;
-      border:1px solid rgba(255,255,255,.09);
-      border-radius:999px;
-      background:rgba(255,255,255,.035);
-      color:var(--text-muted);
-      font:600 .61rem var(--font-mono);
-    }
-    .profile-edit-panel{
-      display:none;
-      margin-top:18px;
-      max-width:760px;
-      padding:14px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:11px;
-      background:rgba(0,0,0,.25);
-    }
-    .profile-authenticated-owner .profile-edit-panel{display:block}
-    .profile-edit-label{
-      display:block;
-      margin-bottom:7px;
-      color:#fff;
-      font-size:.68rem;
-      font-weight:700;
-    }
-    .profile-bio-input{
+      gap:7px;
       width:100%;
-      min-height:105px;
-      resize:vertical;
-      padding:11px;
+      margin:28px auto 8px;
+      min-height:42px;
+    }
+    .catalog-pagination:empty{display:none}
+    .catalog-page-btn{
+      min-width:38px;
+      height:38px;
+      padding:0 11px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
       border:1px solid rgba(255,255,255,.1);
       border-radius:8px;
-      outline:none;
       background:rgba(255,255,255,.035);
       color:#fff;
-      font-family:var(--font-body);
-      line-height:1.5;
+      cursor:pointer;
+      font:650 .68rem var(--font-body);
+      transition:.18s ease;
     }
-    .profile-bio-input:focus{border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
-    .profile-save-row{
+    .catalog-page-btn:hover:not(:disabled){
+      border-color:var(--accent);
+      background:color-mix(in srgb,var(--accent) 12%,rgba(255,255,255,.035));
+      box-shadow:0 0 12px var(--accent-glow);
+    }
+    .catalog-page-btn.active{
+      border-color:var(--accent);
+      background:var(--accent);
+      box-shadow:0 0 14px var(--accent-glow);
+    }
+    .catalog-page-btn:disabled{
+      opacity:.35;
+      cursor:not-allowed;
+    }
+    .catalog-page-gap{
+      color:var(--text-muted);
+      padding:0 2px;
+      font:600 .7rem var(--font-mono);
+    }
+
+
+    /* ================= CONSISTENT POSTER CROPPING ================= */
+    .poster-container{
+      aspect-ratio:2 / 3;
+      overflow:hidden;
+    }
+    .poster-img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+      object-position:center;
+    }
+
+
+    /* ================= GENRE SORT CONTROL ================= */
+    .genre-sort-row{
       display:flex;
       align-items:center;
+      justify-content:flex-end;
       gap:10px;
-      margin-top:10px;
-      flex-wrap:wrap;
+      margin:0 0 16px;
     }
-    .profile-save-btn{
-      border:1px solid var(--accent);
-      border-radius:7px;
-      background:var(--accent);
-      color:#fff;
-      padding:9px 14px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:.7rem;
-    }
-    .profile-save-status{
-      color:var(--text-muted);
-      font-size:.64rem;
-    }
-    .profile-section{
-      margin-top:34px;
-    }
-    .profile-section-head{
+    .genre-sort-label{
       display:flex;
-      align-items:end;
-      justify-content:space-between;
-      gap:15px;
-      margin-bottom:16px;
-    }
-    .profile-section-title{
-      font-family:var(--font-heading);
-      font-size:2.35rem;
-      letter-spacing:.7px;
-    }
-    .profile-favorites-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-      gap:22px 14px;
-    }
-    .profile-fav-card{
-      min-width:0;
-      cursor:pointer;
-    }
-    .profile-fav-poster-shell{
-      aspect-ratio:2/3;
-      overflow:hidden;
-      border-radius:11px;
-      border:1px solid rgba(255,255,255,.08);
-      background:#09090d;
-      transition:.22s;
-      box-shadow:0 12px 26px rgba(0,0,0,.28);
-    }
-    .profile-fav-card:hover .profile-fav-poster-shell{
-      transform:translateY(-4px);
-      border-color:var(--accent);
-      box-shadow:0 16px 32px rgba(0,0,0,.42),0 0 15px var(--accent-glow);
-    }
-    .profile-fav-poster{width:100%;height:100%;object-fit:cover;display:block}
-    .profile-fav-title{
-      margin-top:9px;
-      color:#fff;
-      font-size:.78rem;
-      font-weight:650;
+      align-items:center;
+      gap:7px;
+      color:var(--text-muted);
+      font:650 .66rem var(--font-mono);
       white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
-    .profile-fav-type{
-      margin-top:3px;
-      color:var(--accent);
-      font:700 .56rem var(--font-mono);
-      text-transform:uppercase;
+    .genre-sort-label i{color:var(--accent)}
+    .genre-sort-select-wrap{
+      position:relative;
+      min-width:190px;
     }
-    .profile-state{
-      grid-column:1/-1;
-      padding:46px 20px;
-      text-align:center;
+    .genre-sort-select{
+      width:100%;
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid rgba(255,255,255,.11);
+      border-radius:8px;
+      background:rgba(255,255,255,.045);
+      color:#fff;
+      outline:none;
+      cursor:pointer;
+      padding:9px 34px 9px 12px;
+      font-size:.72rem;
+      font-weight:600;
+    }
+    .genre-sort-select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 12px var(--accent-glow);
+    }
+    .genre-sort-select option{
+      background:#0b0b10;
+      color:#fff;
+    }
+    .genre-sort-select-wrap > i{
+      position:absolute;
+      right:11px;
+      top:50%;
+      transform:translateY(-50%);
       color:var(--text-muted);
-      border:1px dashed rgba(255,255,255,.1);
-      border-radius:12px;
+      font-size:.65rem;
+      pointer-events:none;
     }
-    @media(max-width:760px){
-      .profile-page{padding:24px 18px 55px}
-      .profile-hero{
-        grid-template-columns:1fr;
-        text-align:center;
-        padding:24px 18px;
+    @media(max-width:700px){
+      .genre-sort-row{
+        justify-content:stretch;
+        align-items:stretch;
+        flex-direction:column;
       }
-      .profile-avatar-shell{margin:0 auto}
-      .profile-bio{margin-left:auto;margin-right:auto}
-      .profile-meta,.profile-save-row{justify-content:center}
-      .profile-favorites-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 10px}
-    }
-
-
-    .username-rule-note{
-      margin-top:6px;
-      color:var(--text-muted);
-      font:500 .58rem var(--font-mono);
-      line-height:1.45;
+      .genre-sort-select-wrap{width:100%}
     }
 
 
@@ -1564,73 +1072,6 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
     html[data-flix2watch-theme="theme-purple"] body{--accent:#8b5cf6;--accent-glow:rgba(139,92,246,.5)}
     html[data-flix2watch-theme="theme-amber"] body{--accent:#f59e0b;--accent-glow:rgba(245,158,11,.5)}
     html[data-flix2watch-theme="theme-matrix"] body{--accent:#00ff66;--accent-glow:rgba(0,255,102,.5)}
-
-
-    /* Match profile header sizing to watch page */
-    header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 16px 30px;
-          background: rgba(2, 2, 4, 0.92);
-          backdrop-filter: blur(25px);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          position: sticky;
-          top: 0;
-          z-index: 1000;
-        }
-    .logo {
-          font-family: var(--font-heading);
-          font-size: 2.2rem;
-          color: var(--text-main);
-          text-decoration: none;
-          letter-spacing: 2px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-    .logo-image{
-          display:block;
-          height:96px;
-          width:auto;
-          object-fit:contain;
-          filter:drop-shadow(0 0 14px var(--accent-glow));
-        }
-    .header-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-    .tool-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--text-main);padding:9px 14px;border-radius:8px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;font-size:.8rem;transition:.25s;font-family:var(--font-body)}
-    .search-container{position:relative}
-    .search-bar{padding:9px 16px 9px 38px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;font-family:var(--font-body);font-size:.85rem;width:240px;outline:none;transition:.3s}
-    .user-search-container{
-          position:relative;
-          min-width:210px;
-        }
-    .user-search-bar{
-          padding:9px 16px 9px 38px;
-          border-radius:8px;
-          background:rgba(255,255,255,.04);
-          border:1px solid rgba(255,255,255,.1);
-          color:#fff;
-          font-family:var(--font-body);
-          font-size:.85rem;
-          width:210px;
-          outline:none;
-          transition:.3s;
-        }
-
-    header{
-      min-height:120px !important;
-      padding-top:12px !important;
-      padding-bottom:12px !important;
-      align-items:center !important;
-    }
-    .logo-image{
-      height:96px !important;
-      width:auto !important;
-      object-fit:contain !important;
-    }
-    .header-tools{
-      align-items:center !important;
-    }
 
 
     /* ================= FLIX2WATCH VISUAL UPGRADE ================= */
@@ -1727,385 +1168,89 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
     }
 
 
-    /* ================= PROFILE SOCIAL UPGRADE ================= */
-    .profile-actions{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:16px;
+    /* ================= RECENTLY VIEWED ================= */
+    .recent-section{
+      max-width:1500px;
+      margin:24px auto 0;
+      padding:0 30px;
     }
-    .profile-action-btn{
-      border:1px solid rgba(255,255,255,.1);
-      background:rgba(255,255,255,.04);
-      color:#fff;
-      border-radius:8px;
-      padding:9px 12px;
-      cursor:pointer;
-      font-size:.68rem;
-      font-weight:650;
-    }
-    .profile-action-btn:hover{
-      border-color:var(--accent);
-      box-shadow:0 0 12px var(--accent-glow);
-    }
-    .profile-stats-grid{
+    .recent-strip{
       display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:10px;
-      margin-top:18px;
-      max-width:760px;
-    }
-    .profile-stat-card{
-      padding:12px;
-      border:1px solid rgba(255,255,255,.075);
-      border-radius:11px;
-      background:rgba(255,255,255,.025);
-    }
-    .profile-stat-card strong{
-      display:block;
-      color:#fff;
-      font-family:var(--font-heading);
-      font-size:1.8rem;
-      line-height:1;
-    }
-    .profile-stat-card span{
-      display:block;
-      margin-top:4px;
-      color:var(--text-muted);
-      font:600 .55rem var(--font-mono);
-      text-transform:uppercase;
-    }
-    .profile-public-note{
-      margin-top:12px;
-      color:var(--text-muted);
-      font-size:.62rem;
-    }
-    @media(max-width:650px){
-      .profile-stats-grid{grid-template-columns:repeat(3,1fr)}
-    }
-
-
-    /* ================= PROFILE IDENTITY / SHARE FIX ================= */
-    .profile-hero{
-      align-items:start !important;
-    }
-    .profile-avatar-shell{
-      align-self:start !important;
-      margin-top:0 !important;
-    }
-
-    .profile-username-line{
-      margin-top:4px;
-      color:var(--text-muted);
-      font:600 .68rem var(--font-mono);
-    }
-    .profile-display-name-input{
-      width:100%;
-      margin-bottom:12px;
-      padding:10px 11px;
-      border:1px solid rgba(255,255,255,.1);
-      border-radius:8px;
-      outline:none;
-      background:rgba(255,255,255,.035);
-      color:#fff;
-      font-family:var(--font-body);
-    }
-    .profile-display-name-input:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 12px var(--accent-glow);
-    }
-    @media(max-width:760px){
-      .profile-avatar-shell{margin:0 auto !important}
-    }
-
-
-    /* Preserve display-name capitalization exactly as entered */
-    #profile-name{
-      text-transform:none !important;
-      font-family:var(--font-body) !important;
-      font-weight:800 !important;
-      letter-spacing:-1px !important;
-      line-height:1.05 !important;
-    }
-
-
-    /* ================= FOLLOWING + PRIVATE PROFILES ================= */
-    .profile-name-row{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .profile-social-actions{
-      display:flex;
-      align-items:center;
-      gap:9px;
-      flex-wrap:wrap;
-      margin-top:14px;
-    }
-    .profile-follow-btn{
-      border:1px solid var(--accent);
-      background:var(--accent);
-      color:#fff;
-      min-width:118px;
-      padding:9px 14px;
-      border-radius:8px;
-      cursor:pointer;
-      font-size:.7rem;
-      font-weight:750;
-      box-shadow:0 0 12px var(--accent-glow);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:7px;
-    }
-    .profile-follow-btn.following{
-      background:rgba(255,255,255,.045);
-      border-color:rgba(255,255,255,.14);
-      box-shadow:none;
-    }
-    .profile-follow-btn:hover{
-      transform:translateY(-1px);
-      border-color:var(--accent);
-      box-shadow:0 0 14px var(--accent-glow);
-    }
-    .profile-follow-btn:disabled{
-      opacity:.5;
-      cursor:not-allowed;
-      transform:none;
-    }
-
-    .profile-social-counts{
-      display:flex;
-      align-items:center;
+      grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
       gap:14px;
-      flex-wrap:wrap;
-      margin-top:14px;
     }
-    .profile-social-count{
-      border:0;
-      padding:0;
-      background:transparent;
-      color:var(--text-muted);
+    .recent-card{
+      min-width:0;
       cursor:pointer;
-      font-size:.7rem;
     }
-    .profile-social-count strong{
-      color:#fff;
-      margin-right:4px;
-    }
-    .profile-social-count:hover{
-      text-decoration:underline;
-      text-underline-offset:3px;
-    }
-    .profile-social-count:disabled{
-      cursor:default;
-      text-decoration:none;
-      opacity:.65;
-    }
-
-    .profile-private-control{
-      display:none;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-      margin-top:14px;
-      padding:11px 12px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:9px;
-      background:rgba(255,255,255,.025);
-    }
-    .profile-authenticated-owner .profile-private-control{display:flex}
-    .profile-private-copy strong{
-      display:block;
-      color:#fff;
-      font-size:.69rem;
-    }
-    .profile-private-copy span{
-      display:block;
-      margin-top:3px;
-      color:var(--text-muted);
-      font-size:.58rem;
-      line-height:1.4;
-    }
-    .profile-private-toggle{
-      width:46px;
-      height:26px;
-      border:0;
-      border-radius:999px;
-      padding:3px;
-      background:#30303a;
-      cursor:pointer;
-      transition:.2s;
-      flex:0 0 auto;
-    }
-    .profile-private-toggle::before{
-      content:'';
-      display:block;
-      width:20px;
-      height:20px;
-      border-radius:50%;
-      background:#fff;
-      transition:.2s;
-    }
-    .profile-private-toggle.active{
-      background:var(--accent);
-      box-shadow:0 0 10px var(--accent-glow);
-    }
-    .profile-private-toggle.active::before{
-      transform:translateX(20px);
-    }
-
-    .private-profile-state{
-      grid-column:1/-1;
-      padding:55px 22px;
-      text-align:center;
-      border:1px dashed rgba(255,255,255,.1);
-      border-radius:14px;
-      background:rgba(255,255,255,.02);
-      color:var(--text-muted);
-    }
-    .private-profile-state i{
-      display:block;
-      margin-bottom:13px;
-      color:#fff;
-      font-size:2rem;
-    }
-    .private-profile-state strong{
-      display:block;
-      color:#fff;
-      font-size:.9rem;
-      margin-bottom:6px;
-    }
-
-    .social-modal-overlay{
-      display:none;
-      position:fixed;
-      inset:0;
-      z-index:15000;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-      background:rgba(0,0,0,.76);
-      backdrop-filter:blur(12px);
-    }
-    .social-modal-overlay.show{display:flex}
-    .social-modal{
-      width:min(460px,100%);
-      max-height:75vh;
+    .recent-poster-shell{
+      aspect-ratio:2/3;
       overflow:hidden;
-      border:1px solid rgba(255,255,255,.1);
-      border-radius:14px;
-      background:#09090f;
-      box-shadow:0 24px 70px rgba(0,0,0,.65),0 0 18px var(--accent-glow);
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#09090d;
+      transition:.2s ease;
+      position:relative;
     }
-    .social-modal-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:14px 16px;
-      border-bottom:1px solid rgba(255,255,255,.08);
+    .recent-card:hover .recent-poster-shell{
+      transform:translateY(-4px);
+      border-color:var(--accent);
+      box-shadow:0 14px 28px rgba(0,0,0,.4),0 0 14px var(--accent-glow);
     }
-    .social-modal-head strong{
-      color:#fff;
-      font-size:.82rem;
-    }
-    .social-modal-close{
-      border:0;
-      background:transparent;
-      color:#fff;
-      cursor:pointer;
-      font-size:1rem;
-    }
-    .social-list{
-      max-height:60vh;
-      overflow-y:auto;
-      padding:8px;
-    }
-    .social-user{
+    .recent-poster{
       width:100%;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:9px;
-      border:0;
-      border-radius:9px;
-      background:transparent;
-      color:#fff;
-      cursor:pointer;
-      text-align:left;
-    }
-    .social-user:hover{background:rgba(255,255,255,.05)}
-    .social-avatar{
-      width:42px;
-      height:42px;
-      border-radius:50%;
+      height:100%;
       object-fit:cover;
-      background:#161620;
-      border:1px solid rgba(255,255,255,.1);
+      display:block;
     }
-    .social-avatar-fallback{
-      width:42px;
-      height:42px;
+    .recent-play{
+      position:absolute;
+      right:9px;
+      bottom:9px;
+      width:34px;
+      height:34px;
       border-radius:50%;
       display:grid;
       place-items:center;
-      background:linear-gradient(135deg,var(--accent),#161620);
-      font-weight:800;
+      background:rgba(0,0,0,.72);
+      border:1px solid rgba(255,255,255,.18);
+      color:#fff;
+      opacity:0;
+      transform:scale(.9);
+      transition:.2s;
     }
-    .social-copy{min-width:0}
-    .social-display{
-      display:block;
+    .recent-card:hover .recent-play{
+      opacity:1;
+      transform:scale(1);
+    }
+    .recent-title{
+      margin-top:8px;
+      color:#fff;
       font-size:.72rem;
-      font-weight:700;
+      font-weight:650;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
-    .social-username{
-      display:block;
-      margin-top:2px;
+    .recent-meta{
+      margin-top:3px;
       color:var(--text-muted);
-      font:500 .57rem var(--font-mono);
+      font:600 .54rem var(--font-mono);
+      text-transform:uppercase;
     }
-
-
-    /* Smaller public display name */
-    #profile-name{
-      font-size:clamp(2rem,4.2vw,3.8rem) !important;
-      line-height:1 !important;
-      letter-spacing:-0.5px !important;
-      max-width:760px;
-      overflow-wrap:anywhere;
+    .recent-empty{
+      grid-column:1/-1;
+      padding:28px 20px;
+      text-align:center;
+      color:var(--text-muted);
+      border:1px dashed rgba(255,255,255,.1);
+      border-radius:12px;
+      background:rgba(255,255,255,.02);
+      font-size:.72rem;
     }
-
-    @media(max-width:760px){
-      #profile-name{
-        font-size:clamp(1.9rem,9vw,3rem) !important;
-      }
-    }
-
-
-    /* Final compact display-name sizing */
-    body #profile-hero #profile-name{
-      font-family:var(--font-body) !important;
-      font-size:1.55rem !important;
-      font-weight:800 !important;
-      line-height:1.15 !important;
-      letter-spacing:0 !important;
-      text-transform:none !important;
-      margin:0 !important;
-      max-width:520px !important;
-      overflow-wrap:anywhere;
-    }
-
-    @media(max-width:760px){
-      body #profile-hero #profile-name{
-        font-size:1.35rem !important;
-      }
+    @media(max-width:700px){
+      .recent-section{padding:0 18px}
+      .recent-strip{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
     }
 
 
@@ -2639,51 +1784,6 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
 
 
 
-    /* ================= PROFILE STAFF / OWNER BADGES ================= */
-    .profile-role-badge{
-      display:none;
-      align-items:center;
-      gap:6px;
-      padding:5px 8px;
-      border-radius:999px;
-      font:800 .5rem var(--font-mono);
-      letter-spacing:.7px;
-      text-transform:uppercase;
-      white-space:nowrap;
-      transform:translateY(1px);
-    }
-    .profile-role-badge.show{display:inline-flex}
-
-    .profile-role-badge.owner{
-      color:#fff;
-      background:rgba(239,68,68,.16);
-      border:1px solid rgba(239,68,68,.5);
-      box-shadow:0 0 12px rgba(239,68,68,.2);
-    }
-    .profile-role-badge.owner i{color:#ef4444}
-
-    .profile-role-badge.staff{
-      color:#fff;
-      background:rgba(168,85,247,.16);
-      border:1px solid rgba(168,85,247,.52);
-      box-shadow:0 0 12px rgba(168,85,247,.2);
-    }
-    .profile-role-badge.staff i{color:#a855f7}
-
-
-
-    /* ================= PROFILE AUTH SECURITY ================= */
-    body:not(.profile-authenticated-owner) .profile-edit-panel,
-    body:not(.profile-authenticated-owner) .profile-private-control,
-    body:not(.profile-authenticated-owner) .avatar-upload-button,
-    body:not(.profile-authenticated-owner) #profile-avatar-upload,
-    body:not(.profile-authenticated-owner) #profile-avatar-input,
-    body:not(.profile-authenticated-owner) #profile-edit-controls{
-      display:none !important;
-    }
-
-
-
     /* ================= TOPBAR ACCOUNT ROLE BADGE ================= */
     .topbar-role-badge{
       display:none;
@@ -2715,104 +1815,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
     .topbar-role-badge.staff i{color:#a78bfa}
 
 
-
-    /* ================= PROFILE ROLE BADGE FINAL ================= */
-    #profile-hero .profile-name-row{
-      display:flex !important;
-      align-items:center !important;
-      gap:8px !important;
-      flex-wrap:wrap !important;
-    }
-    #profile-hero #profile-role-badge{
-      display:none;
-      align-items:center;
-      gap:6px;
-      margin:0;
-      padding:5px 9px;
-      border-radius:999px;
-      font:800 .5rem var(--font-mono);
-      letter-spacing:.7px;
-      text-transform:uppercase;
-      white-space:nowrap;
-      transform:none;
-    }
-    #profile-hero #profile-role-badge.show{display:inline-flex !important}
-    #profile-hero #profile-role-badge.owner{
-      color:#fff;
-      background:rgba(229,9,20,.18);
-      border:1px solid rgba(229,9,20,.62);
-      box-shadow:0 0 14px rgba(229,9,20,.2);
-    }
-    #profile-hero #profile-role-badge.owner i{color:#e50914}
-    #profile-hero #profile-role-badge.staff{
-      color:#fff;
-      background:rgba(139,92,246,.18);
-      border:1px solid rgba(139,92,246,.62);
-      box-shadow:0 0 14px rgba(139,92,246,.2);
-    }
-    #profile-hero #profile-role-badge.staff i{color:#a78bfa}
-
-
-
-    
-
-
-
-    
-
-    
-    
-
-    
     #topbar-role-badge[hidden]{display:none !important}
-
-
-    /* ================= FINAL PROFILE ROLE COLOURS ================= */
-    #profile-hero #profile-role-badge.owner{
-      color:#ff3344 !important;
-      background:rgba(229,9,20,.10) !important;
-      border-color:rgba(229,9,20,.46) !important;
-      box-shadow:none !important;
-    }
-    #profile-hero #profile-role-badge.owner i,
-    #profile-hero #profile-role-badge.owner span{
-      color:#ff3344 !important;
-    }
-
-    #profile-hero #profile-role-badge.staff{
-      color:#b26cff !important;
-      background:rgba(139,92,246,.10) !important;
-      border-color:rgba(139,92,246,.46) !important;
-      box-shadow:none !important;
-    }
-    #profile-hero #profile-role-badge.staff i,
-    #profile-hero #profile-role-badge.staff span{
-      color:#b26cff !important;
-    }
-
-
-
-    /* ================= FORCED OWNER / STAFF ROLE COLOURS ================= */
-    #profile-hero .profile-name-row #profile-role-badge.owner,
-    #profile-hero .profile-name-row #profile-role-badge.owner *{
-      color:#ff2b3d !important;
-    }
-    #profile-hero .profile-name-row #profile-role-badge.owner{
-      background:rgba(255,43,61,.10) !important;
-      border-color:rgba(255,43,61,.55) !important;
-      box-shadow:none !important;
-    }
-
-    #profile-hero .profile-name-row #profile-role-badge.staff,
-    #profile-hero .profile-name-row #profile-role-badge.staff *{
-      color:#a855f7 !important;
-    }
-    #profile-hero .profile-name-row #profile-role-badge.staff{
-      background:rgba(168,85,247,.10) !important;
-      border-color:rgba(168,85,247,.55) !important;
-      box-shadow:none !important;
-    }
-
 
 
     /* ================= STAFF CONTROL CENTER / REPORTS ================= */
@@ -2917,25 +1920,27 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
 
 
 
-    /* ================= STAFF CENTER ROLE COLOURS FINAL ================= */
-    #profile-hero #profile-role-badge.owner,
-    #profile-hero #profile-role-badge.owner i,
-    #profile-hero #profile-role-badge.owner span{
-      color:#ff2b3d !important;
+    /* ================= STAFF-CURATED HOME ================= */
+    .staff-curated-section{
+      margin-top:34px;
+      padding:20px;
+      border:1px solid rgba(168,85,247,.12);
+      border-radius:16px;
+      background:linear-gradient(145deg,rgba(168,85,247,.055),rgba(255,255,255,.012));
     }
-    #profile-hero #profile-role-badge.owner{
-      border-color:rgba(255,43,61,.56) !important;
-      background:rgba(255,43,61,.09) !important;
-    }
-    #profile-hero #profile-role-badge.staff,
-    #profile-hero #profile-role-badge.staff i,
-    #profile-hero #profile-role-badge.staff span{
-      color:#a855f7 !important;
-    }
-    #profile-hero #profile-role-badge.staff{
-      border-color:rgba(168,85,247,.56) !important;
-      background:rgba(168,85,247,.09) !important;
-    }
+    .staff-curated-section[hidden]{display:none !important}
+    .staff-curated-head{margin-bottom:14px}
+    .staff-curated-head span{color:#a855f7;font:800 .52rem var(--font-mono);letter-spacing:1.2px}
+    .staff-curated-head h2{margin:5px 0 0;font-family:var(--font-heading);font-size:1.8rem}
+    .staff-collection-block{margin-top:20px}
+    .staff-collection-title{display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:10px}
+    .staff-collection-title strong{font-size:.78rem}
+    .staff-collection-title small{color:var(--text-muted);font-size:.53rem}
+    .staff-collection-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(135px,170px);gap:12px;overflow-x:auto;padding:3px 2px 9px}
+    .staff-collection-card{text-decoration:none;color:#fff}
+    .staff-collection-poster{aspect-ratio:2/3;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.07);background:#111}
+    .staff-collection-poster img{width:100%;height:100%;object-fit:cover;display:block}
+    .staff-collection-name{margin-top:7px;font-size:.61rem;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 
 
@@ -2990,6 +1995,26 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
       .account-username-change-row{grid-template-columns:1fr}
     }
 
+
+
+    /* ================= STAFF COLLECTIONS — TOP OF HOME ================= */
+    .staff-curated-top-wrap{
+      max-width:1400px;
+      margin:0 auto;
+      padding:0 30px;
+    }
+    .staff-curated-top-wrap .staff-curated-section{
+      margin:22px 0 24px !important;
+    }
+    .staff-curated-top-wrap .staff-curated-section[hidden]{
+      display:none !important;
+    }
+    @media(max-width:650px){
+      .staff-curated-top-wrap{
+        padding:0 14px;
+      }
+    }
+
 </style>
 
     <!-- Flix2Watch favicon / app icons -->
@@ -3008,7 +2033,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
     <meta property="og:title" content="Flix2Watch">
     <meta property="og:description" content="Discover movies and TV shows, save your favorites, build your profile, and see what other people are watching.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://flix2watch.com/profile/">
+    <meta property="og:url" content="https://flix2watch.com/home/">
     <meta property="og:image" content="https://flix2watch.com/og-image-v16.png">
     <meta property="og:image:secure_url" content="https://flix2watch.com/og-image-v16.png">
     <meta property="og:image:type" content="image/png">
@@ -3022,7 +2047,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
     <meta name="twitter:description" content="Discover movies and TV shows, save your favorites, build your profile, and see what other people are watching.">
     <meta name="twitter:image" content="https://flix2watch.com/og-image-v16.png">
 
-  <link rel="canonical" href="https://flix2watch.com/profile/">
+  <link rel="canonical" href="https://flix2watch.com/home/">
 
   <!-- Flix2Watch Ultra performance hints -->
   <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
@@ -3326,11 +2351,110 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=90-1788227716">
+  <link rel="stylesheet" href="/final-v35.css?v=94-1788280907">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=93-1788229371">
+  <link rel="stylesheet" href="/global-header-v1.css?v=94-1788280907">
   <script src="/global-header-chat-v1.js?v=94-1788280907" defer></script>
+
+  <style id="f2w-mobile-login-above-featured">
+    /* Mobile/tablet home layout: keep the login/signup card above Featured. */
+    @media (max-width:1180px){
+      body:not(.f2w-authenticated) .f2w-home-stage{
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:stretch !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .f2w-guest-rail{
+        display:contents !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .f2w-guest-rail > .f2w-guest-brand{
+        order:-2 !important;
+        width:100% !important;
+        margin:0 !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .hero-banner{
+        order:-1 !important;
+      }
+      body:not(.f2w-authenticated) .f2w-home-stage > .f2w-guest-rail > .f2w-guest-card:not(.f2w-guest-brand){
+        order:0 !important;
+        width:100% !important;
+        margin:0 !important;
+      }
+    }
+  </style>
+<style id="f2w-inline-home-auth-slide">
+    .f2w-inline-auth-tabs button{transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease}
+    .f2w-inline-auth-tabs button.active{background:#e50914!important;color:#fff!important;border-color:#e50914!important;box-shadow:0 8px 22px rgba(229,9,20,.22)}
+    .f2w-quick-auth-viewport{width:100%;overflow:hidden;transition:height .32s cubic-bezier(.2,.8,.2,1);will-change:height}
+    .f2w-quick-auth-track{display:flex;width:200%;align-items:flex-start;transform:translateX(0);transition:transform .36s cubic-bezier(.2,.85,.25,1);will-change:transform}
+    .f2w-quick-auth-track.signup{transform:translateX(-50%)}
+    .f2w-quick-auth-pane{width:50%;flex:0 0 50%;box-sizing:border-box}
+    .f2w-quick-signup{padding-top:1px}
+    .f2w-inline-signup-rule{font:500 11px/1.45 Inter,system-ui,sans-serif;color:#8f9bad;margin:-2px 2px 10px}
+    @media (prefers-reduced-motion:reduce){.f2w-quick-auth-track,.f2w-quick-auth-viewport{transition:none!important}}
+  </style>
+<style id="f2w-mobile-hero-controls-fix-v1">
+/* Mobile/tablet featured carousel controls: reserve their own bottom row so they never cover titles or action buttons. */
+@media (max-width: 900px){
+  #hero-banner.hero-banner{
+    position:relative!important;
+    padding-bottom:86px!important;
+    overflow:hidden!important;
+  }
+  #hero-banner .hero-content{
+    width:100%!important;
+    max-width:100%!important;
+    padding-inline:0!important;
+  }
+  #hero-banner .hero-actions{
+    margin-bottom:4px!important;
+  }
+  #hero-banner .v19-hero-arrow{
+    top:auto!important;
+    bottom:20px!important;
+    transform:none!important;
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+    min-height:38px!important;
+    border-radius:10px!important;
+    z-index:5!important;
+  }
+  #hero-banner .v19-hero-arrow.prev{left:16px!important;}
+  #hero-banner .v19-hero-arrow.next{right:16px!important;}
+  #hero-banner .hero-carousel-dots{
+    position:absolute!important;
+    left:50%!important;
+    right:auto!important;
+    bottom:32px!important;
+    top:auto!important;
+    transform:translateX(-50%)!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    z-index:5!important;
+    pointer-events:auto!important;
+  }
+  #hero-banner .hero-carousel-dots button,
+  #hero-banner .hero-carousel-dots .dot,
+  #hero-banner .hero-carousel-dots > *{
+    margin:0!important;
+  }
+}
+@media (max-width: 900px) and (orientation: landscape){
+  #hero-banner.hero-banner{
+    min-height:340px!important;
+    height:auto!important;
+    padding-bottom:76px!important;
+  }
+  #hero-banner .v19-hero-arrow{bottom:14px!important;}
+  #hero-banner .hero-carousel-dots{bottom:26px!important;}
+}
+</style>
+
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -3375,171 +2499,125 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </style>
 
 
-<style id="f2w-profile-edit-center-v52">
-/* ============================================================
-   F2W v52 — PROFILE EDIT MODAL CENTERING
-   Keep Edit Profile centered on every device and viewport height.
-   ============================================================ */
+<style id="f2w-home-carousel-controls-v41">
+/* F2W v41 — hero carousel arrows never overlap movie title/content */
+#hero-banner.hero-banner {
+  position:relative!important;
+  padding-bottom:82px!important;
+  overflow:hidden!important;
+}
 
-/* Known cumulative profile editor overlays */
-#v17-profile-editor,
-#profile-editor-modal,
-#edit-profile-modal,
-.profile-edit-modal,
-.f2w-profile-editor-modal,
-.f2w-profile-edit-overlay {
-  position:fixed!important;
-  inset:0!important;
-  z-index:2147483000!important;
+#hero-banner .hero-content {
+  position:relative!important;
+  z-index:2!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  max-width:100%!important;
+}
+
+#hero-banner .v19-hero-arrow {
+  position:absolute!important;
+  top:auto!important;
+  bottom:20px!important;
+  transform:none!important;
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  min-height:40px!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:10px!important;
+  z-index:6!important;
+  line-height:1!important;
+}
+
+#hero-banner .v19-hero-arrow.prev {
+  left:16px!important;
+  right:auto!important;
+}
+
+#hero-banner .v19-hero-arrow.next {
+  right:16px!important;
+  left:auto!important;
+}
+
+#hero-banner .hero-carousel-dots {
+  position:absolute!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:32px!important;
+  transform:translateX(-50%)!important;
+  margin:0!important;
+  z-index:6!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  padding:18px!important;
-  margin:0!important;
-  overflow-y:auto!important;
-  overscroll-behavior:contain!important;
-  box-sizing:border-box!important;
+  gap:8px!important;
 }
 
-#v17-profile-editor[hidden],
-#profile-editor-modal[hidden],
-#edit-profile-modal[hidden],
-.profile-edit-modal[hidden],
-.f2w-profile-editor-modal[hidden],
-.f2w-profile-edit-overlay[hidden] {
-  display:none!important;
-}
-
-/* Actual editor card stays centered and scrolls internally only when necessary. */
-#v17-profile-editor .profile-editor-card,
-#v17-profile-editor .f2w-profile-editor-card,
-#profile-editor-modal .profile-editor-card,
-#edit-profile-modal .profile-editor-card,
-.profile-edit-modal .profile-editor-card,
-.f2w-profile-editor-card {
-  position:relative!important;
-  top:auto!important;
-  left:auto!important;
-  right:auto!important;
-  bottom:auto!important;
-  transform:none!important;
-  margin:auto!important;
-  width:min(760px,calc(100vw - 36px))!important;
-  max-width:760px!important;
-  max-height:min(82dvh,760px)!important;
-  overflow:auto!important;
-  box-sizing:border-box!important;
-}
-
-/* Desktop keeps it visually centered, even on tall/short screens. */
-@media(min-width:761px) {
-  #v17-profile-editor,
-  #profile-editor-modal,
-  #edit-profile-modal,
-  .profile-edit-modal,
-  .f2w-profile-editor-modal,
-  .f2w-profile-edit-overlay {
-    align-items:center!important;
+@media(max-width:600px) {
+  #hero-banner.hero-banner {
+    padding-bottom:76px!important;
+  }
+  #hero-banner .v19-hero-arrow {
+    bottom:16px!important;
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+    min-height:38px!important;
+  }
+  #hero-banner .hero-carousel-dots {
+    bottom:28px!important;
   }
 }
 
-/* Mobile/tablet: centered with safe breathing room, never stuck to bottom. */
-@media(max-width:760px) {
-  #v17-profile-editor,
-  #profile-editor-modal,
-  #edit-profile-modal,
-  .profile-edit-modal,
-  .f2w-profile-editor-modal,
-  .f2w-profile-edit-overlay {
-    padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))!important;
-    align-items:center!important;
-  }
-
-  #v17-profile-editor .profile-editor-card,
-  #v17-profile-editor .f2w-profile-editor-card,
-  #profile-editor-modal .profile-editor-card,
-  #edit-profile-modal .profile-editor-card,
-  .profile-edit-modal .profile-editor-card,
-  .f2w-profile-editor-card {
-    width:min(96vw,680px)!important;
-    max-width:96vw!important;
-    max-height:86dvh!important;
-    margin:auto!important;
-    border-radius:15px!important;
-  }
-}
-
-/* Very short screens: remain centered but allow overlay scrolling rather than anchoring bottom. */
-@media(max-height:650px) {
-  #v17-profile-editor,
-  #profile-editor-modal,
-  #edit-profile-modal,
-  .profile-edit-modal,
-  .f2w-profile-editor-modal,
-  .f2w-profile-edit-overlay {
-    align-items:center!important;
-    padding-top:10px!important;
-    padding-bottom:10px!important;
-  }
-
-  #v17-profile-editor .profile-editor-card,
-  #v17-profile-editor .f2w-profile-editor-card,
-  #profile-editor-modal .profile-editor-card,
-  #edit-profile-modal .profile-editor-card,
-  .profile-edit-modal .profile-editor-card,
-  .f2w-profile-editor-card {
-    max-height:calc(100dvh - 20px)!important;
-  }
-}
-
-/* f2w-force-save:profile-edit-center-v52:1788220545 */
+/* f2w-force-save:home-carousel-controls-v41:1788219230 */
 </style>
 
 
-<style id="f2w-profile-camera-static-v88">
-/* ============================================================
-   F2W v88 — PROFILE CAMERA CONTROL: STATIC / NO BLINK
-   ============================================================ */
-.avatar-edit-label {
-  display:grid!important;
-  visibility:hidden!important;
-  opacity:0!important;
-  animation:none!important;
-  transition:none!important;
-  transform:none!important;
-  will-change:auto!important;
+<style id="f2w-home-quick-auth-feedback-v93">
+.f2w-quick-auth-message {
+  display:block!important;
+  min-height:18px!important;
+  margin:8px 2px 0!important;
+  font-size:.69rem!important;
+  line-height:1.35!important;
+  font-weight:800!important;
+  color:#93a6bb!important;
+  text-align:left!important;
 }
-
-.avatar-edit-label[hidden] {
-  display:grid!important;
-  visibility:hidden!important;
-  opacity:0!important;
-  pointer-events:none!important;
+.f2w-quick-auth-message.error { color:#ff6977!important; }
+.f2w-quick-auth-message.success { color:#53e39b!important; }
+.f2w-quick-auth-message:empty {
+  min-height:0!important;
+  margin-top:0!important;
 }
-
-body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
-  display:grid!important;
-  visibility:visible!important;
-  opacity:1!important;
-  animation:none!important;
-  transition:none!important;
-  transform:none!important;
+.f2w-quick-login-btn[data-f2w-busy="1"] {
+  cursor:wait!important;
+  opacity:.9!important;
 }
-
-/* Camera icon itself is always static. */
-.avatar-edit-label > i {
-  animation:none!important;
-  transition:none!important;
-  transform:none!important;
-  opacity:1!important;
-}
-
-/* f2w-force-save:profile-camera-static-v88:1788227370 */
+/* f2w-force-save:home-quick-auth-feedback-v93:1788229371 */
 </style>
 
+
+<style id="f2w-dedicated-genre-v94-css">
+body.f2w-dedicated-genre-v94 #f2w-home-popular-row,
+body.f2w-dedicated-genre-v94 #f2w-home-top-rated-row,
+body.f2w-dedicated-genre-v94 #f2w-home-upcoming-row,
+body.f2w-dedicated-genre-v94 #f2w-home-browse-genres,
+body.f2w-dedicated-genre-v94 #f2w-home-recently-viewed,
+body.f2w-dedicated-genre-v94 .f2w-mood-section { display:none!important; }
+body.f2w-dedicated-genre-v94 #section-title { margin-top:12px!important; }
+/* f2w-force-save:dedicated-genre-css-v94:1788280907 */
+</style>
+
+<script>window.__F2W_FIXED_GENRE_V94={id:16,slug:"animation",name:"Animation"};document.documentElement.dataset.f2wGenre="animation";</script>
 </head>
 
-<body class="theme-red f2w-main-page f2w-profile-page">
+<body class="theme-red f2w-main-page f2w-home-page f2w-dedicated-genre-v94">
 <header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
       <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
@@ -3902,180 +2980,382 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
   </div>
 
 
-
-
-<main class="profile-page" id="profile-root">
-  <section class="profile-hero" id="profile-hero">
-    <div class="profile-avatar-shell" id="profile-avatar-shell">
-      <div class="profile-avatar-fallback" id="profile-avatar-fallback">?</div>
-      <img class="profile-avatar" id="profile-avatar" alt="" style="display:none">
-      <label class="avatar-edit-label" title="Change profile picture">
-        <i class="fa-solid fa-camera"></i>
-        <input id="profile-avatar-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" onchange="uploadProfileAvatar(this.files?.[0])" hidden>
-      </label>
-    </div>
-
-    <div>
-      <div class="profile-eyebrow">FLIX2WATCH PROFILE</div>
-      <div class="profile-name-row">
-        <h1 class="profile-name" id="profile-name">Loading...</h1>
-        <span id="v17-profile-presence" class="f2w-profile-presence offline" aria-live="polite">
-          <i class="f2w-profile-presence-dot"></i>
-          <span>Checking status…</span>
-        </span>
-      </div>
-      
-      
-      <div class="profile-social-actions">
-        <button class="profile-follow-btn" id="profile-follow-btn" type="button" onclick="toggleProfileFollow()" style="display:none">
-          <i class="fa-solid fa-user-plus"></i> Follow
-        </button>
-        <button class="profile-follow-btn v17-message-profile-btn" id="profile-message-btn" type="button" onclick="messageViewedProfile()" style="display:none">
-          <i class="fa-regular fa-paper-plane"></i> Message
-        </button>
-      </div>
-
-      <div class="profile-social-counts">
-        <button class="profile-social-count" id="followers-count-btn" type="button" onclick="openSocialList('followers')">
-          <strong id="profile-followers-count">0</strong> followers
-        </button>
-        <button class="profile-social-count" id="following-count-btn" type="button" onclick="openSocialList('following')">
-          <strong id="profile-following-count">0</strong> following
-        </button>
-      </div>
-
-      <div class="profile-private-control">
-        <div class="profile-private-copy">
-          <strong>Private profile</strong>
-          <span>Hide your favorites and follower/following lists from everyone else.</span>
+  <div class="f2w-home-stage">
+    <div class="hero-banner" id="hero-banner">
+      <div class="hero-content">
+        <span class="hero-featured-badge">FEATURED</span>
+        <h1 class="hero-title" id="hero-title">Loading Spotlight...</h1>
+        <div class="hero-meta" id="hero-meta">
+          <span>Loading</span><span>Featured</span>
         </div>
-        <button class="profile-private-toggle" id="profile-private-toggle" type="button" onclick="togglePrivateProfile()" aria-label="Toggle private profile"></button>
-      </div>
-      <div class="profile-bio empty" id="profile-bio">Loading profile...</div>
-
-      <div class="profile-meta">
-        <button class="profile-chip profile-chip-button" id="profile-favorite-count" type="button" onclick="document.getElementById('profile-favorites-grid')?.scrollIntoView({behavior:'smooth',block:'start'})">0 favorites</button>
-        <span class="profile-chip" id="profile-joined">Flix2Watch member</span>
-      </div>
-
-      <div class="profile-actions">
-        <button class="profile-action-btn" id="copy-profile-link-btn" type="button" onclick="copyViewedProfileLink()"><i class="fa-solid fa-link"></i> <span>Copy Link</span></button>
-        <button class="profile-action-btn" id="profile-report-btn" type="button" hidden onclick="reportViewedProfile()"><i class="fa-solid fa-flag"></i> <span>Report</span></button>
-      </div>
-
-      <div class="profile-stats-grid">
-        <div class="profile-stat-card"><strong id="profile-stat-total">0</strong><span>Favorites</span></div>
-        <div class="profile-stat-card"><strong id="profile-stat-movies">0</strong><span>Movies</span></div>
-        <div class="profile-stat-card"><strong id="profile-stat-tv">0</strong><span>TV Series</span></div>
-      </div>
-
-      <div class="profile-public-note"><i class="fa-solid fa-earth-europe"></i> This profile and its favorites are public and can be viewed without signing in.</div>
-
-      <div class="profile-edit-panel">
-
-        <label class="profile-edit-label" for="profile-display-name-input">Display name</label>
-        <input
-          id="profile-display-name-input"
-          class="profile-display-name-input"
-          type="text"
-          maxlength="50"
-          placeholder="Add a display name"
-        >
-
-        <label class="profile-edit-label" for="profile-bio-input">Your bio</label>
-        <textarea id="profile-bio-input" class="profile-bio-input" maxlength="500" placeholder="Tell people what you like watching..."></textarea>
-        <div class="profile-save-row">
-          <button class="profile-save-btn" type="button" onclick="saveProfileDetails()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
-          <span class="profile-save-status" id="profile-save-status">Only you can edit this profile.</span>
+        <p class="hero-overview" id="hero-overview">Fetching top featured release from secure database...</p>
+        <div class="hero-actions">
+          <a id="hero-link" href="#" class="hero-btn"><i class="fa-solid fa-play"></i> View Details</a>
+          <button class="hero-btn secondary" type="button" onclick="document.getElementById('movie-grid')?.scrollIntoView({behavior:'smooth',block:'start'})">
+            <i class="fa-solid fa-film"></i> Browse Titles
+          </button>
         </div>
       </div>
-    </div>
-  </section>
-
-
-  <section class="profile-v16-overview" aria-label="Profile overview">
-    <div class="profile-v16-tile">
-      <i class="fa-regular fa-calendar"></i>
-      <strong id="v16-profile-age">—</strong>
-      <span>Member age</span>
-    </div>
-    <div class="profile-v16-tile">
-      <i class="fa-solid fa-clapperboard"></i>
-      <strong id="v16-profile-mix">—</strong>
-      <span>Movie / TV mix</span>
-    </div>
-    <div class="profile-v16-tile">
-      <i class="fa-solid fa-eye"></i>
-      <strong id="v16-profile-privacy">Public</strong>
-      <span>Profile visibility</span>
-    </div>
-    <div class="profile-v16-tile">
-      <i class="fa-solid fa-user-group"></i>
-      <strong id="v16-profile-social">0</strong>
-      <span>Followers + following</span>
-    </div>
-  </section>
-
-  <section class="profile-v16-panel" id="v16-profile-badges-panel">
-    <div class="profile-v16-panel-head">
-      <h2><i class="fa-solid fa-id-badge" style="color:var(--accent)"></i> Roles & Badges</h2>
-      <span>Public Flix2Watch identity</span>
-    </div>
-    <div class="profile-v16-badges" id="v16-profile-badges">
-      <span class="profile-v16-none">No extra public roles.</span>
-    </div>
-  </section>
-
-  
-
-
-  <section class="profile-v16-panel f2w-v34-profile-social">
-    <div class="profile-v16-panel-head"><h2><i class="fa-solid fa-star" style="color:var(--accent)"></i> Ratings & Reviews</h2><span>Recent movie and TV scores</span></div>
-    
-    <div class="f2w-v34-profile-ratings" id="f2w-v34-profile-ratings"><div class="profile-v16-none">No ratings yet.</div></div>
-  </section>
-
-  <section class="profile-v16-panel f2w-v34-profile-social">
-    <div class="profile-v16-panel-head"><h2><i class="fa-solid fa-comments" style="color:var(--accent)"></i> Community Activity</h2><span>Recent threads and posts</span></div>
-    <div class="f2w-v34-profile-forum" id="f2w-v34-profile-forum"><div class="profile-v16-none">No community posts yet.</div></div>
-  </section>
-
-  <section class="profile-section" id="profile-favorites-section">
-    <div class="profile-section-head">
-      <div>
-        <div class="profile-eyebrow">PUBLIC WATCHLIST</div>
-        <h2 class="profile-section-title">Favorite Movies & TV</h2>
+      <button class="v19-hero-arrow prev" id="v19-hero-prev" type="button" aria-label="Previous featured title"><i class="fa-solid fa-chevron-left"></i></button>
+      <button class="v19-hero-arrow next" id="v19-hero-next" type="button" aria-label="Next featured title"><i class="fa-solid fa-chevron-right"></i></button>
+      <div class="hero-carousel-dots" id="v19-hero-dots" aria-label="Featured titles">
+        <button class="active" type="button" aria-label="Featured title 1"></button>
+        <button type="button" aria-label="Featured title 2"></button>
+        <button type="button" aria-label="Featured title 3"></button>
+        <button type="button" aria-label="Featured title 4"></button>
+        <button type="button" aria-label="Featured title 5"></button>
       </div>
     </div>
-    <div class="profile-favorites-grid" id="profile-favorites-grid">
-      <div class="profile-state">Loading favorites...</div>
-    </div>
-  </section>
 
-    <section class="f2w-ultra-section" id="f2w-profile-lab">
-      <div class="f2w-ultra-head">
-        <div>
-          <div class="f2w-ultra-kicker">PROFILE LAB</div>
-          <h2 class="f2w-ultra-title">Taste, Activity & Achievements</h2>
-          <p class="f2w-ultra-sub">A richer readout built from the same public profile and favorites data already on the page.</p>
+    <aside class="f2w-guest-rail" aria-label="Account and playback information">
+      <div class="f2w-guest-card f2w-guest-brand">
+        <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch">
+        <strong>Watch. Chill. Repeat.</strong>
+        <p>Create an account or log in to start watching.</p>
+
+        <div class="f2w-guest-actions f2w-guest-tabs f2w-inline-auth-tabs">
+          <button class="primary active" id="home-inline-login-tab" type="button" onclick="setHomeQuickAuthMode('login')">Login</button>
+          <button id="home-inline-signup-tab" type="button" onclick="setHomeQuickAuthMode('signup')">Sign Up</button>
+        </div>
+
+        <div class="f2w-quick-auth-viewport" id="home-quick-auth-viewport">
+          <div class="f2w-quick-auth-track" id="home-quick-auth-track">
+            <div class="f2w-quick-auth-pane f2w-quick-login" id="home-quick-login-pane">
+              <label>
+                <i class="fa-regular fa-envelope"></i>
+                <input id="home-quick-email" type="text" autocomplete="username" placeholder="Username or email">
+              </label>
+              <label>
+                <i class="fa-solid fa-lock"></i>
+                <input id="home-quick-password" type="password" autocomplete="current-password" placeholder="Password">
+              </label>
+              <button class="f2w-quick-login-btn" id="home-quick-login-btn" type="button" onclick="quickHomeLogin()">Login <i class="fa-solid fa-chevron-right"></i></button>
+              <div class="f2w-quick-auth-message" id="home-quick-login-message" role="status" aria-live="polite"></div>
+              <div class="f2w-quick-oauth">
+                <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span></button>
+                <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span></button>
+              </div>
+              
+              <div class="f2w-quick-signup-copy">No account? <button type="button" onclick="setHomeQuickAuthMode('signup')">Sign up instead</button></div>
+            </div>
+
+            <div class="f2w-quick-auth-pane f2w-quick-login f2w-quick-signup" id="home-quick-signup-pane">
+              <label>
+                <i class="fa-solid fa-user"></i>
+                <input id="home-quick-signup-username" type="text" maxlength="30" autocomplete="username" placeholder="Choose username">
+              </label>
+              <label>
+                <i class="fa-regular fa-envelope"></i>
+                <input id="home-quick-signup-email" type="email" autocomplete="email" placeholder="Email address">
+              </label>
+              <label>
+                <i class="fa-solid fa-lock"></i>
+                <input id="home-quick-signup-password" type="password" autocomplete="new-password" placeholder="Create password">
+              </label>
+              <label>
+                <i class="fa-solid fa-shield-halved"></i>
+                <input id="home-quick-signup-confirm" type="password" autocomplete="new-password" placeholder="Confirm password">
+              </label>
+              <div class="f2w-inline-signup-rule">A-Z and 0-9 only for usernames. Passwords need at least 6 characters.</div>
+              <button class="f2w-quick-login-btn" id="home-quick-signup-btn" type="button" onclick="quickHomeSignup()">Create Account <i class="fa-solid fa-chevron-right"></i></button>
+              <div class="f2w-quick-auth-message" id="home-quick-signup-message" role="status" aria-live="polite"></div>
+              <div class="f2w-quick-oauth">
+                <button type="button" onclick="signInWithOAuthProvider('google')" aria-label="Continue with Google"><i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign up with Google</span></button>
+                <button type="button" onclick="signInWithOAuthProvider('discord')" aria-label="Continue with Discord"><i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign up with Discord</span></button>
+              </div>
+              
+              <div class="f2w-quick-signup-copy">Already have an account? <button type="button" onclick="setHomeQuickAuthMode('login')">Log in instead</button></div>
+            </div>
+          </div>
         </div>
       </div>
+</aside>
+  </div>
 
-      <div class="f2w-ultra-grid">
-        <div class="f2w-mini-stat"><strong id="f2w-profile-level">1</strong><span>PROFILE LEVEL</span></div>
-        <div class="f2w-mini-stat"><strong id="f2w-profile-score">0</strong><span>TASTE SCORE</span></div>
-        <div class="f2w-mini-stat"><strong id="f2w-profile-member">—</strong><span>MEMBER SINCE</span></div>
-        <div class="f2w-mini-stat"><strong id="f2w-profile-completion">0%</strong><span>PROFILE COMPLETE</span></div>
+  <div class="staff-curated-top-wrap">
+    <section class="staff-curated-section" id="staff-curated-section" hidden>
+      <div class="staff-curated-head">
+        <span>CURATED BY FLIX2WATCH STAFF</span>
+        <h2>Staff Picks</h2>
       </div>
-
-      <div style="margin-top:20px">
-        <div class="f2w-ultra-kicker" style="margin-bottom:9px">ACHIEVEMENTS</div>
-        
-      </div>
-
       
     </section>
+  </div>
 
+  <section class="v15-movie-search-section" id="v15-movie-search-section" hidden>
+    <div class="v15-search-head">
+      <div>
+        <span>SEARCH RESULTS</span>
+        <h2 id="v15-movie-search-title">Search Results</h2>
+      </div>
+      <button type="button" onclick="clearV15MovieSearch()" aria-label="Clear movie search">
+        <i class="fa-solid fa-xmark"></i> Clear
+      </button>
+    </div>
+    
+    
+  </section>
+
+<main>
+    <div class="filter-tabs">
+      <button class="tab-btn active" onclick="switchCategory('trending',this)">Trending Today</button>
+      <button class="tab-btn" onclick="switchCategory('movie',this)">Movies</button>
+      <button class="tab-btn" onclick="switchCategory('tv',this)">TV Series</button>
+      <button class="tab-btn" onclick="switchGenre(28,this)">Action</button>
+      <button class="tab-btn" onclick="switchGenre(878,this)">Sci-Fi</button>
+      <button class="tab-btn" onclick="switchGenre(53,this)">Thriller</button>
+      <button class="tab-btn" onclick="switchGenre(27,this)">Horror</button>
+      <button class="tab-btn" onclick="switchGenre(80,this)">Crime</button>
+      <button class="tab-btn" onclick="switchGenre(16,this)">Animation</button>
+      <button class="tab-btn" onclick="switchGenre(99,this)">Documentary</button>
+    </div>
+    <div class="section-header"><h2 id="section-title">Trending Today</h2></div>
+    
+    <div class="genre-sort-row" id="genre-sort-row" style="display:none">
+      <label class="genre-sort-label" for="genre-sort-select">
+        <i class="fa-solid fa-arrow-down-wide-short"></i> Sort by
+      </label>
+      <div class="genre-sort-select-wrap">
+        <select id="genre-sort-select" class="genre-sort-select" onchange="changeGenreSort(this.value)">
+          <option value="popularity.desc">Popularity</option>
+          <option value="primary_release_date.desc">Newest Release</option>
+          <option value="primary_release_date.asc">Oldest Release</option>
+          <option value="vote_average.desc">Highest Rated</option>
+        </select>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+    </div>
+
+    
+    
+
+    
+  
+
+<div class="home-extra">
+
+<section class="extra-section" aria-labelledby="popular-movies-title">
+        <div class="extra-section-head">
+          <div>
+            <div class="extra-eyebrow">SERIES DISCOVERY</div>
+            <h2 id="popular-movies-title">Popular Movies Right Now</h2>
+            <p class="extra-subtitle">A quick row of popular movies without replacing your main movie grid above.</p>
+          </div>
+        </div>
+        <div class="media-strip" id="popular-movies-strip">
+          <div class="extra-loading">Loading popular movies...</div>
+        </div>
+      </section>
+<section class="extra-section" aria-labelledby="top-rated-title">
+        <div class="extra-section-head">
+          <div>
+            <div class="extra-eyebrow">CURATED PICKS</div>
+            <h2 id="top-rated-title">Top Rated Movies</h2>
+            <p class="extra-subtitle">Highly rated films pulled from the catalogue, ready to open straight in the player.</p>
+          </div>
+          <button class="extra-action" type="button" onclick="refreshExtraRows()">
+            <i class="fa-solid fa-rotate"></i> Refresh Picks
+          </button>
+        </div>
+        <div class="media-strip" id="top-rated-strip">
+          <div class="extra-loading">Loading top rated movies...</div>
+        </div>
+      </section>
+<section class="f2w-ultra-section">
+      <div class="f2w-ultra-head">
+        <div>
+          <div class="f2w-ultra-kicker">COMING UP</div>
+          <h2 class="f2w-ultra-title">Upcoming Movies</h2>
+          <p class="f2w-ultra-sub">A quick look at upcoming theatrical releases.</p>
+        </div>
+      </div>
+      <div class="f2w-horizontal" id="f2w-upcoming-row"><div class="f2w-empty-loader"><i class="fa-solid fa-circle-notch fa-spin"></i>Loading on demand…</div></div>
+    </section>
+<section class="extra-section" aria-labelledby="genre-title">
+        <div class="extra-section-head">
+          <div>
+            <div class="extra-eyebrow">FIND SOMETHING FAST</div>
+            <h2 id="genre-title">Browse by Genre</h2>
+            <p class="extra-subtitle">Open a full genre catalogue and keep scrolling to load more titles.</p>
+          </div>
+        </div>
+
+        <div class="genre-grid">
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(28)">
+            <i class="fa-solid fa-explosion"></i><span>Action</span>
+          </button>
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(35)">
+            <i class="fa-solid fa-face-laugh"></i><span>Comedy</span>
+          </button>
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(27)">
+            <i class="fa-solid fa-ghost"></i><span>Horror</span>
+          </button>
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(878)">
+            <i class="fa-solid fa-rocket"></i><span>Sci-Fi</span>
+          </button>
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(53)">
+            <i class="fa-solid fa-user-secret"></i><span>Thriller</span>
+          </button>
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(80)">
+            <i class="fa-solid fa-mask"></i><span>Crime</span>
+          </button>
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(10749)">
+            <i class="fa-solid fa-heart"></i><span>Romance</span>
+          </button>
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(16)">
+            <i class="fa-solid fa-wand-magic-sparkles"></i><span>Animation</span>
+          </button>
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(99)">
+            <i class="fa-solid fa-camera"></i><span>Documentary</span>
+          </button>
+          <button class="genre-tile" type="button" onclick="browseGenreFromBottom(14)">
+            <i class="fa-solid fa-dragon"></i><span>Fantasy</span>
+          </button>
+        </div>
+      </section>
+<section class="recent-section" id="recently-viewed-section">
+    <div class="section-heading-row">
+      <div class="section-heading-copy">
+        <div class="section-kicker">Pick up where you left off</div>
+        <h2>Recently Viewed</h2>
+        <p>Quick access to the movies and series you opened most recently on this device.</p>
+      </div>
+      <span class="glass-chip"><i class="fa-solid fa-clock-rotate-left"></i> Device history</span>
+    </div>
+    
+  </section>
+
+
+      
+
+      
+
+      
+
+      <section class="surprise-panel" aria-label="Surprise me">
+        <div class="surprise-copy">
+          <div class="extra-eyebrow">CAN'T DECIDE?</div>
+          <h3>Let Flix2Watch pick something.</h3>
+          <p>Hit Surprise Me and you’ll be sent to a random trending movie or series from the current catalogue.</p>
+        </div>
+        <button class="surprise-btn" type="button" onclick="surpriseMe()">
+          <i class="fa-solid fa-shuffle"></i> Surprise Me
+        </button>
+      </section>
+
+      <section class="extra-section" aria-labelledby="features-title">
+        <div class="extra-section-head">
+          <div>
+            <div class="extra-eyebrow">SITE FEATURES</div>
+            <h2 id="features-title">Built Into Flix2Watch</h2>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <i class="fa-solid fa-comments"></i>
+            <h3>Live Public Chat</h3>
+            <p>Talk with other viewers from the main site or watch page, with owner and staff controls built in.</p>
+          </div>
+          <div class="feature-card">
+            <i class="fa-solid fa-server"></i>
+            <h3>Multiple Sources</h3>
+            <p>The watch page includes a source matrix and a quick fallback button when a player source is unavailable.</p>
+          </div>
+          
+        </div>
+      </section>
+
+      <section class="extra-section" aria-labelledby="faq-title">
+        <div class="extra-section-head">
+          <div>
+            <div class="extra-eyebrow">QUICK HELP</div>
+            <h2 id="faq-title">FAQ</h2>
+          </div>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" type="button" onclick="toggleFAQ(this)">
+              A video source is broken. What do I do?
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <div class="faq-answer">Open the watch page and use the source buttons or the “Switch to Next Working Source” control above the player.</div>
+          </div>
+
+          
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" onclick="toggleFAQ(this)">
+              How long do chat messages stay?
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <div class="faq-answer">Public chat messages automatically delete from the database after 24 hours.</div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" onclick="toggleFAQ(this)">
+              Can I search while watching something?
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <div class="faq-answer">Yes. The watch page has the same header search, so you can jump straight to another movie or series.</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+
+    <section class="v17-about-flix2watch" aria-labelledby="v17-about-title">
+      <div>
+        <span>ABOUT FLIX2WATCH</span>
+        <h2 id="v17-about-title">Movie and TV discovery, profiles and community in one place.</h2>
+      </div>
+      <p>Flix2Watch lets visitors browse movie and TV information, cast details, genres, public profiles and community features without signing in. Creating a free account unlocks account-gated playback where available, favorites, follows, notifications and private messaging. Flix2Watch itself does not require a subscription or payment.</p>
+    </section>
+
+    <footer class="site-footer">
+      <div>
+        <div class="footer-brand">
+          <img src="/flix2watch-logo-red-v34.png" alt="">
+          <span>Flix2Watch</span>
+        </div>
+        <p class="footer-copy">Browse movie and TV information, build favorites, follow profiles, join the community and unlock account-gated playback after signing in.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>DISCOVER</h4>
+        <div class="footer-links">
+          <button type="button" onclick="browseGenreFromBottom(28)">Action</button>
+          <button type="button" onclick="browseGenreFromBottom(35)">Comedy</button>
+          <button type="button" onclick="browseGenreFromBottom(27)">Horror</button>
+          <button type="button" onclick="browseGenreFromBottom(878)">Sci-Fi</button>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>TOOLS</h4>
+        <div class="footer-links">
+          <button type="button" onclick="openGlobalChat(); return false;">Open Chat</button>
+          <button type="button" onclick="openAccountModal()">Account</button>
+          <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
+        </div>
+      </div>
+    </footer>
+
+
+    <section class="f2w-ultra-section" id="f2w-hidden-gems">
+      <div class="f2w-ultra-head">
+        <div>
+          <div class="f2w-ultra-kicker">DEEP CUTS</div>
+          <h2 class="f2w-ultra-title">Highly Rated Picks</h2>
+          <p class="f2w-ultra-sub">Well-rated movies with enough votes to avoid the random one-review stuff.</p>
+        </div>
+      </div>
+      <div class="f2w-horizontal" id="f2w-gems-row"><div class="f2w-empty-loader"><i class="fa-solid fa-circle-notch fa-spin"></i>Loading on demand…</div></div>
+    </section>
+
+    
 </main>
 
 
@@ -4090,8 +3370,6 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
     </button>
   </div>
 
-
-
 <script>
   /* ================= CONFIG ================= */
   const API_KEY = '925c48dd6e24fd5e975fe224238bbb45';
@@ -4101,7 +3379,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
   const OWNER_UUID = 'f5454804-a2a6-4602-9086-51cf51f11c77';
 
   const chatSupabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-  const grid = document.getElementById('favorites-grid');
+  const grid = document.getElementById('movie-grid');
 
   let currentMode = 'trending';
   let currentUser = null;
@@ -4737,6 +4015,158 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
       message.style.color='#f87171';
     }finally{
       button.disabled=false;
+    }
+  }
+
+
+
+
+
+  let homeQuickAuthMode='login';
+
+  function sizeHomeQuickAuth(){
+    const viewport=document.getElementById('home-quick-auth-viewport');
+    const pane=document.getElementById(homeQuickAuthMode==='signup'?'home-quick-signup-pane':'home-quick-login-pane');
+    if(viewport&&pane){
+      viewport.style.height=`${Math.ceil(pane.scrollHeight)}px`;
+    }
+  }
+
+  function setHomeQuickAuthMode(mode){
+    homeQuickAuthMode=mode==='signup'?'signup':'login';
+    const track=document.getElementById('home-quick-auth-track');
+    const loginTab=document.getElementById('home-inline-login-tab');
+    const signupTab=document.getElementById('home-inline-signup-tab');
+    track?.classList.toggle('signup',homeQuickAuthMode==='signup');
+    loginTab?.classList.toggle('active',homeQuickAuthMode==='login');
+    signupTab?.classList.toggle('active',homeQuickAuthMode==='signup');
+    loginTab?.classList.toggle('primary',homeQuickAuthMode==='login');
+    signupTab?.classList.toggle('primary',homeQuickAuthMode==='signup');
+    requestAnimationFrame(()=>{
+      sizeHomeQuickAuth();
+      setTimeout(sizeHomeQuickAuth,380);
+      const focusId=homeQuickAuthMode==='signup'?'home-quick-signup-username':'home-quick-email';
+      document.getElementById(focusId)?.focus({preventScroll:true});
+    });
+  }
+
+  window.addEventListener('resize',()=>requestAnimationFrame(sizeHomeQuickAuth),{passive:true});
+  window.addEventListener('load',()=>setTimeout(sizeHomeQuickAuth,80),{once:true});
+
+  async function quickHomeSignup(){
+    const username=document.getElementById('home-quick-signup-username')?.value.trim()||'';
+    const email=document.getElementById('home-quick-signup-email')?.value.trim()||'';
+    const password=document.getElementById('home-quick-signup-password')?.value||'';
+    const confirm=document.getElementById('home-quick-signup-confirm')?.value||'';
+    const message=document.getElementById('home-quick-signup-message');
+    const button=document.getElementById('home-quick-signup-btn');
+    const show=(txt,error=false)=>{if(message){message.textContent=txt;message.classList.toggle('error',error);} requestAnimationFrame(sizeHomeQuickAuth);};
+
+    if(username.length<2||username.length>30){show('Username must be between 2 and 30 characters.',true);return;}
+    if(!/^[A-Za-z0-9]+$/.test(username)){show('Username can only use A-Z and numbers 0-9.',true);return;}
+    if(username.toLowerCase()==='josh'){show('That username is reserved.',true);return;}
+    if(!email||!password){show('Enter your email and password.',true);return;}
+    if(password.length<6){show('Use a password with at least 6 characters.',true);return;}
+    if(password!==confirm){show('Passwords do not match.',true);return;}
+
+    if(button)button.disabled=true;
+    show('Creating account…');
+    try{
+      const {data,error}=await chatSupabase.auth.signUp({
+        email,
+        password,
+        options:{data:{username,chat_alias:username}}
+      });
+      if(error)throw error;
+      if(data?.session){
+        currentUser=data.user;
+        chatAlias=isCurrentUserOwner()?'josh':username;
+        localStorage.removeItem('josh_chat_token');
+        chatToken='';
+        await ensureChatIdentity();
+        refreshAccountUI();
+        show('Account created. You are signed in.');
+      }else{
+        show('Account created. Check your email to confirm it, then log in.');
+      }
+    }catch(error){
+      {
+      const raw=String(error?.message||'');
+      const friendly=/already registered|already been registered|user already registered/i.test(raw)
+        ? 'An account with that email already exists.'
+        : (/rate limit|too many requests/i.test(raw)
+          ? 'Too many attempts. Wait a moment and try again.'
+          : (raw||'Could not create account.'));
+      show(friendly,true);
+    }
+    }finally{
+      if(button)button.disabled=false;
+      requestAnimationFrame(sizeHomeQuickAuth);
+    }
+  }
+
+  async function quickHomeLogin(){
+    const email=document.getElementById('home-quick-email')?.value.trim()||'';
+    const password=document.getElementById('home-quick-password')?.value||'';
+    const message=document.getElementById('home-quick-login-message');
+    const button=document.getElementById('home-quick-login-btn');
+
+    const show=(text,error=false)=>{
+      if(!message)return;
+      message.textContent=text;
+      message.classList.toggle('error',error);
+      message.classList.toggle('success',!error&&Boolean(text));
+      requestAnimationFrame(sizeHomeQuickAuth);
+    };
+
+    if(!email||!password){
+      show('Enter your username/email and password.',true);
+      return;
+    }
+
+    if(button){
+      button.disabled=true;
+      button.dataset.f2wBusy='1';
+      button.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Logging in…';
+    }
+    show('Logging in…');
+
+    try{
+      const result=await window.f2wLoginIdentifier(email,password);
+      if(result?.error)throw result.error;
+
+      const {data:sessionData}=await chatSupabase.auth.getSession();
+      const user=result?.data?.user||sessionData?.session?.user||null;
+      if(!user)throw new Error('The login session could not be restored.');
+
+      currentUser=user;
+      try{window.currentUser=user;}catch{}
+      refreshAccountUI();
+      show('Logged in successfully.');
+
+      window.dispatchEvent(new CustomEvent('f2w:auth-success',{
+        detail:{mode:'login',user,session:sessionData?.session||result?.data?.session||null}
+      }));
+
+      setTimeout(()=>{
+        document.querySelector('.f2w-guest-rail')?.setAttribute('hidden','');
+        document.body.classList.add('f2w-authenticated');
+      },120);
+    }catch(error){
+      const raw=String(error?.message||'');
+      const friendly=/invalid login credentials|invalid credentials|email or password/i.test(raw)
+        ? 'Incorrect username/email or password.'
+        : (/email not confirmed/i.test(raw)
+          ? 'Confirm your email address before logging in.'
+          : (raw||'Login failed.'));
+      show(friendly,true);
+    }finally{
+      if(button){
+        button.disabled=false;
+        delete button.dataset.f2wBusy;
+        button.innerHTML='Login <i class="fa-solid fa-chevron-right"></i>';
+      }
+      requestAnimationFrame(sizeHomeQuickAuth);
     }
   }
 
@@ -5665,1171 +5095,688 @@ if(currentUser){
   }
 
 
+  /* ================= TMDB ================= */
 
+  const CATALOG_PAGE_SIZE=30;
+  let catalogPage=1;
+  let catalogTotalPages=1;
+  let catalogMode='trending';
+  let catalogQuery='';
+  let catalogGenreId=null;
+  let catalogGenreSort='popularity.desc';
+  let catalogLoading=false;
+  let catalogRequestGeneration=0;
 
-
-  /* ================= FULL FAVORITES LIBRARY ================= */
-
-  let libraryFavorites=[];
-  let activeLibraryFilter='all';
-
-  function setFilter(filter,button){
-    activeLibraryFilter=filter;
-    document.querySelectorAll('.filter-btn').forEach(btn=>btn.classList.remove('active'));
-    button?.classList.add('active');
-    renderLibraryFavorites();
-  }
-
-  function escapeLibraryHTML(value=''){
-    return String(value).replace(/[&<>"']/g,ch=>({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-    }[ch]));
-  }
-
-  async function getLibraryTmdbDetails(item){
-    try{
-      const endpoint=item.media_type==='tv'?'tv':'movie';
-      const response=await fetch(`https://api.themoviedb.org/3/${endpoint}/${item.media_id}?api_key=${API_KEY}`);
-      if(!response.ok)throw new Error('TMDB request failed');
-      const data=await response.json();
-      return {
-        ...item,
-        title:data.title||data.name||item.title,
-        poster_path:data.poster_path||item.poster_path,
-        year:(data.release_date||data.first_air_date||'').slice(0,4),
-        rating:Number(data.vote_average||0)
-      };
-    }catch{
-      return {...item,year:'',rating:0};
+  function catalogueEndpoint(tmdbPage){
+    if(catalogMode==='genre'&&catalogGenreId){
+      const extra=catalogGenreSort==='vote_average.desc'
+        ? '&vote_count.gte=50'
+        : '';
+      return `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${catalogGenreId}&language=en-US&page=${tmdbPage}&sort_by=${encodeURIComponent(catalogGenreSort)}&include_adult=false${extra}`;
     }
-  }
-
-  function libraryPosterURL(path){
-    return path
-      ? `https://image.tmdb.org/t/p/w500${path}`
-      : 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(
-          `<svg xmlns="http://www.w3.org/2000/svg" width="500" height="750"><rect width="100%" height="100%" fill="#09090d"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#64748b" font-family="Arial" font-size="30">No Poster</text></svg>`
-        );
-  }
-
-  function openLibraryFavorite(item){
-    window.location.href=`/watch/?id=${encodeURIComponent(item.media_id)}&type=${encodeURIComponent(item.media_type)}`;
-  }
-
-  async function removeLibraryFavorite(mediaId,mediaType){
-    if(!currentUser)return;
-
-    const {error}=await chatSupabase
-      .from('user_favorites')
-      .delete()
-      .eq('user_id',currentUser.id)
-      .eq('media_id',mediaId)
-      .eq('media_type',mediaType);
-
-    if(error){
-      console.error(error);
-      return;
+    if(catalogMode==='movie'){
+      return `https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}&page=${tmdbPage}`;
     }
-
-    libraryFavorites=libraryFavorites.filter(item=>!(
-      String(item.media_id)===String(mediaId)&&item.media_type===mediaType
-    ));
-
-    // Keep the compact Account list in sync too.
-    accountFavorites=accountFavorites.filter(item=>!(
-      String(item.media_id)===String(mediaId)&&item.media_type===mediaType
-    ));
-    renderAccountFavorites();
-    renderLibraryFavorites();
+    if(catalogMode==='tv'){
+      return `https://api.themoviedb.org/3/trending/tv/day?api_key=${API_KEY}&page=${tmdbPage}`;
+    }
+    if(catalogMode==='search'){
+      return `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(catalogQuery)}&page=${tmdbPage}&include_adult=false`;
+    }
+    return `https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&page=${tmdbPage}`;
   }
 
-  function renderLibraryFavorites(){
-    const grid=document.getElementById('favorites-grid');
-    const count=document.getElementById('library-count');
-    if(!grid||!count)return;
+  function scrollCatalogToTop(behavior='smooth'){
+    const title=document.getElementById('section-title');
+    const grid=document.getElementById('movie-grid');
+    const target=title||grid;
 
-    const query=(document.getElementById('favorite-search')?.value||'').trim().toLowerCase();
+    if(!target)return;
 
-    if(!currentUser){
-      count.textContent='Login required';
-      grid.innerHTML=`
-        <div class="state-card">
-          <i class="fa-solid fa-lock"></i>
-          <h2>Sign In First</h2>
-          <p>Your favorites are attached to your Flix2Watch account. Sign in, then come back here.</p>
-          <button class="browse-favorites-btn" type="button" onclick="openAccountModal()">
-            <i class="fa-solid fa-user"></i><span>Open Account</span>
-          </button>
-        </div>`;
-      return;
+    const header=document.querySelector('header');
+    const headerHeight=header?.getBoundingClientRect().height||90;
+    const top=Math.max(
+      0,
+      target.getBoundingClientRect().top+window.scrollY-headerHeight-24
+    );
+
+    window.scrollTo({top,behavior});
+  }
+
+  function renderCatalogPagination(){
+    const nav=document.getElementById('catalog-pagination');
+    if(!nav)return;
+
+    nav.innerHTML='';
+    if(catalogTotalPages<=1)return;
+
+    const addButton=(label,page,active=false,disabled=false)=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='catalog-page-btn';
+      if(active)button.classList.add('active');
+      button.disabled=disabled;
+      button.innerHTML=label;
+      if(!active&&!disabled)button.onclick=()=>loadCatalogPage(page,true);
+      nav.appendChild(button);
+    };
+
+    addButton('<i class="fa-solid fa-chevron-left"></i> Prev',catalogPage-1,false,catalogPage<=1);
+
+    const pageSet=new Set([1,catalogTotalPages,catalogPage]);
+    for(let d=-2;d<=2;d++){
+      const p=catalogPage+d;
+      if(p>=1&&p<=catalogTotalPages)pageSet.add(p);
     }
 
-    const filtered=libraryFavorites.filter(item=>{
-      const typeMatch=activeLibraryFilter==='all'||item.media_type===activeLibraryFilter;
-      const searchMatch=!query||(item.title||'').toLowerCase().includes(query);
-      return typeMatch&&searchMatch;
+    const ordered=[...pageSet].sort((a,b)=>a-b);
+    let previous=null;
+
+    ordered.forEach(page=>{
+      if(previous!==null&&page-previous>1){
+        const gap=document.createElement('span');
+        gap.className='catalog-page-gap';
+        gap.textContent='…';
+        nav.appendChild(gap);
+      }
+      addButton(String(page),page,page===catalogPage,false);
+      previous=page;
     });
 
-    count.textContent=`${libraryFavorites.length} saved`;
-
-    if(!libraryFavorites.length){
-      grid.innerHTML=`
-        <div class="state-card">
-          <i class="fa-regular fa-heart"></i>
-          <h2>Your Library Is Empty</h2>
-          <p>Open any movie or TV series, then press Save to Favorites beside the player.</p>
-          <a class="browse-favorites-btn" href="/home/">
-            <i class="fa-solid fa-play"></i><span>Browse Flix2Watch</span>
-          </a>
-        </div>`;
-      return;
-    }
-
-    if(!filtered.length){
-      grid.innerHTML=`
-        <div class="state-card">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <h2>No Matches</h2>
-          <p>Nothing in your saved library matches that filter or search.</p>
-        </div>`;
-      return;
-    }
-
-    grid.innerHTML=filtered.map(item=>{
-      const safeItem=JSON.stringify(item).replace(/'/g,"&#039;");
-      return `
-        <article class="favorite-card">
-          <div class="poster-shell" onclick='openLibraryFavorite(${safeItem})'>
-            <img class="poster" src="${libraryPosterURL(item.poster_path)}" alt="${escapeLibraryHTML(item.title)} poster" loading="lazy">
-            <div class="poster-overlay">
-              <div class="poster-actions" onclick="event.stopPropagation()">
-                <button class="poster-action watch" onclick='openLibraryFavorite(${safeItem})'>
-                  <i class="fa-solid fa-play"></i> Watch
-                </button>
-                <button class="poster-action remove" onclick="removeLibraryFavorite('${String(item.media_id)}','${item.media_type}')">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="favorite-title">${escapeLibraryHTML(item.title||'Untitled')}</div>
-          <div class="favorite-meta">
-            <span class="type-pill">${item.media_type==='tv'?'TV SERIES':'MOVIE'}</span>
-            ${item.year?`<span>${escapeLibraryHTML(item.year)}</span>`:''}
-            ${item.rating?`<span class="rating"><i class="fa-solid fa-star"></i> ${item.rating.toFixed(1)}</span>`:''}
-          </div>
-        </article>`;
-    }).join('');
+    addButton('Next <i class="fa-solid fa-chevron-right"></i>',catalogPage+1,false,catalogPage>=catalogTotalPages);
   }
 
-  async function loadLibraryFavorites(){
-    if(!currentUser){
-      libraryFavorites=[];
-      renderLibraryFavorites();
-      return;
-    }
+  async function loadCatalogPage(page=1,scrollToGrid=false){
+    const requestId=++catalogRequestGeneration;
+    const targetPage=Math.max(1,Number(page)||1);
 
-    const {data,error}=await chatSupabase
-      .from('user_favorites')
-      .select('media_id,media_type,title,poster_path,created_at')
-      .eq('user_id',currentUser.id)
-      .order('created_at',{ascending:false});
+    await ensurePublicContentOps();
+    if(requestId!==catalogRequestGeneration)return;
 
-    if(error){
+    if(scrollToGrid)scrollCatalogToTop('smooth');
+
+    catalogLoading=true;
+    catalogPage=targetPage;
+
+    // Snapshot exactly what this request is supposed to load.
+    const mode=catalogMode;
+    const genreId=catalogGenreId;
+    const query=catalogQuery;
+    const genreSort=catalogGenreSort;
+
+    const endpoint=(tmdbPage)=>{
+      if(mode==='genre'&&genreId){
+        const extra=genreSort==='vote_average.desc'?'&vote_count.gte=50':'';
+        return `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&language=en-US&page=${tmdbPage}&sort_by=${encodeURIComponent(genreSort)}&include_adult=false${extra}`;
+      }
+      if(mode==='movie')return `https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}&page=${tmdbPage}`;
+      if(mode==='tv')return `https://api.themoviedb.org/3/trending/tv/day?api_key=${API_KEY}&page=${tmdbPage}`;
+      if(mode==='search')return `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${tmdbPage}&include_adult=false`;
+      return `https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&page=${tmdbPage}`;
+    };
+
+    grid.innerHTML='<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:42px;">Loading titles...</p>';
+
+    try{
+      const startIndex=(targetPage-1)*CATALOG_PAGE_SIZE;
+      const firstTmdbPage=Math.floor(startIndex/20)+1;
+      const offset=startIndex%20;
+      const secondTmdbPage=firstTmdbPage+1;
+
+      const [r1,r2]=await Promise.all([
+        fetch(endpoint(firstTmdbPage),{cache:'no-store'}),
+        fetch(endpoint(secondTmdbPage),{cache:'no-store'})
+      ]);
+
+      const [d1,d2]=await Promise.all([
+        r1.json().catch(()=>({})),
+        r2.json().catch(()=>({}))
+      ]);
+
+      if(requestId!==catalogRequestGeneration)return;
+      if(!r1.ok)throw new Error(d1?.status_message||'Could not load catalogue.');
+
+      const items1=Array.isArray(d1.results)?d1.results:[];
+      const items2=r2.ok&&Array.isArray(d2.results)?d2.results:[];
+      const combined=[...items1,...items2]
+        .filter(item=>item&&item.media_type!=='person'&&item.poster_path);
+
+      const pageItems=combined
+        .slice(offset,offset+CATALOG_PAGE_SIZE)
+        .filter(item=>{
+          const type=item.media_type||(item.title?'movie':'tv');
+          return !publicBlockedMediaKeys.has(`${type}:${item.id}`);
+        });
+
+      const totalResults=Number(d1.total_results||0);
+      catalogTotalPages=Math.max(1,Math.ceil(totalResults/CATALOG_PAGE_SIZE));
+      catalogTotalPages=Math.min(catalogTotalPages,334);
+      catalogPage=Math.min(targetPage,catalogTotalPages);
+
+      if(pageItems.length&&catalogPage===1&&!window.v19FeaturedReady){
+        setupHeroBanner(pageItems[0]);
+      }
+
+      displayMedia(pageItems,false);
+      renderCatalogPagination();
+
+      // URL mirrors the request that actually won.
+      const url=new URL(window.location.href);
+      if(mode==='genre'&&genreId){
+        if(location.pathname.startsWith('/genre/'))url.searchParams.delete('genre');
+        else url.searchParams.set('genre',String(genreId));
+        url.searchParams.delete('search');
+      }else{
+        url.searchParams.delete('genre');
+      }
+
+      if(mode==='search'&&query){
+        url.searchParams.set('search',query);
+        url.searchParams.delete('genre');
+      }else if(mode!=='search'){
+        url.searchParams.delete('search');
+      }
+
+      if(catalogPage>1)url.searchParams.set('page',String(catalogPage));
+      else url.searchParams.delete('page');
+
+      history.replaceState(null,'',url);
+
+      if(scrollToGrid)requestAnimationFrame(()=>scrollCatalogToTop('auto'));
+    }catch(error){
+      if(requestId!==catalogRequestGeneration)return;
       console.error(error);
-      const grid=document.getElementById('favorites-grid');
-      if(grid){
-        grid.innerHTML=`
-          <div class="state-card">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <h2>Could Not Load Favorites</h2>
-            <p>Check that the favorites SQL setup has been run in Supabase.</p>
-          </div>`;
+      grid.innerHTML='<p style="color:#f87171;grid-column:1/-1;text-align:center;padding:42px;">Could not load titles right now.</p>';
+      document.getElementById('catalog-pagination').innerHTML='';
+    }finally{
+      if(requestId===catalogRequestGeneration)catalogLoading=false;
+    }
+  }
+
+  function displayMedia(items,append=false){
+    if(!append)grid.innerHTML='';
+
+    if(!items?.length){
+      if(!append){
+        grid.innerHTML=
+          '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:40px;">No titles found.</p>';
       }
       return;
     }
 
-    const raw=Array.isArray(data)?data:[];
-    libraryFavorites=await Promise.all(raw.map(getLibraryTmdbDetails));
-    renderLibraryFavorites();
+    items.forEach(item=>{
+      if(!item.poster_path||item.media_type==='person')return;
+
+      const type=item.media_type||(item.title?'movie':'tv');
+      const title=item.title||item.name;
+      const date=item.release_date||item.first_air_date;
+      const cardKey=`${type}:${item.id}`;
+
+      if(grid.querySelector(`[data-media-key="${cardKey}"]`))return;
+
+      const card=document.createElement('a');
+      card.href=`/watch/?id=${item.id}&type=${type}`;
+      card.className='movie-card';
+      card.dataset.mediaKey=cardKey;
+
+      const poster=document.createElement('div');
+      poster.className='poster-container';
+
+      const badge=document.createElement('span');
+      badge.className=`media-badge ${type}`;
+      badge.textContent=type==='tv'?'Series':'Movie';
+
+      const img=document.createElement('img');
+      img.className='poster-img';
+      img.src=`https://image.tmdb.org/t/p/w500${item.poster_path}`;
+      img.alt=`${title} poster`;
+      img.loading='lazy';
+
+      const overlay=document.createElement('div');
+      overlay.className='play-overlay';
+      overlay.innerHTML='<i class="fa-solid fa-play"></i>';
+
+      poster.append(img,badge,overlay);
+
+      const info=document.createElement('div');
+      info.className='movie-info';
+
+      const mt=document.createElement('div');
+      mt.className='movie-title';
+      mt.textContent=title;
+
+      const meta=document.createElement('div');
+      meta.className='movie-meta';
+
+      const year=document.createElement('span');
+      year.innerHTML=
+        `<i class="fa-regular fa-calendar"></i> ${date?date.split('-')[0]:'N/A'}`;
+
+      const rating=document.createElement('span');
+      rating.className='movie-rating';
+      rating.innerHTML=
+        `<i class="fa-solid fa-star"></i> ${item.vote_average?item.vote_average.toFixed(1):'NR'}`;
+
+      meta.append(year,rating);
+      info.append(mt,meta);
+      card.append(poster,info);
+      grid.appendChild(card);
+    });
   }
 
-  // The top search bar filters this library page too.
-  function searchMedia(value){
-    const input=document.getElementById('favorite-search');
-    if(input)input.value=value||'';
-    renderLibraryFavorites();
-  }
-
-  // Keep the full library synced with login/logout changes.
-  chatSupabase.auth.onAuthStateChange(async()=>{
-    
-    clearAutofilledUserSearch();
-setTimeout(loadLibraryFavorites,0);
-  });
-
-  window.addEventListener('DOMContentLoaded',async()=>{
-    await loadLibraryFavorites();
-    await loadSiteAnnouncement();
-  });
-
-
-
-  /* ================= PROFILE PAGE DATA ================= */
-
-  let viewedProfile=null;
-  let viewedProfileFavorites=[];
-
-  function viewedUsernameFromURL(){
-    const pathMatch=window.location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
-    if(pathMatch){
-      return decodeURIComponent(pathMatch[1]);
-    }
-
-    // Backwards compatibility for old links.
-    return new URLSearchParams(window.location.search).get('user')||'';
-  }
-
-  function setProfileStatus(message,error=false){
-    const el=document.getElementById('profile-save-status');
-    if(!el)return;
-    el.textContent=message;
-    el.style.color=error?'#f87171':'var(--text-muted)';
-  }
-
-  function renderProfileAvatar(profile){
-    const img=document.getElementById('profile-avatar');
-    const fallback=document.getElementById('profile-avatar-fallback');
-    const initial=profileInitials(profile?.username||'?');
-
-    if(profile?.avatar_url){
-      img.src=profile.avatar_url;
-      img.style.display='block';
-      fallback.style.display='none';
-    }else{
-      img.style.display='none';
-      fallback.style.display='grid';
-      fallback.textContent=initial;
-    }
-  }
-
-  function isOwnViewedProfile(){
-    return Boolean(currentUser&&viewedProfile&&String(viewedProfile.user_id)===String(currentUser.id));
-  }
-
-  function renderViewedProfile(){
-    clearViewedProfileRoleBadge();
-    const root=document.getElementById('profile-hero');
-    const name=document.getElementById('profile-name');
-    const displayName=null;
-    const usernameLine=document.getElementById('profile-username-line');
-    const bio=document.getElementById('profile-bio');
-    const grid=document.getElementById('profile-favorites-grid');
-    const bioInput=document.getElementById('profile-bio-input');
-
-    if(!viewedProfile){
-      clearViewedProfileRoleBadge();
-      root?.classList.remove('profile-own');
-      document.title='Flix2Watch';
-      name.textContent='Profile Not Found';
-      if(displayName){
-        displayName.textContent='';
-        displayName.classList.add('empty');
-      }
-      if(usernameLine)usernameLine.textContent='';
-      bio.textContent='This user profile does not exist.';
-      bio.classList.add('empty');
-
-      const img=document.getElementById('profile-avatar');
-      const fallback=document.getElementById('profile-avatar-fallback');
-      if(img){
-        img.removeAttribute('src');
-        img.style.display='none';
-      }
-      if(fallback){
-        fallback.style.display='grid';
-        fallback.textContent='?';
-      }
-
-      if(bioInput)bioInput.value='';
-      document.getElementById('profile-favorite-count').textContent='0 favorites';
-      document.getElementById('profile-joined').textContent='Flix2Watch member';
-
-      if(grid){
-        grid.innerHTML='<div class="profile-state">No profile to display.</div>';
-      }
-
-      const totalEl=document.getElementById('profile-stat-total');
-      const moviesEl=document.getElementById('profile-stat-movies');
-      const tvEl=document.getElementById('profile-stat-tv');
-      if(totalEl)totalEl.textContent='0';
-      if(moviesEl)moviesEl.textContent='0';
-      if(tvEl)tvEl.textContent='0';
-      return;
-    }
-
-    const publicDisplayName=viewedProfile.display_name?.trim()||'';
-
-    document.title=`${publicDisplayName||viewedProfile.username} • Flix2Watch`;
-    name.textContent=publicDisplayName||`@${viewedProfile.username}`;
-    name.dataset.username=String(viewedProfile.username||'');
-    name.dataset.f2wPlainText=name.textContent;
-    delete name.dataset.f2wRoleDecorated;
-    delete name.dataset.f2wRole;
-    const immediateRole=String(viewedProfile.user_id||'')==='f5454804-a2a6-4602-9086-51cf51f11c77'?'owner':String(viewedProfile.top_role||'').toLowerCase();
-    if(immediateRole&&typeof window.f2wPaintRoleName==='function'){
-      window.f2wPaintRoleName(name,immediateRole,viewedProfile.username);
-    }
-
-    if(displayName){
-      displayName.textContent=publicDisplayName;
-      displayName.classList.toggle('empty',!publicDisplayName);
-    }
-
-    if(usernameLine){
-      usernameLine.textContent=`@${viewedProfile.username}`;
-    }
-
-    bio.textContent=viewedProfile.bio?.trim()||'No bio yet.';
-    bio.classList.toggle('empty',!viewedProfile.bio?.trim());
-
-    const joined=viewedProfile.created_at
-      ? new Date(viewedProfile.created_at).toLocaleDateString(undefined,{
-          year:'numeric',
-          month:'short'
-        })
-      : '';
-
-    document.getElementById('profile-joined').textContent=
-      joined?`Joined ${joined}`:'Flix2Watch member';
-
-    renderProfileAvatar(viewedProfile);
-    renderProfilePrivacy();
-    
-    
-    setTimeout(revealProfileOwnerControlsIfAuthorized,0);
-    refreshProfileOwnerSecurityState();
-    setTimeout(revealProfileOwnerControlsIfAuthorized,0);
-    loadViewedProfileRoleBadge();
-    syncProfileReportButton();
-
-    const own=isOwnViewedProfile();
-    root?.classList.toggle('profile-own',own);
-    setTimeout(syncAuthenticatedOwnerUI,0);
-
-    if(bioInput){
-      bioInput.value=own?(viewedProfile.bio||''):'';
-    }
-
-    const displayNameInput=document.getElementById('profile-display-name-input');
-    if(displayNameInput){
-      displayNameInput.value=own?(viewedProfile.display_name||''):'';
-    }
-  }
-
-  function renderViewedFavorites(){
-    const grid=document.getElementById('profile-favorites-grid');
-    const count=document.getElementById('profile-favorite-count');
-
-    if(!canViewPrivateContent()){
-      count.textContent='Private';
-
-      const totalEl=document.getElementById('profile-stat-total');
-      const movieEl=document.getElementById('profile-stat-movies');
-      const tvEl=document.getElementById('profile-stat-tv');
-      if(totalEl)totalEl.textContent='—';
-      if(movieEl)movieEl.textContent='—';
-      if(tvEl)tvEl.textContent='—';
-
-      grid.innerHTML=`
-        <div class="private-profile-state">
-          <i class="fa-solid fa-lock"></i>
-          <strong>This profile is private</strong>
-          Favorite movies and TV shows are hidden.
-        </div>`;
-      return;
-    }
-
-    count.textContent=`${viewedProfileFavorites.length} favorites`;
-
-    updateViewedProfileStats();
-
-    if(!viewedProfileFavorites.length){
-      grid.innerHTML='<div class="profile-state">No public favorites yet.</div>';
-      return;
-    }
-
-    grid.innerHTML=viewedProfileFavorites.map(item=>{
-      const title=escapeProfileHTML(item.title||'Untitled');
-      const poster=item.poster_path
-        ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-        : 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(
-            `<svg xmlns="http://www.w3.org/2000/svg" width="500" height="750"><rect width="100%" height="100%" fill="#09090d"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#64748b" font-family="Arial" font-size="30">No Poster</text></svg>`
-          );
-
-      return `
-        <article class="profile-fav-card" onclick="window.location.href='/watch/?id=${encodeURIComponent(item.media_id)}&type=${encodeURIComponent(item.media_type)}'">
-          <div class="profile-fav-poster-shell">
-            <img class="profile-fav-poster" src="${poster}" alt="${title} poster" loading="lazy">
-          </div>
-          <div class="profile-fav-title">${title}</div>
-          <div class="profile-fav-type">${item.media_type==='tv'?'TV SERIES':'MOVIE'}</div>
-        </article>`;
-    }).join('');
-  }
-
-  async function loadViewedProfile(){
-    clearViewedProfileRoleBadge();
-    let username=viewedUsernameFromURL();
-
-    // Always show the clean public URL once the real profile page is loaded.
-    // This avoids GitHub Pages serving a separate/stale @username HTML shell.
-    if(username){
-      const cleanUsername=String(username).replace(/[^A-Za-z0-9]/g,'');
-      if(cleanUsername){
-        history.replaceState(
-          null,
-          '',
-          `/profile/?user=${encodeURIComponent(cleanUsername)}`
-        );
-        username=cleanUsername;
-      }
-    }
-
-    if(!username){
-      username=currentProfileUsername();
-
-    }
-
-    if(username){
-      try{
-        localStorage.setItem('f2w_profile_username_v24',username);
-        const cached=localStorage.getItem(`f2w_profile_cache_v24:${username.toLowerCase()}`);
-        if(cached){
-          const parsed=JSON.parse(cached);
-          if(parsed&&parsed.profile){
-            viewedProfile=parsed.profile;
-            viewedProfileFavorites=Array.isArray(parsed.favorites)?parsed.favorites:[];
-            renderViewedProfile();
-          }
-        }
-      }catch{}
-    }
-
-    if(!username){
-      viewedProfile=null;
-      viewedProfileFavorites=[];
-      viewedSocial={
-        followers:0,
-        following:0,
-        is_following:false,
-        can_view_social:false
-      };
-      renderViewedProfile();
-    setTimeout(revealProfileOwnerControlsIfAuthorized,0);
-      refreshPublicProfileRoleBadge();
-    refreshProfileOwnerSecurityState();
-      renderProfilePrivacy();
-      return;
-    }
-
-    try{
-      let profileData=null;
-      let profileError=null;
-
-      // Current schema.
-      {
-        const result=await chatSupabase
-          .from('profiles')
-          .select('user_id,username,display_name,bio,avatar_url,is_private,location,favorite_genres,website_url,instagram_username,discord_username,snapchat_username,reddit_username,steam_profile,tiktok_username,status_text,pronouns,favorite_movie_text,favorite_movie_tmdb_id,favorite_movie_poster_path,favorite_tv_text,profile_quote,created_at,updated_at')
-          .ilike('username',username)
-          .limit(1)
-          .maybeSingle();
-
-        profileData=result.data;
-        profileError=result.error;
-      }
-
-      // If the private-profile migration has not been applied yet,
-      // retry without is_private.
-      if(
-        profileError &&
-        (
-          profileError.code==='42703' ||
-          /is_private/i.test(profileError.message||'')
-        )
-      ){
-        const fallback=await chatSupabase
-          .from('profiles')
-          .select('user_id,username,display_name,bio,avatar_url,created_at,updated_at')
-          .ilike('username',username)
-          .limit(1)
-          .maybeSingle();
-
-        profileData=fallback.data
-          ? {...fallback.data,is_private:false}
-          : null;
-        profileError=fallback.error;
-      }
-
-      // Older schema: retry without display_name as well.
-      if(
-        profileError &&
-        (
-          profileError.code==='42703' ||
-          /display_name/i.test(profileError.message||'')
-        )
-      ){
-        const fallback=await chatSupabase
-          .from('profiles')
-          .select('user_id,username,bio,avatar_url,created_at,updated_at')
-          .ilike('username',username)
-          .limit(1)
-          .maybeSingle();
-
-        profileData=fallback.data
-          ? {...fallback.data,display_name:null,is_private:false}
-          : null;
-        profileError=fallback.error;
-      }
-
-      if(profileError)throw profileError;
-
-      viewedProfile=profileData||null;
-      viewedProfileFavorites=[];
-      try{
-        if(viewedProfile?.username){
-          localStorage.setItem('f2w_profile_username_v24',viewedProfile.username);
-          localStorage.setItem(`f2w_profile_cache_v24:${viewedProfile.username.toLowerCase()}`,JSON.stringify({
-            profile:viewedProfile,
-            favorites:viewedProfileFavorites,
-            savedAt:Date.now()
-          }));
-        }
-      }catch{}
-      renderViewedProfile();
-        loadViewedProfileRoleBadge();
-
-      if(!viewedProfile)return;
-    }catch(error){
-      console.error('Profile details load failed:',error);
-
-      viewedProfile=null;
-      viewedProfileFavorites=[];
-      viewedSocial={
-        followers:0,
-        following:0,
-        is_following:false,
-        can_view_social:false
-      };
-      socialFeaturesAvailable=false;
-
-      renderViewedProfile();
-      renderProfilePrivacy();
-      return;
-    }
-
-    // Followers/private features are optional and cannot hide the main profile.
-    await loadProfileSocial();
-
-    if(!canViewPrivateContent()){
-      viewedProfileFavorites=[];
-      renderViewedFavorites();
-      return;
-    }
-
-    try{
-      const {data:favorites,error:favError}=await chatSupabase
-        .from('user_favorites')
-        .select('media_id,media_type,title,poster_path,created_at')
-        .eq('user_id',viewedProfile.user_id)
-        .order('created_at',{ascending:false});
-
-      if(favError)throw favError;
-
-      viewedProfileFavorites=Array.isArray(favorites)?favorites:[];
-      try{
-        if(viewedProfile?.username){
-          localStorage.setItem(`f2w_profile_cache_v24:${viewedProfile.username.toLowerCase()}`,JSON.stringify({
-            profile:viewedProfile,
-            favorites:viewedProfileFavorites,
-            savedAt:Date.now()
-          }));
-        }
-      }catch{}
-      renderViewedFavorites();
-      updateViewedProfileStats();
-    }catch(error){
-      console.error('Public favorites load failed:',error);
-
-      viewedProfileFavorites=[];
-      const count=document.getElementById('profile-favorite-count');
-      const grid=document.getElementById('profile-favorites-grid');
-
-      if(count)count.textContent='Favorites unavailable';
-
-      if(typeof updateViewedProfileStats==='function'){
-        updateViewedProfileStats();
-      }
-
-      if(grid){
-        grid.innerHTML=`
-          <div class="profile-state">
-            This profile loaded correctly, but its favorites could not be loaded right now.
-          </div>`;
-      }
-    }
+  function switchCategory(category,btn){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    if(btn)btn.classList.add('active');
+
+    currentMode=category;
+    catalogMode=category;
+    catalogGenreId=null;
+    setGenreSortVisibility(false);
+    catalogQuery='';
+    catalogPage=1;
+
+    const labels={
+      trending:'Trending Today',
+      movie:'Trending Movies',
+      tv:'Trending TV Series'
+    };
+    document.getElementById('section-title').textContent=labels[category]||'Browse';
+    loadCatalogPage(1,false);
   }
 
 
-  /* ================= PROFILE SOCIAL LOGIC ================= */
-  let socialFeaturesAvailable=true;
-  let viewedSocial={
-    followers:0,
-    following:0,
-    is_following:false,
-    can_view_social:true
+  function setGenreSortVisibility(show){
+    const row=document.getElementById('genre-sort-row');
+    if(row)row.style.display=show?'flex':'none';
+  }
+
+  function changeGenreSort(value){
+    const allowed=new Set([
+      'popularity.desc',
+      'primary_release_date.desc',
+      'primary_release_date.asc',
+      'vote_average.desc'
+    ]);
+
+    catalogGenreSort=allowed.has(value)?value:'popularity.desc';
+
+    if(catalogMode==='genre'&&catalogGenreId){
+      catalogPage=1;
+      f2wOpenGenreV91(catalogGenreId,1,false);
+    }
+  }
+
+  const genreNames={
+    28:'Action',
+    35:'Comedy',
+    27:'Horror',
+    878:'Sci-Fi',
+    53:'Thriller',
+    80:'Crime',
+    10749:'Romance',
+    16:'Animation',
+    99:'Documentary',
+    14:'Fantasy',
+    12:'Adventure',
+    18:'Drama',
+    10751:'Family',
+    9648:'Mystery',
+    36:'History',
+    10402:'Music',
+    10752:'War',
+    37:'Western'
   };
 
-  function canViewPrivateContent(){
-    return Boolean(
-      viewedProfile &&
-      (!viewedProfile.is_private || isOwnViewedProfile())
-    );
+  async function f2wOpenGenreV91(id,page=1,scrollToGrid=false){
+    id=Number(id);
+    if(!genreNames[id])return false;
+
+    // One authoritative genre state. Nothing else is allowed to leave this
+    // request in Trending mode.
+    currentMode='genre';
+    catalogMode='genre';
+    catalogGenreId=id;
+    catalogQuery='';
+    catalogPage=Math.max(1,Number(page)||1);
+    catalogGenreSort='popularity.desc';
+
+    setGenreSortVisibility(true);
+
+    const sortSelect=document.getElementById('genre-sort-select');
+    if(sortSelect)sortSelect.value=catalogGenreSort;
+
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+
+    const sectionTitle=document.getElementById('section-title');
+    if(sectionTitle) sectionTitle.textContent=`${genreNames[id]} Movies`;
+
+    // Keep URL truthful and remove mutually-exclusive search/tab params.
+    const url=new URL(location.href);
+    if(!location.pathname.startsWith('/genre/'))url.pathname='/home/';
+    url.searchParams.delete('search');
+    url.searchParams.delete('tab');
+    if(location.pathname.startsWith('/genre/')){
+      url.searchParams.delete('genre');
+    }else{
+      url.searchParams.set('genre',String(id));
+    }
+    url.searchParams.set('page',String(catalogPage));
+    history.replaceState({f2wGenreV91:true},'',url.pathname+'?'+url.searchParams.toString());
+
+    // v93: latest-request-wins loader cancels stale Trending/search renders.
+    await loadCatalogPage(catalogPage,scrollToGrid);
+    return true;
+  }
+  window.f2wOpenGenreV91=f2wOpenGenreV91;
+
+  function switchGenre(id,btn){
+    if(btn)btn.classList.add('active');
+    f2wOpenGenreV91(id,1,false);
   }
 
-  function renderProfilePrivacy(){
-    const toggle=document.getElementById('profile-private-toggle');
-    const followBtn=document.getElementById('profile-follow-btn');
-    const messageBtn=document.getElementById('profile-message-btn');
-    const followersBtn=document.getElementById('followers-count-btn');
-    const followingBtn=document.getElementById('following-count-btn');
-    const followersCount=document.getElementById('profile-followers-count');
-    const followingCount=document.getElementById('profile-following-count');
+  let mediaSearchDebounceTimer=null;
 
-    const own=isOwnViewedProfile();
-    const isPrivate=Boolean(viewedProfile?.is_private);
-
-    toggle?.classList.toggle('active',isPrivate);
-
-    if(followBtn){
-      followBtn.style.display=
-        currentUser && viewedProfile && !own && socialFeaturesAvailable
-          ? 'inline-flex'
-          : 'none';
-
-      followBtn.classList.toggle('following',Boolean(viewedSocial.is_following));
-      followBtn.innerHTML=viewedSocial.is_following
-        ? '<i class="fa-solid fa-user-check"></i> Following'
-        : '<i class="fa-solid fa-user-plus"></i> Follow';
-    }
-
-    if(messageBtn){
-      messageBtn.style.display=
-        currentUser && viewedProfile && !own
-          ? 'inline-flex'
-          : 'none';
-    }
-
-    // Counts are always public, even on private profiles.
-    if(followersCount){
-      followersCount.textContent=String(viewedSocial.followers||0);
-    }
-    if(followingCount){
-      followingCount.textContent=String(viewedSocial.following||0);
-    }
-
-    // The actual follower/following identities stay private.
-    const canOpenLists=own || !isPrivate;
-
-    if(followersBtn)followersBtn.disabled=!canOpenLists;
-    if(followingBtn)followingBtn.disabled=!canOpenLists;
+  function scheduleMediaSearch(query){
+    clearTimeout(mediaSearchDebounceTimer);
+    mediaSearchDebounceTimer=setTimeout(()=>searchMedia(query),180);
   }
 
-  async function loadProfileSocial(){
-    if(!viewedProfile){
-      socialFeaturesAvailable=false;
-      viewedSocial={
-        followers:0,
-        following:0,
-        is_following:false,
-        can_view_social:false
-      };
-      renderProfilePrivacy();
+  function searchMedia(query){
+    query=String(query||'').trim();
+
+    if(!query){
+      catalogMode='trending';
+      catalogGenreId=null;
+      setGenreSortVisibility(false);
+      catalogQuery='';
+      catalogPage=1;
+      document.getElementById('section-title').textContent='Trending Today';
+      loadCatalogPage(1,false);
       return;
     }
 
+    currentMode='search';
+    catalogMode='search';
+    catalogGenreId=null;
+    setGenreSortVisibility(false);
+    catalogQuery=query;
+    catalogPage=1;
+
+    document.getElementById('section-title').textContent=`Search: "${query}"`;
+    loadCatalogPage(1,false);
+  }
+
+  window.searchMedia=searchMedia;
+
+  /* ================= START ================= */
+
+  window.addEventListener('DOMContentLoaded',()=>{
+    const launchParams=new URLSearchParams(window.location.search);
+    const requestedOpen=String(launchParams.get('open')||'').toLowerCase();
+    const requestedAccount=String(launchParams.get('account')||'').toLowerCase();
+    const requestedSearch=String(launchParams.get('search')||'').trim();
+if(requestedAccount==='login'||requestedAccount==='signup'){
+      setTimeout(()=>{
+        showAccountMode(requestedAccount);
+        openAccountModal();
+      },180);
+    }
+
+    if(requestedSearch){
+      const headerSearch=document.getElementById('movie-search');
+      if(headerSearch)headerSearch.value=requestedSearch;
+    }
+
+    const quickPassword=document.getElementById('home-quick-password');
+    if(quickPassword){
+      quickPassword.enterKeyHint='go';
+      quickPassword.addEventListener('keydown',event=>{
+        if(event.key==='Enter'&&!event.shiftKey&&!event.ctrlKey&&!event.metaKey&&!event.isComposing){
+          event.preventDefault();
+          quickHomeLogin();
+        }
+      });
+    }
+
+    const savedTheme=localStorage.getItem('josh_site_theme');
+    if(savedTheme)applyFlix2WatchTheme(savedTheme,false);
+
+    fetchClientIP();
+    checkNetworkStatus();
+    loadSiteAnnouncement();
+
+    document.getElementById('browser-display').textContent=navigator.userAgent;
+
+    setInterval(()=>{
+      document.getElementById('ram-stat').textContent=
+        `${(30+Math.random()*8).toFixed(1)}%`;
+    },4000);
+
+
+    const startupParams=new URLSearchParams(window.location.search);
+    const requestedGenre=Number(window.__F2W_FIXED_GENRE_V94?.id || startupParams.get('genre'));
+    const requestedTab=String(startupParams.get('tab')||'').toLowerCase();
+    const requestedPage=Math.max(1,Number(startupParams.get('page'))||1);
+
+    if(requestedSearch){
+      currentMode='search';
+      catalogMode='search';
+      catalogGenreId=null;
+      setGenreSortVisibility(false);
+      catalogQuery=requestedSearch;
+      catalogPage=requestedPage;
+      document.getElementById('section-title').textContent=`Search: "${requestedSearch}"`;
+      loadCatalogPage(requestedPage,false);
+    }else if(requestedGenre&&genreNames[requestedGenre]){
+      f2wOpenGenreV91(requestedGenre,requestedPage,false);
+    }else if(requestedTab==='movie'||requestedTab==='tv'){
+      const activeTab=[...document.querySelectorAll('.tab-btn')]
+        .find(button=>button.getAttribute('onclick')===`switchCategory('${requestedTab}',this)`);
+
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      if(activeTab)activeTab.classList.add('active');
+
+      currentMode=requestedTab;
+      catalogMode=requestedTab;
+      catalogGenreId=null;
+      setGenreSortVisibility(false);
+      catalogQuery='';
+      catalogPage=1;
+      document.getElementById('section-title').textContent=
+        requestedTab==='movie'?'Trending Movies':'Trending TV Series';
+      loadCatalogPage(requestedPage,false);
+    }else{
+      catalogMode='trending';
+      catalogGenreId=null;
+      setGenreSortVisibility(false);
+      catalogQuery='';
+      document.getElementById('section-title').textContent='Trending Today';
+      loadCatalogPage(requestedPage,false);
+    }
+  });
+
+  /* ================= EXTENDED HOME PAGE ================= */
+
+  function buildMiniMediaCard(item,type){
+    const title=item.title||item.name||'Untitled';
+    const date=item.release_date||item.first_air_date||'';
+    const year=date?date.slice(0,4):'—';
+    const rating=Number(item.vote_average||0).toFixed(1);
+    const poster=item.poster_path
+      ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+      : '';
+
+    const link=document.createElement('a');
+    link.className='mini-media-card';
+    link.href=`/watch/?id=${encodeURIComponent(item.id)}&type=${encodeURIComponent(type)}`;
+
+    const img=document.createElement('img');
+    img.className='mini-media-poster';
+    img.alt=`${title} poster`;
+    img.loading='lazy';
+    if(poster)img.src=poster;
+
+    const badge=document.createElement('span');
+    badge.className='mini-media-type';
+    badge.textContent=type==='tv'?'TV':'Movie';
+
+    const info=document.createElement('div');
+    info.className='mini-media-info';
+
+    const titleEl=document.createElement('div');
+    titleEl.className='mini-media-title';
+    titleEl.textContent=title;
+
+    const meta=document.createElement('div');
+    meta.className='mini-media-meta';
+
+    const yearEl=document.createElement('span');
+    yearEl.textContent=year;
+
+    const ratingEl=document.createElement('span');
+    ratingEl.className='mini-media-rating';
+    ratingEl.innerHTML=`<i class="fa-solid fa-star"></i> ${rating}`;
+
+    meta.append(yearEl,ratingEl);
+    info.append(titleEl,meta);
+    link.append(img,badge,info);
+
+    return link;
+  }
+
+  async function loadExtraMediaStrip(endpoint,containerId,type){
+    const container=document.getElementById(containerId);
+    if(!container)return;
+
+    container.innerHTML='<div class="extra-loading">Loading catalogue data...</div>';
+
     try{
-      const {data,error}=await chatSupabase.rpc(
-        'get_profile_social',
-        {target_user_id:viewedProfile.user_id}
+      const response=await fetch(
+        `https://api.themoviedb.org/3/${endpoint}?api_key=${API_KEY}&language=en-US&page=1`
       );
+      const data=await response.json();
 
-      if(error)throw error;
+      const items=(Array.isArray(data.results)?data.results:[])
+        .filter(item=>item.poster_path)
+        .slice(0,6);
 
-      const row=Array.isArray(data)?data[0]:data;
+      container.innerHTML='';
 
-      socialFeaturesAvailable=true;
-      viewedSocial={
-        followers:Number(row?.followers_count||0),
-        following:Number(row?.following_count||0),
-        is_following:Boolean(row?.is_following),
-        can_view_social:Boolean(row?.can_view_social)
-      };
-    }catch(error){
-      console.warn('Social features unavailable:',error);
-
-      socialFeaturesAvailable=false;
-      viewedSocial={
-        followers:0,
-        following:0,
-        is_following:false,
-        can_view_social:!Boolean(viewedProfile.is_private)||isOwnViewedProfile()
-      };
-    }
-
-    renderProfilePrivacy();
-  }
-
-
-  function messageViewedProfile(){
-    if(!viewedProfile?.username)return;
-
-    if(!currentUser){
-      showAccountMode('login');
-      openAccountModal();
-      setAccountMessage('Log in to send private messages.',false);
-      return;
-    }
-
-    if(isOwnViewedProfile())return;
-
-    if(typeof openDirectMessage==='function'){
-      openDirectMessage(viewedProfile.username);
-    }
-  }
-
-  async function toggleProfileFollow(){
-    if(!currentUser){
-      openAccountModal();
-      setAccountMessage('Log in to follow users.',false);
-      return;
-    }
-
-    if(!viewedProfile || isOwnViewedProfile() || !socialFeaturesAvailable)return;
-
-    const button=document.getElementById('profile-follow-btn');
-    if(button)button.disabled=true;
-
-    try{
-      if(viewedSocial.is_following){
-        const {error}=await chatSupabase
-          .from('profile_follows')
-          .delete()
-          .eq('follower_user_id',currentUser.id)
-          .eq('followed_user_id',viewedProfile.user_id);
-
-        if(error)throw error;
-      }else{
-        const {error}=await chatSupabase
-          .from('profile_follows')
-          .insert({
-            follower_user_id:currentUser.id,
-            followed_user_id:viewedProfile.user_id
-          });
-
-        if(error && error.code!=='23505')throw error;
-      }
-
-      await loadProfileSocial();
-    }catch(error){
-      console.error('Follow action failed:',error);
-      setProfileStatus('Could not update follow status.',true);
-    }finally{
-      if(button)button.disabled=false;
-    }
-  }
-
-  async function togglePrivateProfile(){
-    const authorizedUser=await rejectUnauthorizedProfileWrite("change profile privacy");
-    if(!authorizedUser)return;
-
-    if(!currentUser || !isOwnViewedProfile())return;
-
-    const nextPrivate=!Boolean(viewedProfile.is_private);
-    const button=document.getElementById('profile-private-toggle');
-    if(button)button.disabled=true;
-
-    try{
-      const {data,error}=await chatSupabase
-        .from('profiles')
-        .update({
-          is_private:nextPrivate,
-          updated_at:new Date().toISOString()
-        })
-        .eq('user_id',currentUser.id)
-        .select('user_id,username,display_name,bio,avatar_url,is_private,created_at,updated_at')
-        .single();
-
-      if(error)throw error;
-
-      viewedProfile=data;
-      
-      
-      setTimeout(syncAuthenticatedOwnerUI,0);
-setTimeout(refreshPublicProfileRoleBadge,0);
-renderViewedProfile();
-      await loadProfileSocial();
-      renderViewedFavorites();
-
-      setProfileStatus(
-        nextPrivate
-          ? 'Profile is now private.'
-          : 'Profile is now public.'
-      );
-    }catch(error){
-      console.error('Privacy update failed:',error);
-      setProfileStatus('Could not update profile privacy.',true);
-    }finally{
-      if(button)button.disabled=false;
-    }
-  }
-
-  function closeSocialList(){
-    document.getElementById('social-modal')?.classList.remove('show');
-  }
-
-  function socialAvatarMarkup(profile){
-    if(profile.avatar_url){
-      return `<img class="social-avatar" src="${escapeProfileHTML(profile.avatar_url)}" alt="">`;
-    }
-
-    return `<div class="social-avatar-fallback">${escapeProfileHTML(profileInitials(profile.username))}</div>`;
-  }
-
-  async function openSocialList(type){
-    if(!viewedProfile)return;
-    if(viewedProfile.is_private && !isOwnViewedProfile()){
-      return;
-    }
-
-    const modal=document.getElementById('social-modal');
-    const title=document.getElementById('social-modal-title');
-    const list=document.getElementById('social-list');
-
-    if(!modal||!title||!list)return;
-
-    title.textContent=type==='following'?'Following':'Followers';
-    list.innerHTML='<div class="profile-state">Loading...</div>';
-    modal.classList.add('show');
-
-    try{
-      const fn=type==='following'
-        ? 'get_profile_following'
-        : 'get_profile_followers';
-
-      const {data,error}=await chatSupabase.rpc(
-        fn,
-        {target_user_id:viewedProfile.user_id}
-      );
-
-      if(error)throw error;
-
-      const rows=Array.isArray(data)?data:[];
-
-      if(!rows.length){
-        list.innerHTML='<div class="profile-state">Nobody here yet.</div>';
+      if(!items.length){
+        container.innerHTML='<div class="extra-loading">No titles available right now.</div>';
         return;
       }
 
-      list.innerHTML=rows.map(profile=>{
-        const display=profile.display_name?.trim()||`@${profile.username}`;
+      items.forEach(item=>container.appendChild(buildMiniMediaCard(item,type)));
+    }catch(error){
+      console.error('Extra media row failed:',error);
+      container.innerHTML='<div class="extra-loading">Could not load this row right now.</div>';
+    }
+  }
 
-        return `
-          <button class="social-user" type="button" data-user="${escapeProfileHTML(profile.username)}">
-            ${socialAvatarMarkup(profile)}
-            <span class="social-copy">
-              <span class="social-display">${escapeProfileHTML(display)}</span>
-              <span class="social-username">@${escapeProfileHTML(profile.username)}</span>
-            </span>
-          </button>`;
-      }).join('');
+  function refreshExtraRows(){
+    loadExtraMediaStrip('movie/top_rated','top-rated-strip','movie');
+    loadExtraMediaStrip('movie/popular','popular-movies-strip','movie');
+  }
 
-      list.querySelectorAll('.social-user').forEach(button=>{
-        button.addEventListener('click',()=>{
-          openPublicProfile(button.dataset.user);
-        });
+  function browseGenreFromBottom(genreId){
+    f2wOpenGenreV91(genreId,1,true);
+
+    const grid=document.getElementById('movie-grid');
+    if(grid){
+      requestAnimationFrame(()=>{
+        const top=grid.getBoundingClientRect().top+window.scrollY-150;
+        window.scrollTo({top,behavior:'smooth'});
       });
-    }catch(error){
-      console.error('Social list load failed:',error);
-      list.innerHTML='<div class="profile-state">This list is private or unavailable.</div>';
     }
   }
 
-  async function saveProfileDetails(){
-    const authorizedUser=await rejectUnauthorizedProfileWrite("edit your profile");
-    if(!authorizedUser)return;
-
-    if(!isOwnViewedProfile())return;
-
-    const bio=document.getElementById('profile-bio-input').value.trim().slice(0,500);
-
-    // IMPORTANT: preserve display-name capitalization exactly as typed.
-    // Only leading/trailing whitespace is removed.
-    const displayName=document
-      .getElementById('profile-display-name-input')
-      .value
-      .trim()
-      .slice(0,50);
-
-    setProfileStatus('Saving profile...');
-
-    try{
-      const {data,error}=await chatSupabase
-        .from('profiles')
-        .update({
-          display_name:displayName||null,
-          bio,
-          updated_at:new Date().toISOString()
-        })
-        .eq('user_id',currentUser.id)
-        .select('user_id,username,display_name,bio,avatar_url,is_private,created_at,updated_at')
-        .single();
-
-      if(error){
-        if(
-          error.code==='42703' ||
-          /display_name/i.test(error.message||'')
-        ){
-          setProfileStatus(
-            'Display names need the Supabase display_name setup SQL to be run first.',
-            true
-          );
-          return;
-        }
-        throw error;
-      }
-
-      viewedProfile=data;
-      renderViewedProfile();
-      setProfileStatus('Profile saved.');
-    }catch(error){
-      console.error(error);
-      setProfileStatus('Could not save profile.',true);
-    }
-  }
-
-  async function uploadProfileAvatar(file){
-    const authorizedUser=await rejectUnauthorizedProfileWrite("change your avatar");
-    if(!authorizedUser)return;
-
-    if(!file||!isOwnViewedProfile())return;
-
-    if(!file.type.startsWith('image/')){
-      setProfileStatus('Choose an image file.',true);
-      return;
-    }
-    if(file.size>5*1024*1024){
-      setProfileStatus('Profile picture must be under 5 MB.',true);
-      return;
-    }
-
-    setProfileStatus('Uploading profile picture...');
-
-    try{
-      const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-      const objectPath=`${currentUser.id}/avatar-${Date.now()}.${ext}`;
-
-      const {error:uploadError}=await chatSupabase.storage
-        .from('profile-avatars')
-        .upload(objectPath,file,{upsert:false,contentType:file.type});
-
-      if(uploadError)throw uploadError;
-
-      const {data:publicData}=chatSupabase.storage
-        .from('profile-avatars')
-        .getPublicUrl(objectPath);
-
-      const avatarUrl=publicData.publicUrl;
-
-      const {data,error}=await chatSupabase
-        .from('profiles')
-        .update({avatar_url:avatarUrl,updated_at:new Date().toISOString()})
-        .eq('user_id',currentUser.id)
-        .select('user_id,username,display_name,bio,avatar_url,is_private,created_at,updated_at')
-        .single();
-
-      if(error)throw error;
-      viewedProfile=data;
-      renderViewedProfile();
-      setProfileStatus('Profile picture updated.');
-    }catch(error){
-      console.error(error);
-      setProfileStatus('Could not upload profile picture.',true);
-    }
-  }
-
-  window.addEventListener('DOMContentLoaded',async()=>{
-    // Shared auth initialization may resolve a moment later.
-    loadViewedProfile();
-  });
-
-  let f2wProfileAuthRefreshTimer=null;
-  chatSupabase.auth.onAuthStateChange(()=>{
-    clearTimeout(f2wProfileAuthRefreshTimer);
-    f2wProfileAuthRefreshTimer=setTimeout(()=>{
-      const wanted=viewedUsernameFromURL()||currentProfileUsername();
-      if(!viewedProfile||String(viewedProfile.username||'').toLowerCase()!==String(wanted||'').toLowerCase()){
-        loadViewedProfile();
-      }
-    },40);
-  });
-
-
-
-  function viewedProfileURL(){
-    const username=
-      viewedProfile?.username
-      || viewedUsernameFromURL()
-      || '';
-
-    if(!username)return window.location.href;
-
-    return new URL(
-      `/profile/@${encodeURIComponent(username)}`,
-      window.location.origin
-    ).href;
-  }
-
-  async function copyTextReliable(text){
-    if(navigator.clipboard && window.isSecureContext){
-      try{
-        await navigator.clipboard.writeText(text);
-        return true;
-      }catch{}
-    }
-
-    const textarea=document.createElement('textarea');
-    textarea.value=text;
-    textarea.setAttribute('readonly','');
-    textarea.style.position='fixed';
-    textarea.style.left='-9999px';
-    textarea.style.top='0';
-    textarea.style.opacity='0';
-    document.body.appendChild(textarea);
-
-    textarea.focus();
-    textarea.select();
-    textarea.setSelectionRange(0,textarea.value.length);
-
-    let copied=false;
-    try{
-      copied=document.execCommand('copy');
-    }catch{}
-
-    textarea.remove();
-    return copied;
-  }
-
-  async function copyViewedProfileLink(){
-    const button=document.getElementById('copy-profile-link-btn');
-    const label=button?.querySelector('span');
-    const icon=button?.querySelector('i');
-    const url=viewedProfileURL();
-
+  async function surpriseMe(){
+    const button=document.querySelector('.surprise-btn');
     if(button)button.disabled=true;
 
-    const copied=await copyTextReliable(url);
-
-    if(copied){
-      if(label)label.textContent='Copied!';
-      if(icon)icon.className='fa-solid fa-check';
-
-      setTimeout(()=>{
-        if(label)label.textContent='Copy Link';
-        if(icon)icon.className='fa-solid fa-link';
-        if(button)button.disabled=false;
-      },1800);
-
-      return;
-    }
-
-    if(button)button.disabled=false;
-    window.prompt('Copy this profile link:',url);
-  }
-
-
-
-  /* ================= LIVE PROFILE FAVORITE STATS ================= */
-  function updateViewedProfileStats(){
-    const items=Array.isArray(viewedProfileFavorites)
-      ? viewedProfileFavorites
-      : [];
-
-    const total=items.length;
-    const movies=items.filter(item=>item.media_type==='movie').length;
-    const tv=items.filter(item=>item.media_type==='tv').length;
-
-    const totalEl=document.getElementById('profile-stat-total');
-    const movieEl=document.getElementById('profile-stat-movies');
-    const tvEl=document.getElementById('profile-stat-tv');
-    const chip=document.getElementById('profile-favorite-count');
-
-    if(totalEl)totalEl.textContent=String(total);
-    if(movieEl)movieEl.textContent=String(movies);
-    if(tvEl)tvEl.textContent=String(tv);
-
-    if(
-      chip &&
-      viewedProfile &&
-      !(viewedProfile.is_private && !isOwnViewedProfile())
-    ){
-      chip.textContent=`${total} favorite${total===1?'':'s'}`;
-    }
-  }
-
-  async function refreshViewedProfileFavorites(){
-    if(!viewedProfile)return;
-
-    if(
-      typeof canViewPrivateContent==='function' &&
-      !canViewPrivateContent()
-    ){
-      viewedProfileFavorites=[];
-      renderViewedFavorites();
-      return;
-    }
-
     try{
-      const {data,error}=await chatSupabase
-        .from('user_favorites')
-        .select('media_id,media_type,title,poster_path,created_at')
-        .eq('user_id',viewedProfile.user_id)
-        .order('created_at',{ascending:false});
+      const page=Math.floor(Math.random()*5)+1;
+      const response=await fetch(
+        `https://api.themoviedb.org/3/trending/all/week?api_key=${API_KEY}&page=${page}`
+      );
+      const data=await response.json();
 
-      if(error)throw error;
+      const choices=(Array.isArray(data.results)?data.results:[])
+        .filter(item=>(item.media_type==='movie'||item.media_type==='tv')&&item.id);
 
-      viewedProfileFavorites=Array.isArray(data)?data:[];
-      renderViewedFavorites();
-      updateViewedProfileStats();
-      updateViewedProfileStats();
+      if(!choices.length)throw new Error('No surprise titles available.');
+
+      const choice=choices[Math.floor(Math.random()*choices.length)];
+      window.location.href=`/watch/?id=${encodeURIComponent(choice.id)}&type=${encodeURIComponent(choice.media_type)}`;
     }catch(error){
-      console.error('Favorite stats refresh failed:',error);
+      console.error('Surprise Me failed:',error);
+      if(button){
+        button.disabled=false;
+        button.innerHTML='<i class="fa-solid fa-rotate"></i> Try Again';
+      }
     }
   }
 
-  // Refresh when returning to a profile tab, so a favorite added on the
-  // watch page is reflected without stale zero counters.
-  document.addEventListener('visibilitychange',()=>{
-    if(!document.hidden){
-      refreshViewedProfileFavorites();
+  function toggleFAQ(button){
+    const item=button.closest('.faq-item');
+    if(item)item.classList.toggle('open');
+  }
+
+  window.addEventListener('DOMContentLoaded',()=>{
+    const loadExtras=()=>refreshExtraRows();
+    if('requestIdleCallback' in window){
+      requestIdleCallback(loadExtras,{timeout:1200});
+    }else{
+      setTimeout(loadExtras,350);
     }
   });
 
-  window.addEventListener('focus',()=>{
-    refreshViewedProfileFavorites();
-  });
 
+
+  /* ================= RECENTLY VIEWED ================= */
+  const FLIX_RECENT_KEY='flix2watch_recently_viewed';
+
+  function getRecentlyViewed(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(FLIX_RECENT_KEY)||'[]');
+      return Array.isArray(parsed)?parsed:[];
+    }catch{
+      return [];
+    }
+  }
+
+  function renderRecentlyViewed(containerId='recently-viewed-strip'){
+    const container=document.getElementById(containerId);
+    if(!container)return;
+
+    const items=getRecentlyViewed().slice(0,12);
+
+    if(!items.length){
+      container.innerHTML='<div class="recent-empty">Titles you open will appear here for quick access.</div>';
+      return;
+    }
+
+    container.innerHTML=items.map(item=>{
+      const title=escapeProfileHTML
+        ? escapeProfileHTML(item.title||'Untitled')
+        : String(item.title||'Untitled');
+      const poster=item.poster_path
+        ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+        : '';
+      return `
+        <article class="recent-card" onclick="window.location.href='/watch/?id=${encodeURIComponent(item.id)}&type=${encodeURIComponent(item.type)}'">
+          <div class="recent-poster-shell">
+            ${poster?`<img class="recent-poster" src="${poster}" alt="${title} poster" loading="lazy">`:''}
+            <div class="recent-play"><i class="fa-solid fa-play"></i></div>
+          </div>
+          <div class="recent-title">${title}</div>
+          <div class="recent-meta">${item.type==='tv'?'TV Series':'Movie'}</div>
+        </article>`;
+    }).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>renderRecentlyViewed());
 
 
   /* ================= USERNAME-ONLY USER SEARCH ================= */
@@ -6899,17 +5846,6 @@ renderViewedProfile();
   });
 
 </script>
-
-  <div class="social-modal-overlay" id="social-modal" onclick="if(event.target===this)closeSocialList()">
-    <div class="social-modal">
-      <div class="social-modal-head">
-        <strong id="social-modal-title">Followers</strong>
-        <button class="social-modal-close" type="button" onclick="closeSocialList()"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      
-    </div>
-  </div>
-
 
   
 
@@ -6996,11 +5932,7 @@ renderViewedProfile();
     {icon:'fa-rocket',title:'Sci-Fi',sub:'Browse science fiction',url:'/genre/sci-fi/'},
     {icon:'fa-heart',title:'My Favorites',sub:'Open your saved library',action:ultraOpenFavorites},
     {icon:'fa-user',title:'My Profile',sub:'Open your public profile',action:ultraOpenProfile},
-    {icon:'fa-comments',title:'Open Chat',sub:'Join the 24-hour public chat',action:()=>{closeUltraCommand();openChat()}},
-    {icon:'fa-palette',title:'Theme: Netflix Red',sub:'Switch to red theme',action:()=>setTheme('red','theme-red')},
-    {icon:'fa-palette',title:'Theme: Cyber Blue',sub:'Switch to blue theme',action:()=>setTheme('blue','theme-blue')},
-    {icon:'fa-palette',title:'Theme: Neon Purple',sub:'Switch to purple theme',action:()=>setTheme('purple','theme-purple')},
-    {icon:'fa-arrow-up',title:'Back to top',sub:'Jump to the top of this page',action:()=>window.scrollTo({top:0,behavior:'smooth'})}
+    {icon:'fa-comments',title:'Open Chat',sub:'Join the 24-hour public chat',action:()=>{closeUltraCommand();openChat()}},    {icon:'fa-arrow-up',title:'Back to top',sub:'Jump to the top of this page',action:()=>window.scrollTo({top:0,behavior:'smooth'})}
   ];
   let ultraCommandSelection=0;
 
@@ -7240,453 +6172,60 @@ renderViewedProfile();
   });
 
 
-  function ultraProfileLab(){
-    if(!viewedProfile)return;
-    const own=typeof isOwnViewedProfile==='function'&&isOwnViewedProfile();
-    const privateHidden=Boolean(viewedProfile.is_private&&!own);
-    const favorites=privateHidden?[]:(Array.isArray(viewedProfileFavorites)?viewedProfileFavorites:[]);
-
-    const followers=Number(viewedSocial?.followers||0);
-    const following=Number(viewedSocial?.following||0);
-    const level=Math.max(1,Math.floor((favorites.length+followers+following)/10)+1);
-    const score=Math.min(999,favorites.length*3+followers*5+following*2);
-
-    const levelEl=document.getElementById('f2w-profile-level');
-    const scoreEl=document.getElementById('f2w-profile-score');
-    const memberEl=document.getElementById('f2w-profile-member');
-    const completionEl=document.getElementById('f2w-profile-completion');
-
-    if(levelEl)levelEl.textContent=privateHidden?'—':String(level);
-    if(scoreEl)scoreEl.textContent=privateHidden?'—':String(score);
-    if(memberEl)memberEl.textContent=viewedProfile.created_at?new Date(viewedProfile.created_at).toLocaleDateString(undefined,{month:'short',year:'numeric'}):'—';
-
-    let completion=25;
-    if(viewedProfile.avatar_url)completion+=25;
-    if(String(viewedProfile.bio||'').trim())completion+=25;
-    if(String(viewedProfile.display_name||'').trim())completion+=25;
-    if(completionEl)completionEl.textContent=`${completion}%`;
-
-    const achievements=[];
-    if(viewedProfile.avatar_url)achievements.push(['fa-camera','Avatar Set']);
-    if(String(viewedProfile.bio||'').trim())achievements.push(['fa-pen','Bio Writer']);
-    if(favorites.length>=1)achievements.push(['fa-heart','First Favorite']);
-    if(favorites.length>=10)achievements.push(['fa-film','Collector']);
-    if(favorites.length>=25)achievements.push(['fa-layer-group','Super Collector']);
-    if(followers>=5)achievements.push(['fa-users','Getting Noticed']);
-    if(followers>=25)achievements.push(['fa-crown','Community Star']);
-    if(viewedProfile.is_private)achievements.push(['fa-lock','Private Mode']);
-
-    const badgeHost=document.getElementById('f2w-profile-achievements');
-    if(badgeHost){
-      badgeHost.innerHTML=achievements.length
-        ? achievements.map(([icon,label])=>`<span class="f2w-mood-chip" style="cursor:default"><i class="fa-solid ${icon}"></i>${label}</span>`).join('')
-        : '<span style="color:var(--text-muted);font-size:.65rem">Achievements unlock as the profile is used.</span>';
-    }
-
-    const activity=document.getElementById('f2w-profile-activity');
-    if(activity){
-      if(privateHidden){
-        activity.innerHTML='<div class="private-profile-state"><i class="fa-solid fa-lock"></i><strong>Private activity</strong>Recent saves are hidden.</div>';
-      }else{
-        const recent=favorites.slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,10);
-        activity.innerHTML=recent.length?recent.map(item=>{
-          const poster=item.poster_path?`https://image.tmdb.org/t/p/w342${item.poster_path}`:'/flix2watch-logo-red-v34.png';
-          return `
-            <article class="f2w-ultra-card" onclick="ultraGo('/watch/?id=${encodeURIComponent(item.media_id)}&type=${encodeURIComponent(item.media_type)}')">
-              <div class="f2w-ultra-poster"><img src="${poster}" alt="" loading="lazy" decoding="async"></div>
-              <div class="f2w-ultra-card-title">${escapeProfileHTML(item.title||'Untitled')}</div>
-              <div class="f2w-ultra-card-meta"><span>${item.media_type==='tv'?'TV':'MOVIE'}</span><span>${item.created_at?new Date(item.created_at).toLocaleDateString():''}</span></div>
-            </article>`;
-        }).join(''):'<div class="f2w-empty-loader">No recent favorites yet.</div>';
-      }
-    }
+  function ultraPosterCard(item){
+    const type=item.media_type||(item.first_air_date?'tv':'movie');
+    const title=item.title||item.name||'Untitled';
+    const year=(item.release_date||item.first_air_date||'').slice(0,4)||'—';
+    const rating=Number(item.vote_average||0).toFixed(1);
+    const poster=item.poster_path
+      ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+      : '/flix2watch-logo-red-v34.png';
+    return `
+      <article class="f2w-ultra-card" onclick="ultraGo('/watch/?id=${encodeURIComponent(item.id)}&type=${type}')">
+        <div class="f2w-ultra-poster"><img src="${poster}" alt="" loading="lazy" decoding="async"></div>
+        <div class="f2w-ultra-card-title">${escapeProfileHTML(title)}</div>
+        <div class="f2w-ultra-card-meta"><span>${year}</span><span><i class="fa-solid fa-star"></i> ${rating}</span></div>
+      </article>`;
   }
 
-  window.addEventListener('load',()=>{
-    setTimeout(ultraProfileLab,450);
-    setInterval(ultraProfileLab,1600);
-  });
-
-
-
-  /* ================= PUBLIC PROFILE ROLE BADGE ================= */
-
-
-
-
-  /* ================= FULL-PAGE PROFILE BACKGROUND LOGIC ================= */
-
-
-
-
-
-  /* ================= ROLE BADGE AUTH REFRESH ================= */
-  async function refreshViewedProfileRoleBadge(){
-    if(!viewedProfile)return;
-    if(typeof loadViewedProfileRoleBadge==='function'){
-      await loadViewedProfileRoleBadge();
-    }
-  }
-
-  chatSupabase.auth.onAuthStateChange((_event,_session)=>{
-    setTimeout(refreshViewedProfileRoleBadge,0);
-    setTimeout(refreshViewedProfileRoleBadge,250);
-  });
-
-  window.addEventListener('pageshow',()=>{
-    setTimeout(refreshViewedProfileRoleBadge,0);
-  });
-
-  window.addEventListener('focus',()=>{
-    refreshViewedProfileRoleBadge();
-  });
-
-
-
-  /* ================= PROFILE WRITE AUTHORIZATION ================= */
-  async function getFreshAuthenticatedUser(){
+  async function ultraFetchShelf(url,hostId){
+    const host=document.getElementById(hostId);
+    if(!host||host.dataset.loaded==='1')return;
+    host.dataset.loaded='1';
     try{
-      const {data,error}=await chatSupabase.auth.getUser();
-      if(error||!data?.user)return null;
-      return data.user;
+      const response=await fetch(url);
+      const data=await response.json();
+      const items=(data.results||[]).filter(item=>item.poster_path).slice(0,14);
+      host.innerHTML=items.map(ultraPosterCard).join('')||'<div class="f2w-empty-loader">Nothing found right now.</div>';
     }catch(error){
-      console.error('Auth check failed:',error);
-      return null;
+      console.warn('Ultra shelf failed',error);
+      host.dataset.loaded='0';
+      host.innerHTML='<div class="f2w-empty-loader">Could not load this shelf right now.</div>';
     }
   }
 
-  async function requireAuthenticatedProfileOwner(){
-    const user=await getFreshAuthenticatedUser();
-
-    if(!user){
-      document.body.classList.remove('profile-authenticated-owner');
-      return null;
-    }
-
-    // Never trust just the UI state or URL.
-    // The authenticated UUID must match the viewed profile UUID.
-    if(!viewedProfile || viewedProfile.user_id!==user.id){
-      document.body.classList.remove('profile-authenticated-owner');
-      return null;
-    }
-
-    currentUser=user;
-    document.body.classList.add('profile-authenticated-owner');
-    return user;
-  }
-
-  async function refreshProfileOwnerSecurityState(){
-    const uiOwner=await syncAuthenticatedOwnerUI();
-    if(!uiOwner)return false;
-
-    // Keep the stricter getUser() verification for authorization-sensitive state.
-    return Boolean(await requireAuthenticatedProfileOwner());
-  }
-
-  async function rejectUnauthorizedProfileWrite(actionName='change this profile'){
-    const user=await requireAuthenticatedProfileOwner();
-
-    if(user)return user;
-
-    if(typeof setProfileStatus==='function'){
-      setProfileStatus(`You must be signed in to ${actionName}.`,true);
-    }
-
-    if(typeof openAccountModal==='function'){
-      openAccountModal();
-    }
-
-    return null;
-  }
-
-  chatSupabase.auth.onAuthStateChange((_event,session)=>{
-    if(!session?.user){
-      document.body.classList.remove('profile-authenticated-owner');
-    }
-    setTimeout(refreshProfileOwnerSecurityState,0);
-  });
-
-  window.addEventListener('pageshow',()=>{
-    setTimeout(refreshProfileOwnerSecurityState,0);
-  });
-
-  window.addEventListener('focus',()=>{
-    refreshProfileOwnerSecurityState();
-  });
-
-
-
-  /* ================= PUBLIC ROLE BADGE REFRESH ================= */
-
-  function clearViewedProfileRoleBadge(){
-    document.getElementById('profile-role-badge')?.remove();
-  }
-
-  async function loadViewedProfileRoleBadge(){
-    clearViewedProfileRoleBadge();
-
-    if(!viewedProfile)return;
-
-    const userId=String(viewedProfile.user_id||'');
-
-    function insertRoleBadge(role){
-      if(!['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(role))return;
-
-      clearViewedProfileRoleBadge();
-
-      const row=document.querySelector('#profile-hero .profile-name-row');
-      if(!row)return;
-
-      const badge=document.createElement('span');
-      badge.id='profile-role-badge';
-      badge.className=`profile-role-badge show ${role}`;
-      badge.title=`Flix2Watch ${role.charAt(0).toUpperCase()+role.slice(1)}`;
-
-      const icon=document.createElement('i');
-      icon.className='fa-solid fa-shield-halved';
-
-      const label=document.createElement('span');
-      label.textContent=role.charAt(0).toUpperCase()+role.slice(1);
-
-      // Force exact role colours at render time so theme CSS cannot override them.
-      const roleColor=role==='owner'?'#ff2b3d':'#a855f7';
-
-      badge.style.setProperty('color',roleColor,'important');
-      badge.style.setProperty(
-        'border-color',
-        role==='owner'?'rgba(255,43,61,.55)':'rgba(168,85,247,.55)',
-        'important'
-      );
-      badge.style.setProperty(
-        'background',
-        role==='owner'?'rgba(255,43,61,.10)':'rgba(168,85,247,.10)',
-        'important'
-      );
-      badge.style.setProperty('box-shadow','none','important');
-
-      icon.style.setProperty('color',roleColor,'important');
-      label.style.setProperty('color',roleColor,'important');
-
-      badge.append(icon,label);
-      row.appendChild(badge);
-
-      const profileName=document.getElementById('profile-name');
-      if(profileName&&typeof window.f2wPaintRoleName==='function'){
-        profileName.dataset.f2wPlainText=profileName.dataset.f2wPlainText||profileName.textContent;
-        delete profileName.dataset.f2wRoleDecorated;
-        window.f2wPaintRoleName(profileName,role,viewedProfile?.username||'');
-      }
-    }
-
-    // The owner badge is UUID-only. A username alone can never grant it.
-    if(userId===OWNER_UUID){
-      insertRoleBadge('owner');
-      return;
-    }
-
-    try{
-      const {data,error}=await chatSupabase.rpc(
-        'get_public_profile_role',
-        {target_username:viewedProfile.username}
-      );
-
-      if(error)throw error;
-
-      // Only an exact Staff permission result creates the Staff badge.
-      if(['staff','moderator','support','developer','verified','contributor','curator'].includes(data)){
-        insertRoleBadge(data);
-      }
-    }catch(error){
-      console.warn('Public role badge lookup failed:',error);
-      clearViewedProfileRoleBadge();
-    }
-  }
-
-  function refreshPublicProfileRoleBadge(){
-    if(viewedProfile){
-      loadViewedProfileRoleBadge();
-    }else{
-      clearViewedProfileRoleBadge();
-    }
-  }
-
-  window.addEventListener('pageshow',()=>{
-    setTimeout(refreshPublicProfileRoleBadge,0);
-    setTimeout(refreshPublicProfileRoleBadge,250);
-  });
-
-  window.addEventListener('focus',()=>{
-    refreshPublicProfileRoleBadge();
-  });
-
-
-
-  /* ================= AUTHENTICATED OWNER UI SYNC ================= */
-  let profileOwnerSyncRun=0;
-
-  async function syncAuthenticatedOwnerUI(){
-    const run=++profileOwnerSyncRun;
-
-    try{
-      const {data,error}=await chatSupabase.auth.getSession();
-      if(run!==profileOwnerSyncRun)return false;
-
-      const sessionUser=data?.session?.user||null;
-
-      if(error||!sessionUser||!viewedProfile){
-        document.body.classList.remove('profile-authenticated-owner');
-        return false;
-      }
-
-      const ownsProfile=
-        String(sessionUser.id)===String(viewedProfile.user_id);
-
-      if(!ownsProfile){
-        document.body.classList.remove('profile-authenticated-owner');
-        return false;
-      }
-
-      currentUser=sessionUser;
-      document.body.classList.add('profile-authenticated-owner');
-      return true;
-    }catch(error){
-      console.error('Could not sync owner profile controls:',error);
-      document.body.classList.remove('profile-authenticated-owner');
-      return false;
-    }
-  }
-
-  // Run after auth settles, profile data loads, page restores, and tab refocuses.
-  chatSupabase.auth.onAuthStateChange((_event,session)=>{
-    if(!session?.user){
-      document.body.classList.remove('profile-authenticated-owner');
-    }
-
-    setTimeout(syncAuthenticatedOwnerUI,0);
-    setTimeout(syncAuthenticatedOwnerUI,150);
-    setTimeout(syncAuthenticatedOwnerUI,500);
-  });
-
-  window.addEventListener('pageshow',()=>{
-    setTimeout(syncAuthenticatedOwnerUI,0);
-    setTimeout(syncAuthenticatedOwnerUI,250);
-  });
-
-  window.addEventListener('focus',()=>{
-    syncAuthenticatedOwnerUI();
+  document.addEventListener('DOMContentLoaded',()=>{
+    const targets=[
+      ['f2w-gems-row',`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=vote_average.desc&vote_count.gte=800&include_adult=false&page=1`],
+      ['f2w-upcoming-row',`https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1`]
+    ];
+    const observer=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(!entry.isIntersecting)return;
+        const match=targets.find(([id])=>id===entry.target.id);
+        if(match)ultraFetchShelf(match[1],match[0]);
+        observer.unobserve(entry.target);
+      });
+    },{rootMargin:'350px'});
+    targets.forEach(([id])=>{
+      const el=document.getElementById(id);
+      if(el)observer.observe(el);
+    });
   });
 
 
 
   /* ================= TOPBAR ACCOUNT ROLE BADGE ================= */
-
-
-
-  /* ================= FAIL-SAFE OWNER CONTROL VISIBILITY ================= */
-  function hideProfileOwnerControls(){
-    const avatarLabel=document.querySelector('.avatar-edit-label');
-    const editPanel=document.querySelector('.profile-edit-panel');
-    const privateControl=document.querySelector('.profile-private-control');
-if(avatarLabel)avatarLabel.hidden=true;
-    if(editPanel)editPanel.hidden=true;
-    if(privateControl)privateControl.hidden=true;
-document.body.classList.remove('profile-authenticated-owner');
-  }
-
-  async function revealProfileOwnerControlsIfAuthorized(){
-    if(!viewedProfile)return false;
-
-    try{
-      // getUser() validates against Supabase Auth rather than trusting stale local session UI.
-      const {data,error}=await chatSupabase.auth.getUser();
-      const user=data?.user||null;
-
-      if(error||!user)return false;
-      if(String(user.id)!==String(viewedProfile.user_id))return false;
-
-      currentUser=user;
-      document.body.classList.add('profile-authenticated-owner');
-
-          const avatarLabel=document.querySelector('.avatar-edit-label');
-      const editPanel=document.querySelector('.profile-edit-panel');
-      const privateControl=document.querySelector('.profile-private-control');
-if(avatarLabel)avatarLabel.hidden=false;
-      if(editPanel)editPanel.hidden=false;
-      if(privateControl)privateControl.hidden=false;
-return true;
-    }catch(error){
-      console.error('Profile owner UI authorization failed:',error);
-      hideProfileOwnerControls();
-      return false;
-    }
-  }
-
-  // v88: do not repeatedly hide/reveal owner controls during hydration.
-  // They start visually hidden in CSS and become visible once authorization resolves.
-  chatSupabase.auth.onAuthStateChange((_event,session)=>{
-    if(!session?.user){
-      hideProfileOwnerControls();
-      return;
-    }
-
-    setTimeout(revealProfileOwnerControlsIfAuthorized,0);
-    setTimeout(revealProfileOwnerControlsIfAuthorized,250);
-  });
-
-  window.addEventListener('pageshow',()=>{
-    setTimeout(revealProfileOwnerControlsIfAuthorized,50);
-  });
-
-  window.addEventListener('focus',()=>{
-    revealProfileOwnerControlsIfAuthorized();
-  });
-
-
-
-  /* ================= PROFILE THEME COLOUR LOGIC ================= */
-  function normalizeProfileThemeColor(value){
-    const v=String(value||'').trim();
-    return /^#[0-9A-Fa-f]{6}$/.test(v)?v.toLowerCase():null;
-  }
-
-  function hexToRgbTuple(hex){
-    const clean=normalizeProfileThemeColor(hex);
-    if(!clean)return null;
-    return [
-      parseInt(clean.slice(1,3),16),
-      parseInt(clean.slice(3,5),16),
-      parseInt(clean.slice(5,7),16)
-    ];
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /* ================= PROFILE COLOUR REBUILT LOGIC ================= */
-
-
-
-
-
-
-
-
 
 
 
@@ -7714,11 +6253,11 @@ return true;
     icon.className='fa-solid fa-shield-halved';
 
     const label=document.createElement('span');
-    label.textContent=role.charAt(0).toUpperCase()+role.slice(1);
+    label.textContent=role==='owner'?'Owner':'Staff';
 
     badge.append(icon,label);
     badge.className=`topbar-role-badge show ${role}`;
-    badge.title=`Flix2Watch ${role.charAt(0).toUpperCase()+role.slice(1)}`;
+    badge.title=role==='owner'?'Flix2Watch Owner':'Flix2Watch Staff';
     badge.hidden=false;
   }
 
@@ -7892,45 +6431,8 @@ return true;
       details:details&&typeof details==='object'?details:{}
     };
 
-    const context=document.getElementById('profile-report-context');
-    const reason=document.getElementById('report-reason');
-
-    if(targetType==='profile'){
-      if(context){
-        context.textContent=`Reporting @${targetUsername}. This private report goes to the Staff Control Center. Add evidence and enough context for Staff to review it fairly.`;
-      }
-      if(reason){
-        reason.innerHTML=`
-          <option value="Harassment or bullying">Harassment or bullying</option>
-          <option value="Impersonation">Impersonation</option>
-          <option value="Spam or scams">Spam or scams</option>
-          <option value="Hate or abusive profile content">Hate or abusive profile content</option>
-          <option value="Threats or concerning behaviour">Threats or concerning behaviour</option>
-          <option value="Sexual or inappropriate content">Sexual or inappropriate content</option>
-          <option value="Privacy concern">Privacy concern</option>
-          <option value="Misleading identity or profile">Misleading identity or profile</option>
-          <option value="Other user concern">Other user concern</option>
-        `;
-      }
-    }else{
-      if(context){
-        context.textContent='Send Staff a private moderation report. Include useful evidence and enough context for a fair review.';
-      }
-      if(reason){
-        reason.innerHTML=`
-          <option value="Spam or abuse">Spam or abuse</option>
-          <option value="Harassment">Harassment</option>
-          <option value="Inappropriate content">Inappropriate content</option>
-          <option value="Threats or concerning behaviour">Threats or concerning behaviour</option>
-          <option value="Impersonation">Impersonation</option>
-          <option value="Other">Other</option>
-        `;
-      }
-    }
-
     const modal=document.getElementById('report-modal');
     if(modal)modal.hidden=false;
-    setTimeout(()=>document.getElementById('report-reason')?.focus(),0);
   }
 
   function closeModerationReport(){
@@ -7939,10 +6441,6 @@ return true;
     if(modal)modal.hidden=true;
     const details=document.getElementById('report-details');
     if(details)details.value='';
-    const evidence=document.getElementById('report-evidence');
-    if(evidence)evidence.value='';
-    const concern=document.getElementById('report-concern-level');
-    if(concern)concern.value='normal';
   }
 
   async function submitModerationReport(){
@@ -7958,14 +6456,9 @@ return true;
     }
 
     try{
-      const evidence=document.getElementById('report-evidence')?.value.trim()||'';
-      const concernLevel=document.getElementById('report-concern-level')?.value||'normal';
-
       const payload={
         ...pendingModerationReport.details,
-        user_details:extra,
-        evidence,
-        concern_level:concernLevel
+        user_details:extra
       };
 
       const {error}=await chatSupabase.rpc('submit_moderation_report',{
@@ -7986,7 +6479,7 @@ return true;
     }finally{
       if(button){
         button.disabled=false;
-        button.textContent='Send to Staff';
+        button.textContent='Submit report';
       }
     }
   }
@@ -8001,43 +6494,79 @@ return true;
   });
 
   window.addEventListener('pageshow',()=>{
+    setTimeout(loadPublicContentOps,0);
     setTimeout(loadPublicOpsConfig,0);
     setTimeout(loadStaffControlAccess,100);
   });
 
 
 
-  /* ================= PROFILE REPORT ACTION ================= */
-  function syncProfileReportButton(){
-    const button=document.getElementById('profile-report-btn');
-    if(!button)return;
+  /* ================= PUBLIC STAFF CURATION ================= */
+  let publicBlockedMediaKeys=new Set();
+  let publicContentOpsLoaded=false;
 
-    const own=Boolean(
-      currentUser
-      && viewedProfile
-      && String(currentUser.id)===String(viewedProfile.user_id)
-    );
+  async function loadPublicContentOps(){
+    try{
+      const [blocksResult,collectionsResult]=await Promise.all([
+        chatSupabase.rpc('get_public_content_blocks'),
+        chatSupabase.rpc('get_public_staff_collections')
+      ]);
 
-    button.hidden=!Boolean(currentUser&&viewedProfile&&!own);
-  }
-
-  function reportViewedProfile(){
-    if(!viewedProfile)return;
-
-    openModerationReport(
-      'profile',
-      String(viewedProfile.user_id||''),
-      String(viewedProfile.username||''),
-      {
-        display_name:String(viewedProfile.display_name||''),
-        profile_url:window.location.href
+      if(!blocksResult.error){
+        publicBlockedMediaKeys=new Set(
+          (blocksResult.data||[]).map(item=>`${item.media_type}:${item.media_id}`)
+        );
       }
-    );
+
+      if(!collectionsResult.error){
+        renderPublicStaffCollections(collectionsResult.data||[]);
+      }
+    }catch(error){
+      console.warn('Public Staff curation unavailable:',error);
+    }finally{
+      publicContentOpsLoaded=true;
+    }
   }
 
-  chatSupabase.auth.onAuthStateChange(()=>{
-    setTimeout(syncProfileReportButton,0);
-  });
+  async function ensurePublicContentOps(){
+    if(publicContentOpsLoaded)return;
+    await loadPublicContentOps();
+  }
+
+  function renderPublicStaffCollections(collections){
+    const section=document.getElementById('staff-curated-section');
+    const host=document.getElementById('staff-curated-host');
+    if(!section||!host)return;
+
+    const usable=(Array.isArray(collections)?collections:[])
+      .map(c=>({...c,items:(c.items||[]).filter(i=>!publicBlockedMediaKeys.has(`${i.media_type}:${i.media_id}`))}))
+      .filter(c=>c.items.length);
+
+    if(!usable.length){
+      section.hidden=true;
+      host.innerHTML='';
+      return;
+    }
+
+    host.innerHTML=usable.map(c=>`
+      <div class="staff-collection-block">
+        <div class="staff-collection-title">
+          <strong>${escapeProfileHTML(c.name||'Staff Picks')}</strong>
+          <small>${escapeProfileHTML(c.description||'')}</small>
+        </div>
+        <div class="staff-collection-row">
+          ${c.items.map(item=>`
+            <a class="staff-collection-card" href="/watch/?id=${encodeURIComponent(item.media_id)}&type=${encodeURIComponent(item.media_type)}">
+              <div class="staff-collection-poster">
+                <img src="${item.poster_path?`https://image.tmdb.org/t/p/w342${item.poster_path}`:'/flix2watch-logo-red-v34.png'}" alt="" loading="lazy" decoding="async">
+              </div>
+              <div class="staff-collection-name">${escapeProfileHTML(item.title||'Untitled')}</div>
+            </a>`).join('')}
+        </div>
+      </div>`).join('');
+
+    section.hidden=false;
+  }
 
 
   window.addEventListener('flix2watch:account-state',event=>{
@@ -8058,56 +6587,30 @@ return true;
   <div class="report-modal" id="report-modal" hidden onclick="if(event.target===this)closeModerationReport()">
     <div class="report-card">
       <div class="report-head">
-        <strong id="profile-report-title"><i class="fa-solid fa-flag"></i> Report Profile</strong>
+        <strong><i class="fa-solid fa-flag"></i> Report to Staff</strong>
         <button class="report-close" type="button" onclick="closeModerationReport()"><i class="fa-solid fa-xmark"></i></button>
       </div>
-
-      <div class="profile-report-context" id="profile-report-context">
-        Send Staff a private report about this profile. Include useful evidence when possible.
-      </div>
-
-      <div class="profile-report-grid">
-        <div>
-          <label>REASON</label>
-          <select id="report-reason">
-            <option value="Harassment or bullying">Harassment or bullying</option>
-            <option value="Impersonation">Impersonation</option>
-            <option value="Spam or scams">Spam or scams</option>
-            <option value="Hate or abusive profile content">Hate or abusive profile content</option>
-            <option value="Threats or concerning behaviour">Threats or concerning behaviour</option>
-            <option value="Sexual or inappropriate content">Sexual or inappropriate content</option>
-            <option value="Privacy concern">Privacy concern</option>
-            <option value="Misleading identity or profile">Misleading identity or profile</option>
-            <option value="Other user concern">Other user concern</option>
-          </select>
-        </div>
-        <div>
-          <label>CONCERN LEVEL</label>
-          <select id="report-concern-level">
-            <option value="normal">Normal</option>
-            <option value="important">Important</option>
-            <option value="urgent">Urgent / safety concern</option>
-          </select>
-        </div>
-      </div>
-
-      <label>EVIDENCE / LINKS (OPTIONAL)</label>
-      <input id="report-evidence" maxlength="1000" placeholder="Message link, screenshot URL, profile link, or other evidence">
-      <div class="report-help">Do not include passwords, payment information or private authentication codes.</div>
-
-      <label>DETAILS</label>
-      <textarea id="report-details" maxlength="2000" placeholder="Explain what happened, when you noticed it, and why Staff should review the account."></textarea>
-
+      <label>REASON</label>
+      <select id="report-reason">
+        <option value="Spam or abuse">Spam or abuse</option>
+        <option value="Harassment">Harassment</option>
+        <option value="Inappropriate content">Inappropriate content</option>
+        <option value="Broken stream">Broken stream</option>
+        <option value="Impersonation">Impersonation</option>
+        <option value="Other">Other</option>
+      </select>
+      <label>DETAILS (OPTIONAL)</label>
+      <textarea id="report-details" maxlength="1000" placeholder="Tell Staff what happened..."></textarea>
       <div class="report-actions">
         <button type="button" onclick="closeModerationReport()">Cancel</button>
-        <button class="submit" id="report-submit-btn" type="button" onclick="submitModerationReport()">Send to Staff</button>
+        <button class="submit" id="report-submit-btn" type="button" onclick="submitModerationReport()">Submit report</button>
       </div>
     </div>
   </div>
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=93-1788229371" defer></script>
+  <script src="/final-v35.js?v=94-1788280907" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -9612,100 +8115,139 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-spacing-v70:1788223711 */
 </style>
 
+
+<script id="f2w-genre-reassert-v91">
+(() => {
+  const run=()=>{
+    const params=new URLSearchParams(location.search);
+    const genre=Number(window.__F2W_FIXED_GENRE_V94?.id || params.get('genre'));
+    const page=Math.max(1,Number(params.get('page'))||1);
+    if(!genre)return;
+
+    // Run after legacy DOMContentLoaded handlers; the helper waits for any
+    // in-flight old catalogue request before loading the requested genre.
+    setTimeout(()=>window.f2wOpenGenreV91?.(genre,page,false),80);
+  };
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',run,{once:true});
+  }else{
+    run();
+  }
+})();
+/* f2w-force-save:genre-reassert-v91:1788228094 */
+</script>
+
+
+<script id="f2w-dedicated-genre-title-v94">
+(() => {
+  const run=()=>{
+    const fixed=window.__F2W_FIXED_GENRE_V94;
+    if(!fixed)return;
+    const title=document.getElementById('section-title');
+    if(title)title.textContent=`${fixed.name} Movies`;
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+})();
+</script>
+
 </body>
 </html>
-<!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
-<!-- f2w-update-marker: shared-chat-v7:profile -->
+<!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
+<!-- f2w-update-marker: shared-chat-v7:home -->
 <!-- f2w-force-save: 20260831-2110 -->
-<!-- f2w-force-save:chat-v8-never-auto-open:1788208311:profile -->
-<!-- f2w-force-save:device-v9:20260831-205349:profile -->
-<!-- f2w-force-save:oauth-wording:1788210751:profile -->
-<!-- f2w-force-save:compact-modal-v11:1788210997:profile -->
-<!-- f2w-force-save:sitewide-auth-v13:1788211530:profile/index.html -->
-<!-- f2w-force-save:remove-nettools-v14:1788211808:profile/index.html -->
-<!-- f2w-force-save:sitewide-footer-v15:1788212347:profile/index.html -->
-<!-- f2w-force-save:chat-route-cache-v16:1788212934:profile/index.html -->
-<!-- f2w-force-save:profile-v17:1788213599 -->
-<!-- f2w-force-save:profile-clean-recent-v17 -->
-<!-- f2w-force-save:sitewide-header-v18:1788213893:profile/index.html -->
-<!-- f2w-force-save:sitewide-header-repair-v19:1788214305:profile/index.html -->
-<!-- f2w-force-save:remove-account-favorites-v20:1788214488:profile/index.html -->
-<!-- f2w-force-save:account-favorites-cache-v20:1788214488:profile/index.html -->
-<!-- f2w-force-save:canonical-static-header-v21:1788214596:profile/index.html -->
-<!-- f2w-force-save:header-static-cache-v21:1788214596:profile/index.html -->
-<!-- f2w-force-save:v21-theme-clean:profile/index.html -->
-<!-- f2w-force-save:profile-editor-page-v22:1788214990 -->
-<!-- f2w-force-save:chat-green-dot-v23:1788215130:profile/index.html -->
-<!-- f2w-force-save:chat-dot-js-cache-v23:178821-v23-dot-guard:profile/index.html -->
-<!-- f2w-force-save:critical-header-v24:1788215534:profile/index.html -->
-<!-- f2w-force-save:instant-profile-route-v24:1788215534:profile/index.html -->
-<!-- f2w-force-save:profile-cache-first-v24:1788215534 -->
-<!-- f2w-force-save:performance-cache-v24:1788215534:profile/index.html -->
-<!-- f2w-force-save:role-name-cache-v25:1788215879:profile/index.html -->
-<!-- f2w-force-save:sitewide-fade-page-v26:1788216027:profile/index.html -->
-<!-- f2w-force-save:fade-js-cache-v26:1788216027:profile/index.html -->
-<!-- f2w-force-save:profile-role-name-v27:1788216279 -->
-<!-- f2w-force-save:v27-cache:1788216279:profile/index.html -->
-<!-- f2w-force-save:v30-page:1788216738:profile/index.html -->
-<!-- f2w-force-save:v31-cache:1788217048:profile/index.html -->
-<!-- f2w-force-save:profile-layout-v32:1788217362 -->
-<!-- f2w-force-save:v32-cache:1788217362:profile/index.html -->
-<!-- f2w-force-save:v33-performance-cache:1788217440:profile/index.html -->
-<!-- f2w-force-save:v34-performance:1788217565:profile/index.html -->
-<!-- f2w-force-save:header-button-fit-v35:1788217735:profile/index.html -->
-<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:profile/index.html -->
-<!-- f2w-force-save:footer-cache-v36:1788217803:profile/index.html -->
-<!-- f2w-force-save:chat-width-v38:1788218284:profile/index.html -->
-<!-- f2w-force-save:profile-v39:1788218599 -->
-<!-- f2w-force-save:v39-cache:1788218599:profile/index.html -->
-<!-- f2w-force-save:v40-cache:1788218691:profile/index.html -->
-<!-- f2w-force-save:v41-arrow-cache:1788219230:profile/index.html -->
-<!-- f2w-force-save:chat-button-final-width-v42:1788219270:profile/index.html -->
-<!-- f2w-force-save:v43-watch-auth-cache:1788219527:profile/index.html -->
-<!-- f2w-force-save:v44-header-cache:1788219651:profile/index.html -->
-<!-- f2w-force-save:v50-cache:1788220357:profile/index.html -->
-<!-- f2w-force-save:profile-edit-center-v52:1788220545 -->
-<!-- f2w-force-save:v52-profile-edit-cache:1788220545:profile/index.html -->
-<!-- f2w-force-save:account-details-markup-v54:1788220759:profile/index.html -->
-<!-- f2w-force-save:account-details-cache-v54:1788220759:profile/index.html -->
-<!-- f2w-force-save:v56-auth-cache:1788221054:profile/index.html -->
-<!-- f2w-force-save:v57-user-search-cache:1788221142:profile/index.html -->
-<!-- f2w-force-save:v58-auth-hardfix:1788221340:profile/index.html -->
-<!-- f2w-force-save:v58-cache:1788221340:profile/index.html -->
-<!-- f2w-force-save:v59-cache:1788221542:profile/index.html -->
-<!-- f2w-force-save:auth-modal-lock-v60:1788221799:profile/index.html -->
-<!-- f2w-force-save:v60-auth-cache:1788221799:profile/index.html -->
-<!-- f2w-force-save:text-input-cache-v62:1788221977:profile/index.html -->
-<!-- f2w-force-save:v63-search-isolation:1788222324:profile/index.html -->
-<!-- f2w-force-save:v64-cache:1788222358:profile/index.html -->
-<!-- f2w-force-save:v65-search-cache:1788222474:profile/index.html -->
-<!-- f2w-force-save:v66-arrow-cache:1788222669:profile/index.html -->
-<!-- f2w-force-save:v67-page:1788222795:profile/index.html -->
-<!-- f2w-force-save:v69-header:1788223204:profile/index.html -->
-<!-- f2w-force-save:profile-route-v70:1788223711 -->
-<!-- f2w-force-save:v70-cache:1788223711:profile/index.html -->
-<!-- f2w-force-save:canonical-account-v70:profile/index.html -->
-<!-- f2w-force-save:auth-button-icons-v72:1788223976:profile/index.html -->
-<!-- f2w-force-save:v72-cache:1788223976:profile/index.html -->
-<!-- f2w-force-save:footer-privacy-v74:1788224239:profile/index.html -->
-<!-- f2w-force-save:role-particles-white-v75:1788224563:profile/index.html -->
-<!-- f2w-force-save:v76-cache:1788224745:profile/index.html -->
-<!-- f2w-force-save:v77-role-particles:1788224897:profile/index.html -->
-<!-- f2w-force-save:v78-cache:1788224965:profile/index.html -->
-<!-- f2w-force-save:v79-cache:1788225124:profile/index.html -->
-<!-- f2w-force-save:v80-cache:1788225203:profile/index.html -->
-<!-- f2w-force-save:v81-cache:1788225523:profile/index.html -->
-<!-- f2w-force-save:v82-cache:1788225709:profile/index.html -->
-<!-- f2w-force-save:v83-cache:1788226300:profile/index.html -->
-<!-- f2w-force-save:v84-cache:1788226452:profile/index.html -->
-<!-- f2w-force-save:v86-cache:1788226708:profile/index.html -->
-<!-- f2w-force-save:v87-cache:1788227242:profile/index.html -->
-<!-- f2w-force-save:profile-v88:1788227370 -->
-<!-- f2w-force-save:v88-cache:1788227370:profile/index.html -->
-<!-- f2w-force-save:v89-cache:1788227613:profile/index.html -->
-<!-- f2w-force-save:v90-cache:1788227716:profile/index.html -->
-<!-- f2w-force-save:v91-cache:1788228094:profile/index.html -->
-<!-- f2w-force-save:v92-cache:1788228465:profile/index.html -->
-<!-- f2w-force-save:v93-cache:1788229371:profile/index.html -->
-<!-- f2w-force-save:v94-links:1788280907:profile/index.html -->
+<!-- f2w-force-update:home-mobile-login-top:20260831 -->
+<!-- f2w-force-save:chat-v8-never-auto-open:1788208311:data -->
+<!-- f2w-force-save:fixed-theme-login-card:1788209019:index.html -->
+<!-- f2w-update-marker:home-login-card-bigger-swipe-preserved:1788209349 -->
+<!-- f2w-force-save:device-v9:20260831-205349:home -->
+<!-- f2w-force-save:mobile-hero-controls:1788210595 -->
+<!-- f2w-force-save:oauth-wording:1788210751:home -->
+<!-- f2w-force-save:compact-modal-v11:1788210997:home -->
+<!-- f2w-force-save:home-remove-login-required:1788211424 -->
+<!-- f2w-force-save:sitewide-auth-v13:1788211530:home/index.html -->
+<!-- f2w-force-save:remove-nettools-v14:1788211808:home/index.html -->
+<!-- f2w-force-save:home-reorder-footer-v15:1788212347 -->
+<!-- f2w-force-save:sitewide-footer-v15:1788212347:home/index.html -->
+<!-- f2w-force-save:chat-route-cache-v16:1788212934:home/index.html -->
+<!-- f2w-force-save:sitewide-v17:1788213599:home/index.html -->
+<!-- f2w-force-save:sitewide-header-v18:1788213893:home/index.html -->
+<!-- f2w-force-save:sitewide-header-repair-v19:1788214305:home/index.html -->
+<!-- f2w-force-save:remove-account-favorites-v20:1788214488:home/index.html -->
+<!-- f2w-force-save:account-favorites-cache-v20:1788214488:home/index.html -->
+<!-- f2w-force-save:canonical-static-header-v21:1788214596:home/index.html -->
+<!-- f2w-force-save:header-static-cache-v21:1788214596:home/index.html -->
+<!-- f2w-force-save:v21-theme-clean:home/index.html -->
+<!-- f2w-force-save:final-assets-v22:1788214990:home/index.html -->
+<!-- f2w-force-save:chat-green-dot-v23:1788215130:home/index.html -->
+<!-- f2w-force-save:chat-dot-js-cache-v23:178821-v23-dot-guard:home/index.html -->
+<!-- f2w-force-save:critical-header-v24:1788215534:home/index.html -->
+<!-- f2w-force-save:instant-profile-route-v24:1788215534:home/index.html -->
+<!-- f2w-force-save:performance-cache-v24:1788215534:home/index.html -->
+<!-- f2w-force-save:role-name-cache-v25:1788215879:home/index.html -->
+<!-- f2w-force-save:sitewide-fade-page-v26:1788216027:home/index.html -->
+<!-- f2w-force-save:fade-js-cache-v26:1788216027:home/index.html -->
+<!-- f2w-force-save:v27-cache:1788216279:home/index.html -->
+<!-- f2w-force-save:v30-page:1788216738:home/index.html -->
+<!-- f2w-force-save:v31-cache:1788217048:home/index.html -->
+<!-- f2w-force-save:v32-cache:1788217362:home/index.html -->
+<!-- f2w-force-save:v33-performance-cache:1788217440:home/index.html -->
+<!-- f2w-force-save:v34-performance:1788217565:home/index.html -->
+<!-- f2w-force-save:header-button-fit-v35:1788217735:home/index.html -->
+<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:home/index.html -->
+<!-- f2w-force-save:footer-cache-v36:1788217803:home/index.html -->
+<!-- f2w-force-save:chat-width-v38:1788218284:home/index.html -->
+<!-- f2w-force-save:v39-cache:1788218599:home/index.html -->
+<!-- f2w-force-save:v40-cache:1788218691:home/index.html -->
+<!-- f2w-force-save:home-arrow-layout-v41:1788219230 -->
+<!-- f2w-force-save:v41-arrow-cache:1788219230:home/index.html -->
+<!-- f2w-force-save:chat-button-final-width-v42:1788219270:home/index.html -->
+<!-- f2w-force-save:v43-watch-auth-cache:1788219527:home/index.html -->
+<!-- f2w-force-save:v44-header-cache:1788219651:home/index.html -->
+<!-- f2w-force-save:v50-cache:1788220357:home/index.html -->
+<!-- f2w-force-save:v52-profile-edit-cache:1788220545:home/index.html -->
+<!-- f2w-force-save:account-details-markup-v54:1788220759:home/index.html -->
+<!-- f2w-force-save:account-details-cache-v54:1788220759:home/index.html -->
+<!-- f2w-force-save:v56-auth-cache:1788221054:home/index.html -->
+<!-- f2w-force-save:v57-user-search-cache:1788221142:home/index.html -->
+<!-- f2w-force-save:v58-auth-hardfix:1788221340:home/index.html -->
+<!-- f2w-force-save:v58-cache:1788221340:home/index.html -->
+<!-- f2w-force-save:v59-cache:1788221542:home/index.html -->
+<!-- f2w-force-save:auth-modal-lock-v60:1788221799:home/index.html -->
+<!-- f2w-force-save:v60-auth-cache:1788221799:home/index.html -->
+<!-- f2w-force-save:text-input-cache-v62:1788221977:home/index.html -->
+<!-- f2w-force-save:v63-search-isolation:1788222324:home/index.html -->
+<!-- f2w-force-save:v64-cache:1788222358:home/index.html -->
+<!-- f2w-force-save:v65-search-cache:1788222474:home/index.html -->
+<!-- f2w-force-save:v66-arrow-cache:1788222669:home/index.html -->
+<!-- f2w-force-save:v67-page:1788222795:home/index.html -->
+<!-- f2w-force-save:v69-header:1788223204:home/index.html -->
+<!-- f2w-force-save:v70-cache:1788223711:home/index.html -->
+<!-- f2w-force-save:canonical-account-v70:home/index.html -->
+<!-- f2w-force-save:auth-button-icons-v72:1788223976:home/index.html -->
+<!-- f2w-force-save:v72-cache:1788223976:home/index.html -->
+<!-- f2w-force-save:footer-privacy-v74:1788224239:home/index.html -->
+<!-- f2w-force-save:role-particles-white-v75:1788224563:home/index.html -->
+<!-- f2w-force-save:v76-cache:1788224745:home/index.html -->
+<!-- f2w-force-save:v77-role-particles:1788224897:home/index.html -->
+<!-- f2w-force-save:v78-cache:1788224965:home/index.html -->
+<!-- f2w-force-save:v79-cache:1788225124:home/index.html -->
+<!-- f2w-force-save:v80-cache:1788225203:home/index.html -->
+<!-- f2w-force-save:v81-cache:1788225523:home/index.html -->
+<!-- f2w-force-save:v82-cache:1788225709:home/index.html -->
+<!-- f2w-force-save:v83-cache:1788226300:home/index.html -->
+<!-- f2w-force-save:home-movie-search-v84:1788226452 -->
+<!-- f2w-force-save:v84-cache:1788226452:home/index.html -->
+<!-- f2w-force-save:v86-cache:1788226708:home/index.html -->
+<!-- f2w-force-save:v87-cache:1788227242:home/index.html -->
+<!-- f2w-force-save:v88-cache:1788227370:home/index.html -->
+<!-- f2w-force-save:v89-cache:1788227613:home/index.html -->
+<!-- f2w-force-save:v90-cache:1788227716:home/index.html -->
+<!-- f2w-force-save:home-genre-v91:1788228094 -->
+<!-- f2w-force-save:v91-cache:1788228094:home/index.html -->
+<!-- f2w-force-save:v92-cache:1788228465:home/index.html -->
+<!-- f2w-force-save:home-v93:1788229371 -->
+<!-- f2w-force-save:v93-cache:1788229371:home/index.html -->
+<!-- f2w-force-save:genre-animation-v94:1788280907 -->
+<!-- f2w-force-save:v94-links:1788280907:genre/animation/index.html -->
  

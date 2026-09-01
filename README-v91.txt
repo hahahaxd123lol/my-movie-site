@@ -5,9 +5,9 @@ NO EDGE FUNCTION REDEPLOY NEEDED.
 
 FIXED SITE-WIDE
 - Top-bar Genres links now have one shared navigation handler.
-- Horror -> /home/?genre=27&page=1
-- Action -> /home/?genre=28&page=1
-- Comedy -> /home/?genre=35&page=1
+- Horror -> /genre/horror/
+- Action -> /genre/action/
+- Comedy -> /genre/comedy/
 - etc.
 
 HOME GENRE CATALOGUE
