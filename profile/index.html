@@ -3326,11 +3326,11 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=116-1788295578">
+  <link rel="stylesheet" href="/final-v35.css?v=117-1788295984">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=116-1788295578">
-  <script src="/global-header-chat-v1.js?v=116-1788295578" defer></script>
+  <script src="/global-header-chat-v1.js?v=117-1788295984" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -3756,6 +3756,19 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 #profile-username-line.f2w-role-name::after{content:none!important;display:none!important}
 #profile-username-line{overflow:visible!important;margin-top:6px!important}
 /* f2w-force-save:profile-both-identities-v116:1788295578 */
+</style>
+
+
+<style id="f2w-profile-ratings-v117-css">
+.profile-ratings-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(170px,1fr))!important;gap:14px!important}
+.profile-rating-card{display:block!important;border:1px solid rgba(255,255,255,.09)!important;border-radius:12px!important;overflow:hidden!important;background:#090f18!important;text-decoration:none!important;color:inherit!important}
+.profile-rating-poster{aspect-ratio:2/3!important;background:#0b1520!important;overflow:hidden!important}
+.profile-rating-poster img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+.profile-rating-info{padding:10px 11px 12px!important}
+.profile-rating-title{color:#fff!important;font-size:.82rem!important;font-weight:850!important;line-height:1.25!important}
+.profile-rating-stars{margin-top:7px!important;color:#fbbf24!important;font-size:.78rem!important;letter-spacing:2px!important}
+.profile-rating-review{margin-top:7px!important;color:#8fa2b6!important;font-size:.7rem!important;line-height:1.45!important}
+/* f2w-force-save:profile-ratings-v117-css:1788295984 */
 </style>
 
 </head>
@@ -4265,7 +4278,20 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
     <div class="f2w-v34-profile-forum" id="f2w-v34-profile-forum"><div class="profile-v16-none">No community posts yet.</div></div>
   </section>
 
-  <section class="profile-section" id="profile-favorites-section">
+  
+<section class="profile-section" id="profile-ratings-section">
+  <div class="profile-section-head">
+    <div>
+      <div class="profile-eyebrow">PUBLIC ACTIVITY</div>
+      <h2 class="profile-section-title">Ratings</h2>
+    </div>
+  </div>
+  <div class="profile-ratings-grid" id="profile-ratings-grid">
+    <div class="profile-state">Loading ratings…</div>
+  </div>
+</section>
+
+<section class="profile-section" id="profile-favorites-section">
     <div class="profile-section-head">
       <div>
         <div class="profile-eyebrow">PUBLIC WATCHLIST</div>
@@ -8568,7 +8594,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=116-1788295578" defer></script>
+  <script src="/final-v35.js?v=117-1788295984" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10073,6 +10099,44 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:header-spacing-v70:1788223711 */
 </style>
 
+
+<script id="f2w-profile-ratings-v117-js">
+(() => {
+  'use strict';
+  const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+  function username(){
+    const p=new URLSearchParams(location.search);
+    return String(p.get('user')||document.getElementById('profile-username-line')?.textContent||'').trim().replace(/^@/,'');
+  }
+  function card(r){
+    const title=esc(r.title||`${r.media_type==='tv'?'TV':'Movie'} #${r.media_id}`);
+    const poster=r.poster_path?`https://image.tmdb.org/t/p/w342${r.poster_path}`:'';
+    const n=Math.max(1,Math.min(5,Number(r.rating)||1));
+    const stars='★'.repeat(n)+'☆'.repeat(5-n);
+    return `<a class="profile-rating-card" href="/watch/?id=${encodeURIComponent(r.media_id)}&type=${encodeURIComponent(r.media_type)}">
+      <div class="profile-rating-poster">${poster?`<img src="${poster}" alt="${title} poster" loading="lazy">`:''}</div>
+      <div class="profile-rating-info"><div class="profile-rating-title">${title}</div><div class="profile-rating-stars">${stars} · ${n}/5</div>${r.review?`<div class="profile-rating-review">${esc(r.review)}</div>`:''}</div>
+    </a>`;
+  }
+  async function load(){
+    const host=document.getElementById('profile-ratings-grid'); if(!host)return;
+    const u=username(); if(!u)return;
+    const c=window.chatSupabase; if(!c?.rpc)return;
+    try{
+      const {data,error}=await c.rpc('get_public_profile_ratings_v117',{p_username:u});
+      if(error)throw error;
+      const rows=Array.isArray(data)?data:[];
+      host.innerHTML=rows.length?rows.map(card).join(''):'<div class="profile-state">No public ratings yet.</div>';
+    }catch(error){
+      console.warn('Public ratings unavailable:',error);
+      host.innerHTML='<div class="profile-state">Ratings are temporarily unavailable.</div>';
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(load,250),{once:true});else setTimeout(load,250);
+})();
+/* f2w-force-save:profile-ratings-v117-js:1788295984 */
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
@@ -10192,4 +10256,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v115-cache:1788295289:profile/index.html -->
 <!-- f2w-force-save:profile-both-role-v116:1788295578 -->
 <!-- f2w-force-save:v116-cache:1788295578:profile/index.html -->
+<!-- f2w-force-save:profile-ratings-v117:1788295984 -->
+<!-- f2w-force-save:v117-cache:1788295984:profile/index.html -->
  

@@ -11,7 +11,7 @@
       #f2w-global-chat-overlay.open{visibility:visible!important;opacity:1!important;pointer-events:auto!important}
       #f2w-global-chat-panel{position:relative!important;width:min(1180px,96vw)!important;height:min(820px,92vh)!important;border:1px solid rgba(229,9,20,.45)!important;border-radius:22px!important;overflow:hidden!important;background:#050a12!important;box-shadow:0 28px 90px rgba(0,0,0,.68)!important}
       #f2w-global-chat-frame{display:block!important;width:100%!important;height:100%!important;border:0!important;background:#050a12!important}
-      #f2w-global-chat-close{position:absolute!important;right:12px!important;top:12px!important;z-index:8!important;width:42px!important;height:42px!important;border-radius:12px!important;border:1px solid rgba(255,255,255,.18)!important;background:rgba(5,10,18,.92)!important;color:#fff!important;cursor:pointer!important;font-size:18px!important;display:grid!important;place-items:center!important}
+      #f2w-global-chat-close{position:absolute!important;right:12px!important;top:12px!important;z-index:2147483647!important;width:42px!important;height:42px!important;border-radius:12px!important;border:1px solid rgba(255,255,255,.18)!important;background:rgba(5,10,18,.92)!important;color:#fff!important;cursor:pointer!important;font-size:18px!important;display:grid!important;place-items:center!important}
       #f2w-global-chat-loading{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;color:#cbd5e1!important;font:700 14px/1.4 Inter,system-ui,sans-serif!important;letter-spacing:.04em!important;background:#050a12!important;z-index:3!important}
       #f2w-global-chat-panel.ready #f2w-global-chat-loading{display:none!important}
       @media(max-width:760px){#f2w-global-chat-overlay{padding:0!important}#f2w-global-chat-panel{width:100vw!important;height:100dvh!important;border-radius:0!important;border:0!important}#f2w-global-chat-close{right:8px!important;top:8px!important}}
@@ -37,7 +37,16 @@
     document.body.appendChild(overlay);
     panel=overlay.querySelector('#f2w-global-chat-panel');
     frame=overlay.querySelector('#f2w-global-chat-frame');
-    overlay.querySelector('#f2w-global-chat-close').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();closeGlobalChat();});
+    const closeButton=overlay.querySelector('#f2w-global-chat-close');
+    const hardClose=e=>{
+      e?.preventDefault?.();
+      e?.stopPropagation?.();
+      e?.stopImmediatePropagation?.();
+      closeGlobalChat();
+      return false;
+    };
+    closeButton.addEventListener('pointerdown',hardClose,true);
+    closeButton.addEventListener('click',hardClose,true);
     overlay.addEventListener('pointerdown',e=>{if(e.target===overlay)closeGlobalChat();});
     window.addEventListener('message',e=>{
       if(e.origin!==location.origin) return;
@@ -48,8 +57,15 @@
     forceHidden();
   }
   function openGlobalChat(){
-    if(location.pathname==='/chat/'||location.pathname==='/chat')return true;
-    location.assign('/chat/');
+    build();
+    if(!overlay)return false;
+    userOpened=true;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    overlay.style.removeProperty('visibility');
+    overlay.style.removeProperty('opacity');
+    overlay.style.removeProperty('pointer-events');
+    panel?.classList.toggle('ready',ready);
     return true;
   }
   function closeGlobalChat(){if(!overlay)return;userOpened=false;forceHidden();}
@@ -69,7 +85,7 @@
     root.querySelectorAll('.chat-button,[data-open-chat],a[href="/chat/"],a[href="/chat"]').forEach(el=>{
       if(el.dataset.f2wChatBound==='1')return;
       el.dataset.f2wChatBound='1';
-      el.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();location.assign('/chat/');},true);
+      el.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();openGlobalChat();},true);
     });
   }
   function boot(){
@@ -2439,4 +2455,5 @@ window.f2wOpenGuestDmAuthV98=function(mode){
 })();
 // f2w-force-save:autocomplete-role-v112:1788290771
 // f2w-force-save:operational-staff-nav-v116:1788295578
+// f2w-force-save:chat-close-overlay-v117:1788295984
  
