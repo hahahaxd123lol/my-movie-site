@@ -2389,3 +2389,68 @@ body.f2w-main-page > header #header-signup-btn > i {
 
 /* f2w-force-save:auth-button-icons-css-v72:1788223976 */
  
+
+/* ============================================================
+   F2W v74 — CANONICAL FOOTER AT PAGE BOTTOM
+   ============================================================ */
+html,
+body {
+  min-height:100%;
+}
+
+body.f2w-main-page {
+  min-height:100dvh!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+
+body.f2w-main-page > header {
+  flex:0 0 auto!important;
+}
+
+body.f2w-main-page > main,
+body.f2w-main-page > .page-shell,
+body.f2w-main-page > .f2w-users-main,
+body.f2w-main-page > .content-wrap,
+body.f2w-main-page > .site-main {
+  flex:0 0 auto!important;
+}
+
+body.f2w-main-page > .f2w-site-footer {
+  margin-top:auto!important;
+  width:100%!important;
+  flex:0 0 auto!important;
+  position:relative!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+}
+
+/* Hide any legacy loose Privacy anchor that survives dynamic injection. */
+body.f2w-main-page > a[href="/privacy/"],
+body.f2w-main-page > a[href="/privacy"],
+body.f2w-main-page > main + a[href="/privacy/"],
+body.f2w-main-page > main + a[href="/privacy"],
+body.f2w-main-page > footer + a[href="/privacy/"],
+body.f2w-main-page > footer + a[href="/privacy"] {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* /users/ is a short page: keep its legal bar at the real viewport bottom. */
+body.f2w-users-page {
+  min-height:100dvh!important;
+}
+
+body.f2w-users-page > .f2w-users-main {
+  flex:0 0 auto!important;
+}
+
+body.f2w-users-page > .f2w-site-footer {
+  margin-top:auto!important;
+}
+
+/* f2w-force-save:footer-bottom-v74:1788224239 */
+ 

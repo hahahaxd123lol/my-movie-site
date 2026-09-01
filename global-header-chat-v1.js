@@ -1653,3 +1653,28 @@
 })();
 // f2w-force-save:account-state-v70:1788223711
  
+
+/* ============================================================
+   F2W v74 — REMOVE LEGACY LOOSE PRIVACY LINKS
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wPrivacyCleanupV74)return;
+  window.__f2wPrivacyCleanupV74=true;
+
+  function cleanup(){
+    document.querySelectorAll('a[href="/privacy/"],a[href="/privacy"]').forEach(link=>{
+      if(link.closest('.f2w-site-footer'))return;
+      link.remove();
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',cleanup,{once:true});
+  }else{
+    cleanup();
+  }
+  new MutationObserver(cleanup).observe(document.documentElement,{childList:true,subtree:true});
+})();
+// f2w-force-save:privacy-cleanup-js-v74:1788224239
+ 
