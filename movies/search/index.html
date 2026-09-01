@@ -1,853 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script id="f2w-page-fade-boot-v33">
-(function(){
-  try{
-    var root=document.documentElement;
-    root.classList.add('f2w-page-enter');
-    requestAnimationFrame(function(){
-      root.classList.remove('f2w-page-enter');
-      root.classList.add('f2w-page-ready');
-    });
-  }catch(e){}
-})();
-</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e50914">
+<meta name="color-scheme" content="dark">
+<title>Movie Search | Flix2Watch</title>
+<link rel="icon" href="/favicon-v16.ico" sizes="any">
+<link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
+<link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/responsive-v7.css">
+<link rel="stylesheet" href="/final-v9.css">
+<link rel="stylesheet" href="/approved-ui-v12.css">
+<link rel="stylesheet" href="/final-fixes-v13.css">
+<link rel="stylesheet" href="/final-v14.css">
+<link rel="stylesheet" href="/final-v15.css">
+<link rel="stylesheet" href="/final-v16.css">
+<link rel="stylesheet" href="/final-v17.css">
+<link rel="stylesheet" href="/final-v18.css">
+<link rel="stylesheet" href="/final-v19.css">
+<link rel="stylesheet" href="/final-v20.css">
+<link rel="stylesheet" href="/final-v22.css">
+<link rel="stylesheet" href="/final-v27.css">
+<link rel="stylesheet" href="/final-v28.css">
+<link rel="stylesheet" href="/final-v32.css">
+<link rel="stylesheet" href="/final-v33.css">
+<link rel="stylesheet" href="/final-v34.css">
+<link rel="stylesheet" href="/final-v35.css?v=114-1788291301">
+<link rel="stylesheet" href="/final-v26.css">
+<link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
 
-<style id="f2w-critical-header-v24">
-html{overflow-y:scroll}
-@media (min-width:1181px){
-  body.f2w-main-page>header{
-    display:flex!important;align-items:center!important;flex-wrap:nowrap!important;
-    width:100%!important;height:82px!important;min-height:82px!important;max-height:82px!important;
-    padding:10px 12px!important;gap:10px!important;overflow:visible!important;
-    transform:none!important;font-family:Inter,Arial,sans-serif!important
-  }
-  body.f2w-main-page>header>.logo{flex:0 0 145px!important;width:145px!important;min-width:145px!important;max-width:145px!important}
-  body.f2w-main-page>header>.logo .logo-image{display:block!important;width:145px!important;height:auto!important}
-  body.f2w-main-page>header>.header-tools{
-    position:static!important;display:flex!important;flex:1 1 auto!important;align-items:center!important;
-    flex-wrap:nowrap!important;min-width:0!important;width:auto!important;height:42px!important;gap:7px!important;transform:none!important
-  }
-  body.f2w-main-page>header .f2w-primary-nav{
-    display:flex!important;align-items:center!important;flex:0 1 auto!important;flex-wrap:nowrap!important;
-    min-width:0!important;height:42px!important;gap:1px!important
-  }
-  body.f2w-main-page>header .f2w-search-pair{
-    display:grid!important;grid-template-columns:minmax(120px,1fr) minmax(120px,1fr)!important;
-    flex:1 1 320px!important;width:auto!important;min-width:240px!important;max-width:500px!important;
-    height:40px!important;gap:7px!important;margin:0 2px!important
-  }
-  body.f2w-main-page>header .f2w-action-cluster{
-    position:relative!important;display:grid!important;
-    grid-template-columns:62px 84px 74px 76px 78px 112px 122px!important;
-    grid-template-rows:40px!important;align-items:stretch!important;justify-content:start!important;
-    flex:0 0 644px!important;width:644px!important;min-width:644px!important;max-width:644px!important;
-    height:40px!important;gap:6px!important;margin-left:auto!important;overflow:visible!important
-  }
-  body.f2w-main-page>header .chat-button{grid-column:1!important;grid-row:1!important}
-  body.f2w-main-page>header #header-login-btn,body.f2w-main-page>header #favorites-nav-btn{grid-column:2!important;grid-row:1!important}
-  body.f2w-main-page>header #header-signup-btn,body.f2w-main-page>header #profile-nav-btn{grid-column:3!important;grid-row:1!important}
-  body.f2w-main-page>header #support-nav-btn{grid-column:4!important;grid-row:1!important}
-  body.f2w-main-page>header #account-btn{grid-column:5!important;grid-row:1!important}
-  body.f2w-main-page>header #notification-wrap{grid-column:6!important;grid-row:1!important;width:112px!important}
-  body.f2w-main-page>header #staff-control-nav{grid-column:7!important;grid-row:1!important}
-  body.f2w-main-page>header .f2w-action-cluster>button,
-  body.f2w-main-page>header .f2w-action-cluster>.v17-notification-wrap,
-  body.f2w-main-page>header .f2w-action-cluster>.v17-notification-wrap>button{
-    width:100%!important;min-width:0!important;max-width:100%!important;height:40px!important;
-    box-sizing:border-box!important;margin:0!important;transform:none!important;translate:none!important
-  }
-  body.f2w-main-page>header #header-login-btn[style*="display:none"],
-  body.f2w-main-page>header #header-login-btn[style*="display: none"],
-  body.f2w-main-page>header #header-signup-btn[style*="display:none"],
-  body.f2w-main-page>header #header-signup-btn[style*="display: none"],
-  body.f2w-main-page>header #favorites-nav-btn[style*="display:none"],
-  body.f2w-main-page>header #favorites-nav-btn[style*="display: none"],
-  body.f2w-main-page>header #profile-nav-btn[style*="display:none"],
-  body.f2w-main-page>header #profile-nav-btn[style*="display: none"],
-  body.f2w-main-page>header #support-nav-btn[style*="display:none"],
-  body.f2w-main-page>header #support-nav-btn[style*="display: none"],
-  body.f2w-main-page>header #account-btn[style*="display:none"],
-  body.f2w-main-page>header #account-btn[style*="display: none"],
-  body.f2w-main-page>header #notification-wrap[style*="display:none"],
-  body.f2w-main-page>header #notification-wrap[style*="display: none"],
-  body.f2w-main-page>header #staff-control-nav[hidden]{
-    display:flex!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important
-  }
-  body.f2w-main-page>header i[class*="fa-"]{display:inline-block!important;width:13px!important;min-width:13px!important;text-align:center!important}
-  body.f2w-main-page>header a,body.f2w-main-page>header button,body.f2w-main-page>header input{
-    transform:none!important;translate:none!important
-  }
-}
-@media (min-width:1181px) and (max-width:1550px){
-  body.f2w-main-page>header>.logo{flex-basis:126px!important;width:126px!important;min-width:126px!important;max-width:126px!important}
-  body.f2w-main-page>header>.logo .logo-image{width:126px!important}
-  body.f2w-main-page>header .f2w-search-pair{min-width:180px!important;max-width:300px!important}
-  body.f2w-main-page>header .f2w-action-cluster{
-    grid-template-columns:56px 76px 68px 68px 72px 102px 108px!important;
-    flex-basis:586px!important;width:586px!important;min-width:586px!important;max-width:586px!important
-  }
-}
-
-
-
-</style>
-
-<link rel="preload" as="image" href="/flix2watch-logo-red-v34.png" fetchpriority="high">
-<link rel="dns-prefetch" href="//viqufxlcxwgboyxbdhjb.supabase.co">
-<link rel="preconnect" href="https://viqufxlcxwgboyxbdhjb.supabase.co" crossorigin>
-
-  <script src="/popup-protection-v34.js"></script>
-  <meta charset="UTF-8">
-  <script id="v18-force-https">
-    (() => {
-      const localHosts=new Set(['localhost','127.0.0.1','::1']);
-      if(localHosts.has(location.hostname))return;
-
-      const canonicalHost=
-        location.hostname.toLowerCase()==='www.flix2watch.com'
-          ? 'flix2watch.com'
-          : location.host;
-
-      if(location.protocol!=='https:' || location.hostname.toLowerCase()==='www.flix2watch.com'){
-        location.replace(
-          'https://'+canonicalHost+location.pathname+location.search+location.hash
-        );
-      }
-    })();
-  </script>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Movie Search | Flix2Watch</title>
-  <meta name="theme-color" content="#e50914">
-  <meta name="color-scheme" content="dark">
-  <link rel="icon" href="/favicon-v16.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-v16.png">
-  <link rel="apple-touch-icon" href="/apple-touch-icon-v16.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/silent-account-v16.js"></script>
-  <script src="/account-guard-v16.js" defer></script>
-  <script>
-    (function(){
-      const allowed=new Set(['theme-red','theme-blue','theme-green','theme-purple','theme-amber','theme-matrix','theme-cyan','theme-pink','theme-orange','theme-ice','theme-gold','theme-midnight']);
-      const saved=localStorage.getItem('flix2watch_theme')||localStorage.getItem('josh_site_theme')||'theme-red';
-      document.documentElement.dataset.flix2watchTheme=allowed.has(saved)?saved:'theme-red';
-    })();
-  </script>
-  <link rel="stylesheet" href="/approved-ui-v12.css">
-  <link rel="stylesheet" href="/final-fixes-v13.css">
-  <link rel="stylesheet" href="/final-v14.css">
-  <link rel="stylesheet" href="/final-v15.css">
-  <link rel="stylesheet" href="/final-v16.css">
-  <link rel="stylesheet" href="/final-v17.css">
-  <link rel="stylesheet" href="/final-v18.css">
-  <link rel="stylesheet" href="/final-v19.css">
-  <link rel="stylesheet" href="/final-v20.css">
-  <link rel="stylesheet" href="/final-v22.css">
-  <link rel="stylesheet" href="/final-v27.css">
-  <link rel="stylesheet" href="/final-v28.css">
-  <link rel="stylesheet" href="/final-v32.css">
-  <link rel="stylesheet" href="/final-v33.css">
-  
-  <script src="/approved-ui-v12.js" defer></script>
-  <script src="/final-fixes-v13.js" defer></script>
-  <script src="/final-v14.js" defer></script>
-  <script src="/final-v15.js" defer></script>
-  <script src="/final-v16.js" defer></script>
-  <script src="/final-v17.js" defer></script>
-  <script src="/final-v18.js" defer></script>
-  <script src="/final-v19.js" defer></script>
-  <script src="/final-v20.js" defer></script>
-  <script src="/final-v22.js" defer></script>
-  
-  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
-  <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
-  <meta property="og:site_name" content="Flix2Watch">
-  <meta property="og:image" content="https://flix2watch.com/og-image-v16.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://flix2watch.com/og-image-v16.png">
-  <script src="/seo-v17.js" defer></script>
-
-  <style id="f2w-header-v21-critical">
-    /* V21: final, cache-resistant desktop header authority */
-    @media (min-width: 1181px) {
-      body.f2w-main-page > header{
-        position:sticky !important;
-        top:0 !important;
-        z-index:2147480000 !important;
-        display:flex !important;
-        flex-flow:row nowrap !important;
-        align-items:center !important;
-        justify-content:flex-start !important;
-        width:100% !important;
-        max-width:none !important;
-        height:82px !important;
-        min-height:82px !important;
-        max-height:82px !important;
-        margin:0 !important;
-        padding:10px 16px !important;
-        gap:14px !important;
-        overflow:visible !important;
-        background:rgba(2,8,19,.97) !important;
-        border:0 !important;
-        border-bottom:1px solid color-mix(in srgb,var(--accent) 18%,#27394f) !important;
-        border-radius:0 !important;
-        box-shadow:0 8px 26px rgba(0,0,0,.28) !important;
-        transform:none !important;
-      }
-
-      body.f2w-main-page > header > .logo{
-        position:static !important;
-        display:flex !important;
-        flex:0 0 158px !important;
-        width:158px !important;
-        min-width:158px !important;
-        max-width:158px !important;
-        height:56px !important;
-        margin:0 !important;
-        padding:0 !important;
-        align-items:center !important;
-        justify-content:flex-start !important;
-        transform:none !important;
-      }
-
-      body.f2w-main-page > header > .logo .logo-image{
-        display:block !important;
-        width:158px !important;
-        min-width:0 !important;
-        max-width:158px !important;
-        height:auto !important;
-        max-height:56px !important;
-        margin:0 !important;
-        object-fit:contain !important;
-        transform:none !important;
-      }
-
-      body.f2w-main-page > header > .f2w-mobile-nav-toggle{
-        display:none !important;
-      }
-
-      body.f2w-main-page > header > .header-tools{
-        position:static !important;
-        display:flex !important;
-        flex:1 1 auto !important;
-        flex-flow:row nowrap !important;
-        align-items:center !important;
-        justify-content:flex-start !important;
-        align-content:center !important;
-        min-width:0 !important;
-        width:auto !important;
-        height:42px !important;
-        min-height:42px !important;
-        max-height:42px !important;
-        margin:0 !important;
-        padding:0 !important;
-        gap:7px !important;
-        overflow:visible !important;
-        background:transparent !important;
-        border:0 !important;
-        box-shadow:none !important;
-        transform:none !important;
-      }
-
-      body.f2w-main-page > header .f2w-primary-nav{
-        display:flex !important;
-        flex:0 0 auto !important;
-        flex-flow:row nowrap !important;
-        align-items:center !important;
-        width:auto !important;
-        height:42px !important;
-        margin:0 !important;
-        padding:0 !important;
-        gap:1px !important;
-      }
-
-      body.f2w-main-page > header .f2w-nav-link,
-      body.f2w-main-page > header .f2w-nav-button{
-        display:inline-flex !important;
-        align-items:center !important;
-        justify-content:center !important;
-        gap:5px !important;
-        width:auto !important;
-        min-width:0 !important;
-        height:40px !important;
-        min-height:40px !important;
-        max-height:40px !important;
-        margin:0 !important;
-        padding:7px 8px !important;
-        border-radius:7px !important;
-        font-size:11px !important;
-        line-height:1 !important;
-        white-space:nowrap !important;
-        transform:none !important;
-      }
-
-      body.f2w-main-page > header .f2w-search-pair{
-        display:flex !important;
-        flex:1 1 390px !important;
-        flex-flow:row nowrap !important;
-        align-items:center !important;
-        width:auto !important;
-        min-width:260px !important;
-        max-width:585px !important;
-        height:40px !important;
-        margin:0 3px !important;
-        padding:0 !important;
-        gap:7px !important;
-      }
-
-      body.f2w-main-page > header .search-container,
-      body.f2w-main-page > header .user-search-container{
-        display:flex !important;
-        position:relative !important;
-        flex:1 1 0 !important;
-        min-width:115px !important;
-        width:auto !important;
-        height:40px !important;
-        margin:0 !important;
-        padding:0 !important;
-      }
-
-      body.f2w-main-page > header .search-bar,
-      body.f2w-main-page > header .user-search-bar{
-        width:100% !important;
-        min-width:0 !important;
-        height:40px !important;
-        min-height:40px !important;
-        max-height:40px !important;
-        margin:0 !important;
-        padding:8px 34px !important;
-        border-radius:8px !important;
-        font-size:11px !important;
-        line-height:1 !important;
-      }
-
-      body.f2w-main-page > header .f2w-action-cluster{
-        display:flex !important;
-        flex:0 0 auto !important;
-        flex-flow:row nowrap !important;
-        align-items:center !important;
-        justify-content:flex-end !important;
-        width:auto !important;
-        min-width:0 !important;
-        height:40px !important;
-        margin:0 0 0 auto !important;
-        padding:0 !important;
-        gap:6px !important;
-      }
-
-      body.f2w-main-page > header .tool-btn,
-      body.f2w-main-page > header .f2w-auth-top-btn,
-      body.f2w-main-page > header #staff-control-nav{
-        display:inline-flex !important;
-        flex:0 0 auto !important;
-        align-items:center !important;
-        justify-content:center !important;
-        gap:5px !important;
-        width:auto !important;
-        min-width:0 !important;
-        height:40px !important;
-        min-height:40px !important;
-        max-height:40px !important;
-        margin:0 !important;
-        padding:7px 8px !important;
-        border-radius:8px !important;
-        font-size:11px !important;
-        line-height:1 !important;
-        white-space:nowrap !important;
-        transform:none !important;
-      }
-
-      body.f2w-main-page > header .dropdown-wrapper,
-      body.f2w-main-page > header .f2w-genre-wrap,
-      body.f2w-main-page > header .v17-notification-wrap{
-        position:relative !important;
-        flex:0 0 auto !important;
-        width:auto !important;
-        margin:0 !important;
-      }
-
-      body.f2w-main-page > header .dropdown-menu{
-        top:calc(100% + 8px) !important;
-        right:0 !important;
-        left:auto !important;
-      }
-
-      body.f2w-main-page > header .f2w-genre-menu{
-        top:calc(100% + 8px) !important;
-        left:0 !important;
-        right:auto !important;
-      }
-    }
-
-    /* Medium desktop/laptop: still one row, simply tighter. */
-    @media (min-width:1181px) and (max-width:1650px){
-      body.f2w-main-page > header{
-        gap:9px !important;
-        padding-left:11px !important;
-        padding-right:11px !important;
-      }
-      body.f2w-main-page > header > .logo{
-        flex-basis:145px !important;
-        width:145px !important;
-        min-width:145px !important;
-        max-width:145px !important;
-      }
-      body.f2w-main-page > header > .logo .logo-image{
-        width:145px !important;
-        max-width:145px !important;
-      }
-      body.f2w-main-page > header .f2w-nav-link,
-      body.f2w-main-page > header .f2w-nav-button,
-      body.f2w-main-page > header .tool-btn,
-      body.f2w-main-page > header .f2w-auth-top-btn,
-      body.f2w-main-page > header #staff-control-nav{
-        padding-left:7px !important;
-        padding-right:7px !important;
-        font-size:10px !important;
-      }
-      body.f2w-main-page > header .f2w-search-pair{
-        min-width:235px !important;
-        max-width:500px !important;
-      }
-    }
-  </style>
-
-  <script src="/chat-safety-v33.js" defer></script>
-  <link rel="stylesheet" href="/final-v34.css">
-  <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=112-1788290771">
-  <!-- Unified Watch-page header + preloaded chat -->
-  <link rel="stylesheet" href="/responsive-v7.css">
-  <link rel="stylesheet" href="/final-v9.css">
-  <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
-  <script src="/interaction-v7.js" defer></script>
-  <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=112-1788290771" defer></script>
-
-<style id="f2w-header-gorilla-lock-v30">
-@media(min-width:1181px){
-body.f2w-main-page>header{position:sticky!important;top:0!important;z-index:2147480000!important;display:flex!important;flex-flow:row nowrap!important;align-items:center!important;width:100%!important;max-width:100%!important;height:82px!important;min-height:82px!important;max-height:82px!important;margin:0!important;padding:10px 12px!important;gap:10px!important;overflow:visible!important;transform:none!important;translate:none!important}
-body.f2w-main-page>header>.logo{flex:0 0 126px!important;width:126px!important;min-width:126px!important;max-width:126px!important}
-body.f2w-main-page>header>.logo .logo-image{width:126px!important;max-width:126px!important}
-body.f2w-main-page>header>.header-tools{position:static!important;display:flex!important;flex:1 1 auto!important;align-items:center!important;flex-wrap:nowrap!important;min-width:0!important;width:auto!important;height:42px!important;gap:6px!important;transform:none!important}
-body.f2w-main-page>header .f2w-primary-nav{display:flex!important;flex:0 1 auto!important;align-items:center!important;flex-wrap:nowrap!important;min-width:455px!important;height:42px!important;gap:0!important}
-body.f2w-main-page>header .f2w-search-pair{display:grid!important;grid-template-columns:minmax(150px,1fr) minmax(150px,1fr)!important;flex:1 1 430px!important;min-width:300px!important;max-width:560px!important;height:40px!important;gap:7px!important;margin:0 2px!important}
-body.f2w-main-page>header .f2w-action-cluster{display:grid!important;grid-template-columns:58px 82px 72px 76px 78px 112px 116px!important;grid-template-rows:40px!important;flex:0 0 630px!important;width:630px!important;min-width:630px!important;max-width:630px!important;height:40px!important;gap:6px!important;margin-left:auto!important;align-items:stretch!important;overflow:visible!important}
-body.f2w-main-page>header .chat-button{grid-column:1!important}
-body.f2w-main-page>header #header-login-btn,body.f2w-main-page>header #favorites-nav-btn{grid-column:2!important}
-body.f2w-main-page>header #header-signup-btn,body.f2w-main-page>header #profile-nav-btn{grid-column:3!important}
-body.f2w-main-page>header #support-nav-btn{grid-column:4!important}
-body.f2w-main-page>header #account-btn{grid-column:5!important}
-body.f2w-main-page>header #notification-wrap{grid-column:6!important;width:112px!important}
-body.f2w-main-page>header #staff-control-nav{grid-column:7!important}
-body.f2w-main-page>header a,body.f2w-main-page>header button,body.f2w-main-page>header input,body.f2w-main-page>header .v17-notification-wrap{transform:none!important;translate:none!important;margin-top:0!important;margin-bottom:0!important;box-sizing:border-box!important}
-body.f2w-main-page>header #staff-control-nav[hidden]{display:flex!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
-}
-@media(min-width:1181px) and (max-width:1650px){
-body.f2w-main-page>header .f2w-primary-nav{min-width:410px!important}
-body.f2w-main-page>header .f2w-search-pair{min-width:240px!important;max-width:420px!important}
-body.f2w-main-page>header .f2w-action-cluster{grid-template-columns:54px 74px 66px 68px 70px 100px 104px!important;flex-basis:572px!important;width:572px!important;min-width:572px!important;max-width:572px!important}
-body.f2w-main-page>header .f2w-nav-link,body.f2w-main-page>header .f2w-nav-button{font-size:9px!important;padding-left:5px!important;padding-right:5px!important}
-}
-body.f2w-main-page>header *{transition-property:color,background-color,border-color,box-shadow,opacity!important}
-
-body.f2w-main-page>header .f2w-action-cluster>button,
-body.f2w-main-page>header .f2w-action-cluster>a,
-body.f2w-main-page>header #staff-control-nav,
-body.f2w-main-page>header .chat-button{
-  min-width:0!important;max-width:100%!important;
-  padding-left:8px!important;padding-right:8px!important;
-  white-space:nowrap!important;overflow:hidden!important;
-  text-overflow:clip!important;box-sizing:border-box!important
-}
-body.f2w-main-page>header .chat-button{font-size:10px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding-left:10px!important;padding-right:10px!important;white-space:nowrap!important;overflow:hidden!important;box-sizing:border-box!important}
-body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-spacing:-.01em!important}
-/* f2w-force-save:header-button-fit-inline-v35:1788217735 */
-/* f2w-force-save:header-gorilla-lock-v30:1788216738 */
-</style>
-
-
-<style id="f2w-users-results-v65">
-/* Bigger, more readable user search results */
-.users-results,
-#user-results,
-.user-results {
-  display:grid!important;
-  gap:12px!important;
-}
-
-.user-result-card,
-.user-card,
-.users-result-card {
-  min-height:96px!important;
-  padding:14px 16px!important;
-  border-radius:14px!important;
-  display:flex!important;
-  align-items:center!important;
-  gap:14px!important;
-}
-
-.user-result-card img,
-.user-card img,
-.users-result-card img,
-.user-result-avatar {
-  width:58px!important;
-  height:58px!important;
-  min-width:58px!important;
-  border-radius:50%!important;
-  object-fit:cover!important;
-}
-
-.user-result-card strong,
-.user-card strong,
-.users-result-card strong,
-.user-result-name {
-  font-size:1rem!important;
-  line-height:1.2!important;
-}
-
-.user-result-card small,
-.user-card small,
-.users-result-card small,
-.user-result-meta {
-  font-size:.76rem!important;
-  line-height:1.35!important;
-}
-
-#users-pagination,
-.users-pagination,
-.pagination {
-  display:flex!important;
-  justify-content:center!important;
-  align-items:center!important;
-  gap:7px!important;
-  flex-wrap:wrap!important;
-  margin:22px 0 8px!important;
-}
-
-#users-pagination button,
-.users-pagination button,
-.pagination button,
-.f2w-users-page-btn {
-  min-width:38px!important;
-  height:38px!important;
-  padding:0 11px!important;
-  border:1px solid #29425c!important;
-  border-radius:9px!important;
-  background:#081725!important;
-  color:#dce7f3!important;
-  font-size:.78rem!important;
-  font-weight:800!important;
-  cursor:pointer!important;
-}
-
-#users-pagination button.active,
-.users-pagination button.active,
-.pagination button.active,
-.f2w-users-page-btn.active {
-  background:#e50914!important;
-  border-color:#ff3344!important;
+<style id="f2w-movie-search-v114-css">
+html,body{
+  margin:0!important;
+  min-height:100%!important;
+  background:#020914!important;
   color:#fff!important;
 }
-/* f2w-force-save:users-results-v65:1788222474 */
-</style>
-
-
-<style id="f2w-users-page-clean-v68">
-/* ============================================================
-   F2W v68 — USERS PAGE CLEANUP
-   ============================================================ */
-
-/* User search page gets a wider readable content area. */
-.f2w-users-main {
-  max-width:1540px!important;
-  margin:0 auto!important;
-  padding:26px 28px 64px!important;
+body.f2w-movie-search-page{
+  background:
+    radial-gradient(circle at 92% 0%,rgba(229,9,20,.07),transparent 30%),
+    #020914!important;
 }
-
-.f2w-users-hero {
-  padding:20px 22px!important;
-  border-radius:14px!important;
-}
-
-.f2w-users-hero h1 {
-  font-size:1.32rem!important;
-  line-height:1.2!important;
-}
-
-.f2w-users-hero p,
-.f2w-users-summary {
-  font-size:.78rem!important;
-  line-height:1.5!important;
-}
-
-.f2w-users-grid {
-  display:grid!important;
-  grid-template-columns:repeat(auto-fit,minmax(420px,1fr))!important;
-  gap:14px!important;
-  margin-top:12px!important;
-}
-
-/* REAL user result card classes */
-.f2w-user-card {
-  min-height:118px!important;
-  padding:16px 18px!important;
-  border:1px solid #28435d!important;
-  border-radius:14px!important;
-  background:#081725!important;
-  display:flex!important;
-  align-items:center!important;
-  gap:16px!important;
-  text-decoration:none!important;
-}
-
-.f2w-user-card:hover {
-  border-color:#3d617f!important;
-  background:#0b1d2d!important;
-}
-
-.f2w-user-avatar {
-  width:72px!important;
-  height:72px!important;
-  min-width:72px!important;
-  border-radius:50%!important;
-  overflow:hidden!important;
-  display:grid!important;
-  place-items:center!important;
-  background:#14273a!important;
-  color:#fff!important;
-  font-size:1rem!important;
-  font-weight:900!important;
-}
-
-.f2w-user-avatar img {
-  width:100%!important;
-  height:100%!important;
-  object-fit:cover!important;
-  display:block!important;
-}
-
-.f2w-user-copy {
-  min-width:0!important;
-  flex:1 1 auto!important;
-}
-
-.f2w-user-display {
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
-  font-size:1.08rem!important;
-  font-weight:900!important;
-  line-height:1.2!important;
-  margin-bottom:4px!important;
-}
-
-.f2w-user-handle {
-  color:#a7b8ca!important;
-  -webkit-text-fill-color:#a7b8ca!important;
-  font-size:.82rem!important;
-  font-weight:750!important;
-  line-height:1.3!important;
-}
-
-.f2w-user-bio {
-  margin-top:7px!important;
-  color:#8196ad!important;
-  font-size:.75rem!important;
-  line-height:1.4!important;
-}
-
-/* Real pagination container */
-#users-pagination {
-  display:flex!important;
-  justify-content:center!important;
-  align-items:center!important;
-  gap:7px!important;
-  flex-wrap:wrap!important;
-  margin:24px 0 0!important;
-}
-
-#users-pagination button {
-  min-width:40px!important;
-  height:40px!important;
-  padding:0 12px!important;
-  border:1px solid #29445e!important;
-  border-radius:9px!important;
-  background:#081725!important;
-  color:#dce7f3!important;
-  font-size:.78rem!important;
-  font-weight:850!important;
-  cursor:pointer!important;
-}
-
-#users-pagination button.active {
-  background:#e50914!important;
-  border-color:#ff3445!important;
-  color:#fff!important;
-}
-
-/* On this page specifically there is NO separate user-search arrow button. */
-body.f2w-users-page > header .user-search-container #user-search {
-  padding-right:14px!important;
-}
-
-body.f2w-users-page > header .user-search-container .user-search-submit,
-body.f2w-users-page > header .f2w-search-pair > .user-search-submit {
-  display:none!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-}
-
-/* Keep only the canonical legal footer. */
-body.f2w-users-page > a[href="/privacy/"],
-body.f2w-users-page > main + a[href="/privacy/"],
-body.f2w-users-page > footer + a[href="/privacy/"] {
-  display:none!important;
-}
-
-@media(max-width:760px) {
-  .f2w-users-main {
-    padding:18px 14px 46px!important;
-  }
-  .f2w-users-grid {
-    grid-template-columns:1fr!important;
-  }
-  .f2w-user-card {
-    min-height:104px!important;
-    padding:14px!important;
-  }
-  .f2w-user-avatar {
-    width:62px!important;
-    height:62px!important;
-    min-width:62px!important;
-  }
-}
-
-/* f2w-force-save:users-page-clean-v68:1788222895 */
-</style>
-
-
-
-<style id="f2w-dedicated-movie-search-css-v111">
-.f2w-title-search-main {
+.f2w-ms-main{
   width:min(1500px,calc(100% - 36px))!important;
-  margin:26px auto 70px!important;
+  margin:28px auto 74px!important;
 }
-
-.f2w-title-search-hero {
-  padding:8px 2px 20px!important;
+.f2w-ms-head{
   border-bottom:1px solid #23384d!important;
+  padding:4px 0 20px!important;
 }
-
-.f2w-title-search-kicker {
+.f2w-ms-kicker{
   color:#ff2638!important;
   font-size:.72rem!important;
   font-weight:950!important;
   letter-spacing:.14em!important;
-  margin-bottom:9px!important;
+  margin-bottom:8px!important;
 }
-
-.f2w-title-search-hero h1 {
+.f2w-ms-head h1{
   margin:0!important;
-  color:#fff!important;
-  font-size:clamp(1.9rem,4vw,3rem)!important;
+  font-size:clamp(2rem,4vw,3rem)!important;
   line-height:1.05!important;
 }
-
-.f2w-title-search-hero p {
+.f2w-ms-head p{
   margin:9px 0 0!important;
   color:#8ea2b8!important;
   font-size:.86rem!important;
 }
-
-.f2w-title-search-status {
+.f2w-ms-status{
   margin:14px 0 18px!important;
   min-height:58px!important;
   padding:12px 15px!important;
+  border:1px solid #28445e!important;
+  border-radius:12px!important;
+  background:#071522!important;
   display:flex!important;
   align-items:center!important;
   justify-content:space-between!important;
   gap:14px!important;
-  border:1px solid #28445e!important;
-  border-radius:12px!important;
-  background:#071522!important;
   color:#8fa4ba!important;
   font-size:.78rem!important;
 }
-
-.f2w-title-search-status strong {
-  margin-left:8px!important;
+.f2w-ms-status strong{
   color:#fff!important;
-  font-size:.9rem!important;
+  margin-left:8px!important;
 }
-
-.f2w-title-results-grid {
+#f2w-ms-grid{
   display:grid!important;
   grid-template-columns:repeat(auto-fill,minmax(180px,1fr))!important;
   gap:18px!important;
-  min-height:280px!important;
+  min-height:260px!important;
 }
-
-.f2w-title-result-card {
-  position:relative!important;
+.f2w-ms-card{
   display:block!important;
   overflow:hidden!important;
   border:1px solid #243d56!important;
   border-radius:13px!important;
   background:#071522!important;
   text-decoration:none!important;
-  transition:transform .16s ease,border-color .16s ease!important;
+  color:inherit!important;
 }
-
-.f2w-title-result-card:hover {
-  transform:translateY(-3px)!important;
-  border-color:#4b7092!important;
+.f2w-ms-card:hover{
+  border-color:#486d90!important;
+  transform:translateY(-2px)!important;
 }
-
-.f2w-title-result-poster {
+.f2w-ms-poster{
   position:relative!important;
   aspect-ratio:2/3!important;
   background:#0b1a28!important;
   overflow:hidden!important;
 }
-
-.f2w-title-result-poster img {
+.f2w-ms-poster img{
   width:100%!important;
   height:100%!important;
   display:block!important;
   object-fit:cover!important;
 }
-
-.f2w-title-result-type {
+.f2w-ms-type{
   position:absolute!important;
-  top:8px!important;
   left:8px!important;
+  top:8px!important;
   padding:4px 7px!important;
   border-radius:6px!important;
-  background:rgba(0,0,0,.76)!important;
+  background:rgba(0,0,0,.78)!important;
   color:#fff!important;
   font-size:.61rem!important;
   font-weight:900!important;
   text-transform:uppercase!important;
 }
-
-.f2w-title-result-info {
+.f2w-ms-info{
   padding:11px 12px 13px!important;
 }
-
-.f2w-title-result-name {
+.f2w-ms-title{
+  min-height:2.3em!important;
   color:#fff!important;
   font-size:.9rem!important;
   font-weight:900!important;
   line-height:1.25!important;
-  min-height:2.3em!important;
 }
-
-.f2w-title-result-meta {
+.f2w-ms-meta{
   margin-top:7px!important;
   display:flex!important;
   justify-content:space-between!important;
@@ -855,25 +147,22 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
   color:#8599ae!important;
   font-size:.72rem!important;
 }
-
-.f2w-title-result-rating {
+.f2w-ms-rating{
   color:#ffc13d!important;
 }
-
-.f2w-title-search-state {
+.f2w-ms-state{
   grid-column:1/-1!important;
   min-height:220px!important;
+  border:1px dashed #2a445e!important;
+  border-radius:14px!important;
+  background:#071522!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   gap:9px!important;
-  border:1px dashed #2a445e!important;
-  border-radius:14px!important;
-  background:#071522!important;
   color:#8fa4ba!important;
 }
-
-#f2w-title-pagination {
+#f2w-ms-pagination{
   margin-top:28px!important;
   display:flex!important;
   align-items:center!important;
@@ -881,8 +170,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
   flex-wrap:wrap!important;
   gap:7px!important;
 }
-
-.f2w-title-page {
+.f2w-ms-page{
   min-width:42px!important;
   height:42px!important;
   padding:0 13px!important;
@@ -897,33 +185,30 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
   font-size:.78rem!important;
   font-weight:850!important;
 }
-
-.f2w-title-page.active {
+.f2w-ms-page.active{
   background:#e50914!important;
   border-color:#ff3445!important;
   color:#fff!important;
 }
-
-.f2w-title-page.disabled {
+.f2w-ms-page.disabled{
   opacity:.38!important;
   pointer-events:none!important;
 }
-
 @media(max-width:700px){
-  .f2w-title-search-main {
+  .f2w-ms-main{
     width:calc(100% - 22px)!important;
     margin-top:18px!important;
   }
-  .f2w-title-search-status {
-    align-items:flex-start!important;
+  .f2w-ms-status{
     flex-direction:column!important;
+    align-items:flex-start!important;
   }
-  .f2w-title-results-grid {
+  #f2w-ms-grid{
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
     gap:12px!important;
   }
 }
-/* f2w-force-save:dedicated-movie-search-css-v111:1788290601 */
+/* f2w-force-save:movie-search-v114-css:1788291301 */
 </style>
 
 </head>
@@ -995,7 +280,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
             data-bwignore="true"
             data-protonpass-ignore="true"
             data-keeper-ignore="true"
-            readonly
+           
             oninput="v18HeaderMovieSearch(this.value)"
             onfocus="protectMovieSearchField(this)" role="searchbox">
         </div>
@@ -1022,11 +307,15 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
             data-bwignore="true"
             data-protonpass-ignore="true"
             data-keeper-ignore="true"
-            readonly
+           
             oninput="handleUserSearchInput(this)"
             onfocus="protectUserSearchField(this)"
            role="searchbox">
-</div>
+          <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          
+        </div>
       </div>
 
       <div class="f2w-action-cluster">
@@ -1069,2277 +358,76 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
     </div>
   </header>
 
-<main class="f2w-title-search-main">
-  <section class="f2w-title-search-hero">
-    <div class="f2w-title-search-kicker"><i class="fa-solid fa-magnifying-glass"></i> TITLE SEARCH</div>
-    <h1 id="f2w-title-search-heading">Search movies & TV</h1>
-    <p id="f2w-title-search-subtitle">Movies and series matching your search.</p>
+<main class="f2w-ms-main">
+  <section class="f2w-ms-head">
+    <div class="f2w-ms-kicker"><i class="fa-solid fa-magnifying-glass"></i> TITLE SEARCH</div>
+    <h1 id="f2w-ms-heading">Movie & TV Search</h1>
+    <p>Results come directly from TMDB for exactly what you typed.</p>
   </section>
 
-  <section class="f2w-title-search-status">
-    <div>
-      <span>Searching for</span>
-      <strong id="f2w-title-search-query">—</strong>
-    </div>
-    <div id="f2w-title-search-count">Loading results…</div>
+  <section class="f2w-ms-status">
+    <div>Searching for <strong id="f2w-ms-query">—</strong></div>
+    <div id="f2w-ms-count">Starting search…</div>
   </section>
 
-  <section class="f2w-title-results-grid" id="f2w-title-results-grid" aria-live="polite">
-    <div class="f2w-title-search-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading titles…</div>
+  <section id="f2w-ms-grid" aria-live="polite">
+    <div class="f2w-ms-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading titles…</div>
   </section>
 
-  <nav id="f2w-title-pagination" aria-label="Movie search pages"></nav>
+  <nav id="f2w-ms-pagination" aria-label="Movie search pages"></nav>
 </main>
 
 
-
-<script>
-  if('serviceWorker' in navigator){
-    window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
-  }
-</script>
-  <script src="/final-v35.js?v=112-1788290771" defer></script>
-
-<div class="account-modal" id="account-modal">
-    <div class="account-card">
-      <div class="account-header">
-        <div>
-          <div class="account-title"><i class="fa-solid fa-user"></i> Account</div>
-          <div class="account-subtitle">USERNAME + EMAIL + PASSWORD // SUPABASE AUTH</div>
-        </div>
-        <button class="chat-close" onclick="closeAccountModal()"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="account-body">
-      <div id="account-logged-out">
-        <div class="f2w-account-brand">
-          <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch">
-          <strong>Watch. Chill. Repeat.</strong>
-          <span>Log in or create an account to unlock playback.</span>
-          <div class="v17-free-note">
-            <strong><i class="fa-solid fa-circle-check"></i> Free to use after sign-in</strong>
-            <span>Flix2Watch does not require a subscription or payment. Accounts help reduce automated abuse and scraping, and let us apply account-level moderation when needed.</span>
-          </div>
-        </div>
-        <div class="account-tabs">
-          <button class="account-tab active" id="account-login-tab" onclick="showAccountMode('login')">Log In</button>
-          <button class="account-tab" id="account-signup-tab" onclick="showAccountMode('signup')">Create Account</button>
-        </div>
-
-        <div id="account-username-wrap" style="display:none;">
-          <label class="account-label">USERNAME</label>
-          <input class="account-input" id="account-username" pattern="[A-Za-z0-9]+" inputmode="text" title="Use only normal English letters A-Z and numbers 0-9." maxlength="30" autocomplete="username" placeholder="Choose your username...">
-          <div class="username-rule-note">
-            Normal English letters A-Z and numbers 0-9 only. No spaces, dashes, underscores, symbols or stylized Unicode letters.
-          </div>
-        </div>
-
-        <label class="account-label" id="account-email-label">USERNAME OR EMAIL</label>
-        <input class="account-input" id="account-email" type="text" autocomplete="username" placeholder="Username or email">
-
-        <label class="account-label">PASSWORD</label>
-        <input class="account-input" id="account-password" type="password" autocomplete="current-password" placeholder="Password">
-
-        <div id="account-confirm-wrap" style="display:none;">
-          <label class="account-label">CONFIRM PASSWORD</label>
-          <input class="account-input" id="account-confirm" type="password" autocomplete="new-password" placeholder="Repeat password">
-        </div>
-
-        <button class="account-primary" id="account-submit" onclick="submitAccountAuth()">Log In</button>
-
-        <div class="f2w-oauth-block">
-          <div class="f2w-oauth-divider"><span>or continue with</span></div>
-          <div class="f2w-oauth-grid">
-            <button class="f2w-oauth-btn google" type="button" onclick="signInWithOAuthProvider('google')">
-              <i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span>
-            </button>
-            <button class="f2w-oauth-btn discord" type="button" onclick="signInWithOAuthProvider('discord')">
-              <i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span>
-            </button>
-          </div>
-          <div class="f2w-oauth-note">Works for both Login and Create Account. If this is your first time, Flix2Watch creates your account and profile automatically.</div>
-        </div>
-        
-      </div>
-
-      <div id="account-logged-in" style="display:none;">
-        <div class="account-user-box">
-          <div class="account-avatar"><i class="fa-solid fa-user"></i></div>
-          <div>
-            
-            
-            <div class="account-user-email" id="account-user-email">Signed-in user</div>
-            <div class="account-user-username" id="account-user-username">@username</div>
-            <div class="account-role" id="account-user-role">MEMBER</div>
-            <div class="account-owner-note" id="account-owner-note" style="display:none;"><i class="fa-solid fa-crown"></i> WEBSITE OWNER</div>
-          </div>
-        </div>
-
-        <div class="account-warning-box" id="account-warning-box" hidden>
-          <strong><i class="fa-solid fa-triangle-exclamation"></i> ACCOUNT WARNINGS</strong>
-          
-        </div>
-
-        <div class="owner-chat-auth" id="owner-chat-auth">
-          <label class="account-label">OWNER CHAT ACCESS</label>
-          <div class="owner-chat-auth-row">
-            <input
-              class="account-input"
-              id="owner-chat-password"
-              type="password"
-              autocomplete="current-password"
-              placeholder="Owner chat password"
-            >
-            <button class="owner-chat-auth-btn" id="owner-chat-auth-btn" onclick="activateOwnerChat()">Activate</button>
-          </div>
-          
-        </div>
-
-
-
-        <div class="account-username-change" id="account-username-change-box">
-          <div class="account-username-change-head">
-            <div>
-              <strong><i class="fa-solid fa-at"></i> CHANGE USERNAME</strong>
-              <span>You can change it whenever you want.</span>
-            </div>
-          </div>
-          <div class="account-username-change-row">
-            <input
-              class="account-input"
-              id="account-change-username"
-              type="text"
-              inputmode="text"
-              pattern="[A-Za-z0-9]+"
-              minlength="2"
-              maxlength="30"
-              autocomplete="off"
-              placeholder="New username"
-            >
-            <button class="account-secondary account-change-username-btn" type="button" onclick="changeFlix2WatchUsername()">
-              Update Username
-            </button>
-          </div>
-          <div class="account-username-change-note">
-            2–30 English letters or numbers only. Your old usernames stay reserved to your account, and bans, mutes, warnings and Staff permissions follow your account automatically.
-          </div>
-          
-        </div>
-<button class="account-secondary" id="account-support-btn" hidden onclick="window.location.href='/support/'"><i class="fa-solid fa-life-ring"></i> Support</button>
-        <button class="account-secondary" id="account-staff-control" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1"><i class="fa-solid fa-shield-halved"></i> Staff Control Center</button>
-        <button class="account-secondary" onclick="signOutAccount()">Log Out</button>
-        
-      </div>
-      </div>
-    </div>
-  </div>
-
-
-<style id="f2w-auth-hardfix-v58-css">
-#account-modal.f2w-auth-hard-open-v58 {
-  display:flex!important;
-  position:fixed!important;
-  inset:0!important;
-  z-index:2147483600!important;
-  align-items:center!important;
-  justify-content:center!important;
-  padding:18px!important;
-  background:rgba(0,0,0,.84)!important;
-}
-#account-modal.f2w-auth-hard-open-v58 .account-card {
-  width:min(520px,calc(100vw - 28px))!important;
-  max-width:520px!important;
-  max-height:calc(100dvh - 36px)!important;
-  overflow:auto!important;
-}
-@media(max-width:600px){
-  #account-modal.f2w-auth-hard-open-v58 {
-    padding:12px!important;
-  }
-  #account-modal.f2w-auth-hard-open-v58 .account-card {
-    width:min(94vw,480px)!important;
-    max-width:94vw!important;
-    max-height:calc(100dvh - 24px)!important;
-  }
-}
-/* f2w-force-save:auth-hardfix-css-v58:1788221340 */
-</style>
-
-
-<script id="f2w-auth-modal-lock-v60">
-(() => {
-  'use strict';
-  if(window.__f2wAuthModalLockV60)return;
-  window.__f2wAuthModalLockV60=true;
-
-  let currentMode='login';
-  let touchStartX=null;
-  let savedScrollY=0;
-  let bodyLocked=false;
-
-  function modal(){
-    return document.getElementById('account-modal');
-  }
-
-  function lockBackground(){
-    if(bodyLocked)return;
-    savedScrollY=window.scrollY||window.pageYOffset||0;
-    bodyLocked=true;
-
-    document.documentElement.classList.add('f2w-auth-open-v60');
-    document.body.classList.add('f2w-auth-open-v60');
-
-    Object.assign(document.body.style,{
-      position:'fixed',
-      top:`-${savedScrollY}px`,
-      left:'0',
-      right:'0',
-      width:'100%',
-      overflow:'hidden'
-    });
-  }
-
-  function unlockBackground(){
-    if(!bodyLocked)return;
-    bodyLocked=false;
-
-    document.documentElement.classList.remove('f2w-auth-open-v60');
-    document.body.classList.remove('f2w-auth-open-v60');
-
-    document.body.style.removeProperty('position');
-    document.body.style.removeProperty('top');
-    document.body.style.removeProperty('left');
-    document.body.style.removeProperty('right');
-    document.body.style.removeProperty('width');
-    document.body.style.removeProperty('overflow');
-
-    window.scrollTo({top:savedScrollY,left:0,behavior:'auto'});
-  }
-
-  function setMode(mode, animate=true){
-    currentMode=mode==='signup'?'signup':'login';
-
-    const loginTab=document.getElementById('account-login-tab');
-    const signupTab=document.getElementById('account-signup-tab');
-    const usernameWrap=document.getElementById('account-username-wrap');
-    const confirmWrap=document.getElementById('account-confirm-wrap');
-    const emailLabel=document.getElementById('account-email-label');
-    const submit=document.getElementById('account-submit');
-    const password=document.getElementById('account-password');
-    const card=modal()?.querySelector('.account-card');
-
-    loginTab?.classList.toggle('active',currentMode==='login');
-    signupTab?.classList.toggle('active',currentMode==='signup');
-
-    if(usernameWrap)usernameWrap.style.display=currentMode==='signup'?'block':'none';
-    if(confirmWrap)confirmWrap.style.display=currentMode==='signup'?'block':'none';
-    if(emailLabel)emailLabel.textContent=currentMode==='signup'?'EMAIL':'USERNAME OR EMAIL';
-    if(submit)submit.textContent=currentMode==='signup'?'Create Account':'Log In';
-    if(password)password.autocomplete=currentMode==='signup'?'new-password':'current-password';
-
-    document.querySelectorAll('#account-modal .f2w-oauth-btn.google .f2w-oauth-label')
-      .forEach(el=>el.textContent=currentMode==='signup'?'Sign up with Google':'Sign in with Google');
-    document.querySelectorAll('#account-modal .f2w-oauth-btn.discord .f2w-oauth-label')
-      .forEach(el=>el.textContent=currentMode==='signup'?'Sign up with Discord':'Sign in with Discord');
-
-    const message=document.getElementById('account-message');
-    if(message)message.textContent='';
-
-    if(card){
-      card.classList.remove('f2w-auth-swipe-left-v60','f2w-auth-swipe-right-v60');
-      if(animate){
-        requestAnimationFrame(()=>{
-          card.classList.add(currentMode==='signup'?'f2w-auth-swipe-left-v60':'f2w-auth-swipe-right-v60');
-          setTimeout(()=>card.classList.remove('f2w-auth-swipe-left-v60','f2w-auth-swipe-right-v60'),240);
-        });
-      }
-    }
-  }
-
-  function open(mode='login'){
-    const m=modal();
-    if(!m){
-      console.error('Flix2Watch auth modal is missing on this page.');
-      return false;
-    }
-
-    lockBackground();
-    setMode(mode,false);
-
-    m.hidden=false;
-    m.classList.add('open','f2w-auth-modal-open-v60');
-    m.style.setProperty('display','flex','important');
-    m.setAttribute('aria-hidden','false');
-
-    // Focus without moving the underlying page.
-    setTimeout(()=>{
-      const field=document.getElementById(currentMode==='signup'?'account-username':'account-email');
-      try{field?.focus({preventScroll:true})}catch{field?.focus()}
-    },80);
-
-    return false;
-  }
-
-  function close(){
-    const m=modal();
-    if(!m)return false;
-
-    m.classList.remove('open','f2w-auth-modal-open-v60');
-    m.style.removeProperty('display');
-    m.setAttribute('aria-hidden','true');
-    unlockBackground();
-    return false;
-  }
-
-  window.openHeaderAuth=open;
-  window.f2wOpenAuth=open;
-  window.showAccountMode=(mode)=>setMode(mode,true);
-  window.closeAccountModal=close;
-
-  const oldOpenAccount=typeof window.openAccountModal==='function' ? window.openAccountModal : null;
-  window.openAccountModal=function(){
-    if(document.body.classList.contains('f2w-authenticated') && oldOpenAccount){
-      try{return oldOpenAccount();}catch(error){console.warn(error)}
-    }
-    return open('login');
-  };
-
-  function bind(){
-    const m=modal();
-    if(m && !m.dataset.f2wAuthModalV60){
-      m.dataset.f2wAuthModalV60='1';
-
-      m.addEventListener('click',e=>{
-        if(e.target===m){
-          e.preventDefault();
-          close();
-        }
-      });
-
-      m.querySelector('.chat-close')?.addEventListener('click',e=>{
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        close();
-      },true);
-
-      document.getElementById('account-login-tab')?.addEventListener('click',e=>{
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        setMode('login',true);
-      },true);
-
-      document.getElementById('account-signup-tab')?.addEventListener('click',e=>{
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        setMode('signup',true);
-      },true);
-
-      const card=m.querySelector('.account-card');
-      card?.addEventListener('touchstart',e=>{
-        touchStartX=e.touches?.[0]?.clientX??null;
-      },{passive:true});
-      card?.addEventListener('touchend',e=>{
-        if(touchStartX==null)return;
-        const end=e.changedTouches?.[0]?.clientX??touchStartX;
-        const dx=end-touchStartX;
-        touchStartX=null;
-        if(Math.abs(dx)<55)return;
-        setMode(dx<0?'signup':'login',true);
-      },{passive:true});
-    }
-
-    document.querySelectorAll('#header-login-btn').forEach(btn=>{
-      if(btn.dataset.f2wAuthV60Login)return;
-      btn.dataset.f2wAuthV60Login='1';
-      btn.addEventListener('click',e=>{
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        open('login');
-      },true);
-    });
-
-    document.querySelectorAll('#header-signup-btn').forEach(btn=>{
-      if(btn.dataset.f2wAuthV60Signup)return;
-      btn.dataset.f2wAuthV60Signup='1';
-      btn.addEventListener('click',e=>{
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        open('signup');
-      },true);
-    });
-
-    // Watch-page center auth buttons use the exact same popup.
-    const watchOverlay=document.getElementById('watch-login-overlay');
-    if(watchOverlay){
-      const buttons=watchOverlay.querySelectorAll('.watch-login-actions button');
-      if(buttons[0] && !buttons[0].dataset.f2wAuthV60){
-        buttons[0].dataset.f2wAuthV60='1';
-        buttons[0].addEventListener('click',e=>{
-          e.preventDefault();e.stopImmediatePropagation();open('login');
-        },true);
-      }
-      if(buttons[1] && !buttons[1].dataset.f2wAuthV60){
-        buttons[1].dataset.f2wAuthV60='1';
-        buttons[1].addEventListener('click',e=>{
-          e.preventDefault();e.stopImmediatePropagation();open('signup');
-        },true);
-      }
-    }
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
-  else bind();
-
-  window.addEventListener('pageshow',bind,{passive:true});
-  new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
-
-  // Escape closes modal without moving the page.
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Escape' && modal()?.classList.contains('f2w-auth-modal-open-v60')){
-      e.preventDefault();
-      close();
-    }
-  });
-})();
-// f2w-force-save:auth-modal-lock-v60:1788221799
-</script>
-
-
-
-<script id="f2w-users-pagination-v65">
-(() => {
-  'use strict';
-  window.F2W_USERS_PAGE_SIZE=30;
-
-  function ensurePager(){
-    let pager=document.getElementById('users-pagination');
-    if(pager)return pager;
-
-    const results=document.getElementById('user-results') ||
-      document.querySelector('.users-results,.user-results,[data-users-results]');
-    if(!results)return null;
-
-    pager=document.createElement('div');
-    pager.id='users-pagination';
-    pager.className='users-pagination';
-    results.after(pager);
-    return pager;
-  }
-
-  window.renderUsersPaginationV65=function(total,page){
-    const pager=ensurePager();
-    if(!pager)return;
-
-    const pages=Math.max(1,Math.ceil(Number(total||0)/30));
-    const current=Math.max(1,Math.min(Number(page||1),pages));
-    const parts=[];
-
-    const start=Math.max(1,Math.min(current-2,Math.max(1,pages-4)));
-    const end=Math.min(pages,start+4);
-
-    if(current>1)parts.push(`<button type="button" class="f2w-users-page-btn" data-page="${current-1}"><i class="fa-solid fa-chevron-left"></i></button>`);
-    for(let p=start;p<=end;p++){
-      parts.push(`<button type="button" class="f2w-users-page-btn ${p===current?'active':''}" data-page="${p}">${p}</button>`);
-    }
-    if(current<pages)parts.push(`<button type="button" class="f2w-users-page-btn" data-page="${current+1}"><i class="fa-solid fa-chevron-right"></i></button>`);
-
-    pager.innerHTML=parts.join('');
-
-    pager.querySelectorAll('[data-page]').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const url=new URL(location.href);
-        url.searchParams.set('page',btn.dataset.page);
-        location.href=url.toString();
-      });
-    });
-  };
-})();
-// f2w-force-save:users-pagination-v65:1788222474
-</script>
-
-
-<script id="f2w-users-pagination-autobind-v65">
-window.addEventListener('load',()=>{
-  const params=new URLSearchParams(location.search);
-  const page=Math.max(1,Number(params.get('page')||1));
-
-  // If page script exposes total count, use it. Otherwise use current result count
-  // and only show page 1; existing page script can call renderUsersPaginationV65(total,page).
-  const total=Number(window.f2wUsersTotalCount||window.usersTotalCount||0);
-  if(total>0 && typeof window.renderUsersPaginationV65==='function'){
-    window.renderUsersPaginationV65(total,page);
-  }
-});
-</script>
-
-
-<style id="f2w-sitewide-shell-v67">
-/* ============================================================
-   F2W v67 — ONE SITE-WIDE HEADER + ONE AUTH POPUP
-   ============================================================ */
-
-/* ---------- Header: identical geometry on every desktop page ---------- */
-@media (min-width:1181px) {
-  body.f2w-main-page > header {
-    position:sticky!important;
-    top:0!important;
-    z-index:2147482000!important;
-    display:flex!important;
-    align-items:center!important;
-    min-height:74px!important;
-    height:74px!important;
-    padding:0 14px!important;
-    gap:10px!important;
-    box-sizing:border-box!important;
-    transform:none!important;
-    translate:none!important;
-    overflow:visible!important;
-  }
-
-  body.f2w-main-page > header > .logo {
-    flex:0 0 126px!important;
-    width:126px!important;
-    min-width:126px!important;
-    max-width:126px!important;
-  }
-
-  body.f2w-main-page > header .f2w-primary-nav {
-    flex:0 0 auto!important;
-    display:flex!important;
-    align-items:center!important;
-    gap:10px!important;
-    height:42px!important;
-    white-space:nowrap!important;
-  }
-
-  body.f2w-main-page > header .f2w-search-pair {
-    flex:1 1 440px!important;
-    min-width:300px!important;
-    max-width:560px!important;
-    display:grid!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:8px!important;
-    height:40px!important;
-    margin-left:auto!important;
-  }
-
-  body.f2w-main-page > header .search-container,
-  body.f2w-main-page > header .user-search-container {
-    width:100%!important;
-    min-width:0!important;
-    height:40px!important;
-    position:relative!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header .f2w-action-cluster {
-    flex:0 0 auto!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:flex-end!important;
-    gap:6px!important;
-    min-height:40px!important;
-    height:40px!important;
-    margin-left:8px!important;
-    transform:none!important;
-    translate:none!important;
-    overflow:visible!important;
-  }
-
-  body.f2w-main-page > header .f2w-action-cluster > button,
-  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap,
-  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap > button {
-    min-height:40px!important;
-    height:40px!important;
-    margin:0!important;
-    transform:none!important;
-    translate:none!important;
-    white-space:nowrap!important;
-    box-sizing:border-box!important;
-  }
-
-  body.f2w-main-page > header .chat-button {
-    min-width:112px!important;
-    padding:0 14px!important;
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:8px!important;
-  }
-}
-
-/* ---------- Auth modal: same popup on EVERY page ---------- */
-html.f2w-auth-v67-open,
-body.f2w-auth-v67-open {
-  overflow:hidden!important;
-  overscroll-behavior:none!important;
-}
-
-#account-modal.f2w-auth-v67 {
-  position:fixed!important;
-  inset:0!important;
-  width:100vw!important;
-  height:100dvh!important;
-  z-index:2147483646!important;
-  display:none!important;
-  align-items:center!important;
-  justify-content:center!important;
-  margin:0!important;
-  padding:18px!important;
-  overflow:hidden!important;
-  isolation:isolate!important;
-  background:rgba(0,0,0,.84)!important;
-  backdrop-filter:blur(12px)!important;
-  -webkit-backdrop-filter:blur(12px)!important;
-  transform:none!important;
-  translate:none!important;
-  filter:none!important;
-}
-
-#account-modal.f2w-auth-v67.open {
-  display:flex!important;
-}
-
-#account-modal.f2w-auth-v67 .account-card {
-  position:relative!important;
-  z-index:2!important;
-  top:auto!important;
-  left:auto!important;
-  right:auto!important;
-  bottom:auto!important;
-  width:min(520px,calc(100vw - 36px))!important;
-  max-width:520px!important;
-  min-width:0!important;
-  max-height:calc(100dvh - 36px)!important;
-  margin:0!important;
-  padding:0!important;
-  overflow:auto!important;
-  box-sizing:border-box!important;
-  border:1px solid rgba(255,61,78,.42)!important;
-  border-radius:18px!important;
-  background:linear-gradient(180deg,#0b1826,#07121e)!important;
-  box-shadow:0 30px 100px rgba(0,0,0,.78),0 0 34px rgba(229,9,20,.12)!important;
-  transform:none!important;
-  translate:none!important;
-}
-
-#account-modal.f2w-auth-v67 .account-header {
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  min-height:66px!important;
-  padding:16px 18px!important;
-  border-bottom:1px solid #23394f!important;
-  background:#081522!important;
-}
-
-#account-modal.f2w-auth-v67 .account-title {
-  display:flex!important;
-  align-items:center!important;
-  gap:9px!important;
-  margin:0!important;
-  color:#fff!important;
-  font-size:1.05rem!important;
-  font-weight:900!important;
-  line-height:1.1!important;
-}
-
-#account-modal.f2w-auth-v67 .account-subtitle {
-  margin-top:3px!important;
-  color:#71879d!important;
-  font-size:.62rem!important;
-}
-
-#account-modal.f2w-auth-v67 .chat-close,
-#account-modal.f2w-auth-v67 .account-close {
-  position:static!important;
-  width:34px!important;
-  height:34px!important;
-  min-width:34px!important;
-  min-height:34px!important;
-  padding:0!important;
-  margin:0!important;
-  display:grid!important;
-  place-items:center!important;
-  border:1px solid transparent!important;
-  border-radius:9px!important;
-  background:transparent!important;
-  color:#8497ad!important;
-  font-size:1rem!important;
-  line-height:1!important;
-  cursor:pointer!important;
-  transform:none!important;
-  translate:none!important;
-}
-
-#account-modal.f2w-auth-v67 .chat-close:hover,
-#account-modal.f2w-auth-v67 .account-close:hover {
-  background:#102132!important;
-  color:#fff!important;
-}
-
-#account-modal.f2w-auth-v67 .account-body {
-  padding:16px 18px 18px!important;
-}
-
-#account-modal.f2w-auth-v67 .account-tabs {
-  display:grid!important;
-  grid-template-columns:1fr 1fr!important;
-  gap:5px!important;
-  margin:0 0 14px!important;
-  padding:4px!important;
-  border:1px solid #28425b!important;
-  border-radius:11px!important;
-  background:#071522!important;
-}
-
-#account-modal.f2w-auth-v67 .account-tab {
-  min-height:40px!important;
-  padding:0 10px!important;
-  border:0!important;
-  border-radius:8px!important;
-  background:transparent!important;
-  color:#8ea0b5!important;
-  font-size:.76rem!important;
-  font-weight:800!important;
-  cursor:pointer!important;
-}
-
-#account-modal.f2w-auth-v67 .account-tab.active {
-  background:#e50914!important;
-  color:#fff!important;
-  box-shadow:none!important;
-}
-
-#account-modal.f2w-auth-v67 .account-label {
-  display:block!important;
-  margin:10px 0 6px!important;
-  color:#91a3b7!important;
-  font-size:.63rem!important;
-  font-weight:800!important;
-}
-
-#account-modal.f2w-auth-v67 .account-input {
-  width:100%!important;
-  min-height:42px!important;
-  padding:0 12px!important;
-  border:1px solid #29455f!important;
-  border-radius:9px!important;
-  background:#061421!important;
-  color:#fff!important;
-  font-size:.82rem!important;
-  box-sizing:border-box!important;
-  outline:none!important;
-}
-
-#account-modal.f2w-auth-v67 .account-input:focus {
-  border-color:#e50914!important;
-  box-shadow:0 0 0 2px rgba(229,9,20,.12)!important;
-}
-
-#account-modal.f2w-auth-v67 .account-primary {
-  width:100%!important;
-  min-height:42px!important;
-  margin-top:14px!important;
-  border:0!important;
-  border-radius:9px!important;
-  background:#e50914!important;
-  color:#fff!important;
-  font-size:.8rem!important;
-  font-weight:900!important;
-}
-
-#account-modal.f2w-auth-v67 .f2w-oauth-block {
-  margin-top:14px!important;
-}
-
-@media(max-width:600px) {
-  #account-modal.f2w-auth-v67 {
-    padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))!important;
-  }
-  #account-modal.f2w-auth-v67 .account-card {
-    width:min(94vw,480px)!important;
-    max-width:94vw!important;
-    max-height:calc(100dvh - 24px)!important;
-    border-radius:15px!important;
-  }
-}
-
-/* f2w-force-save:sitewide-shell-css-v67:1788222795 */
-</style>
-
-<script id="f2w-sitewide-shell-v67-js">
-(() => {
-  'use strict';
-  if(window.__f2wSitewideShellV67)return;
-  window.__f2wSitewideShellV67=true;
-
-  let savedY=0;
-  let locked=false;
-
-  function modal(){
-    return document.getElementById('account-modal');
-  }
-
-  function promoteModal(){
-    const m=modal();
-    if(!m)return null;
-
-    // Critical: keep the popup OUTSIDE page/header stacking contexts.
-    if(m.parentElement!==document.body){
-      document.body.appendChild(m);
-    }
-
-    m.classList.add('f2w-auth-v67');
-    return m;
-  }
-
-  function lock(){
-    if(locked)return;
-    savedY=window.scrollY||window.pageYOffset||0;
-    locked=true;
-    document.documentElement.classList.add('f2w-auth-v67-open');
-    document.body.classList.add('f2w-auth-v67-open');
-
-    // v71 USERS fix: do NOT make the body position:fixed.
-    // Short directory pages were becoming the containing/clipping surface
-    // for the viewport auth overlay. Lock scrolling only.
-    document.documentElement.style.setProperty('overflow','hidden','important');
-    document.body.style.setProperty('overflow','hidden','important');
-    document.documentElement.style.setProperty('height','100%','important');
-    document.body.style.setProperty('min-height','100dvh','important');
-  }
-
-  function unlock(){
-    if(!locked)return;
-    locked=false;
-    document.documentElement.classList.remove('f2w-auth-v67-open');
-    document.body.classList.remove('f2w-auth-v67-open');
-    document.documentElement.style.removeProperty('overflow');
-    document.body.style.removeProperty('overflow');
-    document.documentElement.style.removeProperty('height');
-    document.body.style.removeProperty('min-height');
-    window.scrollTo({top:savedY,left:0,behavior:'auto'});
-  }
-
-  function mode(next){
-    const signup=next==='signup';
-    document.getElementById('account-login-tab')?.classList.toggle('active',!signup);
-    document.getElementById('account-signup-tab')?.classList.toggle('active',signup);
-
-    const usernameWrap=document.getElementById('account-username-wrap');
-    const confirmWrap=document.getElementById('account-confirm-wrap');
-    const label=document.getElementById('account-email-label');
-    const submit=document.getElementById('account-submit');
-    const pw=document.getElementById('account-password');
-
-    if(usernameWrap)usernameWrap.style.display=signup?'block':'none';
-    if(confirmWrap)confirmWrap.style.display=signup?'block':'none';
-    if(label)label.textContent=signup?'EMAIL':'USERNAME OR EMAIL';
-    if(submit)submit.textContent=signup?'Create Account':'Log In';
-    if(pw)pw.autocomplete=signup?'new-password':'current-password';
-
-    document.querySelectorAll('#account-modal .f2w-oauth-btn.google .f2w-oauth-label')
-      .forEach(el=>el.textContent=signup?'Sign up with Google':'Sign in with Google');
-    document.querySelectorAll('#account-modal .f2w-oauth-btn.discord .f2w-oauth-label')
-      .forEach(el=>el.textContent=signup?'Sign up with Discord':'Sign in with Discord');
-
-    const card=modal()?.querySelector('.account-card');
-    if(card){
-      card.animate(
-        signup
-          ? [{opacity:.75,transform:'translateX(16px)'},{opacity:1,transform:'translateX(0)'}]
-          : [{opacity:.75,transform:'translateX(-16px)'},{opacity:1,transform:'translateX(0)'}],
-        {duration:220,easing:'ease-out'}
-      );
-    }
-  }
-
-  function open(next='login'){
-    const m=promoteModal();
-    if(!m)return false;
-
-    m.removeAttribute('inert');
-    m.hidden=false;
-    m.classList.add('open');
-    m.setAttribute('aria-hidden','false');
-    lock();
-    mode(next);
-
-    setTimeout(()=>{
-      const target=document.getElementById(next==='signup'?'account-username':'account-email');
-      try{target?.focus({preventScroll:true})}catch{target?.focus()}
-    },70);
-
-    return false;
-  }
-
-  function close(){
-    const m=promoteModal();
-    if(!m)return false;
-    m.classList.remove('open');
-    m.setAttribute('aria-hidden','true');
-    m.setAttribute('inert','');
-    unlock();
-    return false;
-  }
-
-  window.openHeaderAuth=open;
-  window.f2wOpenAuth=open;
-  window.showAccountMode=mode;
-  window.closeAccountModal=close;
-
-  function bind(){
-    const m=promoteModal();
-    if(m && !m.dataset.f2wV67Bound){
-      m.dataset.f2wV67Bound='1';
-
-      m.querySelector('.chat-close,.account-close')?.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();close();
-      },true);
-
-      m.addEventListener('click',e=>{
-        if(e.target===m){e.preventDefault();close();}
-      });
-
-      document.getElementById('account-login-tab')?.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();mode('login');
-      },true);
-
-      document.getElementById('account-signup-tab')?.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();mode('signup');
-      },true);
-
-      if(!m.classList.contains('open'))m.setAttribute('inert','');
-    }
-
-    document.querySelectorAll('#header-login-btn').forEach(btn=>{
-      if(btn.dataset.f2wV67Login)return;
-      btn.dataset.f2wV67Login='1';
-      btn.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();open('login');
-      },true);
-    });
-
-    document.querySelectorAll('#header-signup-btn').forEach(btn=>{
-      if(btn.dataset.f2wV67Signup)return;
-      btn.dataset.f2wV67Signup='1';
-      btn.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();open('signup');
-      },true);
-    });
-
-    const watch=document.getElementById('watch-login-overlay');
-    if(watch){
-      const buttons=watch.querySelectorAll('.watch-login-actions button');
-      if(buttons[0]&&!buttons[0].dataset.f2wV67){
-        buttons[0].dataset.f2wV67='1';
-        buttons[0].addEventListener('click',e=>{
-          e.preventDefault();e.stopImmediatePropagation();open('login');
-        },true);
-      }
-      if(buttons[1]&&!buttons[1].dataset.f2wV67){
-        buttons[1].dataset.f2wV67='1';
-        buttons[1].addEventListener('click',e=>{
-          e.preventDefault();e.stopImmediatePropagation();open('signup');
-        },true);
-      }
-    }
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
-  else bind();
-
-  window.addEventListener('pageshow',bind,{passive:true});
-  new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
-})();
-// f2w-force-save:sitewide-shell-js-v67:1788222795
-</script>
-
-
-
-
-
-<style id="f2w-header-hardlock-v69">
-/* ============================================================
-   F2W v69 — TRUE SITE-WIDE HEADER HARD LOCK
-   One geometry model on every page. No page-local header CSS wins.
-   ============================================================ */
-
-/* ---------- DESKTOP / WIDE ---------- */
-@media (min-width:1601px) {
-  body.f2w-main-page > header {
-    position:sticky!important;
-    top:0!important;
-    z-index:2147482000!important;
-    width:100%!important;
-    min-height:74px!important;
-    height:74px!important;
-    padding:0 12px!important;
-    margin:0!important;
-    display:flex!important;
-    align-items:center!important;
-    gap:10px!important;
-    overflow:visible!important;
-    box-sizing:border-box!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header > .logo {
-    position:static!important;
-    flex:0 0 126px!important;
-    width:126px!important;
-    min-width:126px!important;
-    max-width:126px!important;
-    height:52px!important;
-    margin:0!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header > .logo .logo-image {
-    width:126px!important;
-    max-width:126px!important;
-    max-height:48px!important;
-    object-fit:contain!important;
-  }
-
-  body.f2w-main-page > header > .f2w-mobile-nav-toggle {
-    display:none!important;
-  }
-
-  body.f2w-main-page > header > .header-tools {
-    position:static!important;
-    flex:1 1 auto!important;
-    width:auto!important;
-    min-width:0!important;
-    height:44px!important;
-    margin:0!important;
-    padding:0!important;
-    display:grid!important;
-    grid-template-columns:max-content minmax(340px,460px) 782px!important;
-    grid-template-rows:44px!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    column-gap:10px!important;
-    overflow:visible!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header .f2w-primary-nav {
-    grid-column:1!important;
-    grid-row:1!important;
-    position:static!important;
-    width:max-content!important;
-    min-width:0!important;
-    height:44px!important;
-    margin:0!important;
-    padding:0!important;
-    display:flex!important;
-    flex-flow:row nowrap!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    gap:2px!important;
-    overflow:visible!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header .f2w-primary-nav > * {
-    flex:0 0 auto!important;
-  }
-
-  body.f2w-main-page > header .f2w-nav-link,
-  body.f2w-main-page > header .f2w-nav-button {
-    min-height:38px!important;
-    height:38px!important;
-    padding:0 7px!important;
-    margin:0!important;
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:5px!important;
-    white-space:nowrap!important;
-    font-size:10px!important;
-    box-sizing:border-box!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header .f2w-search-pair {
-    grid-column:2!important;
-    grid-row:1!important;
-    position:static!important;
-    width:100%!important;
-    min-width:340px!important;
-    max-width:460px!important;
-    height:40px!important;
-    margin:0!important;
-    padding:0!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
-    gap:8px!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header .search-container,
-  body.f2w-main-page > header .user-search-container {
-    position:relative!important;
-    width:100%!important;
-    min-width:0!important;
-    max-width:none!important;
-    height:40px!important;
-    margin:0!important;
-    padding:0!important;
-    display:flex!important;
-    align-items:center!important;
-    overflow:visible!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header .search-container > i,
-  body.f2w-main-page > header .user-search-container > i {
-    position:absolute!important;
-    left:11px!important;
-    top:50%!important;
-    transform:translateY(-50%)!important;
-    width:13px!important;
-    min-width:13px!important;
-    z-index:3!important;
-    pointer-events:none!important;
-  }
-
-  body.f2w-main-page > header #movie-search,
-  body.f2w-main-page > header #user-search {
-    position:static!important;
-    width:100%!important;
-    min-width:0!important;
-    max-width:none!important;
-    height:40px!important;
-    margin:0!important;
-    padding:0 38px 0 34px!important;
-    box-sizing:border-box!important;
-    font-size:10px!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header .user-search-submit {
-    position:absolute!important;
-    right:7px!important;
-    top:50%!important;
-    transform:translateY(-50%)!important;
-    width:28px!important;
-    min-width:28px!important;
-    max-width:28px!important;
-    height:28px!important;
-    min-height:28px!important;
-    max-height:28px!important;
-    margin:0!important;
-    padding:0!important;
-    display:grid!important;
-    place-items:center!important;
-    z-index:4!important;
-    border:0!important;
-    background:transparent!important;
-  }
-
-  body.f2w-main-page > header .f2w-action-cluster {
-    grid-column:3!important;
-    grid-row:1!important;
-    position:relative!important;
-    width:782px!important;
-    min-width:782px!important;
-    max-width:782px!important;
-    height:40px!important;
-    margin:0!important;
-    padding:0!important;
-    display:grid!important;
-    grid-template-columns:112px 92px 82px 88px 90px 126px 156px!important;
-    grid-template-rows:40px!important;
-    gap:6px!important;
-    align-items:center!important;
-    justify-content:start!important;
-    overflow:visible!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header .f2w-action-cluster > * {
-    position:static!important;
-    min-width:0!important;
-    max-width:none!important;
-    height:40px!important;
-    min-height:40px!important;
-    margin:0!important;
-    box-sizing:border-box!important;
-    transform:none!important;
-    translate:none!important;
-  }
-
-  body.f2w-main-page > header .chat-button {
-    grid-column:1!important;
-    grid-row:1!important;
-    width:112px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:8px!important;
-    padding:0 12px!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-  }
-
-  body.f2w-main-page > header #favorites-nav-btn {
-    grid-column:2!important;
-    grid-row:1!important;
-  }
-  body.f2w-main-page > header #profile-nav-btn {
-    grid-column:3!important;
-    grid-row:1!important;
-  }
-  body.f2w-main-page > header #support-nav-btn {
-    grid-column:4!important;
-    grid-row:1!important;
-  }
-
-  /* Same physical slots when auth state changes = no jitter. */
-  body.f2w-main-page > header #account-btn,
-  body.f2w-main-page > header #header-login-btn {
-    grid-column:5!important;
-    grid-row:1!important;
-  }
-  body.f2w-main-page > header #notification-wrap,
-  body.f2w-main-page > header #header-signup-btn {
-    grid-column:6!important;
-    grid-row:1!important;
-  }
-  body.f2w-main-page > header #staff-control-nav {
-    grid-column:7!important;
-    grid-row:1!important;
-  }
-
-  body.f2w-main-page > header .tool-btn,
-  body.f2w-main-page > header .f2w-auth-top-btn,
-  body.f2w-main-page > header #notification-btn,
-  body.f2w-main-page > header #staff-control-nav {
-    width:100%!important;
-    min-width:0!important;
-    max-width:100%!important;
-    height:40px!important;
-    min-height:40px!important;
-    padding:0 8px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:6px!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:clip!important;
-    font-size:10px!important;
-    box-sizing:border-box!important;
-  }
-
-  body.f2w-main-page > header #notification-wrap {
-    width:126px!important;
-    min-width:126px!important;
-    max-width:126px!important;
-    overflow:visible!important;
-  }
-
-  body.f2w-main-page > header #notification-btn {
-    width:126px!important;
-  }
-
-  body.f2w-main-page > header #staff-control-nav {
-    width:156px!important;
-  }
-
-  /* Preserve auth/permission visibility; only geometry is forced. */
-  body.f2w-main-page > header [hidden] {
-    display:none!important;
-  }
-
-  body.f2w-main-page.f2w-authenticated > header #header-login-btn,
-  body.f2w-main-page.f2w-authenticated > header #header-signup-btn {
-    display:none!important;
-  }
-
-  body.f2w-main-page:not(.f2w-authenticated) > header #account-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #notification-wrap,
-  body.f2w-main-page:not(.f2w-authenticated) > header #staff-control-nav {
-    display:none!important;
-  }
-
-  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn {
-    display:flex!important;
-  }
-}
-
-/* ---------- NORMAL DESKTOP / LAPTOP ---------- */
-@media (min-width:1181px) and (max-width:1600px) {
-  body.f2w-main-page > header {
-    position:sticky!important;
-    top:0!important;
-    z-index:2147482000!important;
-    width:100%!important;
-    min-height:68px!important;
-    height:68px!important;
-    padding:0 8px!important;
-    margin:0!important;
-    display:flex!important;
-    align-items:center!important;
-    gap:6px!important;
-    overflow:visible!important;
-    box-sizing:border-box!important;
-    transform:none!important;
-  }
-
-  body.f2w-main-page > header > .logo {
-    flex:0 0 104px!important;
-    width:104px!important;
-    min-width:104px!important;
-    max-width:104px!important;
-  }
-
-  body.f2w-main-page > header > .logo .logo-image {
-    width:104px!important;
-    max-width:104px!important;
-  }
-
-  body.f2w-main-page > header > .f2w-mobile-nav-toggle {
-    display:none!important;
-  }
-
-  body.f2w-main-page > header > .header-tools {
-    position:static!important;
-    flex:1 1 auto!important;
-    min-width:0!important;
-    width:auto!important;
-    height:42px!important;
-    display:grid!important;
-    grid-template-columns:max-content minmax(220px,300px) 576px!important;
-    grid-template-rows:42px!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    gap:6px!important;
-    overflow:visible!important;
-    transform:none!important;
-  }
-
-  body.f2w-main-page > header .f2w-primary-nav {
-    grid-column:1!important;
-    grid-row:1!important;
-    position:static!important;
-    width:max-content!important;
-    height:42px!important;
-    display:flex!important;
-    flex-wrap:nowrap!important;
-    align-items:center!important;
-    gap:0!important;
-    transform:none!important;
-  }
-
-  body.f2w-main-page > header .f2w-nav-link,
-  body.f2w-main-page > header .f2w-nav-button {
-    height:36px!important;
-    min-height:36px!important;
-    padding:0 5px!important;
-    font-size:9px!important;
-    gap:4px!important;
-    white-space:nowrap!important;
-  }
-
-  body.f2w-main-page > header .f2w-search-pair {
-    grid-column:2!important;
-    grid-row:1!important;
-    position:static!important;
-    width:100%!important;
-    min-width:220px!important;
-    max-width:300px!important;
-    height:38px!important;
-    display:grid!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:6px!important;
-    margin:0!important;
-    transform:none!important;
-  }
-
-  body.f2w-main-page > header .search-container,
-  body.f2w-main-page > header .user-search-container {
-    position:relative!important;
-    width:100%!important;
-    min-width:0!important;
-    height:38px!important;
-    display:flex!important;
-    align-items:center!important;
-    transform:none!important;
-  }
-
-  body.f2w-main-page > header #movie-search,
-  body.f2w-main-page > header #user-search {
-    width:100%!important;
-    min-width:0!important;
-    height:38px!important;
-    padding:0 32px!important;
-    font-size:9px!important;
-    box-sizing:border-box!important;
-  }
-
-  body.f2w-main-page > header .search-container > i,
-  body.f2w-main-page > header .user-search-container > i {
-    position:absolute!important;
-    left:9px!important;
-    top:50%!important;
-    transform:translateY(-50%)!important;
-    z-index:3!important;
-  }
-
-  body.f2w-main-page > header .user-search-submit {
-    position:absolute!important;
-    right:5px!important;
-    top:50%!important;
-    transform:translateY(-50%)!important;
-    width:25px!important;
-    height:25px!important;
-    min-width:25px!important;
-    min-height:25px!important;
-    max-width:25px!important;
-    max-height:25px!important;
-    padding:0!important;
-    margin:0!important;
-    display:grid!important;
-    place-items:center!important;
-    background:transparent!important;
-    border:0!important;
-    z-index:4!important;
-  }
-
-  body.f2w-main-page > header .f2w-action-cluster {
-    grid-column:3!important;
-    grid-row:1!important;
-    position:relative!important;
-    width:576px!important;
-    min-width:576px!important;
-    max-width:576px!important;
-    height:38px!important;
-    display:grid!important;
-    grid-template-columns:90px 72px 66px 68px 72px 92px 116px!important;
-    grid-template-rows:38px!important;
-    gap:4px!important;
-    margin:0!important;
-    transform:none!important;
-  }
-
-  body.f2w-main-page > header .chat-button {grid-column:1!important}
-  body.f2w-main-page > header #favorites-nav-btn {grid-column:2!important}
-  body.f2w-main-page > header #profile-nav-btn {grid-column:3!important}
-  body.f2w-main-page > header #support-nav-btn {grid-column:4!important}
-  body.f2w-main-page > header #account-btn,
-  body.f2w-main-page > header #header-login-btn {grid-column:5!important}
-  body.f2w-main-page > header #notification-wrap,
-  body.f2w-main-page > header #header-signup-btn {grid-column:6!important}
-  body.f2w-main-page > header #staff-control-nav {grid-column:7!important}
-
-  body.f2w-main-page > header .f2w-action-cluster > *,
-  body.f2w-main-page > header .tool-btn,
-  body.f2w-main-page > header .f2w-auth-top-btn,
-  body.f2w-main-page > header #notification-btn,
-  body.f2w-main-page > header #staff-control-nav {
-    min-width:0!important;
-    max-width:100%!important;
-    width:100%!important;
-    height:38px!important;
-    min-height:38px!important;
-    margin:0!important;
-    padding:0 5px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:4px!important;
-    overflow:hidden!important;
-    white-space:nowrap!important;
-    font-size:9px!important;
-    box-sizing:border-box!important;
-    transform:none!important;
-  }
-
-  body.f2w-main-page > header #notification-wrap {
-    width:92px!important;
-    min-width:92px!important;
-    max-width:92px!important;
-    overflow:visible!important;
-  }
-
-  body.f2w-main-page > header [hidden] {
-    display:none!important;
-  }
-
-  body.f2w-main-page.f2w-authenticated > header #header-login-btn,
-  body.f2w-main-page.f2w-authenticated > header #header-signup-btn {
-    display:none!important;
-  }
-
-  body.f2w-main-page:not(.f2w-authenticated) > header #account-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #notification-wrap,
-  body.f2w-main-page:not(.f2w-authenticated) > header #staff-control-nav {
-    display:none!important;
-  }
-
-  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn,
-  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn {
-    display:flex!important;
-  }
-}
-
-/* Mobile/tablet keeps the established overlay menu. */
-@media (max-width:1180px) {
-  body.f2w-main-page > header {
-    transform:none!important;
-    translate:none!important;
-  }
-}
-
-/* f2w-force-save:header-hardlock-v69:1788223204 */
-</style>
-
-
-<style id="f2w-account-canonical-v70">
-/* F2W v70 — canonical Account/Auth card on every page */
-#account-modal.f2w-auth-v67,
-#account-modal.f2w-auth-modal-open-v60,
-#account-modal.open {
-  position:fixed!important;
-  inset:0!important;
-  width:100vw!important;
-  height:100dvh!important;
-  z-index:2147483646!important;
-  align-items:center!important;
-  justify-content:center!important;
-  padding:18px!important;
-  background:rgba(0,0,0,.84)!important;
-  backdrop-filter:blur(12px)!important;
-  -webkit-backdrop-filter:blur(12px)!important;
-  overflow:hidden!important;
-}
-
-#account-modal.open {
-  display:flex!important;
-}
-
-#account-modal .account-card {
-  position:relative!important;
-  width:min(540px,calc(100vw - 36px))!important;
-  max-width:540px!important;
-  max-height:calc(100dvh - 36px)!important;
-  margin:0!important;
-  border:1px solid rgba(255,64,82,.38)!important;
-  border-radius:18px!important;
-  background:linear-gradient(180deg,#0b1826,#07121e)!important;
-  box-shadow:0 30px 100px rgba(0,0,0,.78),0 0 32px rgba(229,9,20,.10)!important;
-  overflow:auto!important;
-  transform:none!important;
-}
-
-#account-modal .account-header {
-  min-height:66px!important;
-  padding:16px 18px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  border-bottom:1px solid #23394f!important;
-  background:#081522!important;
-}
-
-#account-modal .account-title {
-  display:flex!important;
-  align-items:center!important;
-  gap:9px!important;
-  color:#fff!important;
-  font-size:1.05rem!important;
-  font-weight:900!important;
-}
-
-#account-modal .account-body {
-  padding:16px 18px 18px!important;
-}
-
-#account-modal .account-user-box {
-  display:flex!important;
-  align-items:center!important;
-  gap:12px!important;
-  padding:12px!important;
-  border:1px solid #24394f!important;
-  border-radius:11px!important;
-  background:#0b1927!important;
-}
-
-#account-modal .account-user-avatar {
-  width:38px!important;
-  height:38px!important;
-  min-width:38px!important;
-  display:grid!important;
-  place-items:center!important;
-  border-radius:10px!important;
-  background:#142536!important;
-  color:#ff2637!important;
-}
-
-#account-modal .account-user-email {
-  color:#fff!important;
-  font-size:.78rem!important;
-  font-weight:850!important;
-}
-
-#account-modal .account-user-username {
-  margin-top:2px!important;
-  color:#a8b8c9!important;
-  font-size:.71rem!important;
-  font-weight:750!important;
-}
-
-#account-modal .account-role {
-  margin-top:3px!important;
-  color:#ffbf3f!important;
-  font-size:.60rem!important;
-  font-weight:900!important;
-  letter-spacing:.07em!important;
-}
-
-#account-modal .account-username-change {
-  margin:13px 0!important;
-  padding:12px!important;
-  border:1px solid #24394f!important;
-  border-radius:11px!important;
-  background:#091725!important;
-}
-
-#account-modal .account-username-change-row {
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) auto!important;
-  gap:8px!important;
-}
-
-#account-modal .account-input {
-  min-height:42px!important;
-  width:100%!important;
-  padding:0 12px!important;
-  border:1px solid #29455f!important;
-  border-radius:9px!important;
-  background:#061421!important;
-  color:#fff!important;
-  box-sizing:border-box!important;
-}
-
-#account-modal .account-secondary,
-#account-modal .account-primary {
-  min-height:40px!important;
-  border-radius:9px!important;
-  font-size:.76rem!important;
-  font-weight:850!important;
-}
-
-#account-modal #account-support-btn,
-#account-modal #account-staff-control {
-  width:100%!important;
-  margin-top:8px!important;
-}
-
-@media(max-width:600px){
-  #account-modal {
-    padding:12px!important;
-  }
-  #account-modal .account-card {
-    width:min(94vw,500px)!important;
-    max-width:94vw!important;
-    max-height:calc(100dvh - 24px)!important;
-  }
-  #account-modal .account-username-change-row {
-    grid-template-columns:1fr!important;
-  }
-}
-/* f2w-force-save:account-canonical-css-v70:1788223711 */
-</style>
-
-
-<style id="f2w-header-spacing-v70">
-@media (min-width:1181px) and (max-width:1600px) {
-  body.f2w-main-page > header > .header-tools {
-    grid-template-columns:max-content minmax(220px,300px) 612px!important;
-  }
-  body.f2w-main-page > header .f2w-action-cluster {
-    width:612px!important;
-    min-width:612px!important;
-    max-width:612px!important;
-    grid-template-columns:90px 72px 66px 68px 72px 92px 116px!important;
-    gap:6px!important;
-  }
-  body.f2w-main-page > header #notification-wrap {
-    margin-right:0!important;
-  }
-  body.f2w-main-page > header #staff-control-nav {
-    margin-left:0!important;
-  }
-}
-@media (min-width:1601px) {
-  body.f2w-main-page > header .f2w-action-cluster {
-    gap:8px!important;
-    width:794px!important;
-    min-width:794px!important;
-    max-width:794px!important;
-  }
-  body.f2w-main-page > header > .header-tools {
-    grid-template-columns:max-content minmax(340px,460px) 794px!important;
-  }
-}
-/* f2w-force-save:header-spacing-v70:1788223711 */
-</style>
-
-
-<style id="f2w-users-auth-and-cards-v71">
-/* ============================================================
-   F2W v71 — USERS PAGE: FULL AUTH POPUP + READABLE RESULT CARDS
-   ============================================================ */
-
-/* The auth popup must cover the ENTIRE browser viewport on this short page. */
-body.f2w-users-page #account-modal {
-  position:fixed!important;
-  inset:0!important;
-  top:0!important;
-  right:0!important;
-  bottom:0!important;
-  left:0!important;
-  width:100%!important;
-  min-width:100%!important;
-  max-width:none!important;
-  height:100dvh!important;
-  min-height:100dvh!important;
-  max-height:none!important;
-  margin:0!important;
-  padding:18px!important;
-  z-index:2147483647!important;
-  align-items:center!important;
-  justify-content:center!important;
-  overflow:hidden!important;
-  isolation:isolate!important;
-  transform:none!important;
-  translate:none!important;
-  contain:none!important;
-}
-
-body.f2w-users-page #account-modal.open {
-  display:flex!important;
-  background:rgba(0,0,0,.84)!important;
-  backdrop-filter:blur(12px)!important;
-  -webkit-backdrop-filter:blur(12px)!important;
-}
-
-body.f2w-users-page #account-modal .account-card {
-  position:relative!important;
-  top:auto!important;
-  right:auto!important;
-  bottom:auto!important;
-  left:auto!important;
-  width:min(540px,calc(100vw - 36px))!important;
-  min-width:0!important;
-  max-width:540px!important;
-  max-height:calc(100dvh - 36px)!important;
-  margin:0!important;
-  overflow:auto!important;
-  transform:none!important;
-  translate:none!important;
-}
-
-/* Keep Login/Create Account as the same swipey two-mode card used elsewhere. */
-body.f2w-users-page #account-modal .account-tabs {
-  display:grid!important;
-  grid-template-columns:1fr 1fr!important;
-  gap:5px!important;
-}
-
-body.f2w-users-page #account-modal .account-tab {
-  min-height:42px!important;
-}
-
-/* -------- User result layout -------- */
-body.f2w-users-page .f2w-users-main {
-  max-width:1500px!important;
-  margin:0 auto!important;
-  padding:28px 30px 72px!important;
-}
-
-body.f2w-users-page .f2w-users-grid {
-  display:grid!important;
-  grid-template-columns:minmax(0,760px)!important;
-  gap:14px!important;
-  align-items:start!important;
-}
-
-body.f2w-users-page .f2w-user-card {
-  width:100%!important;
-  min-width:0!important;
-  min-height:132px!important;
-  padding:18px 20px!important;
-  gap:18px!important;
-  display:flex!important;
-  flex-direction:row!important;
-  align-items:center!important;
-  box-sizing:border-box!important;
-  overflow:hidden!important;
-}
-
-body.f2w-users-page .f2w-user-avatar {
-  flex:0 0 80px!important;
-  width:80px!important;
-  min-width:80px!important;
-  max-width:80px!important;
-  height:80px!important;
-  min-height:80px!important;
-  max-height:80px!important;
-  aspect-ratio:1 / 1!important;
-  border-radius:50%!important;
-  overflow:hidden!important;
-  display:grid!important;
-  place-items:center!important;
-}
-
-body.f2w-users-page .f2w-user-avatar > img {
-  width:100%!important;
-  min-width:100%!important;
-  max-width:100%!important;
-  height:100%!important;
-  min-height:100%!important;
-  max-height:100%!important;
-  aspect-ratio:1 / 1!important;
-  object-fit:cover!important;
-  object-position:center!important;
-  border-radius:50%!important;
-  display:block!important;
-  transform:none!important;
-}
-
-body.f2w-users-page .f2w-user-copy {
-  flex:1 1 auto!important;
-  min-width:0!important;
-  display:flex!important;
-  flex-direction:column!important;
-  justify-content:center!important;
-  gap:5px!important;
-}
-
-body.f2w-users-page .f2w-user-display {
-  margin:0!important;
-  font-size:1.18rem!important;
-  line-height:1.22!important;
-  font-weight:900!important;
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-}
-
-body.f2w-users-page .f2w-user-handle {
-  margin:0!important;
-  font-size:.88rem!important;
-  line-height:1.3!important;
-  font-weight:800!important;
-  color:#a9bacb!important;
-  -webkit-text-fill-color:#a9bacb!important;
-}
-
-body.f2w-users-page .f2w-user-bio {
-  margin-top:2px!important;
-  font-size:.78rem!important;
-  line-height:1.45!important;
-  color:#8499ae!important;
-}
-
-body.f2w-users-page .f2w-users-summary {
-  margin:14px 0 10px!important;
-  font-size:.80rem!important;
-  line-height:1.45!important;
-}
-
-/* No floating users-search arrow on the directory page. Enter performs search. */
-body.f2w-users-page > header .user-search-submit {
-  display:none!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-}
-
-@media(max-width:760px){
-  body.f2w-users-page #account-modal {
-    padding:12px!important;
-  }
-  body.f2w-users-page #account-modal .account-card {
-    width:min(94vw,500px)!important;
-    max-width:94vw!important;
-    max-height:calc(100dvh - 24px)!important;
-  }
-  body.f2w-users-page .f2w-users-main {
-    padding:20px 14px 52px!important;
-  }
-  body.f2w-users-page .f2w-users-grid {
-    grid-template-columns:1fr!important;
-  }
-  body.f2w-users-page .f2w-user-card {
-    min-height:112px!important;
-    padding:14px!important;
-    gap:14px!important;
-  }
-  body.f2w-users-page .f2w-user-avatar {
-    flex-basis:68px!important;
-    width:68px!important;
-    min-width:68px!important;
-    max-width:68px!important;
-    height:68px!important;
-    min-height:68px!important;
-    max-height:68px!important;
-  }
-  body.f2w-users-page .f2w-user-display {
-    font-size:1.02rem!important;
-  }
-}
-
-/* f2w-force-save:users-auth-cards-v71:1788223881 */
-</style>
-
-
-<style id="f2w-users-auth-toplayer-v73">
-/* ============================================================
-   F2W v73 — USERS AUTH POPUP IN THE BROWSER TOP LAYER
-   ============================================================ */
-#f2w-users-auth-dialog-v73 {
-  width:100vw!important;
-  max-width:none!important;
-  height:100dvh!important;
-  max-height:none!important;
-  margin:0!important;
-  padding:0!important;
-  border:0!important;
-  background:transparent!important;
-  overflow:hidden!important;
-}
-
-#f2w-users-auth-dialog-v73::backdrop {
-  background:rgba(0,0,0,.84)!important;
-  backdrop-filter:blur(12px)!important;
-  -webkit-backdrop-filter:blur(12px)!important;
-}
-
-#f2w-users-auth-dialog-v73 > #account-modal {
-  position:absolute!important;
-  inset:0!important;
-  width:100%!important;
-  height:100%!important;
-  min-height:100%!important;
-  margin:0!important;
-  padding:18px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  background:transparent!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-  overflow:hidden!important;
-  z-index:auto!important;
-}
-
-#f2w-users-auth-dialog-v73 #account-modal .account-card {
-  position:relative!important;
-  width:min(540px,calc(100vw - 36px))!important;
-  max-width:540px!important;
-  max-height:calc(100dvh - 36px)!important;
-  margin:0!important;
-  overflow:auto!important;
-  transform:none!important;
-  translate:none!important;
-}
-
-@media(max-width:600px){
-  #f2w-users-auth-dialog-v73 > #account-modal {
-    padding:12px!important;
-  }
-  #f2w-users-auth-dialog-v73 #account-modal .account-card {
-    width:min(94vw,500px)!important;
-    max-width:94vw!important;
-    max-height:calc(100dvh - 24px)!important;
-  }
-}
-
-/* Result card: readable and avatar can never stretch. */
-body.f2w-users-page .f2w-user-card {
-  min-height:132px!important;
-  padding:18px 20px!important;
-  gap:18px!important;
-}
-
-body.f2w-users-page .f2w-user-avatar {
-  flex:0 0 80px!important;
-  width:80px!important;
-  min-width:80px!important;
-  max-width:80px!important;
-  height:80px!important;
-  min-height:80px!important;
-  max-height:80px!important;
-  aspect-ratio:1/1!important;
-  border-radius:50%!important;
-}
-
-body.f2w-users-page .f2w-user-avatar img {
-  width:80px!important;
-  min-width:80px!important;
-  max-width:80px!important;
-  height:80px!important;
-  min-height:80px!important;
-  max-height:80px!important;
-  aspect-ratio:1/1!important;
-  object-fit:cover!important;
-  object-position:center!important;
-  border-radius:50%!important;
-  display:block!important;
-}
-
-body.f2w-users-page .f2w-user-display {
-  font-size:1.18rem!important;
-  line-height:1.2!important;
-  font-weight:900!important;
-}
-
-body.f2w-users-page .f2w-user-handle {
-  font-size:.88rem!important;
-  line-height:1.3!important;
-  font-weight:800!important;
-}
-
-/* f2w-force-save:users-auth-toplayer-css-v73:1788224087 */
-</style>
-
-<script id="f2w-users-auth-toplayer-v73-js">
-(() => {
-  'use strict';
-  if(window.__f2wUsersAuthTopLayerV73)return;
-  window.__f2wUsersAuthTopLayerV73=true;
-
-  let dialog=null;
-  let modal=null;
-
-  function ensure(){
-    modal=document.getElementById('account-modal');
-    if(!modal)return null;
-
-    dialog=document.getElementById('f2w-users-auth-dialog-v73');
-    if(!dialog){
-      dialog=document.createElement('dialog');
-      dialog.id='f2w-users-auth-dialog-v73';
-      document.body.appendChild(dialog);
-    }
-
-    if(modal.parentElement!==dialog){
-      dialog.appendChild(modal);
-    }
-
-    return dialog;
-  }
-
-  function mode(next){
-    const signup=next==='signup';
-    document.getElementById('account-login-tab')?.classList.toggle('active',!signup);
-    document.getElementById('account-signup-tab')?.classList.toggle('active',signup);
-
-    const usernameWrap=document.getElementById('account-username-wrap');
-    const confirmWrap=document.getElementById('account-confirm-wrap');
-    const label=document.getElementById('account-email-label');
-    const submit=document.getElementById('account-submit');
-    const password=document.getElementById('account-password');
-
-    if(usernameWrap)usernameWrap.style.display=signup?'block':'none';
-    if(confirmWrap)confirmWrap.style.display=signup?'block':'none';
-    if(label)label.textContent=signup?'EMAIL':'USERNAME OR EMAIL';
-    if(submit)submit.textContent=signup?'Create Account':'Log In';
-    if(password)password.autocomplete=signup?'new-password':'current-password';
-
-    const card=document.querySelector('#f2w-users-auth-dialog-v73 .account-card');
-    if(card){
-      try{
-        card.animate(
-          signup
-            ? [{opacity:.72,transform:'translateX(16px)'},{opacity:1,transform:'translateX(0)'}]
-            : [{opacity:.72,transform:'translateX(-16px)'},{opacity:1,transform:'translateX(0)'}],
-          {duration:220,easing:'ease-out'}
-        );
-      }catch{}
-    }
-  }
-
-  function open(next='login'){
-    const d=ensure();
-    if(!d)return false;
-
-    modal.hidden=false;
-    modal.removeAttribute('inert');
-    modal.classList.add('open','f2w-auth-v67');
-    modal.setAttribute('aria-hidden','false');
-
-    mode(next);
-
-    if(!d.open){
-      try{d.showModal();}catch{d.setAttribute('open','')}
-    }
-
-    document.documentElement.style.setProperty('overflow','hidden','important');
-    document.body.style.setProperty('overflow','hidden','important');
-
-    setTimeout(()=>{
-      const target=document.getElementById(next==='signup'?'account-username':'account-email');
-      try{target?.focus({preventScroll:true})}catch{target?.focus()}
-    },60);
-
-    return false;
-  }
-
-  function close(){
-    const d=ensure();
-    if(!d)return false;
-
-    modal?.classList.remove('open');
-    modal?.setAttribute('aria-hidden','true');
-    modal?.setAttribute('inert','');
-
-    try{if(d.open)d.close();}catch{d.removeAttribute('open')}
-
-    document.documentElement.style.removeProperty('overflow');
-    document.body.style.removeProperty('overflow');
-    return false;
-  }
-
-  window.openHeaderAuth=open;
-  window.f2wOpenAuth=open;
-  window.showAccountMode=mode;
-  window.closeAccountModal=close;
-
-  function bind(){
-    const d=ensure();
-    if(!d)return;
-
-    if(!d.dataset.f2wBoundV73){
-      d.dataset.f2wBoundV73='1';
-
-      d.addEventListener('cancel',e=>{
-        e.preventDefault();
-        close();
-      });
-
-      d.addEventListener('click',e=>{
-        if(e.target===d)close();
-      });
-
-      modal?.querySelector('.chat-close,.account-close')?.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();close();
-      },true);
-
-      document.getElementById('account-login-tab')?.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();mode('login');
-      },true);
-
-      document.getElementById('account-signup-tab')?.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();mode('signup');
-      },true);
-    }
-
-    document.querySelectorAll('#header-login-btn').forEach(btn=>{
-      if(btn.dataset.f2wV73Login)return;
-      btn.dataset.f2wV73Login='1';
-      btn.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();open('login');
-      },true);
-    });
-
-    document.querySelectorAll('#header-signup-btn').forEach(btn=>{
-      if(btn.dataset.f2wV73Signup)return;
-      btn.dataset.f2wV73Signup='1';
-      btn.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();open('signup');
-      },true);
-    });
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
-  else bind();
-
-  new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
-})();
-// f2w-force-save:users-auth-toplayer-js-v73:1788224087
-</script>
-
-
-<script id="f2w-dedicated-movie-search-v111">
+<script id="f2w-movie-search-core-v114">
 (() => {
   'use strict';
 
   const API_KEY='925c48dd6e24fd5e975fe224238bbb45';
-  const PAGE_SIZE=30;
-  const CACHE_MS=10*60*1000;
+  const params=new URLSearchParams(location.search);
+  const query=String(params.get('q')||'').trim();
+  const page=Math.max(1,Number(params.get('page'))||1);
 
-  const clean=value=>String(value||'').trim().replace(/\s+/g,' ').slice(0,120);
+  const queryEl=document.getElementById('f2w-ms-query');
+  const countEl=document.getElementById('f2w-ms-count');
+  const headingEl=document.getElementById('f2w-ms-heading');
+  const grid=document.getElementById('f2w-ms-grid');
+  const pager=document.getElementById('f2w-ms-pagination');
+  const movieInput=document.getElementById('movie-search');
+
   const esc=(value='')=>String(value).replace(/[&<>"']/g,ch=>({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
   }[ch]));
 
-  function key(query,page){
-    return `f2w_title_search_v111:${query.toLowerCase()}:${page}`;
+  if(!query){
+    location.replace('/home/');
+    return;
   }
 
-  function readCache(query,page){
-    try{
-      const raw=localStorage.getItem(key(query,page));
-      if(!raw)return null;
-      const parsed=JSON.parse(raw);
-      if(!parsed?.ts||Date.now()-parsed.ts>CACHE_MS)return null;
-      return parsed;
-    }catch{return null}
-  }
-
-  function writeCache(query,page,data){
-    try{
-      localStorage.setItem(key(query,page),JSON.stringify({ts:Date.now(),...data}));
-      localStorage.setItem('f2w_last_movie_search_v111',query);
-    }catch{}
-  }
+  if(movieInput)movieInput.value=query;
+  queryEl.textContent=query;
+  headingEl.textContent=`Results for “${query}”`;
+  countEl.textContent='Searching TMDB…';
 
   function normalize(item){
-    const type=item.media_type==='tv'?'tv':'movie';
-    const title=item.title||item.name||'Untitled';
-    const date=item.release_date||item.first_air_date||'';
-    return {...item,media_type:type,title,date};
+    return {
+      ...item,
+      media_type:item.media_type==='tv'?'tv':'movie',
+      title:item.title||item.name||'Untitled',
+      date:item.release_date||item.first_air_date||''
+    };
   }
 
-  function relevance(item,query){
+  function relevance(item){
     const title=String(item.title||'').toLowerCase();
     const q=query.toLowerCase();
+
     if(title===q)return 0;
     if(title.startsWith(q))return 1;
     if(title.includes(q))return 2;
 
     const tokens=q.split(/\s+/).filter(Boolean);
-    const hits=tokens.reduce((n,t)=>n+(title.includes(t)?1:0),0);
-    return 10-hits;
+    const matched=tokens.reduce((n,t)=>n+(title.includes(t)?1:0),0);
+    return 20-matched;
   }
 
   function card(item){
@@ -3350,302 +438,167 @@ body.f2w-users-page .f2w-user-handle {
       ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
       : '';
 
-    return `<a class="f2w-title-result-card"
+    return `<a class="f2w-ms-card"
               href="/watch/?id=${encodeURIComponent(item.id)}&type=${encodeURIComponent(item.media_type)}">
-      <div class="f2w-title-result-poster">
-        ${poster
-          ? `<img src="${poster}" alt="${title} poster" loading="lazy" decoding="async">`
-          : ''}
-        <span class="f2w-title-result-type">${item.media_type==='tv'?'Series':'Movie'}</span>
+      <div class="f2w-ms-poster">
+        ${poster?`<img src="${poster}" alt="${title} poster" loading="lazy" decoding="async">`:''}
+        <span class="f2w-ms-type">${item.media_type==='tv'?'Series':'Movie'}</span>
       </div>
-      <div class="f2w-title-result-info">
-        <div class="f2w-title-result-name">${title}</div>
-        <div class="f2w-title-result-meta">
+      <div class="f2w-ms-info">
+        <div class="f2w-ms-title">${title}</div>
+        <div class="f2w-ms-meta">
           <span>${year}</span>
-          <span class="f2w-title-result-rating"><i class="fa-solid fa-star"></i> ${rating?rating.toFixed(1):'NR'}</span>
+          <span class="f2w-ms-rating"><i class="fa-solid fa-star"></i> ${rating?rating.toFixed(1):'NR'}</span>
         </div>
       </div>
     </a>`;
   }
 
-  function render(query,page,rows,totalPages,fromCache=false){
-    const grid=document.getElementById('f2w-title-results-grid');
-    const queryEl=document.getElementById('f2w-title-search-query');
-    const countEl=document.getElementById('f2w-title-search-count');
-    const heading=document.getElementById('f2w-title-search-heading');
-    const subtitle=document.getElementById('f2w-title-search-subtitle');
-
-    if(queryEl)queryEl.textContent=query;
-    if(heading)heading.textContent=`Results for “${query}”`;
-    if(subtitle)subtitle.textContent='Movies and TV series matching this title search.';
-
-    if(countEl){
-      countEl.textContent=rows.length
-        ? `${rows.length} title${rows.length===1?'':'s'} on this page${fromCache?' · cached':''}`
-        : `No titles found`;
-    }
-
-    grid.innerHTML=rows.length
-      ? rows.map(card).join('')
-      : `<div class="f2w-title-search-state">
-           <i class="fa-regular fa-face-meh"></i>
-           No matching movies or TV series found.
-         </div>`;
-
-    renderPagination(query,page,totalPages);
-  }
-
-  function renderPagination(query,page,totalPages){
-    const host=document.getElementById('f2w-title-pagination');
-    if(!host)return;
-    host.innerHTML='';
+  function pagination(totalPages){
+    pager.innerHTML='';
     if(totalPages<=1)return;
 
     const add=(label,target,active=false,disabled=false)=>{
       const node=document.createElement(disabled?'span':'a');
-      node.className='f2w-title-page'+(active?' active':'')+(disabled?' disabled':'');
+      node.className='f2w-ms-page'+(active?' active':'')+(disabled?' disabled':'');
       node.textContent=label;
       if(!disabled)node.href=`/movies/search/?q=${encodeURIComponent(query)}&page=${target}`;
-      host.appendChild(node);
+      pager.appendChild(node);
     };
 
     add('Prev',Math.max(1,page-1),false,page<=1);
-
     const start=Math.max(1,page-2);
     const end=Math.min(totalPages,page+2);
     for(let n=start;n<=end;n++)add(String(n),n,n===page);
-
     add('Next',Math.min(totalPages,page+1),false,page>=totalPages);
   }
 
-  async function fetchTmdbPage(query,tmdbPage,signal){
-    const url=`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${tmdbPage}&include_adult=false`;
-    const response=await fetch(url,{cache:'default',signal});
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(data?.status_message||`TMDB ${response.status}`);
-    return data;
-  }
-
-  async function load(){
-    const params=new URLSearchParams(location.search);
-    const query=clean(params.get('q'));
-    const page=Math.max(1,Number(params.get('page'))||1);
-
-    if(!query){
-      location.replace('/home/');
-      return;
-    }
-
-    const headerInput=document.getElementById('movie-search');
-    if(headerInput)headerInput.value=query;
-
-    const queryEl=document.getElementById('f2w-title-search-query');
-    const heading=document.getElementById('f2w-title-search-heading');
-    if(queryEl)queryEl.textContent=query;
-    if(heading)heading.textContent=`Results for “${query}”`;
-
-    const cached=readCache(query,page);
-    if(cached?.rows){
-      render(query,page,cached.rows,Number(cached.totalPages||1),true);
-    }
-
-    /*
-     * Flix2Watch pages show 30 results. TMDB returns 20 per page.
-     * Fetch the two TMDB pages needed for this 30-result window, then sort
-     * exact/starts-with/contains matches to the top so franchise searches such
-     * as "Sinister" and "Fast and Furious" group together naturally.
-     */
-    const startIndex=(page-1)*PAGE_SIZE;
-    const firstTmdbPage=Math.floor(startIndex/20)+1;
-    const secondTmdbPage=firstTmdbPage+1;
-    const offset=startIndex%20;
-
+  async function run(){
     const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),5500);
+    const timeout=setTimeout(()=>controller.abort(),5000);
 
     try{
-      const first=await fetchTmdbPage(query,firstTmdbPage,controller.signal);
+      // Equivalent to:
+      // https://www.themoviedb.org/search?query=<what user typed>
+      // but via TMDB's JSON API so Flix2Watch can render its own result cards.
+      const tmdbUrl=
+        `https://api.themoviedb.org/3/search/multi`+
+        `?api_key=${API_KEY}`+
+        `&query=${encodeURIComponent(query)}`+
+        `&page=${page}`+
+        `&include_adult=false`+
+        `&language=en-US`;
 
-      const firstRows=(Array.isArray(first.results)?first.results:[])
-        .filter(item=>item && item.media_type!=='person' && item.poster_path)
-        .map(normalize);
-
-      // Show the first available batch immediately instead of a blank spinner.
-      const firstVisible=firstRows.slice(offset,offset+PAGE_SIZE);
-      if(firstVisible.length && !cached){
-        render(
-          query,
-          page,
-          [...firstVisible].sort((a,b)=>relevance(a,query)-relevance(b,query)),
-          Math.min(334,Math.max(1,Math.ceil(Number(first.total_results||0)/PAGE_SIZE))),
-          false
-        );
-      }
-
-      let second={results:[]};
-      try{
-        second=await fetchTmdbPage(query,secondTmdbPage,controller.signal);
-      }catch(error){
-        console.warn('Second title-search batch unavailable:',error);
-      }
-
-      const secondRows=(Array.isArray(second.results)?second.results:[])
-        .filter(item=>item && item.media_type!=='person' && item.poster_path)
-        .map(normalize);
-
-      const seen=new Set();
-      const combined=[...firstRows,...secondRows].filter(item=>{
-        const id=`${item.media_type}:${item.id}`;
-        if(seen.has(id))return false;
-        seen.add(id);
-        return true;
+      const response=await fetch(tmdbUrl,{
+        method:'GET',
+        cache:'no-store',
+        mode:'cors',
+        credentials:'omit',
+        signal:controller.signal,
+        headers:{Accept:'application/json'}
       });
 
-      const rows=combined
-        .slice(offset,offset+PAGE_SIZE)
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok){
+        throw new Error(data?.status_message||`TMDB request failed (${response.status})`);
+      }
+
+      const seen=new Set();
+      const rows=(Array.isArray(data.results)?data.results:[])
+        .filter(item=>
+          item &&
+          item.media_type!=='person' &&
+          (item.media_type==='movie'||item.media_type==='tv') &&
+          item.id
+        )
+        .map(normalize)
+        .filter(item=>{
+          const k=`${item.media_type}:${item.id}`;
+          if(seen.has(k))return false;
+          seen.add(k);
+          return true;
+        })
         .sort((a,b)=>{
-          const rel=relevance(a,query)-relevance(b,query);
-          if(rel!==0)return rel;
-          const ay=String(a.date||'');
-          const by=String(b.date||'');
-          return by.localeCompare(ay);
+          const r=relevance(a)-relevance(b);
+          if(r!==0)return r;
+          return String(b.date||'').localeCompare(String(a.date||''));
         });
 
-      const totalResults=Number(first.total_results||rows.length);
-      const totalPages=Math.min(334,Math.max(1,Math.ceil(totalResults/PAGE_SIZE)));
+      countEl.textContent=
+        `${rows.length} result${rows.length===1?'':'s'} on page ${page}`;
 
-      writeCache(query,page,{rows,totalPages});
-      render(query,page,rows,totalPages,false);
+      grid.innerHTML=rows.length
+        ? rows.map(card).join('')
+        : `<div class="f2w-ms-state"><i class="fa-regular fa-face-meh"></i> No matching movies or TV series found.</div>`;
+
+      pagination(Math.min(500,Math.max(1,Number(data.total_pages)||1)));
     }catch(error){
-      console.error('Dedicated title search failed:',error);
-
-      if(cached?.rows)return;
-
-      const grid=document.getElementById('f2w-title-results-grid');
-      const count=document.getElementById('f2w-title-search-count');
-      if(count)count.textContent='Search failed';
-      if(grid)grid.innerHTML=`
-        <div class="f2w-title-search-state">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-          Could not load titles. Please try the search again.
-        </div>`;
+      console.error('TMDB title search failed:',error);
+      countEl.textContent='Search failed';
+      grid.innerHTML=`<div class="f2w-ms-state">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        ${error?.name==='AbortError'
+          ? 'TMDB took too long to respond. Please try again.'
+          : 'Could not load TMDB results. Please try again.'}
+      </div>`;
+      pager.innerHTML='';
     }finally{
-      clearTimeout(timer);
+      clearTimeout(timeout);
     }
   }
 
-  load();
+  run();
 })();
-/* f2w-force-save:dedicated-movie-search-v111:1788290601 */
+/* f2w-force-save:movie-search-core-v114:1788291301 */
+</script>
+
+
+<script id="f2w-movie-search-header-v114">
+(() => {
+  'use strict';
+
+  const movie=document.getElementById('movie-search');
+  const users=document.getElementById('user-search');
+
+  if(movie){
+    movie.removeAttribute('readonly');
+    movie.addEventListener('keydown',event=>{
+      if(event.key!=='Enter'||event.isComposing)return;
+      event.preventDefault();
+      const q=String(movie.value||'').trim();
+      if(q)location.href=`/movies/search/?q=${encodeURIComponent(q)}&page=1`;
+    });
+  }
+
+  if(users){
+    users.removeAttribute('readonly');
+    users.addEventListener('keydown',event=>{
+      if(event.key!=='Enter'||event.isComposing)return;
+      event.preventDefault();
+      const q=String(users.value||'').trim().replace(/[^A-Za-z0-9]/g,'');
+      if(q)location.href=`/users/search/?q=${encodeURIComponent(q)}&page=1`;
+    });
+  }
+
+  window.toggleF2WGenreMenu=function(event){
+    event?.stopPropagation?.();
+    document.getElementById('f2w-genre-menu')?.classList.toggle('show');
+  };
+
+  window.openGlobalChat=function(){ location.href='/chat/'; };
+  window.openMyProfile=function(){ location.href='/profile/'; };
+
+  document.addEventListener('click',event=>{
+    if(!event.target.closest('.f2w-genre-wrap')){
+      document.getElementById('f2w-genre-menu')?.classList.remove('show');
+    }
+  });
+})();
+/* f2w-force-save:movie-search-header-v114:1788291301 */
 </script>
 
 </body>
 </html>
-<!-- f2w-force-push-20260831-batch2:users:01c6b68a68 -->
-<!-- f2w-update-marker: shared-chat-v7:users -->
-<!-- f2w-force-save: 20260831-2110 -->
-<!-- f2w-force-save:chat-v8-never-auto-open:1788208311:users -->
-<!-- f2w-force-save:device-v9:20260831-205349:users -->
-<!-- f2w-force-save:compact-modal-v11:1788210997:users -->
-<!-- f2w-force-save:sitewide-auth-v13:1788211530:users/index.html -->
-<!-- f2w-force-save:remove-nettools-v14:1788211808:users/index.html -->
-<!-- f2w-force-save:sitewide-footer-v15:1788212347:users/index.html -->
-<!-- f2w-force-save:chat-route-cache-v16:1788212934:users/index.html -->
-<!-- f2w-force-save:sitewide-v17:1788213599:users/index.html -->
-<!-- f2w-force-save:sitewide-header-v18:1788213893:users/index.html -->
-<!-- f2w-force-save:sitewide-header-repair-v19:1788214305:users/index.html -->
-<!-- f2w-force-save:account-favorites-cache-v20:1788214488:users/index.html -->
-<!-- f2w-force-save:canonical-static-header-v21:1788214596:users/index.html -->
-<!-- f2w-force-save:header-static-cache-v21:1788214596:users/index.html -->
-<!-- f2w-force-save:v21-theme-clean:users/index.html -->
-<!-- f2w-force-save:final-assets-v22:1788214990:users/index.html -->
-<!-- f2w-force-save:chat-green-dot-v23:1788215130:users/index.html -->
-<!-- f2w-force-save:chat-dot-js-cache-v23:178821-v23-dot-guard:users/index.html -->
-<!-- f2w-force-save:critical-header-v24:1788215534:users/index.html -->
-<!-- f2w-force-save:instant-profile-route-v24:1788215534:users/index.html -->
-<!-- f2w-force-save:performance-cache-v24:1788215534:users/index.html -->
-<!-- f2w-force-save:role-name-cache-v25:1788215879:users/index.html -->
-<!-- f2w-force-save:sitewide-fade-page-v26:1788216027:users/index.html -->
-<!-- f2w-force-save:fade-js-cache-v26:1788216027:users/index.html -->
-<!-- f2w-force-save:v27-cache:1788216279:users/index.html -->
-<!-- f2w-force-save:v30-page:1788216738:users/index.html -->
-<!-- f2w-force-save:v31-cache:1788217048:users/index.html -->
-<!-- f2w-force-save:v32-cache:1788217362:users/index.html -->
-<!-- f2w-force-save:v33-performance-cache:1788217440:users/index.html -->
-<!-- f2w-force-save:v34-performance:1788217565:users/index.html -->
-<!-- f2w-force-save:header-button-fit-v35:1788217735:users/index.html -->
-<!-- f2w-force-save:privacy-duplicate-cleanup-v36:1788217803:users/index.html -->
-<!-- f2w-force-save:footer-cache-v36:1788217803:users/index.html -->
-<!-- f2w-force-save:chat-width-v38:1788218284:users/index.html -->
-<!-- f2w-force-save:v39-cache:1788218599:users/index.html -->
-<!-- f2w-force-save:v40-cache:1788218691:users/index.html -->
-<!-- f2w-force-save:v41-arrow-cache:1788219230:users/index.html -->
-<!-- f2w-force-save:chat-button-final-width-v42:1788219270:users/index.html -->
-<!-- f2w-force-save:v43-watch-auth-cache:1788219527:users/index.html -->
-<!-- f2w-force-save:v44-header-cache:1788219651:users/index.html -->
-<!-- f2w-force-save:v50-cache:1788220357:users/index.html -->
-<!-- f2w-force-save:v52-profile-edit-cache:1788220545:users/index.html -->
-<!-- f2w-force-save:account-details-cache-v54:1788220759:users/index.html -->
-<!-- f2w-force-save:v56-auth-cache:1788221054:users/index.html -->
-<!-- f2w-force-save:v57-user-search-cache:1788221142:users/index.html -->
-<!-- f2w-force-save:v58-auth-hardfix:1788221340:users/index.html -->
-<!-- f2w-force-save:v58-cache:1788221340:users/index.html -->
-<!-- f2w-force-save:v59-cache:1788221542:users/index.html -->
-<!-- f2w-force-save:auth-modal-lock-v60:1788221799:users/index.html -->
-<!-- f2w-force-save:v60-auth-cache:1788221799:users/index.html -->
-<!-- f2w-force-save:text-input-cache-v62:1788221977:users/index.html -->
-<!-- f2w-force-save:v63-search-isolation:1788222324:users/index.html -->
-<!-- f2w-force-save:v64-cache:1788222358:users/index.html -->
-<!-- f2w-force-save:v65-search-cache:1788222474:users/index.html -->
-<!-- f2w-force-save:users-page-v65:1788222474 -->
-<!-- f2w-force-save:v66-arrow-cache:1788222669:users/index.html -->
-<!-- f2w-force-save:v67-page:1788222795:users/index.html -->
-<!-- f2w-force-save:users-index-v68:1788222895 -->
-<!-- f2w-force-save:v69-header:1788223204:users/index.html -->
-<!-- f2w-force-save:v70-cache:1788223711:users/index.html -->
-<!-- f2w-force-save:canonical-account-v70:users/index.html -->
-<!-- f2w-force-save:users-v71:1788223881 -->
-<!-- f2w-force-save:auth-button-icons-v72:1788223976:users/index.html -->
-<!-- f2w-force-save:v72-cache:1788223976:users/index.html -->
-<!-- f2w-force-save:users-v73:1788224087 -->
-<!-- f2w-force-save:footer-privacy-v74:1788224239:users/index.html -->
-<!-- f2w-force-save:role-particles-white-v75:1788224563:users/index.html -->
-<!-- f2w-force-save:users-enter-v76:1788224745 -->
-<!-- f2w-force-save:v76-cache:1788224745:users/index.html -->
-<!-- f2w-force-save:v77-role-particles:1788224897:users/index.html -->
-<!-- f2w-force-save:v78-cache:1788224965:users/index.html -->
-<!-- f2w-force-save:users-prefix-v79:1788225124 -->
-<!-- f2w-force-save:v79-cache:1788225124:users/index.html -->
-<!-- f2w-force-save:v80-cache:1788225203:users/index.html -->
-<!-- f2w-force-save:v81-cache:1788225523:users/index.html -->
-<!-- f2w-force-save:users-loader-v82:1788225709 -->
-<!-- f2w-force-save:v82-cache:1788225709:users/index.html -->
-<!-- f2w-force-save:v83-cache:1788226300:users/index.html -->
-<!-- f2w-force-save:v84-cache:1788226452:users/index.html -->
-<!-- f2w-force-save:v86-cache:1788226708:users/index.html -->
-<!-- f2w-force-save:v87-cache:1788227242:users/index.html -->
-<!-- f2w-force-save:v88-cache:1788227370:users/index.html -->
-<!-- f2w-force-save:v89-cache:1788227613:users/index.html -->
-<!-- f2w-force-save:v90-cache:1788227716:users/index.html -->
-<!-- f2w-force-save:v91-cache:1788228094:users/index.html -->
-<!-- f2w-force-save:v92-cache:1788228465:users/index.html -->
-<!-- f2w-force-save:v93-cache:1788229371:users/index.html -->
-<!-- f2w-force-save:v94-links:1788280907:users/index.html -->
-<!-- f2w-force-save:v97-cache:1788281880:users/index.html -->
-<!-- f2w-force-save:v98-cache:1788282202:users/index.html -->
-<!-- f2w-force-save:native-transition-off-v100:1788283039:users/index.html -->
-<!-- f2w-force-save:v100-cache:1788283039:users/index.html -->
-<!-- f2w-force-save:v103-cache:1788289090:users/index.html -->
-<!-- f2w-force-save:dedicated-search-page-v104:1788289281 -->
-<!-- f2w-force-save:v104-cache:1788289281:users/search/index.html -->
-<!-- f2w-force-save:v105-cache:1788289468:users/search/index.html -->
-<!-- f2w-force-save:user-search-rest-v106:1788289648 -->
-<!-- f2w-force-save:v106-cache:1788289648:users/search/index.html -->
-<!-- f2w-force-save:v107-cache:1788289786:users/search/index.html -->
-<!-- f2w-force-save:v108-cache:1788290088:users/search/index.html -->
-<!-- f2w-force-save:v109-cache:1788290239:users/search/index.html -->
-<!-- f2w-force-save:v110-cache:1788290464:users/search/index.html -->
-<!-- f2w-force-save:dedicated-movie-search-page-v111:1788290601 -->
-<!-- f2w-force-save:v111-cache:1788290601:movies/search/index.html -->
-<!-- f2w-force-save:v112-cache:1788290771:movies/search/index.html -->
+<!-- f2w-force-save:movie-search-lean-page-v114:1788291301 -->
+<!-- f2w-force-save:v114-cache:1788291301:movies/search/index.html -->
  
