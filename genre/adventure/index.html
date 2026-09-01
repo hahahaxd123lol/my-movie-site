@@ -5192,11 +5192,25 @@ if(currentUser){
     addButton('Next <i class="fa-solid fa-chevron-right"></i>',catalogPage+1,false,catalogPage>=catalogTotalPages);
   }
 
+  async function f2wFetchJsonV99(url,timeoutMs=9000){
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),timeoutMs);
+    try{
+      const response=await fetch(url,{cache:'no-store',signal:controller.signal});
+      const data=await response.json().catch(()=>({}));
+      return {response,data};
+    }finally{
+      clearTimeout(timer);
+    }
+  }
+
   async function loadCatalogPage(page=1,scrollToGrid=false){
     const requestId=++catalogRequestGeneration;
     const targetPage=Math.max(1,Number(page)||1);
 
-    await ensurePublicContentOps();
+    // v99: staff-curation data is optional. Never block Trending/genre titles on it.
+    // Kick it off in the background and continue loading TMDB immediately.
+    try{ ensurePublicContentOps(); }catch{}
     if(requestId!==catalogRequestGeneration)return;
 
     if(scrollToGrid)scrollCatalogToTop('smooth');
@@ -5229,14 +5243,9 @@ if(currentUser){
       const offset=startIndex%20;
       const secondTmdbPage=firstTmdbPage+1;
 
-      const [r1,r2]=await Promise.all([
-        fetch(endpoint(firstTmdbPage),{cache:'no-store'}),
-        fetch(endpoint(secondTmdbPage),{cache:'no-store'})
-      ]);
-
-      const [d1,d2]=await Promise.all([
-        r1.json().catch(()=>({})),
-        r2.json().catch(()=>({}))
+      const [{response:r1,data:d1},{response:r2,data:d2}]=await Promise.all([
+        f2wFetchJsonV99(endpoint(firstTmdbPage),9000),
+        f2wFetchJsonV99(endpoint(secondTmdbPage),9000)
       ]);
 
       if(requestId!==catalogRequestGeneration)return;
@@ -6512,20 +6521,29 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
   let publicContentOpsLoaded=false;
 
   async function loadPublicContentOps(){
+    const timeout=(ms)=>new Promise(resolve=>setTimeout(()=>resolve({__timeout:true}),ms));
     try{
-      const [blocksResult,collectionsResult]=await Promise.all([
+      const work=Promise.all([
         chatSupabase.rpc('get_public_content_blocks'),
         chatSupabase.rpc('get_public_staff_collections')
       ]);
 
-      if(!blocksResult.error){
+      const result=await Promise.race([work,timeout(3500)]);
+      if(result?.__timeout){
+        console.warn('Public Staff curation timed out; continuing without it.');
+        return;
+      }
+
+      const [blocksResult,collectionsResult]=result;
+
+      if(!blocksResult?.error){
         publicBlockedMediaKeys=new Set(
-          (blocksResult.data||[]).map(item=>`${item.media_type}:${item.media_id}`)
+          (blocksResult?.data||[]).map(item=>`${item.media_type}:${item.media_id}`)
         );
       }
 
-      if(!collectionsResult.error){
-        renderPublicStaffCollections(collectionsResult.data||[]);
+      if(!collectionsResult?.error){
+        renderPublicStaffCollections(collectionsResult?.data||[]);
       }
     }catch(error){
       console.warn('Public Staff curation unavailable:',error);
@@ -8183,6 +8201,38 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:genre-grid-safety-v97:1788281880 */
 </script>
 
+
+<script id="f2w-catalog-watchdog-v99">
+(() => {
+  'use strict';
+  if(window.__f2wCatalogWatchdogV99)return;
+  window.__f2wCatalogWatchdogV99=true;
+
+  function isStillLoading(){
+    const grid=document.getElementById('movie-grid');
+    return Boolean(grid && /Loading titles/i.test(grid.textContent||''));
+  }
+
+  function retry(){
+    if(!isStillLoading())return;
+    try{
+      if(window.__F2W_FIXED_GENRE_V94){
+        const fixed=window.__F2W_FIXED_GENRE_V94;
+        const page=Math.max(1,Number(new URLSearchParams(location.search).get('page'))||1);
+        window.f2wOpenGenreV91?.(fixed.id,page,false);
+      }else if(typeof window.loadCatalogPage==='function'){
+        window.loadCatalogPage(1,false);
+      }
+    }catch(error){
+      console.warn('Catalogue retry failed:',error);
+    }
+  }
+
+  setTimeout(retry,10000);
+})();
+/* f2w-force-save:catalog-watchdog-v99:1788282758 */
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
@@ -8285,4 +8335,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:genre-grid-v97:1788281880:genre/adventure/index.html -->
 <!-- f2w-force-save:v97-cache:1788281880:genre/adventure/index.html -->
 <!-- f2w-force-save:v98-cache:1788282202:genre/adventure/index.html -->
+<!-- f2w-force-save:v99:1788282758:genre/adventure/index.html -->
  
