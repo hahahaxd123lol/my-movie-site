@@ -2726,3 +2726,11 @@ body.f2w-main-page > header .user-search-name.f2w-role-name::after {
 /* f2w-force-save:profile-role-particle-stability-v108:1788290088 */
 
  
+
+/* F2W v110 profile role fallback */
+#profile-name.f2w-role-name {
+  color:var(--f2w-profile-role-color,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--f2w-profile-role-color,var(--f2w-role-color,#fff))!important;
+}
+/* f2w-force-save:profile-role-fallback-v110:1788290464 */
+ 

@@ -3326,7 +3326,7 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=108-1788290088">
+  <link rel="stylesheet" href="/final-v35.css?v=110-1788290464">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=100-1788283039">
@@ -3578,6 +3578,105 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
   animation:none!important;
 }
 /* f2w-force-save:profile-role-static-v108:1788290088 */
+</style>
+
+
+<style id="f2w-profile-role-visual-authority-v110">
+#profile-name.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  color:var(--f2w-profile-role-color,#fff)!important;
+  -webkit-text-fill-color:var(--f2w-profile-role-color,#fff)!important;
+  background:none!important;
+  background-image:none!important;
+  text-shadow:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+#profile-name.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  inset:-.22em -.34em!important;
+  z-index:4!important;
+  pointer-events:none!important;
+  background:url("https://i.ibb.co/HC3GW9B/Particles.gif") center/112% 145% no-repeat!important;
+  filter:grayscale(1) saturate(0) brightness(5.2) contrast(1.4)!important;
+  mix-blend-mode:normal!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+#profile-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+#profile-name.f2w-no-role-name::before,
+#profile-name.f2w-no-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+#profile-role-badge {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+#profile-role-badge.owner {
+  color:#ff2638!important;
+  -webkit-text-fill-color:#ff2638!important;
+  border-color:rgba(255,38,56,.55)!important;
+}
+#profile-role-badge.staff {
+  color:#c05cff!important;
+  -webkit-text-fill-color:#c05cff!important;
+  border-color:rgba(192,92,255,.55)!important;
+}
+#profile-role-badge.moderator {
+  color:#62b4ff!important;
+  -webkit-text-fill-color:#62b4ff!important;
+  border-color:rgba(98,180,255,.55)!important;
+}
+#profile-role-badge.support {
+  color:#32c8ff!important;
+  -webkit-text-fill-color:#32c8ff!important;
+  border-color:rgba(50,200,255,.55)!important;
+}
+#profile-role-badge.developer {
+  color:#31d9ad!important;
+  -webkit-text-fill-color:#31d9ad!important;
+  border-color:rgba(49,217,173,.55)!important;
+}
+#profile-role-badge.verified {
+  color:#579dff!important;
+  -webkit-text-fill-color:#579dff!important;
+  border-color:rgba(87,157,255,.55)!important;
+}
+#profile-role-badge.contributor {
+  color:#ffc13d!important;
+  -webkit-text-fill-color:#ffc13d!important;
+  border-color:rgba(255,193,61,.55)!important;
+}
+#profile-role-badge.curator {
+  color:#ff6be1!important;
+  -webkit-text-fill-color:#ff6be1!important;
+  border-color:rgba(255,107,225,.55)!important;
+}
+
+#profile-role-badge::before,
+#profile-role-badge::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* f2w-force-save:profile-role-visual-authority-v110:1788290464 */
 </style>
 
 </head>
@@ -6040,12 +6139,15 @@ setTimeout(loadLibraryFavorites,0);
         ? 'owner'
         : String(viewedProfile.top_role||'').toLowerCase();
 
-    if(
-      immediateRole &&
-      name.dataset.f2wRole!==immediateRole &&
-      typeof window.f2wPaintRoleName==='function'
-    ){
-      window.f2wPaintRoleName(name,immediateRole,viewedProfile.username);
+    if(immediateRole){
+      if(typeof applyProfileRoleV110==='function'){
+        applyProfileRoleV110(immediateRole);
+      }else if(typeof window.f2wPaintRoleName==='function'){
+        window.f2wPaintRoleName(name,immediateRole,viewedProfile.username);
+      }
+    }else if(typeof readRoleCacheV110==='function'){
+      const cachedRole=readRoleCacheV110(viewedProfile.username);
+      if(cachedRole)applyProfileRoleV110(cachedRole);
     }
 
     if(displayName){
@@ -7571,32 +7673,94 @@ renderViewedProfile();
 
 
 
-  /* ================= PUBLIC ROLE BADGE REFRESH — v108 ================= */
+  /* ================= PROFILE ROLE VISUAL AUTHORITY — v110 ================= */
 
-  const f2wProfileRoleCacheV108=new Map();
-  let f2wProfileRoleRequestV108=0;
+  const F2W_ROLE_ORDER_V110=[
+    'owner','staff','moderator','support','developer',
+    'verified','contributor','curator'
+  ];
 
-  function roleBadgeSlotV108(){
-    return document.getElementById('profile-role-badge');
+  const F2W_ROLE_COLORS_V110={
+    owner:'#ff2638',
+    staff:'#c05cff',
+    moderator:'#62b4ff',
+    support:'#32c8ff',
+    developer:'#31d9ad',
+    verified:'#579dff',
+    contributor:'#ffc13d',
+    curator:'#ff6be1'
+  };
+
+  const f2wProfileRoleCacheV110=new Map();
+  let f2wProfileRoleRequestV110=0;
+
+  function validRoleV110(role){
+    role=String(role||'').trim().toLowerCase();
+    return F2W_ROLE_ORDER_V110.includes(role)?role:'';
+  }
+
+  function roleCacheKeyV110(username){
+    return `f2w_profile_role_v110:${String(username||'').trim().toLowerCase()}`;
+  }
+
+  function readRoleCacheV110(username){
+    const key=String(username||'').trim().toLowerCase();
+    if(!key)return '';
+    if(f2wProfileRoleCacheV110.has(key))return f2wProfileRoleCacheV110.get(key)||'';
+    try{
+      const role=validRoleV110(localStorage.getItem(roleCacheKeyV110(key)));
+      if(role)f2wProfileRoleCacheV110.set(key,role);
+      return role;
+    }catch{return ''}
+  }
+
+  function writeRoleCacheV110(username,role){
+    const key=String(username||'').trim().toLowerCase();
+    role=validRoleV110(role);
+    if(!key||!role)return;
+    f2wProfileRoleCacheV110.set(key,role);
+    try{localStorage.setItem(roleCacheKeyV110(key),role);}catch{}
   }
 
   function clearViewedProfileRoleBadge(){
-    const badge=roleBadgeSlotV108();
+    const badge=document.getElementById('profile-role-badge');
     if(!badge)return;
     badge.className='profile-role-badge';
     badge.replaceChildren();
-    badge.removeAttribute('title');
     badge.dataset.role='';
+    badge.removeAttribute('title');
   }
 
-  function renderStaticProfileRoleV108(role){
-    if(!['owner','staff','moderator','support','developer','verified','contributor','curator'].includes(role))return;
+  function paintProfileNameRoleV110(role){
+    role=validRoleV110(role);
+    const name=document.getElementById('profile-name');
+    if(!name||!role)return;
 
-    const badge=roleBadgeSlotV108();
+    F2W_ROLE_ORDER_V110.forEach(r=>name.classList.remove(`f2w-role-${r}`));
+    name.classList.remove('f2w-no-role-name');
+    name.classList.add('f2w-role-name',`f2w-role-${role}`);
+
+    name.dataset.f2wRole=role;
+    name.dataset.f2wRoleDecorated='1';
+    name.dataset.f2wResolvedRole=role;
+
+    // Inline variables are intentional: they make profile role colour immune
+    // to older white-name CSS rules elsewhere in the site.
+    const color=F2W_ROLE_COLORS_V110[role];
+    name.style.setProperty('--f2w-profile-role-color',color);
+    name.style.setProperty('color',color,'important');
+    name.style.setProperty('-webkit-text-fill-color',color,'important');
+    name.style.removeProperty('background');
+    name.style.removeProperty('background-image');
+    name.style.removeProperty('filter');
+  }
+
+  function renderStaticProfileRoleV110(role){
+    role=validRoleV110(role);
+    if(!role)return;
+
+    const badge=document.getElementById('profile-role-badge');
     if(!badge)return;
-
-    // If it already displays the correct role, DO NOTHING. This keeps it
-    // completely static instead of disappearing/reappearing.
     if(badge.dataset.role===role && badge.classList.contains('show'))return;
 
     const label=role.charAt(0).toUpperCase()+role.slice(1);
@@ -7606,14 +7770,57 @@ renderViewedProfile();
     badge.innerHTML=`<i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>${label}</span>`;
   }
 
-  function applyProfileNameRoleV108(role){
-    const name=document.getElementById('profile-name');
-    if(!name||!viewedProfile)return;
-    if(name.dataset.f2wRole===role)return;
+  function applyProfileRoleV110(role){
+    role=validRoleV110(role);
+    if(!role)return;
+    if(viewedProfile?.username)writeRoleCacheV110(viewedProfile.username,role);
+    paintProfileNameRoleV110(role);
+    renderStaticProfileRoleV110(role);
+  }
 
-    if(typeof window.f2wPaintRoleName==='function'){
-      window.f2wPaintRoleName(name,role,viewedProfile.username||'');
-    }
+  async function rpcPublicRoleV110(username){
+    // Production environments have used both argument names historically.
+    // Try the current p_username signature first, then the legacy name.
+    try{
+      const {data,error}=await chatSupabase.rpc(
+        'get_public_profile_role',
+        {p_username:username}
+      );
+      if(!error){
+        const row=Array.isArray(data)?data[0]:data;
+        const role=validRoleV110(row?.top_role||row?.role_key||row?.role||row);
+        if(role)return role;
+      }
+    }catch{}
+
+    try{
+      const {data,error}=await chatSupabase.rpc(
+        'get_public_profile_role',
+        {target_username:username}
+      );
+      if(!error){
+        const row=Array.isArray(data)?data[0]:data;
+        const role=validRoleV110(row?.top_role||row?.role_key||row?.role||row);
+        if(role)return role;
+      }
+    }catch{}
+
+    // Fallback to the same public name-effect RPC used elsewhere on the site.
+    try{
+      const {data,error}=await chatSupabase.rpc(
+        'get_public_name_effects',
+        {p_usernames:[username]}
+      );
+      if(!error && Array.isArray(data)){
+        const row=data.find(item=>
+          String(item?.username||'').toLowerCase()===String(username).toLowerCase()
+        )||data[0];
+        const role=validRoleV110(row?.top_role||row?.role_key||row?.role);
+        if(role)return role;
+      }
+    }catch{}
+
+    return '';
   }
 
   async function loadViewedProfileRoleBadge(){
@@ -7621,60 +7828,47 @@ renderViewedProfile();
 
     const username=String(viewedProfile.username||'').trim();
     const userId=String(viewedProfile.user_id||'');
-    const cacheKey=username.toLowerCase();
-    if(!cacheKey)return;
+    if(!username)return;
 
-    // Owner is UUID-authoritative and can render synchronously.
+    // Owner is always authoritative by UUID and renders immediately.
     if(userId===OWNER_UUID){
-      f2wProfileRoleCacheV108.set(cacheKey,'owner');
-      renderStaticProfileRoleV108('owner');
-      applyProfileNameRoleV108('owner');
+      applyProfileRoleV110('owner');
       return;
     }
 
-    // Use cached role immediately. Never blank the badge while refreshing.
-    const cached=f2wProfileRoleCacheV108.get(cacheKey)
-      || String(viewedProfile.top_role||'').toLowerCase();
+    // Apply any role already supplied by the profile row or cache immediately.
+    const immediate=
+      validRoleV110(viewedProfile.top_role) ||
+      readRoleCacheV110(username);
 
-    if(['staff','moderator','support','developer','verified','contributor','curator'].includes(cached)){
-      renderStaticProfileRoleV108(cached);
-      applyProfileNameRoleV108(cached);
-    }
+    if(immediate)applyProfileRoleV110(immediate);
 
-    const requestId=++f2wProfileRoleRequestV108;
+    const requestId=++f2wProfileRoleRequestV110;
+    const resolved=await rpcPublicRoleV110(username);
 
-    try{
-      const {data,error}=await chatSupabase.rpc(
-        'get_public_profile_role',
-        {target_username:username}
-      );
+    if(requestId!==f2wProfileRoleRequestV110)return;
 
-      if(requestId!==f2wProfileRoleRequestV108)return;
-      if(error)throw error;
-
-      const role=String(
-        Array.isArray(data)
-          ? (data[0]?.top_role||data[0]?.role_key||data[0]?.role||data[0]||'')
-          : (data?.top_role||data?.role_key||data?.role||data||'')
-      ).toLowerCase();
-
-      if(['staff','moderator','support','developer','verified','contributor','curator'].includes(role)){
-        f2wProfileRoleCacheV108.set(cacheKey,role);
-        renderStaticProfileRoleV108(role);
-        applyProfileNameRoleV108(role);
-      }else if(!cached){
-        // Only clear if a successful lookup confirms there is no role AND
-        // there was no previously rendered/cached role.
-        clearViewedProfileRoleBadge();
+    if(resolved){
+      applyProfileRoleV110(resolved);
+    }else if(!immediate){
+      // A successful no-role result means a normal member: plain white,
+      // with no particles and no badge.
+      clearViewedProfileRoleBadge();
+      const name=document.getElementById('profile-name');
+      if(name){
+        F2W_ROLE_ORDER_V110.forEach(r=>name.classList.remove(`f2w-role-${r}`));
+        name.classList.remove('f2w-role-name');
+        name.classList.add('f2w-no-role-name');
+        name.dataset.f2wRole='';
+        name.style.removeProperty('--f2w-profile-role-color');
+        name.style.removeProperty('color');
+        name.style.removeProperty('-webkit-text-fill-color');
       }
-    }catch(error){
-      // Network/RPC failures do not erase a badge already on screen.
-      console.warn('Public role badge lookup unavailable:',error);
     }
   }
 
 
-  let f2wLastRoleRefreshAtV108=0;
+  let f2wLastRoleRefreshAtV110=0;
   function refreshPublicProfileRoleBadge(){
     if(!viewedProfile){
       clearViewedProfileRoleBadge();
@@ -7682,8 +7876,8 @@ renderViewedProfile();
     }
 
     const now=Date.now();
-    if(now-f2wLastRoleRefreshAtV108<5000)return;
-    f2wLastRoleRefreshAtV108=now;
+    if(now-f2wLastRoleRefreshAtV110<5000)return;
+    f2wLastRoleRefreshAtV110=now;
     loadViewedProfileRoleBadge();
   }
 
@@ -8283,7 +8477,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=108-1788290088" defer></script>
+  <script src="/final-v35.js?v=110-1788290464" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -9897,4 +10091,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:profile-role-stability-v108:1788290088 -->
 <!-- f2w-force-save:v108-cache:1788290088:profile/index.html -->
 <!-- f2w-force-save:v109-cache:1788290239:profile/index.html -->
+<!-- f2w-force-save:profile-role-v110:1788290464 -->
+<!-- f2w-force-save:v110-cache:1788290464:profile/index.html -->
  
