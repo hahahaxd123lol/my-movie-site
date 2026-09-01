@@ -424,10 +424,10 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/responsive-v7.css">
   <link rel="stylesheet" href="/final-v9.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=64-1788222358">
+  <link rel="stylesheet" href="/global-header-v1.css?v=65-1788222474">
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=64-1788222358" defer></script>
+  <script src="/global-header-chat-v1.js?v=65-1788222474" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -469,6 +469,92 @@ body.f2w-main-page>header .chat-button{font-size:10px!important;display:flex!imp
 body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-spacing:-.01em!important}
 /* f2w-force-save:header-button-fit-inline-v35:1788217735 */
 /* f2w-force-save:header-gorilla-lock-v30:1788216738 */
+</style>
+
+
+<style id="f2w-users-results-v65">
+/* Bigger, more readable user search results */
+.users-results,
+#user-results,
+.user-results {
+  display:grid!important;
+  gap:12px!important;
+}
+
+.user-result-card,
+.user-card,
+.users-result-card {
+  min-height:96px!important;
+  padding:14px 16px!important;
+  border-radius:14px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+}
+
+.user-result-card img,
+.user-card img,
+.users-result-card img,
+.user-result-avatar {
+  width:58px!important;
+  height:58px!important;
+  min-width:58px!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+}
+
+.user-result-card strong,
+.user-card strong,
+.users-result-card strong,
+.user-result-name {
+  font-size:1rem!important;
+  line-height:1.2!important;
+}
+
+.user-result-card small,
+.user-card small,
+.users-result-card small,
+.user-result-meta {
+  font-size:.76rem!important;
+  line-height:1.35!important;
+}
+
+#users-pagination,
+.users-pagination,
+.pagination {
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:7px!important;
+  flex-wrap:wrap!important;
+  margin:22px 0 8px!important;
+}
+
+#users-pagination button,
+.users-pagination button,
+.pagination button,
+.f2w-users-page-btn {
+  min-width:38px!important;
+  height:38px!important;
+  padding:0 11px!important;
+  border:1px solid #29425c!important;
+  border-radius:9px!important;
+  background:#081725!important;
+  color:#dce7f3!important;
+  font-size:.78rem!important;
+  font-weight:800!important;
+  cursor:pointer!important;
+}
+
+#users-pagination button.active,
+.users-pagination button.active,
+.pagination button.active,
+.f2w-users-page-btn.active {
+  background:#e50914!important;
+  border-color:#ff3344!important;
+  color:#fff!important;
+}
+/* f2w-force-save:users-results-v65:1788222474 */
 </style>
 
 </head>
@@ -526,14 +612,14 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
             class="search-bar"
             type="search"
             placeholder="Search movies..."
-            autocomplete="one-time-code"
+            autocomplete="off"
             inputmode="search"
             enterkeyhint="search"
             autocapitalize="off"
             autocorrect="off"
             spellcheck="false"
             aria-label="Search movies and TV shows"
-            aria-autocomplete="one-time-code"
+            aria-autocomplete="off"
             data-form-type="search"
             data-lpignore="true"
             data-1p-ignore="true"
@@ -553,14 +639,14 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
            
             class="user-search-bar"
             placeholder="Search users..."
-            autocomplete="one-time-code"
+            autocomplete="off"
             inputmode="search"
             enterkeyhint="search"
             autocapitalize="off"
             autocorrect="off"
             spellcheck="false"
             aria-label="Search Flix2Watch users"
-            aria-autocomplete="one-time-code"
+            aria-autocomplete="off"
             data-form-type="search"
             data-lpignore="true"
             data-1p-ignore="true"
@@ -684,7 +770,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         .select('username,avatar_url,display_name')
         .ilike('username',`${query}%`)
         .order('username',{ascending:true})
-        .limit(8);
+        .limit(30);
 
       if(requestId!==userSearchRequestId)return;
       if(error)throw error;
@@ -1221,6 +1307,73 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </script>
 
 
+
+<script id="f2w-users-pagination-v65">
+(() => {
+  'use strict';
+  window.F2W_USERS_PAGE_SIZE=30;
+
+  function ensurePager(){
+    let pager=document.getElementById('users-pagination');
+    if(pager)return pager;
+
+    const results=document.getElementById('user-results') ||
+      document.querySelector('.users-results,.user-results,[data-users-results]');
+    if(!results)return null;
+
+    pager=document.createElement('div');
+    pager.id='users-pagination';
+    pager.className='users-pagination';
+    results.after(pager);
+    return pager;
+  }
+
+  window.renderUsersPaginationV65=function(total,page){
+    const pager=ensurePager();
+    if(!pager)return;
+
+    const pages=Math.max(1,Math.ceil(Number(total||0)/30));
+    const current=Math.max(1,Math.min(Number(page||1),pages));
+    const parts=[];
+
+    const start=Math.max(1,Math.min(current-2,Math.max(1,pages-4)));
+    const end=Math.min(pages,start+4);
+
+    if(current>1)parts.push(`<button type="button" class="f2w-users-page-btn" data-page="${current-1}"><i class="fa-solid fa-chevron-left"></i></button>`);
+    for(let p=start;p<=end;p++){
+      parts.push(`<button type="button" class="f2w-users-page-btn ${p===current?'active':''}" data-page="${p}">${p}</button>`);
+    }
+    if(current<pages)parts.push(`<button type="button" class="f2w-users-page-btn" data-page="${current+1}"><i class="fa-solid fa-chevron-right"></i></button>`);
+
+    pager.innerHTML=parts.join('');
+
+    pager.querySelectorAll('[data-page]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const url=new URL(location.href);
+        url.searchParams.set('page',btn.dataset.page);
+        location.href=url.toString();
+      });
+    });
+  };
+})();
+// f2w-force-save:users-pagination-v65:1788222474
+</script>
+
+
+<script id="f2w-users-pagination-autobind-v65">
+window.addEventListener('load',()=>{
+  const params=new URLSearchParams(location.search);
+  const page=Math.max(1,Number(params.get('page')||1));
+
+  // If page script exposes total count, use it. Otherwise use current result count
+  // and only show page 1; existing page script can call renderUsersPaginationV65(total,page).
+  const total=Number(window.f2wUsersTotalCount||window.usersTotalCount||0);
+  if(total>0 && typeof window.renderUsersPaginationV65==='function'){
+    window.renderUsersPaginationV65(total,page);
+  }
+});
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:users:01c6b68a68 -->
@@ -1278,4 +1431,6 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 <!-- f2w-force-save:text-input-cache-v62:1788221977:users/index.html -->
 <!-- f2w-force-save:v63-search-isolation:1788222324:users/index.html -->
 <!-- f2w-force-save:v64-cache:1788222358:users/index.html -->
+<!-- f2w-force-save:v65-search-cache:1788222474:users/index.html -->
+<!-- f2w-force-save:users-page-v65:1788222474 -->
  

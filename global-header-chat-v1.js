@@ -1178,4 +1178,126 @@
 })();
 // f2w-force-save:search-password-isolation-v63:1788222324
 // f2w-force-save:user-search-role-decoration-v64:1788222358
+
+/* ============================================================
+   F2W v65 — SEARCH FIELDS MUST NEVER ACT LIKE LOGIN FIELDS
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wSearchNoPasswordV65)return;
+  window.__f2wSearchNoPasswordV65=true;
+
+  const SEARCH_SELECTOR = [
+    '#movie-search',
+    '#user-search',
+    '#forum-search',
+    '#forum-search-input',
+    '#v35-dm-user-search',
+    '.movie-search-container input',
+    '.user-search-container input',
+    '.forum-v30-toolbar input',
+    '.forum-search input',
+    'input[type="search"]'
+  ].join(',');
+
+  function randomName(input){
+    if(input.dataset.f2wRandomSearchNameV65)return;
+    input.dataset.f2wRandomSearchNameV65='1';
+    const seed=Math.random().toString(36).slice(2,10);
+    input.name=`f2w_q_${seed}`;
+  }
+
+  function harden(input){
+    if(!input || input.closest?.('#account-modal'))return;
+    if(input.matches?.('input[type="password"],input[type="email"]'))return;
+
+    input.type='search';
+    input.autocomplete='off';
+    input.setAttribute('role','searchbox');
+    input.setAttribute('inputmode','search');
+    input.setAttribute('autocapitalize','none');
+    input.setAttribute('spellcheck','false');
+    input.setAttribute('enterkeyhint','search');
+
+    input.setAttribute('data-lpignore','true');
+    input.setAttribute('data-1p-ignore','true');
+    input.setAttribute('data-bwignore','true');
+    input.setAttribute('data-form-type','other');
+    input.setAttribute('data-protonpass-ignore','true');
+
+    randomName(input);
+
+    // Keep readonly until the real pointer interaction. This prevents Chromium
+    // from pre-classifying the field as a username/login autofill target.
+    if(document.activeElement!==input && !input.dataset.f2wSearchActivatedV65){
+      input.readOnly=true;
+    }
+  }
+
+  function activate(input,e){
+    if(!input)return;
+    e?.preventDefault?.();
+    input.dataset.f2wSearchActivatedV65='1';
+    input.readOnly=false;
+    randomName(input);
+    try{input.focus({preventScroll:true})}catch{input.focus()}
+    const len=String(input.value||'').length;
+    try{input.setSelectionRange(len,len)}catch{}
+  }
+
+  function lockClosedAuth(){
+    const modal=document.getElementById('account-modal');
+    if(!modal)return;
+    const isOpen=modal.classList.contains('open') ||
+      modal.classList.contains('f2w-auth-modal-open-v60') ||
+      modal.classList.contains('f2w-auth-hard-open-v58');
+
+    if(!isOpen){
+      modal.setAttribute('inert','');
+      modal.setAttribute('aria-hidden','true');
+    }else{
+      modal.removeAttribute('inert');
+      modal.setAttribute('aria-hidden','false');
+    }
+  }
+
+  function scan(){
+    document.querySelectorAll(SEARCH_SELECTOR).forEach(harden);
+    lockClosedAuth();
+  }
+
+  document.addEventListener('pointerdown',e=>{
+    const input=e.target.closest?.(SEARCH_SELECTOR);
+    if(input && !input.closest('#account-modal'))activate(input,e);
+  },true);
+
+  document.addEventListener('keydown',e=>{
+    const input=e.target.closest?.(SEARCH_SELECTOR);
+    if(input && input.readOnly){
+      input.readOnly=false;
+      input.dataset.f2wSearchActivatedV65='1';
+    }
+  },true);
+
+  document.addEventListener('blur',e=>{
+    const input=e.target.closest?.(SEARCH_SELECTOR);
+    if(input){
+      input.dataset.f2wSearchActivatedV65='';
+      setTimeout(()=>{ if(document.activeElement!==input) input.readOnly=true; },0);
+    }
+  },true);
+
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('#header-login-btn,#header-signup-btn,#watch-login-overlay .watch-login-actions button')){
+      document.getElementById('account-modal')?.removeAttribute('inert');
+    }
+  },true);
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan,{once:true});
+  else scan();
+
+  new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('pageshow',scan,{passive:true});
+})();
+// f2w-force-save:search-no-password-v65:1788222474
  

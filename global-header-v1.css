@@ -2280,3 +2280,27 @@ body .f2w-role-name {
 
 /* f2w-force-save:roleless-usernames-white-global-v64:1788222358 */
  
+
+/* ============================================================
+   F2W v65 — NORMAL SEARCH FIELD VISUALS
+   ============================================================ */
+body.f2w-main-page input[type="search"] {
+  -webkit-text-security:none!important;
+}
+
+body.f2w-main-page input[type="search"]:-webkit-autofill,
+body.f2w-main-page input[type="search"]:-webkit-autofill:hover,
+body.f2w-main-page input[type="search"]:-webkit-autofill:focus {
+  -webkit-text-fill-color:inherit!important;
+  transition:background-color 999999s ease-out 0s!important;
+}
+
+body.f2w-main-page input[type="search"]::-webkit-credentials-auto-fill-button,
+body.f2w-main-page input[type="search"]::-webkit-contacts-auto-fill-button {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* f2w-force-save:search-field-visuals-v65:1788222474 */
+ 
