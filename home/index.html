@@ -8509,13 +8509,15 @@ body.f2w-auth-v67-open {
 
 
 
-<script id="f2w-home-featured-v118">
+<script id="f2w-home-featured-v133">
 (() => {
   'use strict';
-  if(window.__f2wHomeFeaturedV118)return;
-  window.__f2wHomeFeaturedV118=true;
+  if(window.__f2wHomeFeaturedV133)return;
+  window.__f2wHomeFeaturedV133=true;
 
   const API_KEY='925c48dd6e24fd5e975fe224238bbb45';
+  const ROTATE_MS=5000;
+  const REFRESH_MS=5*60*1000;
   const banner=document.getElementById('hero-banner');
   const titleEl=document.getElementById('hero-title');
   const metaEl=document.getElementById('hero-meta');
@@ -8529,15 +8531,26 @@ body.f2w-auth-v67-open {
 
   let slides=[];
   let index=0;
-  let timer=null;
+  let rotateTimer=0;
+  let refreshTimer=0;
+  let lastRefresh=0;
+  let loadSeq=0;
 
-  function mediaType(item){
-    return item.media_type==='tv'?'tv':'movie';
+  const mediaType=item=>item?.media_type==='tv'?'tv':'movie';
+  const slideKey=item=>`${mediaType(item)}:${item?.id||''}`;
+
+  function preloadNext(){
+    if(slides.length<2)return;
+    const nextItem=slides[(index+1)%slides.length];
+    if(!nextItem?.backdrop_path)return;
+    const img=new Image();
+    img.decoding='async';
+    img.src=`https://image.tmdb.org/t/p/original${nextItem.backdrop_path}`;
   }
 
-  function render(i){
+  function render(i,{restart=false}={}){
     if(!slides.length)return;
-    index=(i+slides.length)%slides.length;
+    index=((i%slides.length)+slides.length)%slides.length;
     const item=slides[index];
     const type=mediaType(item);
     const title=item.title||item.name||'Featured';
@@ -8548,7 +8561,6 @@ body.f2w-auth-v67-open {
     titleEl.textContent=title;
     overviewEl.textContent=item.overview||'No description available.';
     linkEl.href=`/watch/?id=${encodeURIComponent(item.id)}&type=${type}`;
-
     metaEl.innerHTML=[
       year?`<span>${year}</span>`:'',
       `<span>${type==='tv'?'TV Series':'Movie'}</span>`,
@@ -8556,8 +8568,7 @@ body.f2w-auth-v67-open {
     ].filter(Boolean).join('<span aria-hidden="true">•</span>');
 
     if(item.backdrop_path){
-      banner.style.backgroundImage=
-        `linear-gradient(90deg,rgba(2,9,20,.94) 0%,rgba(2,9,20,.66) 46%,rgba(2,9,20,.20) 100%),url("https://image.tmdb.org/t/p/original${item.backdrop_path}")`;
+      banner.style.backgroundImage=`linear-gradient(90deg,rgba(2,9,20,.94) 0%,rgba(2,9,20,.66) 46%,rgba(2,9,20,.20) 100%),url("https://image.tmdb.org/t/p/original${item.backdrop_path}")`;
       banner.style.backgroundSize='cover';
       banner.style.backgroundPosition='center';
     }
@@ -8568,104 +8579,128 @@ body.f2w-auth-v67-open {
         dot.setAttribute('aria-current',n===index?'true':'false');
       });
     }
+
+    preloadNext();
+    if(restart)scheduleRotate();
   }
 
-  function restart(){
-    clearInterval(timer);
-    if(slides.length>1){
-      timer=setInterval(()=>render(index+1),5000);
-    }
+  // A single chained timeout is intentional. setInterval could bunch callbacks after
+  // a stalled/backgrounded tab, which made the hero skip and jump backwards.
+  function scheduleRotate(){
+    clearTimeout(rotateTimer);
+    if(slides.length<2||document.hidden)return;
+    rotateTimer=setTimeout(()=>{
+      render(index+1);
+      scheduleRotate();
+    },ROTATE_MS);
   }
 
-  async function load(){
+  function rebuildDots(){
+    if(!dots)return;
+    dots.innerHTML=slides.map((_,n)=>`<button type="button" aria-label="Featured title ${n+1}"></button>`).join('');
+    [...dots.children].forEach((dot,n)=>{
+      dot.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        render(n,{restart:true});
+      });
+    });
+  }
+
+  async function refreshTrending({initial=false}={}){
+    const seq=++loadSeq;
     const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),5000);
+    const timeout=setTimeout(()=>controller.abort(),6500);
     try{
       const response=await fetch(
         `https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&language=en-US&page=1`,
-        {cache:'default',signal:controller.signal}
+        {cache:'no-cache',signal:controller.signal}
       );
       const data=await response.json().catch(()=>({}));
       if(!response.ok)throw new Error(data?.status_message||`TMDB ${response.status}`);
+      if(seq!==loadSeq)return;
 
-      slides=(Array.isArray(data.results)?data.results:[])
-        .filter(item=>
-          item &&
-          item.id &&
-          item.backdrop_path &&
-          item.media_type!=='person' &&
-          (item.media_type==='movie'||item.media_type==='tv')
-        )
+      const fresh=(Array.isArray(data.results)?data.results:[])
+        .filter(item=>item&&item.id&&item.backdrop_path&&item.media_type!=='person'&&(item.media_type==='movie'||item.media_type==='tv'))
         .slice(0,5);
+      if(!fresh.length)throw new Error('No featured titles returned');
 
-      if(!slides.length)throw new Error('No featured titles returned');
+      const currentKey=slides[index]?slideKey(slides[index]):null;
+      slides=fresh;
+      rebuildDots();
 
-      // Rebuild dots so they always match actual slides.
-      if(dots){
-        dots.innerHTML=slides.map((_,n)=>
-          `<button type="button" aria-label="Featured title ${n+1}"></button>`
-        ).join('');
-        [...dots.children].forEach((dot,n)=>{
-          dot.addEventListener('click',event=>{
-            event.preventDefault();
-            event.stopPropagation();
-            render(n);
-            restart();
-          });
-        });
+      // Refresh the trending data without visually jumping to another title.
+      // Keep the same title if it is still in today's top five; otherwise continue
+      // from the nearest valid position. Initial load always starts at #1.
+      if(initial||!currentKey){
+        index=0;
+      }else{
+        const same=slides.findIndex(item=>slideKey(item)===currentKey);
+        index=same>=0?same:Math.min(index,slides.length-1);
       }
 
+      lastRefresh=Date.now();
       window.v19FeaturedReady=true;
-      render(0);
-      restart();
+      render(index);
+      scheduleRotate();
     }catch(error){
       console.warn('Featured carousel unavailable:',error);
-
-      // Never leave permanent "Loading" text on a failed optional carousel request.
-      if(/^Loading/i.test(metaEl.textContent||'')){
-        metaEl.innerHTML='<span>Featured</span>';
-      }
-      if(/^Loading Spotlight/i.test(titleEl.textContent||'')){
-        titleEl.textContent='Featured Titles';
-      }
-      if(/Fetching top featured/i.test(overviewEl.textContent||'')){
-        overviewEl.textContent='Browse today’s featured movies and series.';
+      if(!slides.length){
+        if(/^Loading/i.test(metaEl.textContent||''))metaEl.innerHTML='<span>Featured</span>';
+        if(/^Loading Spotlight/i.test(titleEl.textContent||''))titleEl.textContent='Featured Titles';
+        if(/Fetching top featured/i.test(overviewEl.textContent||''))overviewEl.textContent='Browse today’s featured movies and series.';
       }
     }finally{
       clearTimeout(timeout);
     }
   }
 
-  const arrowHandler=(delta)=>event=>{
+  function scheduleRefresh(){
+    clearTimeout(refreshTimer);
+    refreshTimer=setTimeout(async()=>{
+      await refreshTrending();
+      scheduleRefresh();
+    },REFRESH_MS);
+  }
+
+  const arrowHandler=delta=>event=>{
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
-    if(slides.length)render(index+delta);
-    restart();
+    if(slides.length)render(index+delta,{restart:true});
   };
-
   prev?.addEventListener('click',arrowHandler(-1),true);
   next?.addEventListener('click',arrowHandler(1),true);
 
-  // Expose the renderer for the catalogue loader too.
+  // Compatibility hook used by the catalogue loader. Do not let it hijack a
+  // healthy trending carousel or reset its five-second sequence.
   window.setupHeroBanner=item=>{
-    if(!item)return;
-    const existing=slides.findIndex(x=>String(x.id)===String(item.id)&&mediaType(x)===mediaType(item));
-    if(existing>=0){
-      render(existing);
-      return;
-    }
-    slides=[item,...slides].slice(0,5);
+    if(!item||slides.length)return;
+    slides=[item];
+    index=0;
+    rebuildDots();
     render(0);
   };
 
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',load,{once:true});
-  }else{
-    load();
-  }
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){
+      clearTimeout(rotateTimer);
+      return;
+    }
+    // Coming back to the tab never "catches up" missed slides. It simply waits
+    // a fresh five seconds, so there are no rapid skips.
+    scheduleRotate();
+    if(Date.now()-lastRefresh>REFRESH_MS)refreshTrending().catch(()=>{});
+  });
+
+  const start=async()=>{
+    await refreshTrending({initial:true});
+    scheduleRefresh();
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
 })();
-/* f2w-force-save:home-featured-v118:1788296424 */
+/* f2w-force-save:home-featured-v133 */
 </script>
 
 </body>
