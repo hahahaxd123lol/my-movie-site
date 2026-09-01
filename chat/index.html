@@ -2340,7 +2340,7 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <link rel="stylesheet" href="/final-v35.css?v=90-1788227716">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=93-1788229371">
+  <link rel="stylesheet" href="/global-header-v1.css?v=95-1788281037">
 
   <style id="f2w-dedicated-chat-page">
     /* /chat/ is a dedicated chat route, not a disguised Home page. */
@@ -8472,6 +8472,144 @@ body.f2w-auth-v67-open {
 // f2w-force-save:guest-dm-stable-js-v85:1788226556
 </script>
 
+
+<style id="f2w-chat-auth-close-v95">
+/* ============================================================
+   F2W v95 — CHAT GUEST-DM AUTH MODAL CLOSE SAFETY
+   ============================================================ */
+#account-modal.open {
+  cursor:default!important;
+}
+
+#account-modal.open .account-card {
+  cursor:default!important;
+}
+
+#account-modal.open .chat-close,
+#account-modal.open .account-close,
+#account-modal.open .f2w-auth-close-v56 {
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  z-index:2147483647!important;
+}
+
+/* f2w-force-save:chat-auth-close-css-v95:1788281037 */
+</style>
+
+<script id="f2w-chat-auth-close-v95-js">
+(() => {
+  'use strict';
+  if(window.__f2wChatAuthCloseV95)return;
+  window.__f2wChatAuthCloseV95=true;
+
+  function modal(){
+    return document.getElementById('account-modal');
+  }
+
+  function closeAuthModal(){
+    const m=modal();
+    if(!m)return false;
+
+    // Clear every historical open-state class used by the site.
+    m.classList.remove(
+      'open',
+      'f2w-auth-v67',
+      'f2w-auth-hard-open-v58',
+      'f2w-auth-modal-open-v60'
+    );
+    m.setAttribute('aria-hidden','true');
+    m.setAttribute('inert','');
+    m.style.removeProperty('display');
+
+    // Remove every historical body/html lock so the chat remains usable.
+    const root=document.documentElement;
+    const body=document.body;
+
+    [
+      'f2w-auth-open-v56',
+      'f2w-auth-v67-open',
+      'f2w-auth-open-v60',
+      'f2w-auth-modal-open',
+      'f2w-auth-hard-open'
+    ].forEach(cls=>{
+      root.classList.remove(cls);
+      body?.classList.remove(cls);
+    });
+
+    root.style.removeProperty('overflow');
+    root.style.removeProperty('height');
+
+    if(body){
+      [
+        'overflow','position','top','left','right',
+        'width','height','min-height'
+      ].forEach(prop=>body.style.removeProperty(prop));
+    }
+
+    // If a native top-layer wrapper exists on a reused auth implementation, close it too.
+    const dialog=document.getElementById('f2w-users-auth-dialog-v73');
+    if(dialog){
+      try{if(dialog.open)dialog.close();}catch{}
+      dialog.removeAttribute('open');
+    }
+
+    // Keep Direct Messages selected. Closing auth should reveal the existing
+    // right-pane guest padlock again rather than kicking the user elsewhere.
+    const dmTab=document.getElementById('v17-chat-dm-tab');
+    if(dmTab?.classList.contains('active')){
+      setTimeout(()=>{
+        try{window.switchChatMode?.('dm');}catch{}
+      },0);
+    }
+
+    return false;
+  }
+
+  window.f2wCloseChatAuthV95=closeAuthModal;
+
+  // CAPTURE phase makes the X reliable even if an older inline/legacy handler breaks.
+  document.addEventListener('click',event=>{
+    const m=modal();
+    if(!m || !m.classList.contains('open'))return;
+
+    const closeButton=event.target?.closest?.(
+      '#account-modal .chat-close,'+
+      '#account-modal .account-close,'+
+      '#account-modal .f2w-auth-close-v56'
+    );
+
+    if(closeButton){
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      closeAuthModal();
+      return;
+    }
+
+    // Clicking the dimmed backdrop — but NOT the account card — closes it.
+    if(event.target===m){
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      closeAuthModal();
+    }
+  },true);
+
+  // Escape/Back is useful on keyboard/TV browsers as well.
+  document.addEventListener('keydown',event=>{
+    if(event.key!=='Escape')return;
+    const m=modal();
+    if(!m?.classList.contains('open'))return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    closeAuthModal();
+  },true);
+})();
+/* f2w-force-save:chat-auth-close-js-v95:1788281037 */
+</script>
+
 </body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
@@ -8572,4 +8710,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v92-cache:1788228465:chat/index.html -->
 <!-- f2w-force-save:v93-cache:1788229371:chat/index.html -->
 <!-- f2w-force-save:v94-links:1788280907:chat/index.html -->
+<!-- f2w-force-save:chat-auth-close-v95:1788281037 -->
+<!-- f2w-force-save:chat-v95-cache:1788281037 -->
  
