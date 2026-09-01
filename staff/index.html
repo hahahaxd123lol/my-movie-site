@@ -799,7 +799,7 @@ html{overflow-y:scroll}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=118-1788296424">
+  <link rel="stylesheet" href="/final-v35.css?v=120-1788297036">
 
 <style id="staff-v36-support-tickets">
   #panel-support .card{overflow:hidden}
@@ -819,9 +819,9 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=119-1788296897">
+  <link rel="stylesheet" href="/global-header-v1.css?v=120-1788297036">
   <script src="/seo-v17.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=118-1788296424" defer></script>
+  <script src="/global-header-chat-v1.js?v=120-1788297036" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -863,6 +863,17 @@ body.f2w-main-page>header .chat-button{font-size:10px!important;display:flex!imp
 body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-spacing:-.01em!important}
 /* f2w-force-save:header-button-fit-inline-v35:1788217735 */
 /* f2w-force-save:header-gorilla-lock-v30:1788216738 */
+</style>
+
+
+<style id="f2w-staff-settings-status-v120">
+#settings-view{
+  min-height:38px!important;
+  display:flex!important;
+  align-items:center!important;
+  color:#9fb0c4!important;
+}
+/* f2w-force-save:staff-settings-status-v120:1788297036 */
 </style>
 
 </head>
@@ -1329,7 +1340,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <div class="card-head"><strong>Public site settings</strong><span>Only approved keys are writable by Staff.</span></div>
         <div class="field"><label>MAINTENANCE / STATUS MESSAGE</label><textarea id="maintenance-message" placeholder="Leave blank for no banner"></textarea></div>
         <div class="row" style="margin-top:10px"><button class="btn primary" onclick="saveMaintenance()">Save status message</button><button class="btn" onclick="loadSettings()">Reload</button></div>
-        
+        <div id="settings-view" class="help-inline" style="margin-top:12px">Loading site settings…</div>
       </div>
     </section>
 
@@ -1855,7 +1866,27 @@ async function boot(){
 
   applyPermissionUI();
 
-  await Promise.all([loadStats(),loadReports(),loadSources(),loadCollections(),loadTickets(),loadSettings(),loadAudit(),loadLiveModeration(),loadAnnouncementHistory()]);
+  const startupLoads=[
+    ['stats',loadStats],
+    ['reports',loadReports],
+    ['sources',loadSources],
+    ['collections',loadCollections],
+    ['tickets',loadTickets],
+    ['settings',loadSettings],
+    ['audit',loadAudit],
+    ['moderation',loadLiveModeration],
+    ['announcements',loadAnnouncementHistory]
+  ];
+
+  await Promise.allSettled(
+    startupLoads.map(async([label,fn])=>{
+      try{
+        await fn();
+      }catch(error){
+        console.error(`Staff startup section failed: ${label}`,error);
+      }
+    })
+  );
 }
 
 
@@ -2573,10 +2604,22 @@ async function updateTicket(id,status,priority){try{await rpc('staff_update_tick
 async function loadSettings(){
   try{
     const config=await rpc('get_public_site_config');
-    document.getElementById('maintenance-message').value=config.maintenance_message||'';
-    document.getElementById('slow-seconds').value=Number(config.chat_slow_mode_seconds||0);
-    document.getElementById('settings-view').textContent=`Chat locked: ${Boolean(config.chat_locked)} · Slow mode: ${Number(config.chat_slow_mode_seconds||0)}s · Uploads: ${Boolean(config.chat_uploads_enabled)}`;
-  }catch(e){toast(e.message)}
+
+    const maintenance=document.getElementById('maintenance-message');
+    const slow=document.getElementById('slow-seconds');
+    const view=document.getElementById('settings-view');
+
+    if(maintenance)maintenance.value=config?.maintenance_message||'';
+    if(slow)slow.value=Number(config?.chat_slow_mode_seconds||0);
+    if(view){
+      view.textContent=`Chat locked: ${Boolean(config?.chat_locked)} · Slow mode: ${Number(config?.chat_slow_mode_seconds||0)}s · Uploads: ${Boolean(config?.chat_uploads_enabled)}`;
+    }
+  }catch(e){
+    console.error('Staff settings load failed:',e);
+    const view=document.getElementById('settings-view');
+    if(view)view.textContent='Site settings are temporarily unavailable.';
+    toast(e?.message||'Could not load site settings.');
+  }
 }
 async function saveMaintenance(){await setSetting('maintenance_message',document.getElementById('maintenance-message').value.trim())}
 
@@ -2661,7 +2704,7 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js?v=118-1788296424" defer>
+  <script src="/final-v35.js?v=120-1788297036" defer>
 document.getElementById('staff-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='staff-ticket-modal')closeStaffTicketModal()});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('staff-ticket-modal')?.hidden)closeStaffTicketModal()});
 document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendStaffTicketReply()}});
@@ -4433,4 +4476,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v117-cache:1788295984:staff/index.html -->
 <!-- f2w-force-save:v118-cache:1788296424:staff/index.html -->
 <!-- f2w-force-save:v119-cache:1788296897:staff/index.html -->
+<!-- f2w-force-save:staff-null-fix-v120:1788297036 -->
+<!-- f2w-force-save:v120-cache:1788297036:staff/index.html -->
  
