@@ -743,4 +743,201 @@
   window.addEventListener('pageshow',bindSitewide,{passive:true});
 })();
 // f2w-force-save:sitewide-auth-restore-v56:1788221054
+
+/* ============================================================
+   F2W v57 — SITE-WIDE USER SEARCH AUTOCOMPLETE
+   Independent of page-local search functions.
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wUserAutocompleteV57)return;
+  window.__f2wUserAutocompleteV57=true;
+
+  const SUPABASE_URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const SUPABASE_KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  let fallbackClient=null;
+  let timer=null;
+  let requestSeq=0;
+
+  function client(){
+    try{if(window.chatSupabase?.from)return window.chatSupabase;}catch{}
+    try{if(window.f2wSupabase?.from)return window.f2wSupabase;}catch{}
+    try{if(window.supabaseClient?.from)return window.supabaseClient;}catch{}
+    try{
+      if(!fallbackClient && window.supabase?.createClient){
+        fallbackClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+      }
+    }catch{}
+    return fallbackClient;
+  }
+
+  function esc(value=''){
+    return String(value).replace(/[&<>"']/g,ch=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    })[ch]);
+  }
+
+  function initials(value=''){
+    const clean=String(value||'?').trim();
+    return clean.slice(0,2).toUpperCase();
+  }
+
+  function ensureResults(input){
+    const container=input.closest('.user-search-container') || input.parentElement;
+    if(!container)return null;
+
+    let results=container.querySelector('.user-search-results');
+    if(!results){
+      results=document.createElement('div');
+      results.className='user-search-results f2w-user-search-results-v57';
+      results.id=input.id==='user-search'?'user-search-results':'';
+      results.setAttribute('role','listbox');
+      results.setAttribute('aria-label','User search suggestions');
+      container.appendChild(results);
+    }
+    return results;
+  }
+
+  function hideResults(input){
+    const results=ensureResults(input);
+    if(!results)return;
+    results.classList.remove('show');
+    results.innerHTML='';
+  }
+
+  function openProfile(username){
+    const clean=String(username||'').trim().replace(/^@/,'');
+    if(clean)location.href=`/profile/?user=${encodeURIComponent(clean)}`;
+  }
+
+  async function runSearch(input){
+    const results=ensureResults(input);
+    if(!results)return;
+
+    const query=String(input.value||'').trim().replace(/[^A-Za-z0-9]/g,'');
+    if(input.value!==query)input.value=query;
+
+    const seq=++requestSeq;
+    if(!query){
+      hideResults(input);
+      return;
+    }
+
+    results.classList.add('show');
+    results.innerHTML='<div class="user-search-empty">Searching users…</div>';
+
+    const c=client();
+    if(!c?.from){
+      results.innerHTML='<div class="user-search-empty">User search is loading…</div>';
+      return;
+    }
+
+    try{
+      const {data,error}=await c
+        .from('profiles')
+        .select('username,avatar_url')
+        .not('username','is',null)
+        .ilike('username',`${query}%`)
+        .order('username',{ascending:true})
+        .limit(8);
+
+      if(seq!==requestSeq)return;
+      if(error)throw error;
+
+      if(!data?.length){
+        results.innerHTML='<div class="user-search-empty">No users found.</div>';
+        return;
+      }
+
+      results.innerHTML=data.map(profile=>{
+        const username=String(profile.username||'').trim();
+        const safe=esc(username);
+        const avatar=profile.avatar_url
+          ? `<img class="user-search-avatar" src="${esc(profile.avatar_url)}" alt="" loading="lazy" decoding="async">`
+          : `<span class="user-search-avatar fallback">${esc(initials(username))}</span>`;
+        return `<button class="user-search-result" type="button" role="option" data-username="${safe}">
+          ${avatar}
+          <span class="user-search-copy">
+            <strong class="user-search-name">@${safe}</strong>
+            <span class="user-search-sub">View public profile</span>
+          </span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>`;
+      }).join('');
+
+      results.querySelectorAll('.user-search-result').forEach(button=>{
+        button.addEventListener('pointerdown',e=>{
+          e.preventDefault();
+          openProfile(button.dataset.username);
+        });
+      });
+    }catch(error){
+      console.warn('User autocomplete failed:',error?.message||error);
+      if(seq===requestSeq){
+        results.innerHTML='<div class="user-search-empty">Could not search users right now.</div>';
+      }
+    }
+  }
+
+  function schedule(input){
+    clearTimeout(timer);
+    timer=setTimeout(()=>runSearch(input),90);
+  }
+
+  function activateInput(input){
+    if(!input || input.dataset.f2wAutocompleteV57)return;
+    input.dataset.f2wAutocompleteV57='1';
+
+    // The old password-manager protection left these readonly on some pages.
+    input.removeAttribute('readonly');
+    input.setAttribute('autocomplete','off');
+    input.setAttribute('aria-autocomplete','list');
+
+    ensureResults(input);
+
+    input.addEventListener('input',()=>schedule(input),{passive:true});
+    input.addEventListener('focus',()=>{
+      input.removeAttribute('readonly');
+      if(input.value.trim())schedule(input);
+    },{passive:true});
+
+    input.addEventListener('keydown',e=>{
+      if(e.key==='Escape')hideResults(input);
+      if(e.key==='Enter'){
+        const first=ensureResults(input)?.querySelector('.user-search-result');
+        if(first){
+          e.preventDefault();
+          openProfile(first.dataset.username);
+        }
+      }
+    });
+
+    input.addEventListener('blur',()=>setTimeout(()=>hideResults(input),160),{passive:true});
+  }
+
+  function bindAll(){
+    document.querySelectorAll('.user-search-container input[type="search"],#user-search')
+      .forEach(activateInput);
+  }
+
+  // Capture input before any stale page-local no-op handler can interfere.
+  document.addEventListener('input',e=>{
+    const input=e.target.closest?.('.user-search-container input,#user-search');
+    if(input)schedule(input);
+  },true);
+
+  document.addEventListener('pointerdown',e=>{
+    const input=e.target.closest?.('.user-search-container input,#user-search');
+    if(input)input.removeAttribute('readonly');
+  },{capture:true,passive:true});
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bindAll,{once:true});
+  }else{
+    bindAll();
+  }
+
+  new MutationObserver(bindAll).observe(document.documentElement,{childList:true,subtree:true});
+})();
+// f2w-force-save:user-autocomplete-v57:1788221142
  

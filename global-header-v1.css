@@ -2022,3 +2022,103 @@ html.f2w-auth-open-v56 {
 }
 /* f2w-force-save:sitewide-auth-css-v56:1788221054 */
  
+
+/* ============================================================
+   F2W v57 — USER SEARCH AUTOCOMPLETE DROPDOWN
+   ============================================================ */
+body.f2w-main-page > header .user-search-container {
+  position:relative!important;
+  overflow:visible!important;
+}
+
+body.f2w-main-page > header .f2w-user-search-results-v57,
+body.f2w-main-page > header .user-search-results {
+  position:absolute!important;
+  top:calc(100% + 7px)!important;
+  left:0!important;
+  right:0!important;
+  z-index:2147482500!important;
+  display:none!important;
+  max-height:330px!important;
+  overflow-y:auto!important;
+  border:1px solid #29435d!important;
+  border-radius:11px!important;
+  background:#061421!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.52)!important;
+  padding:5px!important;
+}
+
+body.f2w-main-page > header .f2w-user-search-results-v57.show,
+body.f2w-main-page > header .user-search-results.show {
+  display:block!important;
+}
+
+body.f2w-main-page > header .user-search-result {
+  width:100%!important;
+  min-height:52px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:7px 9px!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  color:#fff!important;
+  cursor:pointer!important;
+  text-align:left!important;
+}
+
+body.f2w-main-page > header .user-search-result:hover,
+body.f2w-main-page > header .user-search-result:focus {
+  background:#0c2032!important;
+  outline:none!important;
+}
+
+body.f2w-main-page > header .user-search-avatar {
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+  display:grid!important;
+  place-items:center!important;
+  background:#14293c!important;
+  color:#dce8f5!important;
+  font-size:.66rem!important;
+  font-weight:850!important;
+}
+
+body.f2w-main-page > header .user-search-copy {
+  min-width:0!important;
+  flex:1 1 auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:2px!important;
+}
+
+body.f2w-main-page > header .user-search-name {
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:.76rem!important;
+  color:#ff5260!important;
+}
+
+body.f2w-main-page > header .user-search-sub,
+body.f2w-main-page > header .user-search-empty {
+  color:#8196ad!important;
+  font-size:.64rem!important;
+}
+
+body.f2w-main-page > header .user-search-empty {
+  padding:12px!important;
+}
+
+body.f2w-main-page > header .user-search-result > i {
+  color:#71879e!important;
+  font-size:.66rem!important;
+  flex:0 0 auto!important;
+}
+
+/* f2w-force-save:user-autocomplete-css-v57:1788221142 */
+ 
