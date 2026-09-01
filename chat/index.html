@@ -2337,10 +2337,10 @@ body.f2w-main-page>header{view-transition-name:f2w-header}
   <script src="/chat-safety-v33.js" defer></script>
   <link rel="stylesheet" href="/final-v34.css">
   <script src="/social-v34.js" defer></script>
-  <link rel="stylesheet" href="/final-v35.css?v=90-1788227716">
+  <link rel="stylesheet" href="/final-v35.css?v=96-1788281466">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
-  <link rel="stylesheet" href="/global-header-v1.css?v=95-1788281037">
+  <link rel="stylesheet" href="/global-header-v1.css?v=96-1788281466">
 
   <style id="f2w-dedicated-chat-page">
     /* /chat/ is a dedicated chat route, not a disguised Home page. */
@@ -2699,7 +2699,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div class="account-title"><i class="fa-solid fa-user"></i> Account</div>
           <div class="account-subtitle">USERNAME + EMAIL + PASSWORD // SUPABASE AUTH</div>
         </div>
-        <button class="chat-close" onclick="closeAccountModal()"><i class="fa-solid fa-xmark"></i></button>
+        <button class="chat-close f2w-auth-hard-close-v96" type="button" aria-label="Close account popup" onclick="return window.f2wHardCloseAccountModalV96?.(event)"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <div class="account-body">
@@ -6386,7 +6386,7 @@ if(currentUser){
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=93-1788229371" defer></script>
+  <script src="/final-v35.js?v=96-1788281466" defer></script>
 
   <!-- F2W dedicated chat route bootstrap -->
 
@@ -8341,6 +8341,8 @@ body.f2w-auth-v67-open {
     sidebar()?.classList.add('f2w-guest-v85');
   }
 
+  window.f2wRenderGuestDmLockV96=renderGuestLock;
+
   function renderSessionCheck(){
     const right=thread();
     if(!right)return;
@@ -8473,55 +8475,52 @@ body.f2w-auth-v67-open {
 </script>
 
 
-<style id="f2w-chat-auth-close-v95">
+
+<style id="f2w-chat-auth-close-v96">
 /* ============================================================
-   F2W v95 — CHAT GUEST-DM AUTH MODAL CLOSE SAFETY
+   F2W v96 — HARD CLOSE FOR CHAT AUTH POPUP
    ============================================================ */
-#account-modal.open {
-  cursor:default!important;
+#account-modal {
+  pointer-events:auto!important;
 }
 
-#account-modal.open .account-card {
-  cursor:default!important;
+#account-modal .account-card {
+  position:relative!important;
+  pointer-events:auto!important;
+  z-index:2!important;
 }
 
-#account-modal.open .chat-close,
-#account-modal.open .account-close,
-#account-modal.open .f2w-auth-close-v56 {
+#account-modal .f2w-auth-hard-close-v96 {
+  position:relative!important;
+  z-index:2147483647!important;
   pointer-events:auto!important;
   cursor:pointer!important;
-  z-index:2147483647!important;
+  touch-action:manipulation!important;
 }
 
-/* f2w-force-save:chat-auth-close-css-v95:1788281037 */
+/* Nothing is allowed to cover the X inside the card. */
+#account-modal .account-header {
+  position:relative!important;
+  z-index:2147483646!important;
+  pointer-events:auto!important;
+}
+
+/* f2w-force-save:chat-auth-close-css-v96:1788281466 */
 </style>
 
-<script id="f2w-chat-auth-close-v95-js">
+<script id="f2w-chat-auth-close-v96-js">
 (() => {
   'use strict';
-  if(window.__f2wChatAuthCloseV95)return;
-  window.__f2wChatAuthCloseV95=true;
+  if(window.__f2wChatAuthCloseV96)return;
+  window.__f2wChatAuthCloseV96=true;
+
+  let closingUntil=0;
 
   function modal(){
     return document.getElementById('account-modal');
   }
 
-  function closeAuthModal(){
-    const m=modal();
-    if(!m)return false;
-
-    // Clear every historical open-state class used by the site.
-    m.classList.remove(
-      'open',
-      'f2w-auth-v67',
-      'f2w-auth-hard-open-v58',
-      'f2w-auth-modal-open-v60'
-    );
-    m.setAttribute('aria-hidden','true');
-    m.setAttribute('inert','');
-    m.style.removeProperty('display');
-
-    // Remove every historical body/html lock so the chat remains usable.
+  function clearLocks(){
     const root=document.documentElement;
     const body=document.body;
 
@@ -8530,7 +8529,8 @@ body.f2w-auth-v67-open {
       'f2w-auth-v67-open',
       'f2w-auth-open-v60',
       'f2w-auth-modal-open',
-      'f2w-auth-hard-open'
+      'f2w-auth-hard-open',
+      'f2w-auth-hard-open-v58'
     ].forEach(cls=>{
       root.classList.remove(cls);
       body?.classList.remove(cls);
@@ -8542,72 +8542,146 @@ body.f2w-auth-v67-open {
     if(body){
       [
         'overflow','position','top','left','right',
-        'width','height','min-height'
+        'width','height','min-height','pointer-events'
       ].forEach(prop=>body.style.removeProperty(prop));
     }
+  }
 
-    // If a native top-layer wrapper exists on a reused auth implementation, close it too.
+  function hardClose(event){
+    if(event){
+      try{event.preventDefault();}catch{}
+      try{event.stopPropagation();}catch{}
+      try{event.stopImmediatePropagation();}catch{}
+    }
+
+    closingUntil=Date.now()+700;
+
+    const m=modal();
+    if(m){
+      m.classList.remove(
+        'open',
+        'f2w-auth-v67',
+        'f2w-auth-hard-open-v58',
+        'f2w-auth-modal-open-v60'
+      );
+      m.setAttribute('aria-hidden','true');
+      m.setAttribute('inert','');
+      m.hidden=true;
+      m.style.setProperty('display','none','important');
+      m.style.setProperty('visibility','hidden','important');
+      m.style.setProperty('opacity','0','important');
+      m.style.setProperty('pointer-events','none','important');
+    }
+
+    clearLocks();
+
     const dialog=document.getElementById('f2w-users-auth-dialog-v73');
     if(dialog){
       try{if(dialog.open)dialog.close();}catch{}
       dialog.removeAttribute('open');
     }
 
-    // Keep Direct Messages selected. Closing auth should reveal the existing
-    // right-pane guest padlock again rather than kicking the user elsewhere.
-    const dmTab=document.getElementById('v17-chat-dm-tab');
-    if(dmTab?.classList.contains('active')){
-      setTimeout(()=>{
-        try{window.switchChatMode?.('dm');}catch{}
-      },0);
-    }
+    // Keep Direct Messages selected, but restore ONLY the right-pane guest lock.
+    // Do not call switchChatMode('dm') here because legacy code may reopen auth.
+    setTimeout(()=>{
+      try{window.f2wRenderGuestDmLockV96?.();}catch{}
+    },0);
 
     return false;
   }
 
-  window.f2wCloseChatAuthV95=closeAuthModal;
+  window.f2wHardCloseAccountModalV96=hardClose;
 
-  // CAPTURE phase makes the X reliable even if an older inline/legacy handler breaks.
-  document.addEventListener('click',event=>{
+  // Prevent legacy code from immediately reopening the modal from the same click/tap.
+  const originalOpenHeaderAuth=window.openHeaderAuth;
+  const originalF2wOpenAuth=window.f2wOpenAuth;
+
+  if(typeof originalOpenHeaderAuth==='function'){
+    window.openHeaderAuth=function(...args){
+      if(Date.now()<closingUntil)return false;
+      return originalOpenHeaderAuth.apply(this,args);
+    };
+  }
+
+  if(typeof originalF2wOpenAuth==='function'){
+    window.f2wOpenAuth=function(...args){
+      if(Date.now()<closingUntil)return false;
+      return originalF2wOpenAuth.apply(this,args);
+    };
+  }
+
+  // Pointer-down closes BEFORE any legacy click handler can interfere.
+  document.addEventListener('pointerdown',event=>{
     const m=modal();
     if(!m || !m.classList.contains('open'))return;
 
     const closeButton=event.target?.closest?.(
+      '#account-modal .f2w-auth-hard-close-v96,'+
       '#account-modal .chat-close,'+
       '#account-modal .account-close,'+
       '#account-modal .f2w-auth-close-v56'
     );
 
     if(closeButton){
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      closeAuthModal();
+      hardClose(event);
       return;
     }
 
-    // Clicking the dimmed backdrop — but NOT the account card — closes it.
-    if(event.target===m){
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      closeAuthModal();
+    // Backdrop only. Clicking the card itself must not close.
+    const card=event.target?.closest?.('#account-modal .account-card');
+    if(!card){
+      hardClose(event);
     }
   },true);
 
-  // Escape/Back is useful on keyboard/TV browsers as well.
+  // Click fallback for browsers without useful pointer events.
+  document.addEventListener('click',event=>{
+    const m=modal();
+    if(!m || !m.classList.contains('open'))return;
+
+    const closeButton=event.target?.closest?.(
+      '#account-modal .f2w-auth-hard-close-v96,'+
+      '#account-modal .chat-close,'+
+      '#account-modal .account-close,'+
+      '#account-modal .f2w-auth-close-v56'
+    );
+
+    if(closeButton){
+      hardClose(event);
+      return;
+    }
+
+    const card=event.target?.closest?.('#account-modal .account-card');
+    if(!card){
+      hardClose(event);
+    }
+  },true);
+
   document.addEventListener('keydown',event=>{
-    if(event.key!=='Escape')return;
+    if(event.key!=='Escape' && event.key!=='BrowserBack')return;
     const m=modal();
     if(!m?.classList.contains('open'))return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    closeAuthModal();
+    hardClose(event);
   },true);
+
+  // If some old observer tries to re-add "open" during the close window, kill it.
+  const observer=new MutationObserver(()=>{
+    const m=modal();
+    if(!m || Date.now()>=closingUntil)return;
+    if(m.classList.contains('open'))hardClose();
+  });
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{
+      const m=modal();
+      if(m)observer.observe(m,{attributes:true,attributeFilter:['class','style','hidden']});
+    },{once:true});
+  }else{
+    const m=modal();
+    if(m)observer.observe(m,{attributes:true,attributeFilter:['class','style','hidden']});
+  }
 })();
-/* f2w-force-save:chat-auth-close-js-v95:1788281037 */
+/* f2w-force-save:chat-auth-close-js-v96:1788281466 */
 </script>
 
 </body>
@@ -8712,4 +8786,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v94-links:1788280907:chat/index.html -->
 <!-- f2w-force-save:chat-auth-close-v95:1788281037 -->
 <!-- f2w-force-save:chat-v95-cache:1788281037 -->
+<!-- f2w-force-save:chat-auth-close-v96:1788281466 -->
+<!-- f2w-force-save:chat-v96-cache:1788281466 -->
  
