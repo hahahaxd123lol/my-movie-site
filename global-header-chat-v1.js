@@ -1761,4 +1761,67 @@
 // f2w-force-save:user-search-single-handler-v82:1788225709
 // f2w-force-save:user-search-v82:1788225709
 // f2w-force-save:autocomplete-display-name-v83:1788226300
+
+/* ============================================================
+   F2W v84 — MOVIE SEARCH ENTER = RESULTS PAGE, NEVER TOP RESULT
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wMovieSearchResultsV84)return;
+  window.__f2wMovieSearchResultsV84=true;
+
+  let navigating=false;
+
+  function clean(value){
+    return String(value||'').trim().replace(/\s+/g,' ').slice(0,120);
+  }
+
+  function submit(){
+    if(navigating)return false;
+
+    const input=document.getElementById('movie-search');
+    const query=clean(input?.value);
+    if(!query)return false;
+
+    navigating=true;
+
+    // Search Movies always opens the catalogue results page.
+    // It does NOT choose/open the first autocomplete result.
+    const target=`/home/?search=${encodeURIComponent(query)}&page=1`;
+
+    if(location.pathname.replace(/\/+$/,'')==='/home'){
+      const current=new URL(location.href);
+      const currentQuery=String(current.searchParams.get('search')||'').trim();
+      if(currentQuery===query){
+        current.searchParams.set('page','1');
+        history.replaceState({f2wMovieSearch:true},'',current.pathname+'?'+current.searchParams.toString());
+
+        if(typeof window.searchMedia==='function'){
+          window.searchMedia(query);
+        }
+        navigating=false;
+        return false;
+      }
+    }
+
+    location.assign(target);
+    return false;
+  }
+
+  window.submitMovieDirectorySearch=submit;
+
+  // Capture Enter before any older autocomplete handlers can select result #1.
+  document.addEventListener('keydown',event=>{
+    const input=event.target?.closest?.('#movie-search,.search-container input');
+    if(!input || event.key!=='Enter' || event.isComposing)return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    submit();
+  },true);
+
+  window.addEventListener('pageshow',()=>{navigating=false;},{passive:true});
+})();
+// f2w-force-save:movie-search-results-v84:1788226452
  

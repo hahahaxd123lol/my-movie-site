@@ -2355,7 +2355,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=74-1788224239">
-  <script src="/global-header-chat-v1.js?v=83-1788226300" defer></script>
+  <script src="/global-header-chat-v1.js?v=84-1788226452" defer></script>
 
   <style id="f2w-mobile-login-above-featured">
     /* Mobile/tablet home layout: keep the login/signup card above Featured. */
@@ -5168,6 +5168,13 @@ if(currentUser){
       }else{
         url.searchParams.delete('genre');
       }
+
+      if(catalogMode==='search'&&catalogQuery){
+        url.searchParams.set('search',catalogQuery);
+      }else{
+        url.searchParams.delete('search');
+      }
+
       if(catalogPage>1){
         url.searchParams.set('page',String(catalogPage));
       }else{
@@ -5432,6 +5439,8 @@ if(currentUser){
     loadCatalogPage(1,false);
   }
 
+  window.searchMedia=searchMedia;
+
   /* ================= START ================= */
 
   window.addEventListener('DOMContentLoaded',()=>{
@@ -5447,9 +5456,8 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
     }
 
     if(requestedSearch){
-      const search=document.getElementById('search');
-      if(search)search.value=requestedSearch;
-      setTimeout(()=>searchMedia(requestedSearch),240);
+      const headerSearch=document.getElementById('movie-search');
+      if(headerSearch)headerSearch.value=requestedSearch;
     }
 
     const quickPassword=document.getElementById('home-quick-password');
@@ -5483,7 +5491,16 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
     const requestedTab=String(startupParams.get('tab')||'').toLowerCase();
     const requestedPage=Math.max(1,Number(startupParams.get('page'))||1);
 
-    if(requestedGenre&&genreNames[requestedGenre]){
+    if(requestedSearch){
+      currentMode='search';
+      catalogMode='search';
+      catalogGenreId=null;
+      setGenreSortVisibility(false);
+      catalogQuery=requestedSearch;
+      catalogPage=requestedPage;
+      document.getElementById('section-title').textContent=`Search: "${requestedSearch}"`;
+      loadCatalogPage(requestedPage,false);
+    }else if(requestedGenre&&genreNames[requestedGenre]){
       currentMode='genre';
       catalogMode='genre';
       catalogGenreId=requestedGenre;
@@ -8132,4 +8149,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v81-cache:1788225523:home/index.html -->
 <!-- f2w-force-save:v82-cache:1788225709:home/index.html -->
 <!-- f2w-force-save:v83-cache:1788226300:home/index.html -->
+<!-- f2w-force-save:home-movie-search-v84:1788226452 -->
+<!-- f2w-force-save:v84-cache:1788226452:home/index.html -->
  
