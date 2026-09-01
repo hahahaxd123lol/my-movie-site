@@ -1381,4 +1381,62 @@ body.f2w-main-page .watch-auth-card {
   backdrop-filter:none!important;
 }
 /* f2w-force-save:role-particles-white-v75:1788224563 */
+
+/* ============================================================
+   F2W v77 — COMPACT ROLE PARTICLES IN USER AUTOCOMPLETE
+   Keep the white GIF tight to the actual display-name text.
+   ============================================================ */
+body.f2w-main-page > header .user-search-name.f2w-role-name {
+  display:inline-flex!important;
+  align-items:center!important;
+  align-self:flex-start!important;
+  flex:0 0 auto!important;
+  width:fit-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  position:relative!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+  line-height:1.2!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  top:-2px!important;
+  right:-4px!important;
+  bottom:-2px!important;
+  left:-4px!important;
+  width:auto!important;
+  height:auto!important;
+  display:block!important;
+  pointer-events:none!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  background-color:transparent!important;
+  filter:grayscale(1) brightness(3.4) contrast(1.15)!important;
+  mix-blend-mode:screen!important;
+  opacity:.92!important;
+  z-index:2!important;
+  border-radius:3px!important;
+  animation:none!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Do not let any generic compact-role rule widen this autocomplete effect. */
+body.f2w-main-page > header
+.user-search-result [data-f2w-role-decorated="1"].user-search-name.f2w-role-name::before {
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+  left:-4px!important;
+  right:-4px!important;
+}
+
+/* f2w-force-save:compact-user-search-particles-v77:1788224897 */
  
