@@ -8314,26 +8314,15 @@ body.f2w-auth-v67-open {
           <h3>Direct Messages are locked</h3>
           <p>Log in or create an account to send private messages. Public Chat stays available.</p>
           <div class="f2w-guest-dm-actions-v85">
-            <button class="login" type="button" data-f2w-v85-login>
+            <button class="login" type="button" data-f2w-dm-auth="login">
               <i class="fa-solid fa-right-to-bracket"></i> Log In
             </button>
-            <button class="signup" type="button" data-f2w-v85-signup>
+            <button class="signup" type="button" data-f2w-dm-auth="signup">
               <i class="fa-solid fa-user-plus"></i> Create Account
             </button>
           </div>
         </div>`;
 
-      lock.querySelector('[data-f2w-v85-login]')?.addEventListener('click',event=>{
-        event.preventDefault();
-        event.stopPropagation();
-        openSiteAuth('login');
-      });
-
-      lock.querySelector('[data-f2w-v85-signup]')?.addEventListener('click',event=>{
-        event.preventDefault();
-        event.stopPropagation();
-        openSiteAuth('signup');
-      });
 
       right.appendChild(lock);
     }
@@ -8383,7 +8372,7 @@ body.f2w-auth-v67-open {
   async function switchToDm(){
     const generation=++switchGeneration;
 
-    // Make the DM panel visible immediately. The lock/check belongs ONLY on the right.
+    // Always show the Direct Messages panel first.
     setVisibleMode('dm');
 
     if(window.currentUser){
@@ -8407,6 +8396,9 @@ body.f2w-auth-v67-open {
       return;
     }
 
+    // Guest behavior: STOP HERE on the right-pane padlock.
+    // Do not open the Account popup until the user explicitly presses
+    // Log In or Create Account inside the lock card.
     renderGuestLock();
   }
 
@@ -8684,6 +8676,67 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:chat-auth-close-js-v96:1788281466 */
 </script>
 
+
+<script id="f2w-dm-lock-actions-v98">
+(() => {
+  'use strict';
+  if(window.__f2wDmLockActionsV98)return;
+  window.__f2wDmLockActionsV98=true;
+
+  function openAuth(mode){
+    const normalized=mode==='signup'?'signup':'login';
+
+    // Prefer the shared site-wide auth opener.
+    if(typeof window.openHeaderAuth==='function'){
+      window.openHeaderAuth(normalized);
+      return;
+    }
+    if(typeof window.f2wOpenAuth==='function'){
+      window.f2wOpenAuth(normalized);
+      return;
+    }
+
+    // Fallback to the existing chat account modal.
+    try{
+      window.openAccountModal?.();
+      window.showAccountMode?.(normalized);
+    }catch{}
+  }
+
+  document.addEventListener('click',event=>{
+    const button=event.target?.closest?.('[data-f2w-dm-auth]');
+    if(!button)return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    openAuth(button.getAttribute('data-f2w-dm-auth'));
+  },true);
+
+  // Make sure guest DM always lands on the padlock first, never the auth popup.
+  document.addEventListener('click',event=>{
+    const dmTab=event.target?.closest?.('#v17-chat-dm-tab');
+    if(!dmTab)return;
+
+    if(window.currentUser)return;
+
+    // Let the existing DM switch handler render the lock.
+    // Explicitly suppress any stale immediate auth-popup opener from older code.
+    setTimeout(()=>{
+      const modal=document.getElementById('account-modal');
+      if(modal?.classList.contains('open')){
+        try{window.f2wHardCloseAccountModalV96?.();}catch{
+          modal.classList.remove('open');
+        }
+      }
+      try{window.f2wRenderGuestDmLockV96?.();}catch{}
+    },0);
+  },true);
+})();
+/* f2w-force-save:dm-lock-actions-v98:1788282202 */
+</script>
+
 </body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
@@ -8789,4 +8842,6 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:chat-auth-close-v96:1788281466 -->
 <!-- f2w-force-save:chat-v96-cache:1788281466 -->
 <!-- f2w-force-save:v97-cache:1788281880:chat/index.html -->
+<!-- f2w-force-save:chat-dm-actions-v98:1788282202 -->
+<!-- f2w-force-save:v98-cache:1788282202:chat/index.html -->
  

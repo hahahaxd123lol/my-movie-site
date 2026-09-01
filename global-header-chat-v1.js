@@ -2297,4 +2297,15 @@
 })();
 // f2w-force-save:auth-authority-v93:1788229371
 // f2w-force-save:dedicated-genres-v94:1788280907
+
+/* ============================================================
+   F2W v98 — SITE-WIDE AUTH OPENER FOR GUEST DM LOCK
+   ============================================================ */
+window.f2wOpenGuestDmAuthV98=function(mode){
+  const normalized=mode==='signup'?'signup':'login';
+  if(typeof window.openHeaderAuth==='function')return window.openHeaderAuth(normalized);
+  if(typeof window.f2wOpenAuth==='function')return window.f2wOpenAuth(normalized);
+  return false;
+};
+// f2w-force-save:guest-dm-auth-opener-v98:1788282202
  
