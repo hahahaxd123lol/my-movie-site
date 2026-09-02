@@ -2374,7 +2374,10 @@ function f2wDebounce(fn,wait=140){
         host.className='f2w-current-watching-card';
         host.innerHTML=`<img src="${poster}" alt=""><div class="f2w-current-watching-copy"><strong>${String(row.watching_title||'Untitled').replace(/[<>&]/g,'')}</strong><span class="f2w-current-watching-live"><i class="fa-solid fa-circle"></i> Watching now</span><span>${type==='tv'?'TV Series':'Movie'} · updated ${new Date(row.watching_last_seen_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>`;
         host.onclick=()=>location.href=`/watch/?id=${encodeURIComponent(row.watching_media_id)}&type=${type}`;host.style.cursor='pointer';
-      }else if(row.watching_media_id===null||row.watching_media_id===undefined){
+      }else{
+        // v156: a non-null media id is NOT enough to mean "watching now".
+        // Cached/live snapshot rows can retain the last title after its heartbeat
+        // expires, so always clear the card whenever the heartbeat is stale.
         host.className='f2w-current-watching-empty';host.innerHTML='Not watching anything right now.';host.onclick=null;host.style.cursor='';
       }
     }
@@ -2412,6 +2415,16 @@ function f2wDebounce(fn,wait=140){
   bc?.addEventListener?.('message',e=>{const row=e.data;if(row?.username&&String(row.username).toLowerCase()===usernameFromUrl().toLowerCase())paint(row)});
   const start=()=>{
     bootProfile();
+    // v156: while a profile is open, refresh its live snapshot once every
+    // 30 seconds. Realtime still handles instant updates; this is the bounded
+    // fallback that expires a stale Currently Watching lease even when no
+    // database change event occurs after somebody leaves the watch page.
+    if(!window.__F2W_PROFILE_LIVE_30S_V156){
+      window.__F2W_PROFILE_LIVE_30S_V156=setInterval(()=>{
+        if(document.visibilityState!=='visible')return;
+        const u=usernameFromUrl(); if(u)fetchOne(u,{paintNow:true});
+      },30000);
+    }
     // Warm a small number of visible profile destinations in idle time. Capped
     // deliberately so "instant" does not turn into excessive Supabase load.
     const idle=window.requestIdleCallback||((fn)=>setTimeout(fn,800));idle(()=>Array.from(document.querySelectorAll('a[href*="/profile"]')).slice(0,12).forEach((a,i)=>setTimeout(()=>warmAnchor(a),i*80)));

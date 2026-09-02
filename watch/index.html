@@ -8465,7 +8465,7 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
 
-  <script src="/final-v35.js?v=134-1788313000" defer></script>
+  <script src="/final-v35.js?v=156-1788313000" defer></script>
 
 <style id="f2w-watch-tools-v47-css">
   .f2w-watch-toast-v47{
@@ -10616,6 +10616,8 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 
   let watchingPingBusy=false;
   let watchingRetryTimer=0;
+  let watchingAccessToken='';
+  let watchingClearStarted=false;
   function watchingClient(){
     try{if(typeof chatSupabase!=='undefined'&&chatSupabase?.rpc)return chatSupabase}catch{}
     return client;
@@ -10630,6 +10632,8 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
       const {data:sessionData,error:sessionError}=await c.auth.getSession();
       if(sessionError)throw sessionError;
       if(!sessionData?.session?.user)return;
+      watchingAccessToken=String(sessionData.session.access_token||watchingAccessToken||'');
+      watchingClearStarted=false;
       const {id,type}=identity();if(!id)return;
       const d=details();
       // Metadata can arrive after the page shell. Retry quickly instead of
@@ -10653,6 +10657,32 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
     }
   }
 
+  async function clearWatching({keepalive=false}={}){
+    if(watchingClearStarted)return;
+    watchingClearStarted=true;
+    clearTimeout(watchingRetryTimer);
+    const c=watchingClient();
+    try{
+      if(keepalive&&watchingAccessToken){
+        // Keepalive lets the request survive navigation away from /watch/.
+        fetch(`${URL}/rest/v1/rpc/clear_current_watching_v156`,{
+          method:'POST',keepalive:true,credentials:'omit',
+          headers:{'apikey':KEY,'Authorization':`Bearer ${watchingAccessToken}`,'Content-Type':'application/json'},
+          body:'{}'
+        }).catch(()=>{});
+        return;
+      }
+      if(c?.rpc){
+        const {error}=await c.rpc('clear_current_watching_v156');
+        if(error)throw error;
+      }
+    }catch(error){
+      // The profile-side 70s lease expiry is the hard fallback if navigation
+      // interrupts this best-effort clear request.
+      console.warn('Current watching clear unavailable:',error?.message||error);
+    }
+  }
+
   function startWatchingHeartbeat(){
     bindDim();
     // Fire immediately, then again as soon as TMDB metadata becomes usable.
@@ -10666,6 +10696,10 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
   }else startWatchingHeartbeat();
   window.addEventListener('flix2watch:media-ready',pingWatching);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pingWatching()});
+  // Leaving /watch/ should stop "Watching now" immediately instead of
+  // waiting for a stale row to age out. Refreshing is safe: the next page load
+  // writes a fresh heartbeat straight back.
+  window.addEventListener('pagehide',()=>clearWatching({keepalive:true}),{capture:true});
 })();
 /* f2w-force-save:watch-bounty-v130:1788306600 */
 </script>

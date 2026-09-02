@@ -8726,7 +8726,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=139-20260902" defer></script>
+  <script src="/final-v35.js?v=156-20260902" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10336,9 +10336,13 @@ body.f2w-auth-v67-open {
       const {data,error}=await client.rpc('get_public_current_watching_v125',{p_username:username});
       if(error)throw error;
       const row=Array.isArray(data)?data[0]:data;
-      if(!row?.media_id){
+      const seenAt=row?.last_seen_at?new Date(row.last_seen_at).getTime():0;
+      const fresh=Boolean(row?.media_id&&seenAt&&Date.now()-seenAt<70000);
+      if(!fresh){
         host.className='f2w-current-watching-empty';
         host.innerHTML='Not watching anything right now.';
+        host.onclick=null;
+        host.style.cursor='';
         return;
       }
       const poster=row.poster_path?`https://image.tmdb.org/t/p/w342${row.poster_path}`:'/flix2watch-logo-red-v34.png';
