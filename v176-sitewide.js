@@ -452,3 +452,204 @@ window.addEventListener('pageshow',()=>{repair();void stabilizeMemberAge();void 
   window.addEventListener('pageshow', install, { passive:true });
 })();
 // f2w-force-save:v187-tv-header-final-layer:20260902
+
+/* v189 — TV header collision repair. Latches only when the fully-loaded header actually overlaps. */
+(() => {
+  'use strict';
+  if (window.__f2wTvHeaderV189) return;
+  window.__f2wTvHeaderV189 = true;
+
+  const STYLE_ID = 'f2w-tv-header-v189';
+  const CLASS = 'f2w-tv-header-safe-v189';
+  const css = `
+@media (min-width:1181px) {
+  body.${CLASS}.f2w-main-page > header {
+    height:auto!important;
+    min-height:124px!important;
+    max-height:none!important;
+    padding:9px 14px 10px!important;
+    align-items:flex-start!important;
+    overflow:visible!important;
+  }
+  body.${CLASS}.f2w-main-page > header > .header-tools {
+    position:relative!important;
+    display:flex!important;
+    flex:1 1 auto!important;
+    flex-flow:row wrap!important;
+    align-items:center!important;
+    align-content:flex-start!important;
+    width:auto!important;
+    min-width:0!important;
+    height:auto!important;
+    min-height:94px!important;
+    max-height:none!important;
+    gap:8px 10px!important;
+    overflow:visible!important;
+  }
+  body.${CLASS}.f2w-main-page > header .f2w-primary-nav {
+    order:1!important;
+    display:flex!important;
+    flex:0 1 auto!important;
+    min-width:0!important;
+    width:auto!important;
+    height:40px!important;
+    margin:0!important;
+  }
+  body.${CLASS}.f2w-main-page > header .f2w-search-pair {
+    order:2!important;
+    display:grid!important;
+    grid-template-columns:minmax(180px,1fr) minmax(180px,1fr)!important;
+    flex:1 1 440px!important;
+    width:auto!important;
+    min-width:370px!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0 0 0 auto!important;
+    gap:8px!important;
+    position:relative!important;
+    z-index:5!important;
+    overflow:visible!important;
+  }
+  body.${CLASS}.f2w-main-page > header .search-container,
+  body.${CLASS}.f2w-main-page > header .user-search-container {
+    position:relative!important;
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0!important;
+    overflow:visible!important;
+  }
+  body.${CLASS}.f2w-main-page > header .search-bar,
+  body.${CLASS}.f2w-main-page > header .user-search-bar {
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:40px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  body.${CLASS}.f2w-main-page > header .user-search-bar { padding-right:48px!important; }
+  body.${CLASS}.f2w-main-page > header .user-search-submit {
+    position:absolute!important;
+    right:4px!important;
+    left:auto!important;
+    top:50%!important;
+    bottom:auto!important;
+    transform:translateY(-50%)!important;
+    width:36px!important;
+    min-width:36px!important;
+    max-width:36px!important;
+    height:32px!important;
+    margin:0!important;
+    z-index:9!important;
+  }
+  body.${CLASS}.f2w-main-page > header .f2w-action-cluster {
+    order:3!important;
+    display:flex!important;
+    flex:1 0 100%!important;
+    width:100%!important;
+    min-width:100%!important;
+    max-width:100%!important;
+    height:40px!important;
+    min-height:40px!important;
+    margin:0!important;
+    gap:7px!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    overflow:visible!important;
+    position:relative!important;
+    z-index:4!important;
+    grid-template-columns:none!important;
+    grid-template-rows:none!important;
+  }
+  body.${CLASS}.f2w-main-page > header .f2w-action-cluster > button,
+  body.${CLASS}.f2w-main-page > header .f2w-action-cluster > a,
+  body.${CLASS}.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap,
+  body.${CLASS}.f2w-main-page > header .f2w-action-cluster #notification-wrap,
+  body.${CLASS}.f2w-main-page > header .f2w-action-cluster #staff-control-nav {
+    position:relative!important;
+    inset:auto!important;
+    grid-column:auto!important;
+    grid-row:auto!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0!important;
+    transform:none!important;
+    translate:none!important;
+  }
+  body.${CLASS}.f2w-main-page > header .f2w-action-cluster .tool-btn,
+  body.${CLASS}.f2w-main-page > header .f2w-action-cluster .f2w-auth-top-btn {
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+  }
+  body.${CLASS}.f2w-main-page > header .chat-button {
+    width:auto!important;
+    min-width:82px!important;
+    max-width:none!important;
+    padding:0 13px!important;
+  }
+  body.${CLASS}.f2w-main-page > header #notification-wrap,
+  body.${CLASS}.f2w-main-page > header #notification-wrap > button {
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+  body.${CLASS}.f2w-main-page > header #staff-control-nav[hidden] {
+    display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    pointer-events:none!important;
+  }
+}
+`;
+
+  function installStyle(){
+    let s=document.getElementById(STYLE_ID);
+    if(!s){s=document.createElement('style');s.id=STYLE_ID;document.head.appendChild(s)}
+    if(s.textContent!==css)s.textContent=css;
+  }
+  function overlap(a,b){
+    if(!a||!b)return false;
+    const A=a.getBoundingClientRect(),B=b.getBoundingClientRect();
+    return A.width>0&&B.width>0&&A.left < B.right-2&&A.right > B.left+2&&A.top < B.bottom-2&&A.bottom > B.top+2;
+  }
+  function shouldLatch(){
+    if(innerWidth<1181)return false;
+    const h=document.querySelector('body.f2w-main-page > header');
+    if(!h)return false;
+    const tools=h.querySelector('.header-tools');
+    const pair=h.querySelector('.f2w-search-pair');
+    const user=h.querySelector('.user-search-container');
+    const actions=h.querySelector('.f2w-action-cluster');
+    const chat=h.querySelector('.chat-button');
+    if(!tools||!pair||!actions||!chat)return false;
+    const tr=tools.getBoundingClientRect(), ar=actions.getBoundingClientRect();
+    return overlap(user,chat) || overlap(pair,actions) || ar.right>innerWidth+2 || tr.right>innerWidth+2 || actions.scrollWidth>actions.clientWidth+4;
+  }
+  function latch(){
+    installStyle();
+    if(document.body?.classList.contains(CLASS))return;
+    if(shouldLatch()) document.body.classList.add(CLASS);
+  }
+
+  const run=()=>{installStyle();latch()};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+  [80,220,500,900,1500,2500,4000].forEach(ms=>setTimeout(latch,ms));
+  window.addEventListener('load',()=>{latch();setTimeout(latch,400);setTimeout(latch,1200)},{once:true});
+  window.addEventListener('pageshow',()=>setTimeout(latch,100),{passive:true});
+  window.addEventListener('resize',()=>{if(innerWidth<1181)document.body?.classList.remove(CLASS);else setTimeout(latch,80)},{passive:true});
+
+  const mo=new MutationObserver(()=>{ if(!document.body?.classList.contains(CLASS)) requestAnimationFrame(latch); });
+  if(document.documentElement)mo.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['style','class','hidden']});
+})();
+// f2w-force-save:v189-tv-header-inner-container-latch:20260902
