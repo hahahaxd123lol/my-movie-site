@@ -987,7 +987,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   <link rel="stylesheet" href="/v146-live-ops.css?v=159">
   <link rel="stylesheet" href="/v154-global-ui.css?v=159">
   <script src="/v154-global-ui.js?v=159" defer></script>
-<link rel="stylesheet" href="/v164-enforcement.css?v=164">
+<link rel="stylesheet" href="/v165-enforcement.css?v=165">
   <link rel="stylesheet" href="/v161-notifications.css?v=161">
 </head>
 <body class="f2w-main-page f2w-staff-page">
@@ -1961,7 +1961,7 @@ async function applyInstantRestriction(input){
     }else if(action==='account-ban'){
       if(!['owner','staff'].includes(staffContext.role))throw new Error('Only Owner or Staff can apply account-login bans.');
       await rpc('staff_set_account_enforcement_v164',{p_user_id:userId,p_kind:'account-ban',p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
-      try{await rpc('staff_set_account_login_ban',{p_user_id:userId,p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});}catch(_){}
+      // v165: account_enforcement_v146 is the sole account-ban authority. Do not mirror to the legacy login-ban table.
     }
     staffActionToast(enabled?'Restriction applied':'Restriction removed',`@${username} updated instantly.`,'success');
     document.getElementById('moderation-status').innerHTML=`<strong>${esc(enabled?'Applied':'Removed')}:</strong> ${esc(action.replaceAll('-',' '))} for @${esc(username)}.`;
@@ -4650,7 +4650,7 @@ body.f2w-auth-v67-open {
 <!-- F2W v159 core recovery -->
 <link rel="stylesheet" href="/v159-core.css?v=159">
 <script src="/v159-core.js?v=159" defer></script>
-<script src="/v164-enforcement.js?v=164"></script>
+<script src="/v165-enforcement.js?v=165"></script>
   <script src="/v161-notifications.js?v=161"></script>
 </body>
 </html>
