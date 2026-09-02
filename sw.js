@@ -1,6 +1,6 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v160-full-recovery-20260902';
-const CORE=['/v160-recovery.css','/v160-bootstrap.js','/v160-recovery.js','/v159-core.css','/v159-core.js','/v146-live-ops.css','/v146-live-ops.js','/v154-global-ui.css','/v154-global-ui.js',
+const CACHE='f2w-v161-notifications-20260902';
+const CORE=['/v161-notifications.js','/v161-notifications.css','/v160-recovery.css','/v160-bootstrap.js','/v160-recovery.js','/v159-core.css','/v159-core.js','/v146-live-ops.css','/v146-live-ops.js','/v154-global-ui.css','/v154-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
