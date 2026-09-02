@@ -82,10 +82,40 @@ const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 const PROJECT='viqufxlcxwgboyxbdhjb';
 const c=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let sessionUser=null,currentUsername='',checkTimer=0,checkSeq=0,loggingOut=false;
+const USERNAME_RATE_KEY='f2w_username_submit_attempts_v151';
+const USERNAME_RATE_MAX=5,USERNAME_RATE_WINDOW=60000;
+const availabilityCache=new Map();
 const $=id=>document.getElementById(id);
 function flash(text,type='good'){const el=$('account-flash');el.textContent=text;el.className='flash show '+type;}
 function status(text,type=''){const el=$('username-status');el.textContent=text;el.className='availability '+type;}
 function setBusy(btn,busy,label){if(!btn)return; if(busy){btn.dataset.old=btn.innerHTML;btn.disabled=true;btn.innerHTML=label;}else{btn.disabled=false;if(btn.dataset.old){btn.innerHTML=btn.dataset.old;delete btn.dataset.old;}}}
+function readUsernameAttempts(){
+  const now=Date.now();
+  try{
+    const raw=JSON.parse(localStorage.getItem(USERNAME_RATE_KEY)||'[]');
+    const clean=Array.isArray(raw)?raw.map(Number).filter(t=>Number.isFinite(t)&&now-t<USERNAME_RATE_WINDOW):[];
+    localStorage.setItem(USERNAME_RATE_KEY,JSON.stringify(clean));
+    return clean;
+  }catch{return [];}
+}
+function usernameCooldownMs(){
+  const a=readUsernameAttempts();
+  if(a.length<USERNAME_RATE_MAX)return 0;
+  return Math.max(0,USERNAME_RATE_WINDOW-(Date.now()-a[0]));
+}
+function consumeUsernameAttempt(){
+  const now=Date.now();
+  const a=readUsernameAttempts();
+  if(a.length>=USERNAME_RATE_MAX){
+    const left=Math.max(1,Math.ceil((USERNAME_RATE_WINDOW-(now-a[0]))/1000));
+    flash(`Too many username attempts. Try again in ${left}s.`,'bad');
+    status(`Rate limited for ${left}s — max 5 attempts per minute.`,'bad');
+    return false;
+  }
+  a.push(now);
+  try{localStorage.setItem(USERNAME_RATE_KEY,JSON.stringify(a));}catch{}
+  return true;
+}
 async function roleFor(user){
   if(!user)return 'MEMBER';
   try{const {data}=await c.rpc('get_staff_context');const r=String(data?.role||'').trim().toUpperCase();if(r)return r;}catch{}
@@ -112,13 +142,21 @@ async function checkAvailability(){
   const input=$('new-username');const value=String(input.value||'').trim();const seq=++checkSeq;
   if(value.toLowerCase()===currentUsername.toLowerCase()){status('This is your current username.','good');return true;}
   if(!/^[A-Za-z0-9]{2,30}$/.test(value)){status(value?'Use 2–30 English letters or numbers.':'','bad');return false;}
+  const cacheKey=value.toLowerCase();
+  const cached=availabilityCache.get(cacheKey);
+  if(cached && Date.now()-cached.at<60000){
+    status(cached.available?'Username is available.':'Username is already taken.',cached.available?'good':'bad');
+    return cached.available;
+  }
   status('Checking availability…','checking');
-  try{const {data,error}=await c.rpc('is_username_available_v145',{p_username:value});if(seq!==checkSeq)return false;if(error)throw error;status(data?'Username is available.':'Username is already taken.',data?'good':'bad');return Boolean(data);}catch(err){if(seq===checkSeq)status('Could not check availability right now.','bad');return false;}
+  try{const {data,error}=await c.rpc('is_username_available_v145',{p_username:value});if(seq!==checkSeq)return false;if(error)throw error;const available=Boolean(data);availabilityCache.set(cacheKey,{available,at:Date.now()});status(available?'Username is available.':'Username is already taken.',available?'good':'bad');return available;}catch(err){if(seq===checkSeq)status('Could not check availability right now.','bad');return false;}
 }
 $('new-username').addEventListener('input',()=>{clearTimeout(checkTimer);checkTimer=setTimeout(checkAvailability,170)});
 $('new-username').addEventListener('focus',()=>{clearTimeout(checkTimer);checkTimer=setTimeout(checkAvailability,40)});
 $('update-username').addEventListener('click',async()=>{
   const btn=$('update-username');const next=String($('new-username').value||'').trim();
+  if(btn.disabled)return;
+  if(!consumeUsernameAttempt())return;
   if(next.toLowerCase()===currentUsername.toLowerCase()){flash('That is already your username.','good');return;}
   if(!(await checkAvailability()))return;
   setBusy(btn,true,'<i class="fa-solid fa-circle-notch fa-spin"></i> Updating…');
@@ -133,7 +171,7 @@ $('update-username').addEventListener('click',async()=>{
   }catch(err){flash(err?.message||'Could not update username.','bad');await checkAvailability();}
   finally{setBusy(btn,false);}
 });
-$('new-username').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('update-username').click();}});
+$('new-username').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(e.repeat){const left=usernameCooldownMs();if(left>0){const sec=Math.max(1,Math.ceil(left/1000));status(`Rate limited for ${sec}s — max 5 attempts per minute.`,'bad');}return;}$('update-username').click();}});
 function clearAuthStorage(storage){try{for(let i=storage.length-1;i>=0;i--){const k=storage.key(i);if(k&&(/^sb-.*-auth-token$/i.test(k)||k.includes(PROJECT)&&k.includes('auth')))storage.removeItem(k);}}catch{}}
 $('logout-btn').addEventListener('click',async e=>{
   e.preventDefault();e.stopImmediatePropagation();if(loggingOut)return;loggingOut=true;const btn=$('logout-btn');setBusy(btn,true,'<i class="fa-solid fa-circle-notch fa-spin"></i> Logging out…');
@@ -145,7 +183,7 @@ $('logout-btn').addEventListener('click',async e=>{
 boot();
 })();
 </script>
-<script src="/page-transitions-v135.js?v=148" defer></script>
-  <script src="/v149-account-route.js?v=149"></script>
+<script src="/page-transitions-v135.js?v=151" defer></script>
+  <script src="/v149-account-route.js?v=151"></script>
 </body>
 </html>
