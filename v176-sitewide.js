@@ -87,4 +87,83 @@ function boot(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 
-// v177-force-refresh-2026-09-02
+/* v178 auth/profile/nav/member-age hardening */
+(()=>{
+'use strict';
+if(window.__f2wV178Hardening)return;window.__f2wV178Hardening=true;
+const $=s=>document.querySelector(s);
+function db(){return window.f2wSupabase||window.chatSupabase||window.supabaseClient||null}
+function closeAccountModal(){
+  const m=$('#account-modal');if(!m)return;
+  m.classList.remove('open','f2w-auth-modal-open-v60','f2w-v159-auth-open','f2w-auth-hard-open-v58');
+  m.style.removeProperty('display');m.setAttribute('aria-hidden','true');m.setAttribute('inert','');
+  document.documentElement.classList.remove('f2w-auth-open-v56','f2w-auth-v67-open','f2w-popup-scroll-lock');
+  document.body.classList.remove('f2w-auth-v67-open','f2w-popup-scroll-lock');
+  for(const k of ['position','top','left','right','width','overflow'])document.body.style.removeProperty(k);
+  document.documentElement.style.removeProperty('overflow');
+}
+function openLoggedOutAuth(mode='login'){
+  const m=$('#account-modal');if(!m)return;
+  try{window.showAccountMode?.(mode)}catch{}
+  m.removeAttribute('inert');m.setAttribute('aria-hidden','false');m.classList.add('open');
+  m.querySelectorAll('input,textarea,button,select').forEach(el=>{el.removeAttribute('inert');el.style.pointerEvents='auto'});
+}
+async function routeProfile(){
+  const c=db();let user=null;
+  try{user=(await c?.auth?.getSession?.())?.data?.session?.user||null}catch{}
+  if(!user){openLoggedOutAuth('login');return}
+  let u='';
+  try{u=String(window.getAccountUsername?.()||'').replace(/^@/,'').trim()}catch{}
+  if(!u)try{u=String(localStorage.getItem('f2w_profile_username_v24')||'').replace(/^@/,'').trim()}catch{}
+  if(!u&&c?.from){
+    try{const {data}=await c.from('profiles').select('username').eq('user_id',user.id).maybeSingle();u=String(data?.username||'').replace(/^@/,'').trim()}catch{}
+  }
+  if(u){try{localStorage.setItem('f2w_profile_username_v24',u)}catch{};location.href=`/profile/@${encodeURIComponent(u)}`;return}
+  openLoggedOutAuth('login');
+}
+function ensureLeaderboard(){
+  document.querySelectorAll('.f2w-primary-nav').forEach(nav=>{
+    let existing=nav.querySelector('a[href="/leaderboard/"],[data-v35-leaderboard]');
+    if(existing){existing.textContent='Leaderboard';return}
+    const a=document.createElement('a');a.className='f2w-nav-link';a.href='/leaderboard/';a.dataset.v178Leaderboard='1';a.innerHTML='<i class="fa-solid fa-trophy"></i> Leaderboard';
+    const genres=[...nav.querySelectorAll('a,button')].find(el=>/^genres$/i.test(String(el.textContent||'').trim()));
+    if(genres?.nextSibling)nav.insertBefore(a,genres.nextSibling);else nav.appendChild(a);
+  });
+}
+function ageLabel(ts){
+  const t=new Date(ts).getTime();if(!Number.isFinite(t))return '—';
+  const d=Math.max(0,Date.now()-t),min=60000,h=3600000,day=86400000,w=604800000,mo=2629800000,y=31557600000;
+  let n,unit;
+  if(d<min){n=Math.max(1,Math.floor(d/1000));unit='second'}
+  else if(d<h){n=Math.max(1,Math.floor(d/min));unit='minute'}
+  else if(d<day){n=Math.max(1,Math.floor(d/h));unit='hour'}
+  else if(d<w){n=Math.max(1,Math.floor(d/day));unit='day'}
+  else if(d<mo){n=Math.max(1,Math.floor(d/w));unit='week'}
+  else if(d<y){n=Math.max(1,Math.floor(d/mo));unit='month'}
+  else {n=Math.max(1,Math.floor(d/y));unit='year'}
+  return `${n} ${unit}${n===1?'':'s'}`;
+}
+let ageStamp='';
+function stabilizeProfileAge(){
+  if(!location.pathname.startsWith('/profile'))return;
+  let ts='';try{if(typeof viewedProfile!=='undefined'&&viewedProfile?.created_at)ts=viewedProfile.created_at}catch{}
+  if(!ts)return;
+  ageStamp=String(ts);
+  const age=$('#v16-profile-age');if(age)age.textContent=ageLabel(ageStamp);
+  const joined=$('#profile-joined');if(joined){joined.textContent=`Joined ${new Date(ageStamp).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;joined.style.display='inline-flex';joined.style.alignItems='center';joined.style.justifyContent='center'}
+}
+document.addEventListener('click',e=>{
+  const close=e.target.closest?.('#account-modal .account-close,#account-modal .chat-close,#account-modal [data-close],#account-modal [aria-label="Close" i]');
+  if(close){e.preventDefault();e.stopImmediatePropagation();closeAccountModal();return}
+  const p=e.target.closest?.('#profile-nav-btn');if(p){e.preventDefault();e.stopImmediatePropagation();routeProfile();return}
+},true);
+function repair(){
+  ensureLeaderboard();stabilizeProfileAge();
+  const m=$('#account-modal');if(m){m.querySelectorAll('input,textarea,button,select').forEach(el=>el.removeAttribute('inert'))}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();
+const mo=new MutationObserver(()=>repair());mo.observe(document.documentElement,{subtree:true,childList:true});
+setInterval(()=>{if(document.visibilityState==='visible')stabilizeProfileAge()},5000);
+window.addEventListener('pageshow',repair);
+})();
+// f2w-force-save:v178-hardening:20260902

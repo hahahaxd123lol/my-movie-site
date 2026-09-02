@@ -251,7 +251,8 @@ function f2wDebounce(fn,wait=140){
       a.href='/leaderboard/';
       a.dataset.v35Leaderboard='1';
       a.innerHTML='<i class="fa-solid fa-trophy"></i> Leaderboard';
-      nav.insertBefore(a,forum||null);
+      const genres=[...nav.querySelectorAll('a,button')].find(el=>/^(genres)$/i.test(String(el.textContent||'').trim()));
+      if(genres?.nextSibling) nav.insertBefore(a,genres.nextSibling); else nav.appendChild(a);
     });
     document.querySelectorAll('footer').forEach(footer=>{
       if(footer.querySelector('[data-v35-privacy]'))return;
@@ -1688,6 +1689,14 @@ function f2wDebounce(fn,wait=140){
     await syncAuthUI();
     await enforceUsernameGate();
     setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();bootProfileRealtime();bootLeaderboard();decorateNames();/* v159 legacy quick moderation disabled */ void 0},350);
+    if(location.pathname.startsWith('/profile')){
+      let editorAttempts=0;
+      const editorRetry=setInterval(()=>{
+        editorAttempts++;
+        installProfileEditor();
+        if(document.getElementById('v35-edit-profile')||editorAttempts>=40)clearInterval(editorRetry);
+      },250);
+    }
     roleDecorateTimer=null;
     const client=db();
     try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{syncAuthUI();enforceUsernameGate();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments()},0))}catch{}
@@ -2364,4 +2373,4 @@ function f2wDebounce(fn,wait=140){
 })();
 // f2w-force-save:v134-instant-sitewide-live-profile:1788313000
 
-// v177-force-refresh-2026-09-02
+// f2w-force-save:v178-profile-editor-leaderboard:20260902

@@ -2,3 +2,10 @@
 body #profile-hero #profile-name{font-size:1.72rem!important;font-weight:900!important;line-height:1.12!important}
 body #profile-hero #profile-username-line{font-size:.86rem!important;font-weight:800!important;line-height:1.25!important;margin-top:4px!important}
 @media(max-width:760px){body #profile-hero #profile-name{font-size:1.48rem!important}body #profile-hero #profile-username-line{font-size:.82rem!important}}
+
+/* v178 profile/auth/nav hardening */
+#profile-joined{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;line-height:1.2!important}
+#account-modal.open{pointer-events:auto!important}
+#account-modal.open .account-card,#account-modal.open input,#account-modal.open textarea,#account-modal.open button,#account-modal.open select{pointer-events:auto!important}
+.f2w-primary-nav a[href="/leaderboard/"]{white-space:nowrap}
+/* f2w-force-save:v178-hardening:20260902 */
