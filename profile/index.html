@@ -3906,7 +3906,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
         <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
         <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
         <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
-        
+        <a class="f2w-nav-link" id="f2w-nav-forum" href="/forum/"><i class="fa-solid fa-comments"></i> Community</a>
 
           <div class="f2w-genre-wrap">
             <button class="f2w-nav-button" id="f2w-nav-genres" type="button" onclick="toggleF2WGenreMenu(event)">
@@ -4396,6 +4396,22 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
       <span class="profile-v16-none">No extra public roles.</span>
     </div>
   </section>
+
+  
+
+
+  <section class="profile-v16-panel f2w-v34-profile-social">
+    <div class="profile-v16-panel-head"><h2><i class="fa-solid fa-star" style="color:var(--accent)"></i> Ratings & Reviews</h2><span>Recent movie and TV scores</span></div>
+    
+    <div class="f2w-v34-profile-ratings" id="f2w-v34-profile-ratings"><div class="profile-v16-none">No ratings yet.</div></div>
+  </section>
+
+  <section class="profile-v16-panel f2w-v34-profile-social">
+    <div class="profile-v16-panel-head"><h2><i class="fa-solid fa-comments" style="color:var(--accent)"></i> Community Activity</h2><span>Recent threads and posts</span></div>
+    <div class="f2w-v34-profile-forum" id="f2w-v34-profile-forum"><div class="profile-v16-none">No community posts yet.</div></div>
+  </section>
+
+  
 <section class="profile-section" id="profile-ratings-section">
   <div class="profile-section-head">
     <div>
@@ -7760,7 +7776,7 @@ renderViewedProfile();
     if(favorites.length>=10)achievements.push(['fa-film','Collector']);
     if(favorites.length>=25)achievements.push(['fa-layer-group','Super Collector']);
     if(followers>=5)achievements.push(['fa-users','Getting Noticed']);
-    if(followers>=25)achievements.push(['fa-crown','Social Star']);
+    if(followers>=25)achievements.push(['fa-crown','Community Star']);
     if(viewedProfile.is_private)achievements.push(['fa-lock','Private Mode']);
 
     const badgeHost=document.getElementById('f2w-profile-achievements');
@@ -10311,7 +10327,6 @@ body.f2w-auth-v67-open {
 
   let currentWatchingBusy=false;
   async function refreshCurrentWatching(){
-    if(window.__f2wV177ProfilePlayback)return;
     if(currentWatchingBusy)return;
     const host=document.getElementById('f2w-current-watching-card');
     const username=viewedUsername();
@@ -10428,9 +10443,7 @@ body.f2w-auth-v67-open {
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
 <script src="/v172-sitewide.js?v=172"></script>
 <link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=175"></script>
-<script src="/v176-sitewide.js?v=176" defer></script><link rel="stylesheet" href="/v177-profile-playback.css?v=177-20260902">
-<script src="/v177-profile-playback.js?v=177-20260902" defer></script>
-</body>
+<script src="/v176-sitewide.js?v=176" defer></script></body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
 <!-- f2w-update-marker: shared-chat-v7:profile -->
