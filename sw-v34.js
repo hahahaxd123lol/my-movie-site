@@ -8,7 +8,7 @@ const CORE=['/v159-core.css','/v159-core.js','/v146-live-ops.css','/v146-live-op
   '/page-transitions-v135.css','/page-transitions-v135.js',
   '/leaderboard-v140.css','/leaderboard-v140.js',
   '/v145-sitewide-fixes.css','/v145-sitewide-fixes.js','/v146-live-ops.css','/v146-live-ops.js','/v147-account-logout.js','/v150-account-route.js',
-  '/flix2watch-logo-red-v34.png'
+  '/flix2watch-logo-red-v174.png'
 ];
 
 self.addEventListener('install',event=>{

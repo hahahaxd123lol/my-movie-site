@@ -1,6 +1,6 @@
 /* Flix2Watch v34 navigation cache */
 const CACHE='f2w-v173-viewport-popups-20260902';
-const CORE=['/v173-viewport-popups.js','/v173-viewport-popups.css','/v172-sitewide.js','/v171-notifications.js','/v171-sitewide-fixes.css','/v171-sitewide-fixes.js','/v171-enforcement.css','/v171-bootstrap.js','/v171-enforcement.js','/v171-core.css','/v171-core.js','/v171-global-ui.css','/v171-global-ui.js',
+const CORE=['/v174-viewport-popups.js','/v174-viewport-popups.css','/v172-sitewide.js','/v171-notifications.js','/v171-sitewide-fixes.css','/v171-sitewide-fixes.js','/v171-enforcement.css','/v171-bootstrap.js','/v171-enforcement.js','/v171-core.css','/v171-core.js','/v171-global-ui.css','/v171-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
@@ -8,7 +8,7 @@ const CORE=['/v173-viewport-popups.js','/v173-viewport-popups.css','/v172-sitewi
   '/page-transitions-v135.css','/page-transitions-v135.js',
   '/leaderboard-v140.css','/leaderboard-v140.js',
   '/v145-sitewide-fixes.css','/v145-sitewide-fixes.js','/v147-account-logout.js','/v171-account-route.js',
-  '/flix2watch-logo-red-v34.png'
+  '/flix2watch-logo-red-v174.png'
 ];
 
 self.addEventListener('install',event=>{
