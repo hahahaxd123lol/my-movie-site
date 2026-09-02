@@ -1,5 +1,5 @@
 /* Flix2Watch v185 — fresh critical-code service worker */
-const CACHE='f2w-v208-post-login-close-20260902';
+const CACHE='f2w-v209-post-login-close-20260902';
 const CORE=[
   '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
   '/v159-core.js','/v174-viewport-popups.js','/v176-sitewide.js','/v176-sitewide.css','/final-v35.js',
@@ -69,4 +69,6 @@ self.addEventListener('fetch',event=>{
 
 // f2w-force-save:v207-sitewide-presence:20260902
 
-// f2w-force-save:v208-post-login-close-cache:20260902
+// f2w-force-save:v209-post-login-close-cache:20260902
+
+// f2w-force-save:v209-support-enforcement-cache:20260902

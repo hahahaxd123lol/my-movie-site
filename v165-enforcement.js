@@ -104,7 +104,7 @@ function stopPlayback(){
 }
 function applyEnforcement(uid,state,{realtime=false,cached=false}={}){
   if(String(state?.user_id||uid)!==String(uid)){clearEnforcement(uid);return false}
-  const supportExempt=location.pathname.startsWith('/support')&&!!state?.site_suspended&&!state?.account_banned;
+  const supportExempt=location.pathname.startsWith('/support')&&!!(state?.site_suspended||state?.account_banned);
   if(supportExempt){scrubEnforcementVisuals();window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:false,support_exempt:true};writeCachedEnforcement(uid,state);return false}
   const active=!!(state?.site_suspended||state?.account_banned);
   window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:active};
@@ -199,3 +199,5 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 // f2w-force-save:v183-enforcement-no-flash-support-exemption:20260902
 
 // f2w-force-save:v201-enforcement-viewport:20260902
+
+// f2w-force-save:v209-support-exempt-account-ban:20260902
