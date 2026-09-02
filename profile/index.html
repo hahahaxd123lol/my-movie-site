@@ -6500,6 +6500,7 @@ setTimeout(loadLibraryFavorites,0);
             f2wProfileResolvedUsername=String(parsed.profile.username||username).toLowerCase();
             renderViewedProfile();
             renderViewedFavorites();
+            try{window.dispatchEvent(new CustomEvent('f2w:profile-ready',{detail:{profile:viewedProfile,cached:true}}));}catch{}
             // v128: profile identity is already known from cache; start the
             // public presence lookup now instead of waiting for full app boot.
             try{window.renderProfilePresence?.();}catch{}
@@ -6537,15 +6538,41 @@ setTimeout(loadLibraryFavorites,0);
        * WHOLE request and the catch block incorrectly changed a valid profile into
        * "Profile Not Found".
        */
-      const controller=new AbortController();
-      const timeout=setTimeout(()=>controller.abort(),6000);
+      const timeoutError=()=>new Error('Profile request timed out');
+      const withTimeout=(promise,ms=6500)=>Promise.race([
+        promise,
+        new Promise((_,reject)=>setTimeout(()=>reject(timeoutError()),ms))
+      ]);
 
-      let result;
+      let result={data:null,error:null};
+      let rpcFailure=null;
       try{
-        const rpcResult=await chatSupabase.rpc('get_public_profile_v160',{p_username:username});
+        const rpcResult=await withTimeout(
+          chatSupabase.rpc('get_public_profile_v191',{p_username:username}),
+          6500
+        );
         result={data:rpcResult?.data||null,error:rpcResult?.error||null};
-      }finally{
-        clearTimeout(timeout);
+        if(result.error)throw result.error;
+      }catch(error191){
+        rpcFailure=error191;
+        try{
+          const rpcResult=await withTimeout(
+            chatSupabase.rpc('get_public_profile_v160',{p_username:username}),
+            6500
+          );
+          result={data:rpcResult?.data||null,error:rpcResult?.error||null};
+          if(result.error)throw result.error;
+        }catch(error160){
+          try{
+            const direct=await withTimeout(
+              chatSupabase.from('profiles').select('*').ilike('username',username).maybeSingle(),
+              6500
+            );
+            result={data:direct?.data||null,error:direct?.error||null};
+          }catch(directError){
+            throw rpcFailure||error160||directError;
+          }
+        }
       }
 
       if(requestGeneration!==f2wProfileLoadGeneration)return;
@@ -6634,6 +6661,8 @@ setTimeout(loadLibraryFavorites,0);
       renderViewedFavorites();
       try{window.renderProfilePresence?.();}catch{}
       loadViewedProfileRoleBadge();
+      try{window.dispatchEvent(new CustomEvent('f2w:profile-ready',{detail:{profile:viewedProfile}}));}catch{}
+      setTimeout(()=>window.f2wInstallProfileEditorV191?.(),0);
 
     }catch(error){
       if(requestGeneration!==f2wProfileLoadGeneration)return;
@@ -8696,7 +8725,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js?v=183-20260902" defer></script>
-  <script src="/final-v35.js?v=183-20260902" defer></script>
+  <script src="/final-v35.js?v=191-20260902-profile-editor" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10120,3 +10149,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v185-auth-cache-bust:20260902 -->
 
 <!-- f2w-force-save:v190-auth-controller-cleanup:20260902 -->
+
+<!-- f2w-force-save:v191-profile-page-load-editor:20260902 -->
