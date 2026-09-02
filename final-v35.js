@@ -1312,7 +1312,7 @@ function f2wDebounce(fn,wait=140){
           <img src="${esc(row.avatar_url||RED_LOGO)}" alt="" onerror="this.src='${RED_LOGO}'">
           <div class="f2w-profile-comment-main">
             <div class="f2w-profile-comment-head">
-              <a href="/profile/?user=${encodeURIComponent(row.username)}" data-f2w-username="${esc(row.username)}" class="${roleClass(row.top_role)}">${esc(row.display_name||`@${row.username}`)}</a>
+              <a href="/profile/@${encodeURIComponent(row.username)}" data-f2w-username="${esc(row.username)}" class="${roleClass(row.top_role)}">${esc(row.display_name||`@${row.username}`)}</a>
               <span>${formatRelative(row.created_at)}</span>
               ${row.can_delete?`<button type="button" data-delete-comment="${esc(row.id)}" title="Delete comment"><i class="fa-solid fa-trash"></i></button>`:''}
             </div>
@@ -1424,7 +1424,7 @@ function f2wDebounce(fn,wait=140){
 
   function leaderboardRow(row){
     const online=Boolean(row.online);const last=online?'Online':row.last_seen_at?`Last online ${formatRelative(row.last_seen_at)}`:'Offline';
-    return `<article class="f2w-leader-row ${Number(row.rank_no)<=3?'top':''}"><div class="f2w-rank">#${Number(row.rank_no||0)}</div><div class="f2w-leader-user"><img class="f2w-leader-avatar" src="${esc(row.avatar_url||RED_LOGO)}" alt="" onerror="this.src='${RED_LOGO}'"><div class="f2w-leader-copy"><strong data-f2w-username="${esc(row.username)}" class="${roleClass(row.top_role)}">${esc(row.display_name||`@${row.username}`)}</strong><small>@${esc(row.username)} · <span class="f2w-presence ${online?'online':'offline'}"><i class="f2w-presence-dot"></i>${esc(last)}</span></small></div></div><div class="f2w-leader-metric"><b>${Number(row.titles_watched||0)}</b><span>Titles</span></div><div class="f2w-leader-metric"><b>${Number(row.watch_minutes||0)}</b><span>Minutes</span></div><div class="f2w-leader-metric"><b>${Number(row.ratings_count||0)}</b><span>Ratings</span></div><div class="f2w-leader-metric"><b>${Number(row.achievements||0)}</b><span>Achievements</span></div><div class="f2w-score">${Number(row.score||0)}</div><button class="f2w-leader-open" type="button" title="Open profile" onclick="location.href='/profile/?user=${encodeURIComponent(row.username)}'"><i class="fa-solid fa-chevron-right"></i></button></article>`;
+    return `<article class="f2w-leader-row ${Number(row.rank_no)<=3?'top':''}"><div class="f2w-rank">#${Number(row.rank_no||0)}</div><div class="f2w-leader-user"><img class="f2w-leader-avatar" src="${esc(row.avatar_url||RED_LOGO)}" alt="" onerror="this.src='${RED_LOGO}'"><div class="f2w-leader-copy"><strong data-f2w-username="${esc(row.username)}" class="${roleClass(row.top_role)}">${esc(row.display_name||`@${row.username}`)}</strong><small>@${esc(row.username)} · <span class="f2w-presence ${online?'online':'offline'}"><i class="f2w-presence-dot"></i>${esc(last)}</span></small></div></div><div class="f2w-leader-metric"><b>${Number(row.titles_watched||0)}</b><span>Titles</span></div><div class="f2w-leader-metric"><b>${Number(row.watch_minutes||0)}</b><span>Minutes</span></div><div class="f2w-leader-metric"><b>${Number(row.ratings_count||0)}</b><span>Ratings</span></div><div class="f2w-leader-metric"><b>${Number(row.achievements||0)}</b><span>Achievements</span></div><div class="f2w-score">${Number(row.score||0)}</div><button class="f2w-leader-open" type="button" title="Open profile" onclick="location.href='/profile/@${encodeURIComponent(row.username)}'"><i class="fa-solid fa-chevron-right"></i></button></article>`;
   }
 
   function renderPager(host,page,count){
@@ -1477,7 +1477,7 @@ function f2wDebounce(fn,wait=140){
       const countEl=document.getElementById('v35-thread-count');if(countEl)countEl.textContent=String(count||0);
       let rankbox=document.getElementById('v35-forum-rankbox');
       if(!rankbox){rankbox=document.createElement('aside');rankbox.id='v35-forum-rankbox';rankbox.className='f2w-forum-rankbox';main.appendChild(rankbox);}
-      rankbox.innerHTML=`<h3><i class="fa-solid fa-trophy"></i> Community rankings</h3>${(leaders||[]).map(row=>`<div class="f2w-forum-rankline"><a href="/profile/?user=${encodeURIComponent(row.username)}" data-f2w-username="${esc(row.username)}">#${Number(row.rank_no)} ${esc(row.display_name||row.username)}</a><b>${Number(row.score||0)}</b></div>`).join('')}<div style="margin-top:9px"><a href="/leaderboard/" style="color:#ff4852">View full leaderboard →</a></div>`;
+      rankbox.innerHTML=`<h3><i class="fa-solid fa-trophy"></i> Community rankings</h3>${(leaders||[]).map(row=>`<div class="f2w-forum-rankline"><a href="/profile/@${encodeURIComponent(row.username)}" data-f2w-username="${esc(row.username)}">#${Number(row.rank_no)} ${esc(row.display_name||row.username)}</a><b>${Number(row.score||0)}</b></div>`).join('')}<div style="margin-top:9px"><a href="/leaderboard/" style="color:#ff4852">View full leaderboard →</a></div>`;
       decorateNames();
     }catch{}
   }
@@ -1543,7 +1543,7 @@ function f2wDebounce(fn,wait=140){
     const {data:{user}}=await client.auth.getUser();if(!user){try{window.openAccountModal?.();return}catch{}location.assign('/home/');return;}
     try{
       const {data,error}=await client.from('profiles').select('username').eq('user_id',user.id).maybeSingle();if(error)throw error;
-      if(data?.username){location.assign(`/profile/?user=${encodeURIComponent(data.username)}`);return;}
+      if(data?.username){location.assign(`/profile/@${encodeURIComponent(data.username)}`);return;}
     }catch{}
     location.assign('/profile/');
   };

@@ -10,14 +10,13 @@ try{document.documentElement.classList.add('f2w-transition-boot')}catch(e){}
 <link rel="stylesheet" href="/page-transitions-v135.css?v=135-1788314000">
 
 
-<script id="f2w-profile-route-stability-v70">
+<script id="f2w-profile-route-stability-v153">
 (() => {
+  // Friendly profile routes are canonical. The profile runtime reads the username
+  // directly from /profile/@username, so never rewrite it to a query-string URL.
   const match=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
-  if(match){
-    location.replace('/profile/?user='+encodeURIComponent(match[1]));
-  }
+  if(match) window.__F2W_FRIENDLY_PROFILE_USERNAME = decodeURIComponent(match[1]);
 })();
-/* f2w-force-save:profile-route-stability-v70:1788223711 */
 </script>
 
 <script id="f2w-page-fade-boot-v33">
@@ -10430,7 +10429,7 @@ body.f2w-auth-v67-open {
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
   <script src="/v146-live-ops.js?v=150" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
-  <script src="/v149-account-route.js?v=149"></script>
+  <script src="/v149-account-route.js?v=153"></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->

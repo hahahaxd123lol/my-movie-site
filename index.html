@@ -109,10 +109,21 @@ html{overflow-y:scroll}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Flix2Watch</title>
-  <meta http-equiv="refresh" content="0;url=/home/">
   <link rel="canonical" href="https://flix2watch.com/home/">
-  <script>
+  <script id="f2w-root-route-v153">
     (() => {
+      const profileMatch=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
+      if(profileMatch){
+        // Some static hosts send unknown pretty URLs to /index.html. Load the
+        // profile shell in-place so /profile/@username remains in the address bar.
+        fetch('/profile/index.html',{cache:'no-cache'}).then(r=>{
+          if(!r.ok) throw new Error('profile shell unavailable');
+          return r.text();
+        }).then(html=>{document.open();document.write(html);document.close();}).catch(()=>{
+          location.replace('/profile/');
+        });
+        return;
+      }
       const target = '/home/' + (location.search || '') + (location.hash || '');
       location.replace(target);
     })();
@@ -1810,7 +1821,7 @@ body.f2w-auth-v67-open {
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
   <script src="/v146-live-ops.js?v=150" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
-  <script src="/v149-account-route.js?v=149"></script>
+  <script src="/v149-account-route.js?v=153"></script>
 </body>
 </html>
 <!-- f2w-force-save:remove-nettools-v14:1788211808:index.html -->

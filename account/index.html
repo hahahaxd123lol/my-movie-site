@@ -180,10 +180,18 @@ $('logout-btn').addEventListener('click',async e=>{
   try{localStorage.removeItem('josh_chat_token');localStorage.removeItem('f2w_chat_token');localStorage.setItem('f2w-force-logout-at',String(Date.now()));}catch{}
   location.replace('/home/');
 },true);
+// Use the real /profile/ shell with a query parameter. This works on static hosting
+// v153: keep the canonical friendly /profile/@username route site-wide.
+$('profile-link').addEventListener('click',e=>{
+  if(!currentUsername)return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  location.assign('/profile/@'+encodeURIComponent(currentUsername));
+},true);
 boot();
 })();
 </script>
-<script src="/page-transitions-v135.js?v=151" defer></script>
-  <script src="/v149-account-route.js?v=151"></script>
+<script src="/page-transitions-v135.js?v=152" defer></script>
+  <script src="/v149-account-route.js?v=152"></script>
 </body>
 </html>

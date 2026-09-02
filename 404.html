@@ -12,28 +12,31 @@ try{document.documentElement.classList.add('f2w-transition-boot')}catch(e){}
   <link rel="stylesheet" href="/v146-live-ops.css?v=150">
 </head>
 <body style="margin:0;background:#020914;color:white;font-family:Arial,sans-serif">
-<script>
+<script id="f2w-404-friendly-profile-v153">
 (async()=>{
   const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
   if(m){
-    try{
-      const r=await fetch('/profile/index.html',{cache:'no-cache'});
-      if(!r.ok)throw new Error('Profile route unavailable');
-      const html=await r.text();
-      document.open();document.write(html);document.close();
-      return;
-    }catch{}
+    for(let attempt=0;attempt<2;attempt++){
+      try{
+        const r=await fetch('/profile/index.html',{cache:'no-cache'});
+        if(!r.ok)throw new Error('Profile route unavailable');
+        const html=await r.text();
+        document.open();document.write(html);document.close();
+        return;
+      }catch{ if(attempt===0) await new Promise(r=>setTimeout(r,180)); }
+    }
+    document.body.innerHTML='<main style="min-height:100vh;display:grid;place-items:center;background:#020914;color:#fff;font:600 16px Arial"><div>Profile is temporarily unavailable. <button onclick="location.reload()" style="margin-left:10px">Retry</button></div></main>';
+    return;
   }
   location.replace('/home/');
 })();
-/* f2w-force-save:profile-friendly-route-v125:1788300576 */
 </script>
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
   <script src="/v146-live-ops.js?v=150" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
-  <script src="/v149-account-route.js?v=149"></script>
+  <script src="/v149-account-route.js?v=153"></script>
 </body>
 </html>
 <!-- f2w-force-save:v125-cache:1788300576:404.html -->
