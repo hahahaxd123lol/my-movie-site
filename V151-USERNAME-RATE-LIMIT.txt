@@ -1,0 +1,9 @@
+Flix2Watch v151 — username submit rate limit
+
+- Account username Update/Enter attempts are limited to 5 per rolling 60 seconds.
+- The limit is stored in localStorage, so it is shared across Flix2Watch tabs in the same browser.
+- Holding Enter cannot repeatedly submit: keyboard auto-repeat events are ignored.
+- Availability results for the same username are cached for 60 seconds, so repeatedly trying an unchanged taken username does not repeatedly query Supabase.
+- Normal typing still uses the existing debounce before checking availability.
+- No Supabase SQL is required for this update.
+- Service-worker cache bumped to v151.

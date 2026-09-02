@@ -1,5 +1,5 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v150-recovery-20260902';
+const CACHE='f2w-v151-username-rate-20260902';
 const CORE=[
   '/home/','/favorites/','/profile/','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
