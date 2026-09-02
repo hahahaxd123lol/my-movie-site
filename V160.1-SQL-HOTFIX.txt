@@ -1,0 +1,15 @@
+Flix2Watch v160.1 SQL hotfix
+
+Fixes PostgreSQL error:
+ERROR 42P13: cannot change return type of existing function
+HINT: Use DROP FUNCTION staff_get_profile_roles(uuid) first.
+
+Cause:
+An older deployment already created public.staff_get_profile_roles(uuid) with a different return type. PostgreSQL does not allow CREATE OR REPLACE FUNCTION to change a function's return type.
+
+Fix:
+The consolidated SQL now runs:
+  DROP FUNCTION IF EXISTS public.staff_get_profile_roles(uuid);
+before recreating the function with the v160 text[] return type.
+
+Run the updated V160-FULL-RECOVERY.sql from this package. It is safe to rerun after the previous v160 attempt stopped at this error.

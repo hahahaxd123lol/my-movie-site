@@ -174,6 +174,10 @@ returns text[] language sql security definer stable set search_path=public as $$
 $$;
 grant execute on function public.staff_get_profile_roles(uuid) to authenticated;
 
+-- Existing installations may also have staff_set_profile_role with an older return type.
+-- Drop the exact signature before recreating it, otherwise PostgreSQL raises 42P13.
+drop function if exists public.staff_set_profile_role(uuid,text,boolean);
+
 create or replace function public.staff_set_profile_role(p_user_id uuid,p_role_key text,p_enabled boolean)
 returns text[] language plpgsql security definer set search_path=public as $$
 declare me uuid:=auth.uid();r text:=lower(trim(coalesce(p_role_key,'')));owner constant uuid:='f5454804-a2a6-4602-9086-51cf51f11c77'::uuid;allowed boolean;
