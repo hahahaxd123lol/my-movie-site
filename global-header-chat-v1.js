@@ -2637,3 +2637,65 @@ window.f2wOpenGuestDmAuthV98=function(mode){
   else boot();
 })();
 // f2w-force-save:tv-header-v143:20260902
+
+/* ============================================================
+   Flix2Watch v157 — FINAL SITE-WIDE HEADER ACTION SPACING
+   Keep every top-right action visually detached, even after
+   legacy/TV runtime styles are injected later in startup.
+   ============================================================ */
+(()=>{
+  'use strict';
+  const STYLE_ID='f2w-header-action-spacing-v157';
+  const install=()=>{
+    let style=document.getElementById(STYLE_ID);
+    if(!style){
+      style=document.createElement('style');
+      style.id=STYLE_ID;
+      document.head.appendChild(style);
+    }
+    style.textContent=`
+      body.f2w-main-page > header .f2w-action-cluster{
+        display:flex!important;
+        flex-flow:row nowrap!important;
+        align-items:center!important;
+        justify-content:flex-end!important;
+        gap:12px!important;
+        column-gap:12px!important;
+      }
+      body.f2w-main-page > header .f2w-action-cluster > *{
+        margin-left:0!important;
+        margin-right:0!important;
+      }
+      body.f2w-main-page > header #notification-wrap,
+      body.f2w-main-page > header #staff-control-nav{
+        margin-left:0!important;
+        margin-right:0!important;
+      }
+      @media (min-width:1181px) and (max-width:1480px){
+        body.f2w-main-page > header .f2w-action-cluster{
+          gap:9px!important;
+          column-gap:9px!important;
+        }
+        body.f2w-main-page > header .f2w-action-cluster .tool-btn,
+        body.f2w-main-page > header .f2w-action-cluster .f2w-auth-top-btn,
+        body.f2w-main-page > header .f2w-action-cluster #staff-control-nav{
+          padding-left:10px!important;
+          padding-right:10px!important;
+        }
+      }
+      @media (min-width:1700px){
+        body.f2w-main-page > header .f2w-action-cluster{
+          gap:14px!important;
+          column-gap:14px!important;
+        }
+      }
+    `;
+    // Keep this style physically last so old injected !important rules cannot win by order.
+    if(style.parentNode===document.head) document.head.appendChild(style);
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install,{once:true});
+  else install();
+  window.addEventListener('load',install,{once:true});
+  setTimeout(install,250);
+  setTimeout(install,1200);
+})();
