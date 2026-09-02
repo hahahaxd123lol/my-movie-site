@@ -49,7 +49,7 @@
   function siteMetadata(){
     ensureMeta(
       'description',
-      'Flix2Watch is a free-to-use movie and TV discovery and community site. Browse films, TV shows, cast, plots, profiles and favorites; sign in for account-gated playback where available.'
+      'Flix2Watch is a free-to-use movie and TV discovery site. Browse films, TV shows, cast, plots, profiles and favorites; sign in for account-gated playback where available.'
     );
     ensureMeta(
       'robots',
@@ -188,7 +188,7 @@
 
       const description=bio&&!/loading/i.test(bio)
         ?`${bio.slice(0,155)}${bio.length>155?'…':''}`
-        :`View ${display}'s public Flix2Watch profile, favorites and community details.`;
+        :`View ${display}'s public Flix2Watch profile, favorites and profile details.`;
 
       ensureMeta('description',description);
       ensureMeta('og:title',`${display} | Flix2Watch`,true);

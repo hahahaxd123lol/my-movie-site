@@ -1030,7 +1030,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
         <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
         <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
-        <a class="f2w-nav-link" id="f2w-nav-forum" href="/forum/"><i class="fa-solid fa-comments"></i> Community</a>
+        
 
           <div class="f2w-genre-wrap">
             <button class="f2w-nav-button" id="f2w-nav-genres" type="button" onclick="toggleF2WGenreMenu(event)">
@@ -1194,7 +1194,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     <button class="tab-btn" data-tab="operations"><i class="fa-solid fa-tower-broadcast"></i> Live Ops</button>
     <button class="tab-btn" data-tab="reports"><i class="fa-solid fa-flag"></i> Reports</button>
     <button class="tab-btn" data-tab="users"><i class="fa-solid fa-shield-halved"></i> Account Moderation</button>
-    <div class="staff-nav-title">People & Community</div>
+    <div class="staff-nav-title">People</div>
     <button class="tab-btn" data-tab="profiles"><i class="fa-solid fa-address-card"></i> Profiles</button>
     <button class="tab-btn" data-tab="chat"><i class="fa-solid fa-comments"></i> Chat</button>
     <button class="tab-btn" data-tab="announcements"><i class="fa-solid fa-bullhorn"></i> Announcements</button>
@@ -1816,7 +1816,7 @@ function applyRoleScopedNavigation(){
   const title=document.getElementById('staff-role-summary-title');
   const copy=document.getElementById('staff-role-summary-copy');
   if(title)title.textContent=`${role.toUpperCase()} ACCESS`;
-  const descriptions={owner:'Full control across every Staff operation.',staff:'Full operational control across the Staff Center.',moderator:'Community moderation, reports and user safety tools.',support:'Support tickets and limited user context.',developer:'Near read-only operational visibility and diagnostics.'};
+  const descriptions={owner:'Full control across every Staff operation.',staff:'Full operational control across the Staff Center.',moderator:'Site moderation, reports and user safety tools.',support:'Support tickets and limited user context.',developer:'Near read-only operational visibility and diagnostics.'};
   if(copy)copy.textContent=descriptions[role]||'No Staff access.';
   const note=document.getElementById('role-backend-note');
   if(note)note.classList.toggle('show',!['owner','staff'].includes(role));

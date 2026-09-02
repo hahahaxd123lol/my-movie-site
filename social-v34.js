@@ -94,7 +94,7 @@
     document.getElementById('f2w-v34-clear-rating').onclick=async()=>{const s=await session();if(!s)return;await c.from('user_ratings').delete().eq('user_id',s.user.id).eq('media_id',mediaId).eq('media_type',mediaType);chosen=0;review.value='';paint()};
   }
 
-  // ----- Profile ratings + forum activity -----
+  // ----- Profile ratings -----
   async function initProfileSocial(){
     const ratingsHost=document.getElementById('f2w-v34-profile-ratings');if(!ratingsHost)return;
     const username=(new URLSearchParams(location.search).get('user')||location.pathname.match(/@([^/]+)/)?.[1]||'').replace(/^@/,'');if(!username)return;
@@ -103,36 +103,9 @@
       const {data:ratings}=await c.from('user_ratings').select('*').eq('user_id',p.user_id).order('updated_at',{ascending:false}).limit(12);
       const rows=ratings||[];const stats=document.getElementById('f2w-v34-profile-rating-stats');if(stats)stats.innerHTML=`<span><strong>${rows.length}</strong> rated</span><span><strong>${rows.length?(rows.reduce((a,x)=>a+Number(x.rating),0)/rows.length).toFixed(1):'—'}</strong> avg</span>`;
       ratingsHost.innerHTML=rows.length?rows.map(r=>`<a class="f2w-v34-profile-rating" href="/watch/?id=${r.media_id}&type=${r.media_type}">${r.poster_path?`<img src="https://image.tmdb.org/t/p/w185${r.poster_path}" alt="">`:'<div class="f2w-v34-rating-placeholder"><i class="fa-solid fa-film"></i></div>'}<span><strong>${esc(r.title)}</strong><b>${Number(r.rating).toFixed(1)}★</b>${r.review?`<small>${esc(r.review)}</small>`:''}</span></a>`).join(''):'<div class="profile-v16-none">No ratings yet.</div>';
-      const {data:threads}=await c.from('forum_threads').select('id,title,body,created_at').eq('author_id',p.user_id).order('created_at',{ascending:false}).limit(5);
-      const {data:posts}=await c.from('forum_posts').select('id,thread_id,body,created_at').eq('author_id',p.user_id).order('created_at',{ascending:false}).limit(5);
-      const items=[...(threads||[]).map(x=>({...x,kind:'Thread'})),...(posts||[]).map(x=>({...x,kind:'Reply',id:x.thread_id}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,8);
-      const host=document.getElementById('f2w-v34-profile-forum');host.innerHTML=items.length?items.map(x=>`<a href="/forum/?thread=${x.id}"><b>${x.kind}</b><strong>${esc(x.title||x.body.slice(0,90))}</strong><small>${fmtDate(x.created_at)}</small></a>`).join(''):'<div class="profile-v16-none">No community posts yet.</div>';
     }catch{}
   }
 
-  // ----- Forum -----
-  async function initForum(){
-    const feed=document.getElementById('f2w-v34-thread-feed');if(!feed)return;const c=db();if(!c)return;
-    const composer=document.getElementById('f2w-v34-thread-composer');
-    document.getElementById('f2w-v34-new-thread').onclick=async()=>{const s=await session();if(!s){window.openAccountModal?.();return}composer.hidden=false;document.getElementById('f2w-v34-thread-title').focus()};
-    document.getElementById('f2w-v34-thread-cancel').onclick=()=>composer.hidden=true;
-    document.getElementById('f2w-v34-thread-submit').onclick=async()=>{const s=await session();if(!s)return;const title=document.getElementById('f2w-v34-thread-title').value.trim(),body=document.getElementById('f2w-v34-thread-body').value.trim();if(title.length<3||!body)return alert('Add a title and message.');const {data,error}=await c.from('forum_threads').insert({author_id:s.user.id,title,body}).select().single();if(error)return alert(error.message);location.href=`/forum/?thread=${data.id}`};
-    const threadId=new URLSearchParams(location.search).get('thread');
-    if(threadId){return loadThread(threadId)}
-    const {data:threads,error}=await c.from('forum_threads').select('*').order('created_at',{ascending:false}).limit(50);if(error){feed.innerHTML='<div class="f2w-v34-forum-state">Community tables are not installed yet. Run the V34 SQL.</div>';return}
-    const ids=[...new Set((threads||[]).map(x=>x.author_id))];let profiles={};if(ids.length){const {data:ps}=await c.from('profiles').select('user_id,username,display_name,avatar_url').in('user_id',ids);(ps||[]).forEach(x=>profiles[x.user_id]=x)}
-    const postCounts={};if((threads||[]).length){const {data:posts}=await c.from('forum_posts').select('thread_id').in('thread_id',threads.map(x=>x.id));(posts||[]).forEach(x=>postCounts[x.thread_id]=(postCounts[x.thread_id]||0)+1)}
-    feed.innerHTML=(threads||[]).length?threads.map(t=>{const p=profiles[t.author_id]||{};return `<article class="f2w-v34-thread-card"><a class="f2w-v34-thread-author" href="/profile/?user=${encodeURIComponent(p.username||'')}">${p.avatar_url?`<img src="${esc(p.avatar_url)}" alt="">`:'<span><i class="fa-solid fa-user"></i></span>'}<b>${esc(p.display_name||p.username||'User')}</b><small>@${esc(p.username||'user')}</small></a><a class="f2w-v34-thread-body" href="/forum/?thread=${t.id}"><h2>${esc(t.title)}</h2><p>${esc(t.body.slice(0,240))}</p><footer><span>${fmtDate(t.created_at)}</span><span><i class="fa-regular fa-comment"></i> ${postCounts[t.id]||0}</span></footer></a></article>`}).join(''):'<div class="f2w-v34-forum-state">No threads yet. Start the first one.</div>';
-    async function loadThread(){}
-  }
-  async function loadThread(id){
-    const feed=document.getElementById('f2w-v34-thread-feed'),c=db();if(!feed||!c)return;const {data:t,error}=await c.from('forum_threads').select('*').eq('id',id).maybeSingle();if(error||!t){feed.innerHTML='<div class="f2w-v34-forum-state">Thread not found.</div>';return}
-    const {data:posts}=await c.from('forum_posts').select('*').eq('thread_id',id).order('created_at',{ascending:true});const ids=[...new Set([t.author_id,...(posts||[]).map(x=>x.author_id)])];const {data:ps}=await c.from('profiles').select('user_id,username,display_name,avatar_url').in('user_id',ids);const pm={};(ps||[]).forEach(x=>pm[x.user_id]=x);
-    const row=(x,kind)=>{const p=pm[x.author_id]||{};return `<article class="f2w-v34-post"><a href="/profile/?user=${encodeURIComponent(p.username||'')}">${p.avatar_url?`<img src="${esc(p.avatar_url)}" alt="">`:'<span><i class="fa-solid fa-user"></i></span>'}<b>${esc(p.display_name||p.username||'User')}</b><small>@${esc(p.username||'user')}</small></a><div>${kind==='thread'?`<h1>${esc(x.title)}</h1>`:''}<p>${esc(x.body)}</p><small>${fmtDate(x.created_at)}</small></div></article>`};
-    feed.innerHTML=`<a class="f2w-v34-back" href="/forum/"><i class="fa-solid fa-arrow-left"></i> All threads</a>${row(t,'thread')}${(posts||[]).map(x=>row(x,'post')).join('')}<section class="f2w-v34-reply"><textarea id="f2w-v34-reply-body" maxlength="5000" placeholder="Write a reply..."></textarea><button id="f2w-v34-reply-send" type="button">Post reply</button></section>`;
-    document.getElementById('f2w-v34-reply-send').onclick=async()=>{const s=await session();if(!s){window.openAccountModal?.();return}const body=document.getElementById('f2w-v34-reply-body').value.trim();if(!body)return;const {error}=await c.from('forum_posts').insert({thread_id:id,author_id:s.user.id,body});if(error)alert(error.message);else location.reload()};
-  }
-
-  function boot(){forceBrand();installSearch();initRating();initProfileSocial();initForum();const obs=new MutationObserver(()=>forceBrand());obs.observe(document.body,{attributes:true,attributeFilter:['class'],subtree:false});}
+  function boot(){forceBrand();installSearch();initRating();initProfileSocial();const obs=new MutationObserver(()=>forceBrand());obs.observe(document.body,{attributes:true,attributeFilter:['class'],subtree:false});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

@@ -198,7 +198,7 @@
 
   function headerTargets() {
     document.querySelectorAll('body.f2w-main-page > header a[href]').forEach(a=>prefetch(a.href));
-    ['/home/','/favorites/','/support/','/profile/','/chat/','/leaderboard/','/forum/'].forEach(prefetch);
+    ['/home/','/favorites/','/support/','/profile/','/chat/','/leaderboard/'].forEach(prefetch);
     try {
       const username=localStorage.getItem('f2w_profile_username_v24');
       if(username)prefetch(`/profile/@${encodeURIComponent(username)}`);
@@ -265,7 +265,7 @@
 
   const common=[
     '/home/','/watch/','/favorites/','/profile/','/support/',
-    '/chat/','/leaderboard/','/forum/','/users/'
+    '/chat/','/leaderboard/','/users/'
   ];
 
   const run=()=>{

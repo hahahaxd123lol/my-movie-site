@@ -60,7 +60,7 @@
   }
 
   function forumVisualFix(){
-    if(!location.pathname.startsWith('/forum'))return;
+    if(!false)return;
     document.documentElement.classList.add('f2w-forum-v145');
   }
 

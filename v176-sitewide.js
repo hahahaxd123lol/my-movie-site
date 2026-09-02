@@ -4,7 +4,7 @@ if(window.__f2wV176Sitewide)return;window.__f2wV176Sitewide=true;
 
 const now=()=>Date.now();
 const RATE_WINDOW=30000, RATE_MAX=2;
-const NAV_WORDS=/^(home|movies|tv shows|leaderboard|community|genres|chat|favorites|profile|support|account|notifications|login|log in|sign up|create account)$/i;
+const NAV_WORDS=/^(home|movies|tv shows|leaderboard|genres|chat|favorites|profile|support|account|notifications|login|log in|sign up|create account)$/i;
 const EXCLUDE=/^(close|cancel|back|next|previous|prev|refresh|retry|understood|support)$/i;
 const ACTION_HINT=/(send|post|save|update|delete|remove|dismiss|resolve|ban|mute|suspend|unsuspend|unban|follow|unfollow|report|submit|apply|grant|give|revoke|mark all read|create|login|log in|sign up|change|clear all restrictions)/i;
 function normText(el){return String(el?.getAttribute?.('aria-label')||el?.title||el?.textContent||'').replace(/\s+/g,' ').trim()}

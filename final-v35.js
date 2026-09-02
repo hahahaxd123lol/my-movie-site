@@ -251,7 +251,6 @@ function f2wDebounce(fn,wait=140){
       a.href='/leaderboard/';
       a.dataset.v35Leaderboard='1';
       a.innerHTML='<i class="fa-solid fa-trophy"></i> Leaderboard';
-      const forum=nav.querySelector('#f2w-nav-forum');
       nav.insertBefore(a,forum||null);
     });
     document.querySelectorAll('footer').forEach(footer=>{
@@ -635,39 +634,7 @@ function f2wDebounce(fn,wait=140){
       console.warn('Recently Watched tracking unavailable:',error?.message||error);
     }
   }
-
-  function startWatchTime(){
-    if(!location.pathname.startsWith('/watch'))return;
-    if(watchTimeTimer)return;
-
-    const params=new URLSearchParams(location.search);
-    const mediaId=Number(params.get('id'));
-    const mediaType=params.get('type')==='tv'?'tv':'movie';
-    if(!mediaId)return;
-
-    let lastTick=Date.now();
-    watchTimeTimer=setInterval(async()=>{
-      const now=Date.now();
-      const elapsed=Math.max(1,Math.min(15,Math.round((now-lastTick)/1000)));
-      lastTick=now;
-
-      if(!authUser||document.visibilityState!=='visible'||!document.hasFocus())return;
-
-      const frame=document.querySelector('#player-frame,iframe[src]');
-      if(!frame||!String(frame.getAttribute('src')||'').trim())return;
-
-      try{
-        await rpc('add_watch_seconds',{
-          p_media_type:mediaType,
-          p_media_id:mediaId,
-          p_seconds:elapsed
-        });
-      }catch(error){
-        console.warn('Watch-time tracking unavailable:',error?.message||error);
-      }
-    },15000);
-  }
-
+  function startWatchTime(){ /* v177: consolidated into touch_playback_session_v177 */ }
 
   /* ---------- profile editor v22 helpers ---------- */
   const PROFILE_TMDB_KEY='925c48dd6e24fd5e975fe224238bbb45';
@@ -1445,28 +1412,6 @@ function f2wDebounce(fn,wait=140){
     setInterval(refresh,30000);
   }
 
-  /* ---------- community/forum additions ---------- */
-  async function enrichForum(){
-    if(!location.pathname.startsWith('/forum'))return;
-    const main=document.querySelector('main,.forum-main,.v34-forum-shell');if(!main)return;
-    if(!document.getElementById('v35-community-metrics')){
-      const metrics=document.createElement('div');metrics.id='v35-community-metrics';metrics.className='f2w-community-metrics';metrics.innerHTML='<div class="f2w-community-metric"><b id="v35-thread-count">—</b><span>Discussions</span></div><div class="f2w-community-metric"><b>½–5★</b><span>Rating scale</span></div><div class="f2w-community-metric"><b>Public</b><span>Anyone can read</span></div><div class="f2w-community-metric"><b id="v35-community-user">Guest</b><span>Your account</span></div>';
-      main.insertBefore(metrics,main.firstChild);
-    }
-    const user=document.getElementById('v35-community-user');if(user)user.textContent=authUser?'Member':'Guest';
-    try{
-      const client=db();const [{count},{data:leaders}]=await Promise.all([
-        client.from('forum_threads').select('*',{count:'exact',head:true}),
-        client.rpc('get_public_leaderboard',{p_page:1,p_page_size:5,p_sort:'overall'})
-      ]);
-      const countEl=document.getElementById('v35-thread-count');if(countEl)countEl.textContent=String(count||0);
-      let rankbox=document.getElementById('v35-forum-rankbox');
-      if(!rankbox){rankbox=document.createElement('aside');rankbox.id='v35-forum-rankbox';rankbox.className='f2w-forum-rankbox';main.appendChild(rankbox);}
-      rankbox.innerHTML=`<h3><i class="fa-solid fa-trophy"></i> Community rankings</h3>${(leaders||[]).map(row=>`<div class="f2w-forum-rankline"><a href="/profile/@${encodeURIComponent(row.username)}" data-f2w-username="${esc(row.username)}">#${Number(row.rank_no)} ${esc(row.display_name||row.username)}</a><b>${Number(row.score||0)}</b></div>`).join('')}<div style="margin-top:9px"><a href="/leaderboard/" style="color:#ff4852">View full leaderboard →</a></div>`;
-      decorateNames();
-    }catch{}
-  }
-
   /* ---------- staff instant quick moderation ---------- */
   function currentStaffSnapshot(){try{return typeof currentSnapshot!=='undefined'?currentSnapshot:null}catch{return null}}
   function installStaffQuickModeration(){
@@ -1742,10 +1687,10 @@ function f2wDebounce(fn,wait=140){
     bootProfilePresenceFastV128();
     await syncAuthUI();
     await enforceUsernameGate();
-    setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();bootProfileRealtime();enrichForum();bootLeaderboard();decorateNames();/* v159 legacy quick moderation disabled */ void 0},350);
+    setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();bootProfileRealtime();bootLeaderboard();decorateNames();/* v159 legacy quick moderation disabled */ void 0},350);
     roleDecorateTimer=null;
     const client=db();
-    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{syncAuthUI();enforceUsernameGate();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments();enrichForum()},0))}catch{}
+    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{syncAuthUI();enforceUsernameGate();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments()},0))}catch{}
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchPresence();recordWatchOpen();}else{leavePresence();}});
     window.addEventListener('pagehide',()=>{leavePresence()});
     let f2wDomRefreshTimer=null;
@@ -2349,7 +2294,7 @@ function f2wDebounce(fn,wait=140){
       if(label)label.textContent=online?'Online':row.last_seen_at?`Last online ${rel(row.last_seen_at)}`:'Last online not recorded yet';
     }
     const host=document.getElementById('f2w-current-watching-card');
-    if(host){
+    if(host && !window.__f2wV177ProfilePlayback){
       const fresh=row.watching_media_id&&row.watching_last_seen_at&&(Date.now()-new Date(row.watching_last_seen_at).getTime()<95000);
       if(fresh){
         const type=row.watching_media_type==='tv'?'tv':'movie';

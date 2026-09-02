@@ -25,6 +25,7 @@ function portal(){
 function sig(el){return [el.id,typeof el.className==='string'?el.className:'',el.getAttribute?.('role'),el.getAttribute?.('aria-modal')].filter(Boolean).join(' ')}
 function candidate(el){
   if(!(el instanceof HTMLElement))return false;
+  if(location.pathname.startsWith('/watch')&&(el.id==='watch-login-overlay'||el.id==='account-modal'||el.closest?.('#watch-login-overlay')))return false;
   if(el.id===PORTAL_ID||el.closest?.('#'+PORTAL_ID))return false;
   if(el.tagName==='DIALOG')return true;
   const s=sig(el); if(EXCLUDE.test(s))return false;

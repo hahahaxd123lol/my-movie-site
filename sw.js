@@ -2,7 +2,7 @@
 const CACHE='f2w-v176-viewport-popups-20260902';
 const CORE=['/v176-viewport-popups.js','/v176-viewport-popups.css','/v176-sitewide.js','/v176-notifications.js','/v176-sitewide-fixes.css','/v176-sitewide-fixes.js','/v176-enforcement.css','/v176-bootstrap.js','/v176-enforcement.js','/v176-core.css','/v176-core.js','/v176-global-ui.css','/v176-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
-  '/leaderboard/','/forum/','/users/',
+  '/leaderboard/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
   '/final-v35.css','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',

@@ -108,7 +108,7 @@ const icons={
   tag:'<path d="M3 4h8l10 10-7 7L4 11V4zm5 2a2 2 0 100 4 2 2 0 000-4z"/>'
 };
 function svg(kind){return `<svg class="forum-v159-icon" viewBox="0 0 24 24" aria-hidden="true">${icons[kind]||icons.discuss}</svg>`}
-function forumIcons(){if(!location.pathname.startsWith('/forum'))return;
+function forumIcons(){if(!false)return;
   document.querySelectorAll('.forum-v30-nav,[data-new-thread],a[href*="/movies"],button').forEach(el=>{
     if(!el.closest('main,.forum-v30-layout,.forum-v30-sidebar,.forum-v30-hero'))return;
     const text=(el.textContent||'').trim().toLowerCase();let kind='discuss';
@@ -155,7 +155,7 @@ function boot(){
   window.openHeaderAuth=openAuth;
   window.openAccountModal=async()=>{try{const {data:{session}}=await db().auth.getSession();if(session?.user)location.href='/account/';else openAuth('login')}catch{openAuth('login')}};
   normalizeRedButtons();forumIcons();warmPlayer();setTimeout(prewarmChat,350);
-  const mo=new MutationObserver(muts=>{for(const m of muts){for(const n of m.addedNodes){if(n.nodeType===1){normalizeRedButtons(n);if(location.pathname.startsWith('/forum'))forumIcons()}}}});mo.observe(document.documentElement,{childList:true,subtree:true});
+  const mo=new MutationObserver(muts=>{for(const m of muts){for(const n of m.addedNodes){if(n.nodeType===1){normalizeRedButtons(n);if(false)forumIcons()}}}});mo.observe(document.documentElement,{childList:true,subtree:true});
   // Fix any leaderboard/page script that replaced auth/profile actions with Home redirects.
   window.openMyProfile=async()=>{try{const c=db();const {data:{user}}=await c.auth.getUser();if(!user)return openAuth('login');const {data:p}=await c.from('profiles').select('username').eq('user_id',user.id).maybeSingle();if(p?.username)location.href='/profile/@'+encodeURIComponent(p.username)}catch{}};
 }

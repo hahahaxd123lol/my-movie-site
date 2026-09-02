@@ -2,7 +2,7 @@
 const CACHE='f2w-v159-full-recovery-20260902';
 const CORE=['/v159-core.css','/v159-core.js','/v146-live-ops.css','/v146-live-ops.js','/v154-global-ui.css','/v154-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
-  '/leaderboard/','/forum/','/users/',
+  '/leaderboard/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
   '/final-v35.css','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',
