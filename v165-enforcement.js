@@ -1,6 +1,7 @@
 (()=>{
 'use strict';
-if(window.__f2wV165Enforcement)return;window.__f2wV165Enforcement=true;
+if(window.__f2wV201Enforcement)return;window.__f2wV201Enforcement=true;
+window.__f2wV165Enforcement=true;
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co',KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 let client=null,notifyChannel=null,enforcementChannel=null,profileRoleChannel=null,enforcementUserId='',notifyUserId='',notifyTimer=0,enforcementTimer=0;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -58,7 +59,20 @@ function scrubEnforcementVisuals(uid=''){
   for(const el of [document.documentElement,document.body]){if(!el)continue;for(const prop of ['filter','backdrop-filter','-webkit-backdrop-filter','pointer-events','user-select'])el.style.removeProperty(prop);el.style.removeProperty('overflow')}
   if(uid){try{for(const k of legacyEnforcementKeys(uid))localStorage.removeItem(k)}catch{}}
 }
+function ensureEnforcementStyle(){
+  if(document.getElementById('f2w-v201-enforcement-style'))return;
+  const st=document.createElement('style');st.id='f2w-v201-enforcement-style';st.textContent=`
+#f2w-v165-enforcement{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;padding:20px!important;border:0!important;background:rgba(0,0,0,.72)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;z-index:2147483647!important;place-items:center!important;overflow:auto!important;color:#fff!important}
+#f2w-v165-enforcement[open]{display:grid!important}
+#f2w-v165-enforcement .panel{width:min(560px,calc(100vw - 40px))!important;max-height:calc(100dvh - 40px)!important;overflow:auto!important;background:#07111e!important;border:1px solid rgba(255,35,62,.55)!important;border-radius:18px!important;padding:28px!important;box-shadow:0 28px 90px rgba(0,0,0,.72),0 0 42px rgba(229,9,20,.22)!important;color:#fff!important;outline:none!important}
+#f2w-v165-enforcement h1,#f2w-v165-enforcement p,#f2w-v165-enforcement small{color:#fff!important}
+#f2w-v165-enforcement .actions{display:flex!important;gap:10px!important;flex-wrap:wrap!important;margin-top:20px!important}
+#f2w-v165-enforcement .actions a,#f2w-v165-enforcement .actions button{pointer-events:auto!important}
+`;
+  document.head.appendChild(st);
+}
 function enforcementOverlay(){
+  ensureEnforcementStyle();
   let el=document.getElementById('f2w-v165-enforcement');
   if(el)return el;
   el=document.createElement('dialog');el.id='f2w-v165-enforcement';el.setAttribute('role','alertdialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-live','assertive');el.hidden=true;
@@ -74,14 +88,24 @@ function clearEnforcement(uid=''){
   try{enforcementBus?.postMessage({user_id:uid,active:false})}catch{}window.dispatchEvent(new CustomEvent('flix2watch:enforcement-cleared'));
 }
 function stopPlayback(){
-  try{if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{})}catch{}
+  try{
+    const exit=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen;
+    if((document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement)&&exit){
+      try{const r=exit.call(document);r?.catch?.(()=>{})}catch{}
+    }
+  }catch{}
+  try{
+    document.documentElement.classList.remove('flix-viewport-fullscreen-open');
+    document.body?.classList.remove('flix-viewport-fullscreen-open');
+    document.querySelectorAll('.flix-viewport-fullscreen,.flix-fullscreen-active').forEach(el=>el.classList.remove('flix-viewport-fullscreen','flix-fullscreen-active'));
+  }catch{}
   document.querySelectorAll('video,audio').forEach(v=>{try{v.pause()}catch{}});
   document.querySelectorAll('iframe').forEach(f=>{if(/player\.flix2watch\.com|vidsrc|vidcore|ezvid|movie-src|vidlink|embed/i.test(f.src||'')){try{f.src='about:blank'}catch{}}});
 }
 function applyEnforcement(uid,state,{realtime=false,cached=false}={}){
   if(String(state?.user_id||uid)!==String(uid)){clearEnforcement(uid);return false}
   const supportExempt=location.pathname.startsWith('/support')&&!!state?.site_suspended&&!state?.account_banned;
-  if(supportExempt){scrubEnforcementVisuals();window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:true,support_exempt:true};writeCachedEnforcement(uid,state);return false}
+  if(supportExempt){scrubEnforcementVisuals();window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:false,support_exempt:true};writeCachedEnforcement(uid,state);return false}
   const active=!!(state?.site_suspended||state?.account_banned);
   window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:active};
   if(!active){clearEnforcement(uid);return false}
@@ -168,8 +192,10 @@ async function bindRoleRealtime(session){const c=db(),uid=session?.user?.id||'';
 let enforcementBus=null;try{enforcementBus=new BroadcastChannel('f2w-enforcement-v165');enforcementBus.onmessage=e=>{const d=e.data||{};if(String(d.user_id||'')!==String(enforcementUserId||''))return;if(d.active)applyEnforcement(enforcementUserId,d.state||d,{cached:true});else clearEnforcement(enforcementUserId)}}catch{}
 
 async function sync(session){setAuthHeader(session);ensureChatDot();normalizeRed();fixAuthTabs();fixSocial();forumIcons();await Promise.allSettled([bindNotifications(session),bindEnforcement(session),bindViewedProfileRoleRealtime(),bindRoleRealtime(session)])}
-async function boot(){scrubEnforcementVisuals();const c=db();if(!c?.auth)return;let session=null;try{session=(await timeout(c.auth.getSession(),1800)).data?.session||null}catch{}await sync(session);c.auth.onAuthStateChange?.((_e,s)=>{clearEnforcement();setTimeout(()=>sync(s),0)});const mo=new MutationObserver(m=>{ensureChatDot();normalizeRed();fixAuthTabs();forumIcons()});mo.observe(document.documentElement,{subtree:true,childList:true});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')c.auth.getSession().then(({data})=>{setAuthHeader(data?.session||null);refreshEnforcement(data?.session||null)})},{passive:true})}
+async function boot(){scrubEnforcementVisuals();const c=db();if(!c?.auth)return;let session=null;try{session=(await timeout(c.auth.getSession(),1800)).data?.session||null}catch{}await sync(session);c.auth.onAuthStateChange?.((_e,s)=>{const next=String(s?.user?.id||'');const current=String(enforcementUserId||'');if(!next){if(current)clearEnforcement(current);setTimeout(()=>sync(s),0);return}if(next!==current){if(current)clearEnforcement(current);setTimeout(()=>sync(s),0);return}setAuthHeader(s);setTimeout(()=>refreshEnforcement(s),0)});const mo=new MutationObserver(m=>{ensureChatDot();normalizeRed();fixAuthTabs();forumIcons()});mo.observe(document.documentElement,{subtree:true,childList:true});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')c.auth.getSession().then(({data})=>{setAuthHeader(data?.session||null);refreshEnforcement(data?.session||null)})},{passive:true})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 
 // f2w-force-save:v183-enforcement-no-flash-support-exemption:20260902
+
+// f2w-force-save:v201-enforcement-viewport:20260902

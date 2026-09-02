@@ -5352,7 +5352,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
 
   /* ================= ACCOUNT ================= */
 
-  async function openAccountModalLegacyV194Disabled(){
+  async function openAccountModal(){
     document.getElementById('account-modal').classList.add('open');
 
     // Show the current cached state immediately, then ask rapid-worker
@@ -5395,16 +5395,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
   }
 
   function closeAccountModal(){
-    const modal=document.getElementById('account-modal');
-    if(!modal)return;
-    modal.classList.remove('open','f2w-v183-auth-open','f2w-v185-auth-open','f2w-auth-modal-open-v60','f2w-v159-auth-open','f2w-auth-hard-open-v58','f2w-auth-v67','f2w-viewport-popup');
-    modal.setAttribute('aria-hidden','true');
-    modal.style.setProperty('display','none','important');
-    modal.style.setProperty('pointer-events','none','important');
-    document.documentElement.classList.remove('f2w-popup-scroll-lock','f2w-transition-leaving');
-    document.body?.classList.remove('f2w-popup-scroll-lock');
-    document.documentElement.style.removeProperty('overflow');
-    document.body?.style.removeProperty('overflow');
+    document.getElementById('account-modal').classList.remove('open');
   }
 
   function showAccountMode(mode){
@@ -8627,10 +8618,18 @@ if(currentUser){
   }
 
   function bindRatingGuard(){
-    // v194: retired. The v117 rating controller below is the single authority.
-    // The old async capture guard allowed the click to continue while awaiting
-    // getSession(), then attempted to open auth a second time.
-    return;
+    findRatingSaveButtons().forEach(btn=>{
+      if(btn.dataset.f2wRatingGuardV47)return;
+      btn.dataset.f2wRatingGuardV47='1';
+      btn.addEventListener('click',async e=>{
+        const session=await getSession();
+        if(session?.user)return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        toast('Log in or create an account to save your rating.');
+        openAuthChoice();
+      },true);
+    });
   }
 
   // ---------------- More FAQs ----------------
@@ -10083,20 +10082,7 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
     try{return (await client()?.auth.getSession())?.data?.session||null}catch{return null}
   }
   function auth(){
-    // v194: one safe auth opening path for rating/clear-rating.
-    try{
-      document.documentElement.classList.remove('f2w-transition-leaving','f2w-popup-scroll-lock');
-      document.body?.classList.remove('f2w-popup-scroll-lock');
-      document.documentElement.removeAttribute('inert');
-      document.body?.removeAttribute('inert');
-      document.documentElement.style.removeProperty('overflow');
-      document.body?.style.removeProperty('overflow');
-      const chat=document.getElementById('chat-modal');
-      if(chat){chat.classList.remove('open','show','active','f2w-viewport-popup');chat.setAttribute('aria-hidden','true');}
-      const opener=window.f2wOpenAuth||window.openHeaderAuth||window.openAccountModal;
-      if(typeof opener==='function'){opener('login');return;}
-      document.getElementById('header-login-btn')?.click();
-    }catch(error){console.warn('Rating auth opener unavailable:',error)}
+    try{window.openHeaderAuth?.('login')}catch{}
   }
   async function load(){
     const c=client(); if(!c)return;
@@ -10160,7 +10146,6 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{bind();load()},{once:true});else{bind();load()}
 })();
 /* f2w-force-save:rating-v117-js:1788295984 */
-/* f2w-v194-watch-rating-auth-single-authority:20260902 */
 </script>
 
 
@@ -10306,13 +10291,13 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 
 <!-- F2W v159 core recovery -->
 <link rel="stylesheet" href="/v159-core.css?v=159">
-<script src="/v159-core.js?v=194-20260902-rating-auth" defer></script>
-<script src="/v165-enforcement.js?v=165"></script>
+<script src="/v159-core.js?v=190-20260902-auth-authority" defer></script>
+<script src="/v165-enforcement.js?v=201-20260902"></script>
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
 <script src="/v172-sitewide.js?v=172"></script>
-<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=194-20260902-rating-auth"></script>
-<script src="/v176-sitewide.js?v=196-20260902-auth-freeze" defer></script><link rel="stylesheet" href="/v177-watch-realtime.css?v=177-20260902">
-<script src="/v177-watch-realtime.js?v=182-20260902" defer></script>
+<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=190-20260902-auth-authority"></script>
+<script src="/v176-sitewide.js?v=190-20260902-auth-authority" defer></script><link rel="stylesheet" href="/v177-watch-realtime.css?v=177-20260902">
+<script src="/v177-watch-realtime.js?v=201-20260902" defer></script>
 
 <style id="f2w-watch-auth-tv-scroll-v184">
 /* v184 — Watch-page auth modal may scroll as a whole on short/TV viewports.
@@ -10481,6 +10466,4 @@ body.f2w-watch-page #account-modal .account-card {
 
 <!-- f2w-force-save:v190-auth-controller-cleanup-watch:20260902 -->
 
-<!-- f2w-force-save:v194-watch-rating-auth:20260902 -->
-
-<!-- f2w-force-save:v196-watch-auth-freeze-fix:20260902 -->
+<!-- f2w-force-save:v201-watch-telemetry-enforcement:20260902 -->

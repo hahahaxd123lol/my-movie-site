@@ -10510,6 +10510,76 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* f2w-force-save:v200-profile-editor-presence-age:20260902 */
 </script>
 
+
+<style id="f2w-v201-profile-playback-style">
+#f2w-current-watching-card.f2w-current-watching-card[data-v201-playback="1"]{display:grid!important;grid-template-columns:92px minmax(0,1fr)!important;gap:16px!important;align-items:center!important}
+#f2w-current-watching-card[data-v201-playback="1"] img{width:92px!important;height:138px!important;object-fit:cover!important;border-radius:10px!important;background:#07101b!important}
+#f2w-current-watching-card[data-v201-playback="1"] .f2w-v201-progress{display:flex!important;align-items:center!important;gap:10px!important;margin-top:10px!important;flex-wrap:wrap!important}
+#f2w-current-watching-card[data-v201-playback="1"] .f2w-v201-clock{font-family:var(--font-mono,'JetBrains Mono',monospace)!important;font-size:.82rem!important;font-weight:800!important;color:#fff!important;letter-spacing:.02em!important}
+#f2w-current-watching-card[data-v201-playback="1"] .f2w-v201-state{display:inline-flex!important;align-items:center!important;gap:6px!important;padding:4px 8px!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:999px!important;color:#a8b9cb!important;font-size:.65rem!important;font-weight:800!important}
+#f2w-current-watching-card[data-v201-playback="1"] .f2w-v201-state.playing{color:#4ade80!important;border-color:rgba(74,222,128,.3)!important}
+#f2w-current-watching-card[data-v201-playback="1"] .f2w-v201-state.paused{color:#facc15!important;border-color:rgba(250,204,21,.3)!important}
+#f2w-current-watching-card[data-v201-playback="1"] .f2w-v201-source{margin-top:7px!important;color:#71859a!important;font-size:.62rem!important}
+@media(max-width:560px){#f2w-current-watching-card.f2w-current-watching-card[data-v201-playback="1"]{grid-template-columns:72px minmax(0,1fr)!important}#f2w-current-watching-card[data-v201-playback="1"] img{width:72px!important;height:108px!important}}
+</style>
+<script id="f2w-v201-profile-playback">
+(()=>{
+'use strict';
+if(window.__f2wV201ProfilePlayback)return;window.__f2wV201ProfilePlayback=true;
+const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+let supa=null,row=null,rowReceivedAt=0,channel=null,pollTimer=0,tickTimer=0,observer=null,rendering=false,ownUserId='';
+let bc=null;try{bc=new BroadcastChannel('f2w-playback-v182')}catch{}
+function db(){return supa||(supa=window.f2wSupabase||window.chatSupabase||window.supabaseClient||(window.supabase?.createClient?window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null))}
+function username(){const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);return (m?.[1]||new URLSearchParams(location.search).get('user')||'').replace(/[^A-Za-z0-9]/g,'')}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function fmt(seconds){seconds=Math.max(0,Math.floor(Number(seconds)||0));const h=Math.floor(seconds/3600),m=Math.floor((seconds%3600)/60),s=seconds%60;return h>0?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${m}:${String(s).padStart(2,'0')}`}
+function normalizedStatus(v){v=String(v||'unknown').toLowerCase();if(v==='seeked')return 'playing';if(['playing','paused','buffering','completed','stopped'].includes(v))return v;return 'unknown'}
+function effectivePosition(at=Date.now()){
+  if(!row||row.position_seconds==null)return null;
+  let p=Math.max(0,Number(row.position_seconds)||0);const st=normalizedStatus(row.playback_status);
+  if(st==='playing'){
+    const serverAt=row.progress_updated_at?new Date(row.progress_updated_at).getTime():rowReceivedAt;
+    if(Number.isFinite(serverAt)&&serverAt>0)p+=Math.max(0,Math.min(75,(at-serverAt)/1000));
+  }
+  const dur=Math.max(0,Number(row.duration_seconds)||0);if(dur)p=Math.min(p,dur);return p;
+}
+function fresh(){const t=row?.last_seen_at?new Date(row.last_seen_at).getTime():0;return !!(row?.media_id&&t&&Date.now()-t<76000)}
+function stateLabel(st){return st==='playing'?'Playing':st==='paused'?'Paused':st==='buffering'?'Buffering':st==='completed'?'Finished':st==='stopped'?'Stopped':'Live'}
+function updateClock(){
+  const host=document.getElementById('f2w-current-watching-card');if(!host||!row||!fresh())return;
+  const clock=host.querySelector('.f2w-v201-clock'),badge=host.querySelector('.f2w-v201-state');const pos=effectivePosition(),dur=Math.max(0,Number(row.duration_seconds)||0),st=normalizedStatus(row.playback_status);
+  if(clock)clock.textContent=pos==null?(dur?`— / ${fmt(dur)}`:'Timestamp unavailable'):`${fmt(pos)}${dur?` / ${fmt(dur)}`:''}`;
+  if(badge){badge.className=`f2w-v201-state ${st}`;badge.innerHTML=`<i class="fa-solid ${st==='paused'?'fa-pause':st==='buffering'?'fa-spinner':st==='completed'?'fa-check':'fa-play'}"></i> ${stateLabel(st)}`}
+}
+function render(){
+  const host=document.getElementById('f2w-current-watching-card');if(!host)return;rendering=true;
+  try{
+    if(!row||!fresh()){
+      host.className='f2w-current-watching-empty';host.removeAttribute('data-v201-playback');host.innerHTML='Not watching anything right now.';host.onclick=null;host.style.cursor='';return;
+    }
+    const poster=row.poster_path?`https://image.tmdb.org/t/p/w342${String(row.poster_path).replace(/^https?:\/\/image\.tmdb\.org\/t\/p\/[^/]+/i,'')}`:'/flix2watch-logo-red-v34.png';
+    const type=row.media_type==='tv'?'tv':'movie',st=normalizedStatus(row.playback_status),src=String(row.source_key||'').trim();
+    host.className='f2w-current-watching-card';host.dataset.v201Playback='1';host.innerHTML=`<img src="${esc(poster)}" alt="${esc(row.title||'Currently watching')} poster" onerror="this.src='/flix2watch-logo-red-v34.png'">
+      <div class="f2w-current-watching-copy">
+        <strong>${esc(row.title||'Untitled')}</strong>
+        <span class="f2w-current-watching-live"><i class="fa-solid fa-circle"></i> Watching now</span>
+        <div class="f2w-v201-progress"><span class="f2w-v201-clock"></span><span class="f2w-v201-state ${st}"></span></div>
+        ${src?`<span class="f2w-v201-source">Source: ${esc(src)}</span>`:''}
+      </div>`;
+    host.onclick=()=>location.href=`/watch/?id=${encodeURIComponent(row.media_id)}&type=${type}`;host.style.cursor='pointer';updateClock();
+  } finally {setTimeout(()=>{rendering=false},0)}
+}
+function apply(next){if(!next||!next.media_id){row=null;rowReceivedAt=Date.now();render();return}row={...next};rowReceivedAt=Date.now();render();bindRealtime()}
+async function fetchRow(){const c=db(),u=username();if(!c?.rpc||!u)return;try{let res=await c.rpc('get_public_current_watching_v201',{p_username:u});if(res.error){res=await c.rpc('get_public_current_watching_v177',{p_username:u})}if(res.error)throw res.error;const x=Array.isArray(res.data)?res.data[0]:res.data;apply(x||null)}catch(e){console.warn('v201 profile playback refresh unavailable:',e?.message||e)}}
+function bindRealtime(){const c=db(),uid=String(row?.user_id||'');if(!c?.channel||!uid)return;if(channel?.__f2wUid===uid)return;if(channel){try{c.removeChannel(channel)}catch{}channel=null}try{channel=c.channel('f2w-v201-profile-playback-'+uid).on('postgres_changes',{event:'*',schema:'public',table:'current_watching_v125',filter:`user_id=eq.${uid}`},payload=>{if(payload.eventType==='DELETE')apply(null);else if(payload.new)apply(payload.new)}).subscribe();channel.__f2wUid=uid}catch{}}
+function bindObserver(){const host=document.getElementById('f2w-current-watching-card');if(!host||observer)return;observer=new MutationObserver(()=>{if(!rendering&&row&&fresh()&&host.dataset.v201Playback!=='1')queueMicrotask(render)});observer.observe(host,{childList:true,subtree:true,attributes:true,attributeFilter:['class','data-v201-playback']})}
+async function resolveOwn(){try{const {data}=await db()?.auth?.getSession?.();ownUserId=String(data?.session?.user?.id||'')}catch{}}
+if(bc)bc.onmessage=e=>{const d=e.data||{};if(d.type!=='f2w-playback-v182'||!row||!ownUserId||String(row.user_id)!==ownUserId)return;if(Number(d.media_id)!==Number(row.media_id)||String(d.media_type)!==String(row.media_type))return;apply({...row,...d,last_seen_at:d.last_seen_at||new Date().toISOString(),progress_updated_at:d.progress_updated_at||new Date().toISOString()})};
+function start(){bindObserver();resolveOwn();fetchRow();clearInterval(tickTimer);tickTimer=setInterval(updateClock,1000);clearInterval(pollTimer);pollTimer=setInterval(fetchRow,30000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')fetchRow()});window.addEventListener('focus',fetchRow,{passive:true})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
@@ -10647,3 +10717,5 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- f2w-force-save:v200-profile-page:20260902 -->
 
 <!-- f2w-force-save:v200:profile/index.html:20260902 -->
+
+<!-- f2w-force-save:v201-profile-playback:20260902 -->

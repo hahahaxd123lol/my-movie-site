@@ -1,13 +1,14 @@
 (()=>{
 'use strict';
-if(window.__f2wV182WatchRealtime)return;window.__f2wV182WatchRealtime=true;
+if(window.__f2wV201WatchRealtime)return;window.__f2wV201WatchRealtime=true;
+window.__f2wV182WatchRealtime=true;
 window.__f2wV177WatchRealtime=true;
 if(!location.pathname.startsWith('/watch'))return;
 
 const $=s=>document.querySelector(s);
 const frame=()=>$('#video-frame');
 let telemetry={position:0,duration:0,status:'unknown',positionAt:0,statusKnown:false,positionKnown:false,source:'',updatedAt:0};
-let heartbeatTimer=0,busy=false,immediateTimer=0,lastImmediateAt=0,telemetryWatchdog=0;
+let heartbeatTimer=0,busy=false,immediateTimer=0,lastImmediateAt=0,telemetryWatchdog=0,lastPositionSample=null,lastPositionSampleAt=0,stablePositionSince=0;
 let creditBucket=0,lastCreditSampleAt=Date.now();
 let bc=null;
 try{bc=new BroadcastChannel('f2w-playback-v182')}catch{}
@@ -16,8 +17,9 @@ function client(){return window.f2wSupabase||window.chatSupabase||window.supabas
 function identity(){const q=new URLSearchParams(location.search);return {id:Number(q.get('id')||0),type:q.get('type')==='tv'?'tv':'movie'}}
 function titleInfo(){
   const title=String($('#detail-title')?.textContent||document.title||'').replace(/\s*[|•].*$/,'').trim();
-  const img=$('#detail-poster,#detail-poster img,.detail-poster img,.poster img,img[alt*="poster" i]');
-  const src=String(img?.getAttribute('src')||img?.getAttribute('data-src')||'');
+  const posterRoot=$('#detail-poster');
+  const img=(posterRoot?.tagName==='IMG'?posterRoot:null)||posterRoot?.querySelector?.('img')||$('.detail-poster img,.poster img,img[alt*="poster" i]');
+  const src=String(img?.currentSrc||img?.getAttribute?.('src')||img?.getAttribute?.('data-src')||'');
   const m=src.match(/image\.tmdb\.org\/t\/p\/[^/]+(\/[^?]+)/i);
   return {title:title.slice(0,250),poster:m?.[1]||null};
 }
@@ -54,11 +56,15 @@ function readTelemetry(data){
     if(pos===null)pos=numFrom(root,['player_progress','currentTime','current_time','position','position_seconds','progressSeconds','progress_seconds','current','time','seconds']);
     if(dur===null)dur=numFrom(root,['player_duration','duration','totalDuration','total_duration','duration_seconds','length']);
     if(!status){
-      if(root.paused===true)status='paused';
-      else if(root.playing===true)status='playing';
-      else status=normalizeStatus(stringFrom(root,['player_status','status','state','playback_status']));
+      if(root.paused===true||root.isPaused===true||root.is_paused===true)status='paused';
+      else if(root.playing===true||root.isPlaying===true||root.is_playing===true)status='playing';
+      else {
+        const numeric=numFrom(root,['playerState','player_state','stateCode','state_code']);
+        if(numeric===1)status='playing';else if(numeric===2)status='paused';else if(numeric===0)status='completed';else if(numeric===3)status='buffering';
+        if(!status)status=normalizeStatus(stringFrom(root,['player_status','status','state','playback_status']));
+      }
     }
-    if(!eventName)eventName=normalizeStatus(stringFrom(root,['event','eventType','event_type','action','type','name']));
+    if(!eventName)eventName=normalizeStatus(stringFrom(root,['event','eventType','event_type','action','type','name','method','command']));
   }
   const important=eventName==='seeked'||eventName==='paused'||eventName==='playing'||eventName==='completed';
   if(status==='seeked')status='';
@@ -94,7 +100,16 @@ function scheduleImmediateHeartbeat(){
 function applyTelemetry(next){
   const now=Date.now();accrue(now);
   const prevStatus=telemetry.status,prevKnown=telemetry.statusKnown,priorPosition=estimatedPosition(now);
-  if(Number.isFinite(next.position)){telemetry.position=Math.max(0,next.position);telemetry.positionKnown=true;telemetry.positionAt=now}
+  if(Number.isFinite(next.position)){
+    const sample=Math.max(0,next.position),had=Number.isFinite(lastPositionSample),delta=had?sample-lastPositionSample:0,elapsed=lastPositionSampleAt?now-lastPositionSampleAt:0;
+    if(!next.status&&had&&elapsed>0){
+      if(delta>.18){next.status='playing';stablePositionSince=0}
+      else if(Math.abs(delta)<.08){if(!stablePositionSince)stablePositionSince=lastPositionSampleAt||now;if(now-stablePositionSince>=2500)next.status='paused'}
+      else stablePositionSince=0;
+    }
+    lastPositionSample=sample;lastPositionSampleAt=now;
+    telemetry.position=sample;telemetry.positionKnown=true;telemetry.positionAt=now;
+  }
   else if(priorPosition!==null&&telemetry.positionKnown){telemetry.position=priorPosition;telemetry.positionAt=now}
   if(Number.isFinite(next.duration)&&next.duration>=0)telemetry.duration=next.duration;
   if(next.status){telemetry.status=next.status;telemetry.statusKnown=true}
@@ -104,7 +119,7 @@ function applyTelemetry(next){
   broadcast();if(statusChanged||next.important)scheduleImmediateHeartbeat();
 }
 function resetTelemetry(){
-  accrue();telemetry={position:0,duration:0,status:'unknown',positionAt:0,statusKnown:false,positionKnown:false,source:sourceKey(),updatedAt:Date.now()};
+  accrue();telemetry={position:0,duration:0,status:'unknown',positionAt:0,statusKnown:false,positionKnown:false,source:sourceKey(),updatedAt:Date.now()};lastPositionSample=null;lastPositionSampleAt=0;stablePositionSince=0;
   broadcast({source_changed:true});scheduleImmediateHeartbeat();
 }
 window.addEventListener('message',e=>{
@@ -160,24 +175,42 @@ async function heartbeat(force=false){
     if(error)throw error;broadcast({persisted:true});
   }catch(err){console.warn('v182 playback heartbeat unavailable:',err?.message||err)}finally{busy=false}
 }
+
+let statePollTimer=0;
+function requestPlayerTelemetry(){
+  const f=frame();
+  const w=f?.contentWindow;
+  if(!w||!visiblePlayback())return;
+  let target='*';
+  try{target=new URL(String(f.src||''),location.href).origin}catch{}
+  const probes=[
+    {type:'PLAYER_COMMAND',action:'get_state'},
+    {type:'PLAYER_COMMAND',command:'get_state'},
+    {type:'PLAYER_COMMAND',action:'get_progress'},
+    {type:'PLAYER_COMMAND',command:'get_progress'},
+    {type:'GET_PLAYER_STATE'},
+    {type:'GET_PLAYBACK_STATE'}
+  ];
+  for(const probe of probes){try{w.postMessage(probe,target)}catch{}}
+}
 function start(){
   bindAuthRepair();lastCreditSampleAt=Date.now();heartbeat();clearInterval(heartbeatTimer);heartbeatTimer=setInterval(()=>heartbeat(),30000);
   const f=frame();f?.addEventListener('load',()=>{resetTelemetry();bindAuthRepair();bindNativeVideos()});
   bindNativeVideos();clearInterval(telemetryWatchdog);telemetryWatchdog=setInterval(watchdogTelemetry,2000);
-  const poster=$('#detail-poster');
+  clearInterval(statePollTimer);statePollTimer=setInterval(requestPlayerTelemetry,2000);setTimeout(requestPlayerTelemetry,900);
+  const posterRoot=$('#detail-poster'),poster=(posterRoot?.tagName==='IMG'?posterRoot:null)||posterRoot?.querySelector?.('img');
   poster?.addEventListener('load',()=>{broadcast();scheduleImmediateHeartbeat()},{passive:true});
-  if(poster){
-    const posterMo=new MutationObserver(()=>{broadcast();scheduleImmediateHeartbeat()});
-    posterMo.observe(poster,{attributes:true,attributeFilter:['src','data-src']});
-  }
+  if(poster){const posterMo=new MutationObserver(()=>{broadcast();scheduleImmediateHeartbeat()});posterMo.observe(poster,{attributes:true,attributeFilter:['src','data-src']})}
   document.addEventListener('click',e=>{if(e.target.closest?.('.server-btn[data-server]'))setTimeout(resetTelemetry,0)},true);
   const mo=new MutationObserver(()=>{bindAuthRepair();bindNativeVideos()});mo.observe(document.body,{subtree:true,childList:true});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 window.addEventListener('pageshow',()=>{bindAuthRepair();lastCreditSampleAt=Date.now();heartbeat()});
 document.addEventListener('visibilitychange',()=>{accrue();lastCreditSampleAt=Date.now();if(document.visibilityState==='visible')heartbeat()});
-window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog);void heartbeat(true)});
+window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog);clearInterval(statePollTimer);void heartbeat(true)});
 })();
 // f2w-force-save:v182-watch-telemetry-pause-poster:20260902
 
 // f2w-force-save:v183-watch-pause-all-supported-sources:20260902
+
+// f2w-force-save:v201-playback-profile-clock:20260902
