@@ -3378,7 +3378,7 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=157" defer></script>
+  <script src="/global-header-chat-v1.js?v=159" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -3883,9 +3883,9 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 </style>
 
   <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
-  <link rel="stylesheet" href="/v146-live-ops.css?v=158">
-  <link rel="stylesheet" href="/v154-global-ui.css?v=157">
-  <script src="/v154-global-ui.js?v=154" defer></script>
+  <link rel="stylesheet" href="/v146-live-ops.css?v=159">
+  <link rel="stylesheet" href="/v154-global-ui.css?v=159">
+  <script src="/v154-global-ui.js?v=159" defer></script>
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -4480,7 +4480,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
   const CHAT_API_URL = 'https://viqufxlcxwgboyxbdhjb.supabase.co/functions/v1/rapid-worker';
   const OWNER_UUID = 'f5454804-a2a6-4602-9086-51cf51f11c77';
 
-  const chatSupabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const chatSupabase = window.f2wSupabase||(window.f2wSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
   const grid = document.getElementById('favorites-grid');
 
   let currentMode = 'trending';
@@ -10433,9 +10433,13 @@ body.f2w-auth-v67-open {
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
-  <script src="/v146-live-ops.js?v=158" defer></script>
+  <script src="/v146-live-ops.js?v=159" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
   <script src="/v149-account-route.js?v=153"></script>
+
+<!-- F2W v159 core recovery -->
+<link rel="stylesheet" href="/v159-core.css?v=159">
+<script src="/v159-core.js?v=159" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->

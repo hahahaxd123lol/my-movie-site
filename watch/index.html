@@ -3000,7 +3000,7 @@ html{overflow-y:scroll}
   <link rel="stylesheet" href="/final-v35.css?v=125-1788300576">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=157" defer></script>
+  <script src="/global-header-chat-v1.js?v=159" defer></script>
 
 
 
@@ -4029,9 +4029,9 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
 #video-frame{position:relative;z-index:1}
 </style>
   <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
-  <link rel="stylesheet" href="/v146-live-ops.css?v=158">
-  <link rel="stylesheet" href="/v154-global-ui.css?v=157">
-  <script src="/v154-global-ui.js?v=154" defer></script>
+  <link rel="stylesheet" href="/v146-live-ops.css?v=159">
+  <link rel="stylesheet" href="/v154-global-ui.css?v=159">
+  <script src="/v154-global-ui.js?v=159" defer></script>
 </head>
 <body class="theme-red f2w-main-page f2w-watch-page watch-locked">
 <header>
@@ -4710,7 +4710,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
   const CHAT_API_URL = 'https://viqufxlcxwgboyxbdhjb.supabase.co/functions/v1/rapid-worker';
   const OWNER_UUID = 'f5454804-a2a6-4602-9086-51cf51f11c77';
 
-  const chatSupabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const chatSupabase = window.f2wSupabase||(window.f2wSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
   let currentUser = null;
   let accountMode = 'login';
   let chatAlias = '';
@@ -6886,16 +6886,12 @@ if(currentUser){
 
       // Signed-in accounts wait for the global account guard before any
       // third-party stream is loaded. A banned account never starts playback.
-      if(!window.__flix2watchAccountGuardReady){
-        // v158: never leave the movie on a permanent black screen while the
-        // moderation RPC/session check is slow. Realtime enforcement still
-        // terminates playback immediately if an actual restriction arrives.
-        window.__f2wGuardWaitStarted ||= Date.now();
-        if(Date.now()-window.__f2wGuardWaitStarted < 900){setTimeout(loadPlayer,90);return;}
-        window.__flix2watchAccountGuardReady=true;
-      }
-
-      if(window.__flix2watchAccountState?.banned){
+      // v159: start playback immediately. The account-scoped realtime guard
+      // can stop the iframe a moment later if THIS signed-in account is actually
+      // restricted; a slow moderation lookup must never create a black player.
+      window.__flix2watchAccountGuardReady=true;
+      const enforcement=window.__flix2watchAccountState||{};
+      if(enforcement.banned&&(!enforcement.user_id||String(enforcement.user_id)===String(currentUser?.id||''))){
         iframe.src='data:text/html,%3Cbody%20style%3D%22margin%3A0%3Bbackground%3A%23000%22%3E';
         return;
       }
@@ -8469,7 +8465,7 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
 
-  <script src="/final-v35.js?v=158-20260902" defer></script>
+  <script src="/final-v35.js?v=159-20260902" defer></script>
 
 <style id="f2w-watch-tools-v47-css">
   .f2w-watch-toast-v47{
@@ -10711,9 +10707,13 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
-  <script src="/v146-live-ops.js?v=158" defer></script>
+  <script src="/v146-live-ops.js?v=159" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
   <script src="/v149-account-route.js?v=153"></script>
+
+<!-- F2W v159 core recovery -->
+<link rel="stylesheet" href="/v159-core.css?v=159">
+<script src="/v159-core.js?v=159" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->

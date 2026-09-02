@@ -296,7 +296,6 @@ function f2wDebounce(fn,wait=140){
       return;
     }
     startPresence();
-    subscribeAccountLoginBan();
     try{
       const context=await rpc('get_staff_context');
       setStaffNav(['owner','staff'].includes(context?.role));
@@ -1756,15 +1755,12 @@ function f2wDebounce(fn,wait=140){
     // Presence is public data. Do not make the profile badge wait behind auth
     // hydration, username checks, chat prewarming, or the old 350ms boot delay.
     bootProfilePresenceFastV128();
-    installAuthAbuseGuard();
     await syncAuthUI();
     await enforceUsernameGate();
-    registerCurrentAbuseSignals();
-    prewarmChat();
-    setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();bootProfileRealtime();enrichForum();bootLeaderboard();decorateNames();installStaffQuickModeration()},350);
+    setTimeout(()=>{recordWatchOpen();startWatchTime();renderProfileActivity();installProfileEditor();bootProfileRealtime();enrichForum();bootLeaderboard();decorateNames();/* v159 legacy quick moderation disabled */ void 0},350);
     roleDecorateTimer=null;
     const client=db();
-    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{installAuthAbuseGuard();syncAuthUI();enforceUsernameGate();registerCurrentAbuseSignals();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments();enrichForum()},0))}catch{}
+    try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{syncAuthUI();enforceUsernameGate();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments();enrichForum()},0))}catch{}
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchPresence();recordWatchOpen();}else{leavePresence();}});
     window.addEventListener('pagehide',()=>{leavePresence()});
     let f2wDomRefreshTimer=null;
@@ -2429,7 +2425,7 @@ function f2wDebounce(fn,wait=140){
     }
     // Warm a small number of visible profile destinations in idle time. Capped
     // deliberately so "instant" does not turn into excessive Supabase load.
-    const idle=window.requestIdleCallback||((fn)=>setTimeout(fn,800));idle(()=>Array.from(document.querySelectorAll('a[href*="/profile"]')).slice(0,12).forEach((a,i)=>setTimeout(()=>warmAnchor(a),i*80)));
+    // v159 low-usage: no bulk profile fan-out. Hover/touch/focus still warms the exact profile the user is about to open.
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')bootProfile()});

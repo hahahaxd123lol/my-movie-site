@@ -201,7 +201,7 @@
     ['/home/','/favorites/','/support/','/profile/','/chat/','/leaderboard/','/forum/'].forEach(prefetch);
     try {
       const username=localStorage.getItem('f2w_profile_username_v24');
-      if(username)prefetch(`/profile/?user=${encodeURIComponent(username)}`);
+      if(username)prefetch(`/profile/@${encodeURIComponent(username)}`);
     } catch {}
   }
 
@@ -218,7 +218,7 @@
     if(btn.id==='profile-nav-btn'){
       try {
         const username=localStorage.getItem('f2w_profile_username_v24');
-        if(username)prefetch(`/profile/?user=${encodeURIComponent(username)}`);
+        if(username)prefetch(`/profile/@${encodeURIComponent(username)}`);
       } catch {}
     }
   },{passive:true,capture:true});
@@ -295,7 +295,7 @@
   'use strict';
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/sw-v34.js?v=158-20260902',{scope:'/'})
+    navigator.serviceWorker.register('/sw-v34.js?v=159-20260902',{scope:'/'})
       .catch(error=>console.warn('F2W service worker registration failed:',error));
   },{once:true,passive:true});
 })();
@@ -833,6 +833,7 @@
   let fallbackClient=null;
   let timer=null;
   let requestSeq=0;
+  const userSearchCache=new Map();
 
   function client(){
     try{if(window.chatSupabase?.from)return window.chatSupabase;}catch{}
@@ -882,7 +883,7 @@
 
   function openProfile(username){
     const clean=String(username||'').trim().replace(/^@/,'');
-    if(clean)location.href=`/profile/?user=${encodeURIComponent(clean)}`;
+    if(clean)location.href=`/profile/@${encodeURIComponent(clean)}`;
   }
 
   async function runSearch(input){
@@ -893,8 +894,9 @@
     if(input.value!==query)input.value=query;
 
     const seq=++requestSeq;
-    if(!query){
-      hideResults(input);
+    if(query.length<2){
+      if(!query)hideResults(input);
+      else {results.classList.add('show');results.innerHTML='<div class="user-search-empty">Type 2+ characters…</div>';}
       return;
     }
 
@@ -908,14 +910,14 @@
     }
 
     try{
-      const {data,error}=await c
-        .from('profiles')
-        .select('username,display_name,avatar_url')
-        .not('username','is',null)
-        .ilike('username',`${query}%`)
-        .order('username',{ascending:true})
-        .limit(8);
-
+      const ck=query.toLowerCase();
+      const hot=userSearchCache.get(ck);
+      let data,error;
+      if(hot&&Date.now()-hot.at<60000){data=hot.data;error=null}
+      else{
+        const res=await c.rpc('search_public_users_v159',{p_query:query,p_page:1,p_page_size:8});
+        data=res.data;error=res.error;if(!error)userSearchCache.set(ck,{at:Date.now(),data:data||[]});
+      }
       if(seq!==requestSeq)return;
       if(error)throw error;
 
@@ -965,7 +967,7 @@
 
   function schedule(input){
     clearTimeout(timer);
-    timer=setTimeout(()=>runSearch(input),90);
+    timer=setTimeout(()=>runSearch(input),300);
   }
 
   function activateInput(input){

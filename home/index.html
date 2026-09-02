@@ -2363,7 +2363,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=157" defer></script>
+  <script src="/global-header-chat-v1.js?v=159" defer></script>
 
   <style id="f2w-mobile-login-above-featured">
     /* Mobile/tablet home layout: keep the login/signup card above Featured. */
@@ -2634,9 +2634,9 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </style>
 
   <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
-  <link rel="stylesheet" href="/v146-live-ops.css?v=158">
-  <link rel="stylesheet" href="/v154-global-ui.css?v=157">
-  <script src="/v154-global-ui.js?v=154" defer></script>
+  <link rel="stylesheet" href="/v146-live-ops.css?v=159">
+  <link rel="stylesheet" href="/v154-global-ui.css?v=159">
+  <script src="/v154-global-ui.js?v=159" defer></script>
 </head>
 
 <body class="theme-red f2w-main-page f2w-home-page">
@@ -3006,11 +3006,11 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     <div class="hero-banner" id="hero-banner">
       <div class="hero-content">
         <span class="hero-featured-badge">FEATURED</span>
-        <h1 class="hero-title" id="hero-title">Loading Spotlight...</h1>
+        <h1 class="hero-title" id="hero-title">Trending on Flix2Watch</h1>
         <div class="hero-meta" id="hero-meta">
           <span>Loading</span><span>Featured</span>
         </div>
-        <p class="hero-overview" id="hero-overview">Fetching top featured release from secure database...</p>
+        <p class="hero-overview" id="hero-overview">Today’s most-watched movies and TV shows.</p>
         <div class="hero-actions">
           <a id="hero-link" href="#" class="hero-btn"><i class="fa-solid fa-play"></i> View Details</a>
           <button class="hero-btn secondary" type="button" onclick="document.getElementById('movie-grid')?.scrollIntoView({behavior:'smooth',block:'start'})">
@@ -3408,7 +3408,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   const CHAT_API_URL = 'https://viqufxlcxwgboyxbdhjb.supabase.co/functions/v1/rapid-worker';
   const OWNER_UUID = 'f5454804-a2a6-4602-9086-51cf51f11c77';
 
-  const chatSupabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const chatSupabase = window.f2wSupabase||(window.f2wSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
   const grid = document.getElementById('movie-grid');
 
   let currentMode = 'trending';
@@ -6980,7 +6980,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=158-20260902" defer></script>
+  <script src="/final-v35.js?v=159-20260902" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -8562,6 +8562,7 @@ body.f2w-auth-v67-open {
   let lastRefresh=0;
   let loadSeq=0;
 
+  const CACHE_KEY='f2w_featured_v159';
   const mediaType=item=>item?.media_type==='tv'?'tv':'movie';
   const slideKey=item=>`${mediaType(item)}:${item?.id||''}`;
 
@@ -8653,6 +8654,7 @@ body.f2w-auth-v67-open {
 
       const currentKey=slides[index]?slideKey(slides[index]):null;
       slides=fresh;
+      try{localStorage.setItem(CACHE_KEY,JSON.stringify({at:Date.now(),slides:fresh}))}catch{}
       rebuildDots();
 
       // Refresh the trending data without visually jumping to another title.
@@ -8720,8 +8722,8 @@ body.f2w-auth-v67-open {
   });
 
   const start=async()=>{
-    await refreshTrending({initial:true});
-    scheduleRefresh();
+    try{const cache=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');if(cache?.slides?.length){slides=cache.slides.slice(0,5);index=0;rebuildDots();render(0);scheduleRotate()}}catch{}
+    refreshTrending({initial:!slides.length}).finally(scheduleRefresh);
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
@@ -8732,9 +8734,13 @@ body.f2w-auth-v67-open {
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
-  <script src="/v146-live-ops.js?v=158" defer></script>
+  <script src="/v146-live-ops.js?v=159" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
   <script src="/v149-account-route.js?v=153"></script>
+
+<!-- F2W v159 core recovery -->
+<link rel="stylesheet" href="/v159-core.css?v=159">
+<script src="/v159-core.js?v=159" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->

@@ -86,8 +86,10 @@
   async function openThreadFresh(id){S.threadBusy=false;await openThread(id)}
   function closeThread(){const m=$('forum-thread-modal');if(m)m.hidden=true;document.body.style.overflow=''}
   function realtime(){
-    try{if(S.channel)db.removeChannel?.(S.channel);let t;const refresh=()=>{clearTimeout(t);t=setTimeout(()=>loadThreads(true),90)};S.channel=db.channel('forum-v137-live').on('postgres_changes',{event:'*',schema:'public',table:'forum_threads'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'forum_replies'},refresh).subscribe()}
-    catch(e){console.warn('Forum realtime unavailable',e)}
+    // v159: forum does not need a permanent Realtime subscription. Refresh once
+    // every 30 seconds only while visible; posting/replying still updates instantly.
+    if(S.pollTimer)clearInterval(S.pollTimer);
+    S.pollTimer=setInterval(()=>{if(document.visibilityState==='visible')loadThreads(true)},30000);
   }
   function bind(){
     document.querySelectorAll('[data-new-thread]').forEach(b=>b.addEventListener('click',openComposer));

@@ -2471,9 +2471,9 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
 
   <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
-  <link rel="stylesheet" href="/v146-live-ops.css?v=158">
-  <link rel="stylesheet" href="/v154-global-ui.css?v=157">
-  <script src="/v154-global-ui.js?v=154" defer></script>
+  <link rel="stylesheet" href="/v146-live-ops.css?v=159">
+  <link rel="stylesheet" href="/v154-global-ui.css?v=159">
+  <script src="/v154-global-ui.js?v=159" defer></script>
 </head>
 
 <body class="theme-red f2w-main-page f2w-chat-page">
@@ -3236,46 +3236,31 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   const CHAT_API_URL = 'https://viqufxlcxwgboyxbdhjb.supabase.co/functions/v1/rapid-worker';
   const OWNER_UUID = 'f5454804-a2a6-4602-9086-51cf51f11c77';
 
-  const chatSupabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const chatSupabase = window.f2wSupabase||(window.f2wSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
 
   async function fetchChatBootstrap(){
-    let edgeError=null;
     try{
-      const controller=new AbortController();
-      const timeout=setTimeout(()=>controller.abort(),4500);
-      const response=await fetch(CHAT_API_URL,{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'apikey':SUPABASE_KEY
-        },
-        cache:'no-store',
-        signal:controller.signal,
-        body:JSON.stringify({action:'list'})
-      });
-      clearTimeout(timeout);
-      let result={};
-      try{ result=await response.json(); }catch{}
+      const hot=window.__flix2watchPreloadedChat||JSON.parse(sessionStorage.getItem('f2w_chat_snapshot_v159')||'null')?.snapshot;
+      const at=Number(JSON.parse(sessionStorage.getItem('f2w_chat_snapshot_v159')||'null')?.at||0);
+      if(hot&&Date.now()-at<15000)return {success:true,...hot};
+    }catch{}
+    let rpcError=null;
+    try{
+      const req=chatSupabase.rpc('get_public_chat_bootstrap');
+      const result=await Promise.race([req,new Promise((_,rej)=>setTimeout(()=>rej(new Error('Chat RPC timed out.')),2800))]);
+      if(result?.error)throw result.error;
+      const data=result?.data||{};
+      const out={success:true,...data,__rpc:true};
+      try{sessionStorage.setItem('f2w_chat_snapshot_v159',JSON.stringify({at:Date.now(),snapshot:out}));window.__flix2watchPreloadedChat=out}catch{}
+      return out;
+    }catch(error){rpcError=error}
+    try{
+      const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),3200);
+      const response=await fetch(CHAT_API_URL,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},cache:'no-store',signal:controller.signal,body:JSON.stringify({action:'list'})});
+      clearTimeout(timeout);const result=await response.json().catch(()=>({}));
       if(response.ok&&result?.success)return result;
       throw new Error(result?.error||`Chat server returned HTTP ${response.status}.`);
-    }catch(error){
-      edgeError=error;
-      console.warn('[Flix2Watch Chat] Edge bootstrap failed, trying Supabase RPC fallback:',error);
-    }
-
-    try{
-      const {data,error}=await chatSupabase.rpc('get_public_chat_bootstrap');
-      if(error)throw error;
-      if(!data||typeof data!=='object')throw new Error('Fallback returned no chat data.');
-      return {success:true,...data,__fallback:true};
-    }catch(error){
-      const edgeMsg=edgeError?.name==='AbortError'?'connection timed out':(edgeError?.message||'network error');
-      const rpcMsg=String(error?.message||error||'fallback failed');
-      if(/get_public_chat_bootstrap|schema cache|function/i.test(rpcMsg)){
-        throw new Error(`Chat fallback SQL is not installed yet. Edge connection: ${edgeMsg}`);
-      }
-      throw new Error(`Chat backend unavailable. Edge: ${edgeMsg}. Fallback: ${rpcMsg}`);
-    }
+    }catch(edgeError){throw new Error(`Chat unavailable. ${rpcError?.message||''} ${edgeError?.message||''}`.trim())}
   }
   const grid = document.getElementById('movie-grid');
 
@@ -4786,7 +4771,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   }
 
   async function deleteChatMessage(id){
-    if(!currentUser||!chatReady||!id)return;
+    if(!currentUser||!id)return;
 
     try{
       let deletedDirect=false;
@@ -6482,7 +6467,7 @@ if(currentUser){
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=158-20260902" defer></script>
+  <script src="/final-v35.js?v=159-20260902" defer></script>
 
   <!-- F2W dedicated chat route bootstrap -->
 
@@ -8814,9 +8799,13 @@ body.f2w-auth-v67-open {
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
-  <script src="/v146-live-ops.js?v=158" defer></script>
+  <script src="/v146-live-ops.js?v=159" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
   <script src="/v149-account-route.js?v=153"></script>
+
+<!-- F2W v159 core recovery -->
+<link rel="stylesheet" href="/v159-core.css?v=159">
+<script src="/v159-core.js?v=159" defer></script>
 </body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->

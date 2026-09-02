@@ -435,7 +435,7 @@ html{overflow-y:scroll}
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=157" defer></script>
+  <script src="/global-header-chat-v1.js?v=159" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -751,9 +751,9 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
 </script>
 
   <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
-  <link rel="stylesheet" href="/v146-live-ops.css?v=158">
-  <link rel="stylesheet" href="/v154-global-ui.css?v=157">
-  <script src="/v154-global-ui.js?v=154" defer></script>
+  <link rel="stylesheet" href="/v146-live-ops.css?v=159">
+  <link rel="stylesheet" href="/v154-global-ui.css?v=159">
+  <script src="/v154-global-ui.js?v=159" defer></script>
 </head>
 <body class="theme-red f2w-main-page f2w-users-page">
 <header>
@@ -851,7 +851,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
             data-protonpass-ignore="true"
             data-keeper-ignore="true"
             readonly
-            oninput="handleUserSearchInput(this)"
+           
             onfocus="protectUserSearchField(this)"
            role="searchbox">
 </div>
@@ -913,7 +913,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
 <script>
   const SUPABASE_URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
   const SUPABASE_KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
-  const chatSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const chatSupabase=window.f2wSupabase||(window.f2wSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
 
   let userSearchRequestId=0;
   let userSearchDebounceTimer=null;
@@ -1118,23 +1118,14 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
     const to=from+USERS_PER_PAGE-1;
 
     try{
-      if(!window.chatSupabase?.from)throw new Error('User database client is unavailable.');
+      if(!chatSupabase?.rpc)throw new Error('User database client is unavailable.');
 
-      const request=window.chatSupabase
-        .from('profiles')
-        .select('user_id,username,display_name,avatar_url,bio',{count:'exact'})
-        .ilike('username',`${query}%`)
-        .order('username',{ascending:true})
-        .range(from,to);
-
-      const timeout=new Promise((_,reject)=>
-        setTimeout(()=>reject(new Error('User search timed out.')),8000)
-      );
-
+      const request=chatSupabase.rpc('search_public_users_v159',{p_query:query,p_page:page,p_page_size:USERS_PER_PAGE});
+      const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('User search timed out.')),4500));
       const result=await Promise.race([request,timeout]);
       const data=result?.data||[];
       const error=result?.error;
-      const count=result?.count;
+      const count=Number(data?.[0]?.total_count||0);
       if(error)throw error;
 
       const rows=[...data].sort((a,b)=>{
@@ -1203,7 +1194,7 @@ body.f2w-users-page > footer + a[href="/privacy/"] {
     window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
   }
 </script>
-  <script src="/final-v35.js?v=158-20260902" defer></script>
+  <script src="/final-v35.js?v=159-20260902" defer></script>
 
 <div class="account-modal" id="account-modal">
     <div class="account-card">
@@ -3396,9 +3387,13 @@ body.f2w-users-page .f2w-user-handle {
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
-  <script src="/v146-live-ops.js?v=158" defer></script>
+  <script src="/v146-live-ops.js?v=159" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
   <script src="/v149-account-route.js?v=153"></script>
+
+<!-- F2W v159 core recovery -->
+<link rel="stylesheet" href="/v159-core.css?v=159">
+<script src="/v159-core.js?v=159" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:users:01c6b68a68 -->
