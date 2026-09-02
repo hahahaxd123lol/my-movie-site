@@ -1,6 +1,6 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v172-no-at-display-names-20260902';
-const CORE=['/v172-sitewide.js','/v171-notifications.js','/v171-sitewide-fixes.css','/v171-sitewide-fixes.js','/v171-enforcement.css','/v171-bootstrap.js','/v171-enforcement.js','/v171-core.css','/v171-core.js','/v171-global-ui.css','/v171-global-ui.js',
+const CACHE='f2w-v173-viewport-popups-20260902';
+const CORE=['/v173-viewport-popups.js','/v173-viewport-popups.css','/v172-sitewide.js','/v171-notifications.js','/v171-sitewide-fixes.css','/v171-sitewide-fixes.js','/v171-enforcement.css','/v171-bootstrap.js','/v171-enforcement.js','/v171-core.css','/v171-core.js','/v171-global-ui.css','/v171-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
