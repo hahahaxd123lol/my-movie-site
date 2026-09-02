@@ -4414,7 +4414,6 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
     const canDelete=Boolean(
       currentUser &&
-      chatReady &&
       (
         chatOwner ||
         chatStaff ||
@@ -4782,13 +4781,24 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   }
 
   async function deleteChatMessage(id){
-    if(!currentUser||!chatReady||!id)return;
+    if(!currentUser||!id)return;
 
     try{
-      const result=await workerRequest('delete',{message_id:id});
+      let result=null;
+      // v144: normal users delete by authenticated user_id, never by mutable alias/token.
+      try{
+        const {data,error}=await chatSupabase.rpc('delete_my_public_chat_message_v144',{p_message_id:String(id)});
+        if(error)throw error;
+        result=data;
+      }catch(error){
+        console.warn('[v144] direct message delete fallback',error);
+      }
+      if(!result?.success && (chatOwner||chatStaff||chatReady)){
+        result=await workerRequest('delete',{message_id:id});
+      }
 
-      if(!result.success){
-        throw new Error(result.error||'Unable to delete message.');
+      if(!result?.success){
+        throw new Error(result?.error||'Unable to delete message.');
       }
 
       displayedChatIds.delete(id);
@@ -8800,6 +8810,10 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v131-chat-route-instant-send -->
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
+
+<script id="f2w-public-chat-no-images-v144">
+(()=>{function disable(){const file=document.getElementById('chat-image-input');if(file){file.disabled=true;file.closest('label,button,.chat-attachment,.chat-image-button')?.setAttribute('hidden','hidden')}document.querySelectorAll('[onclick*="chat-image"],[onclick*="selectChatImage"],[onclick*="uploadPendingChatImage"],.chat-image-btn,.chat-attach-btn').forEach(el=>el.hidden=true);if(typeof clearChatAttachment==='function')try{clearChatAttachment()}catch{}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',disable,{once:true});else disable();new MutationObserver(disable).observe(document.documentElement,{childList:true,subtree:true})})();
+</script>
 </body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->

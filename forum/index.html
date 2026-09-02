@@ -439,7 +439,7 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=143" defer></script>
+  <script src="/global-header-chat-v1.js?v=144" defer></script>
 
 <style id="forum-v30-design">
 .f2w-forum-page{background:radial-gradient(circle at 88% 7%,rgba(229,9,20,.075),transparent 30%),#020b14!important}
@@ -604,6 +604,15 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 /* f2w-force-save:forum-bounty-css-v125:1788300576 */
 </style>
 
+
+<style id="f2w-forum-v144-fixes">
+/* Never let page typography override icon glyphs. */
+#forum-app i.fa-solid,#forum-app i.fa-regular,#forum-app i.fa-brands{font-family:"Font Awesome 6 Free"!important;font-style:normal!important}
+#forum-app i.fa-solid{font-weight:900!important}#forum-app i.fa-regular{font-weight:400!important}
+/* Stable text-symbol fallback used by v144 when the icon webfont is unavailable. */
+#forum-app .f2w-forum-symbol-v144{display:inline-grid;place-items:center;width:1.15em;min-width:1.15em;font-family:Arial,sans-serif!important;font-weight:800!important;font-style:normal!important;line-height:1!important;color:currentColor}
+#account-modal .account-card,#account-modal .account-card *{color:#f4f7fb!important}#account-modal .account-subtitle,#account-modal .account-user-email,#account-modal .account-username-change-note{color:#8fa2b8!important}
+</style>
 </head>
 <body class="f2w-main-page f2w-forum-page f2w-forum-page">
 <header>
@@ -2689,6 +2698,10 @@ body.f2w-auth-v67-open {
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <!-- f2w-force-save:forum-v137:20260902 -->
 <script src="/player-warm-v142.js?v=142" defer></script>
+
+<script id="f2w-forum-icons-v144">
+(()=>{const map={"fa-pen-to-square":"✎","fa-clapperboard":"▶","fa-message":"●","fa-star":"★","fa-earth-americas":"◎","fa-circle-user":"●","fa-house":"⌂","fa-square-plus":"＋","fa-trophy":"★","fa-user":"●","fa-layer-group":"≡","fa-comments":"●","fa-film":"▶","fa-tv":"▣","fa-wand-magic-sparkles":"✦","fa-mug-hot":"☕","fa-magnifying-glass":"⌕","fa-eye-slash":"◌","fa-eye":"◉"};function apply(){let ok=false;try{ok=document.fonts&&document.fonts.check('900 14px "Font Awesome 6 Free"')}catch{}if(ok)return;document.querySelectorAll('#forum-app i[class*="fa-"]').forEach(i=>{const key=[...i.classList].find(c=>map[c]);if(!key)return;const span=document.createElement('span');span.className='f2w-forum-symbol-v144';span.textContent=map[key];span.setAttribute('aria-hidden','true');i.replaceWith(span)})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,250),{once:true});else setTimeout(apply,250)})();
+</script>
 </body></html>
 <!-- f2w-force-push-20260831-batch2:forum:16d129a193 -->
 <!-- f2w-update-marker: shared-chat-v7:forum -->

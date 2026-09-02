@@ -2637,3 +2637,177 @@ window.f2wOpenGuestDmAuthV98=function(mode){
   else boot();
 })();
 // f2w-force-save:tv-header-v143:20260902
+
+
+/* ============================================================
+   F2W v144 — ACCOUNT / NOTIFICATIONS / USERNAME UX HARDENING
+   ============================================================ */
+(() => {
+  'use strict';
+  if(window.__f2wV144AccountFixes)return;
+  window.__f2wV144AccountFixes=true;
+
+  const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  let fallbackClient=null,availabilityTimer=null,lastAvailabilityName='';
+  const getDb=()=>{
+    try{if(window.chatSupabase?.auth)return window.chatSupabase}catch{}
+    try{if(window.f2wSupabase?.auth)return window.f2wSupabase}catch{}
+    try{if(window.supabaseClient?.auth)return window.supabaseClient}catch{}
+    try{if(window.__f2wSupabaseClient?.auth)return window.__f2wSupabaseClient}catch{}
+    try{
+      if(!fallbackClient&&window.supabase?.createClient){
+        fallbackClient=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+      }
+    }catch{}
+    return fallbackClient;
+  };
+
+  function ensureUsernameStatus(){
+    const input=document.getElementById('account-change-username');
+    if(!input)return null;
+    let status=document.getElementById('account-username-availability-v144');
+    if(!status){
+      status=document.createElement('div');
+      status.id='account-username-availability-v144';
+      status.className='f2w-username-availability-v144';
+      status.setAttribute('aria-live','polite');
+      (input.closest('.account-username-change')||input.parentElement)?.appendChild(status);
+    }
+    return status;
+  }
+
+  async function checkUsernameAvailability(value,force=false){
+    const input=document.getElementById('account-change-username');
+    const status=ensureUsernameStatus();
+    const name=String(value??input?.value??'').trim();
+    if(!status)return null;
+    if(!/^[A-Za-z0-9]{2,30}$/.test(name)){
+      status.textContent=name?'Use 2–30 letters or numbers only.':'';
+      status.dataset.state=name?'bad':'';
+      return null;
+    }
+    if(!force&&name.toLowerCase()===lastAvailabilityName.toLowerCase())return null;
+    lastAvailabilityName=name;
+    status.textContent='Checking username…';status.dataset.state='checking';
+    try{
+      const db=getDb();
+      const {data,error}=await db.rpc('username_available_v144',{p_username:name});
+      if(error)throw error;
+      const available=Boolean(data?.available);
+      status.textContent=available?'Username is available.':(data?.reason||'That username is already taken.');
+      status.dataset.state=available?'good':'bad';
+      return available;
+    }catch(error){
+      console.warn('[v144] username availability check failed',error);
+      status.textContent='Could not check username yet.';status.dataset.state='bad';
+      return null;
+    }
+  }
+
+  function bindAccountModal(){
+    const modal=document.getElementById('account-modal');
+    if(!modal)return;
+    // Any click inside the card must never be mistaken for a backdrop click.
+    const card=modal.querySelector('.account-card');
+    if(card&&!card.dataset.f2wStopCloseV144){
+      card.dataset.f2wStopCloseV144='1';
+      ['click','pointerdown','mousedown','touchstart'].forEach(type=>card.addEventListener(type,e=>e.stopPropagation(),true));
+    }
+    const input=document.getElementById('account-change-username');
+    if(input&&!input.dataset.f2wAvailabilityV144){
+      input.dataset.f2wAvailabilityV144='1';
+      ensureUsernameStatus();
+      input.addEventListener('input',()=>{
+        clearTimeout(availabilityTimer);
+        availabilityTimer=setTimeout(()=>checkUsernameAvailability(input.value,true),220);
+      });
+      input.addEventListener('blur',()=>checkUsernameAvailability(input.value,true));
+    }
+  }
+
+  // Replace the old direct profiles.update path with one transactional RPC.
+  window.changeFlix2WatchUsername=async function(){
+    const db=getDb();
+    const input=document.getElementById('account-change-username');
+    const status=ensureUsernameStatus();
+    const next=String(input?.value||'').trim();
+    if(!/^[A-Za-z0-9]{2,30}$/.test(next)){
+      if(status){status.textContent='Use 2–30 letters or numbers only.';status.dataset.state='bad'}
+      input?.focus();return false;
+    }
+    const okay=await checkUsernameAvailability(next,true);
+    if(okay===false)return false;
+    try{
+      if(status){status.textContent='Updating username…';status.dataset.state='checking'}
+      const {data,error}=await db.rpc('change_my_username_v144',{p_username:next});
+      if(error)throw error;
+      if(!data?.success)throw new Error(data?.error||'Could not update username.');
+      const old=String(data.old_username||'').toLowerCase();
+      try{
+        if(old){
+          localStorage.removeItem(`f2w_profile_cache_v24:${old}`);
+          localStorage.removeItem(`f2w_profile_role_v110:${old}`);
+          localStorage.removeItem(`f2w_profile_live_v134:${old}`);
+        }
+        localStorage.setItem('f2w_profile_username_v24',next);
+      }catch{}
+      if(status){status.textContent='Username updated.';status.dataset.state='good'}
+      try{await window.f2wRefreshAccountV70?.()}catch{}
+      window.dispatchEvent(new CustomEvent('flix2watch:username-changed',{detail:{oldUsername:data.old_username||'',username:next}}));
+      return false;
+    }catch(error){
+      if(status){status.textContent=error?.message||'Could not update username.';status.dataset.state='bad'}
+      return false;
+    }
+  };
+
+  // Always open the account modal in-place for authenticated users; never navigate home.
+  const stableOpenAccount=async()=>{
+    const db=getDb();
+    let session=null;
+    try{session=(await db?.auth?.getSession?.())?.data?.session||null}catch{}
+    if(!session?.user){window.openHeaderAuth?.('login');return false}
+    const modal=document.getElementById('account-modal');
+    if(!modal)return false;
+    modal.removeAttribute('inert');modal.hidden=false;modal.classList.add('open','f2w-auth-v67');modal.setAttribute('aria-hidden','false');
+    document.documentElement.classList.add('f2w-auth-v67-open');document.body.classList.add('f2w-auth-v67-open');
+    bindAccountModal();
+    try{await window.f2wRefreshAccountV70?.()}catch{}
+    return false;
+  };
+  window.openAccountModal=stableOpenAccount;
+
+  async function loadNotificationsV144(){
+    const db=getDb(),list=document.getElementById('notification-list'),count=document.getElementById('notification-count');
+    if(!list||!db?.rpc)return;
+    list.innerHTML='<div class="v17-notification-empty">Loading notifications…</div>';
+    try{
+      const {data,error}=await db.rpc('get_my_notifications_v125',{p_limit:60});
+      if(error)throw error;
+      const rows=Array.isArray(data)?data:[];
+      const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+      const rel=v=>{const ms=Math.max(0,Date.now()-new Date(v).getTime());return ms<60000?'just now':ms<3600000?Math.floor(ms/60000)+'m ago':ms<86400000?Math.floor(ms/3600000)+'h ago':Math.floor(ms/86400000)+'d ago'};
+      const unread=rows.filter(n=>!n.read_at).length;if(count){count.textContent=String(unread);count.hidden=!unread}
+      list.innerHTML=rows.length?rows.map(n=>`<a class="f2w-v125-notification ${n.read_at?'read':'unread'}" href="${esc(n.link||'#')}"><strong>${esc(n.title||'Notification')}</strong><span>${esc(n.message||'')}</span><small>${esc(rel(n.created_at))}</small></a>`).join(''):'<div class="v17-notification-empty">No notifications yet.</div>';
+    }catch(error){
+      console.warn('[v144] notifications failed',error);
+      list.innerHTML=`<div class="v17-notification-empty">Could not load notifications. <button type="button" id="f2w-notify-retry-v144">Retry</button></div>`;
+      document.getElementById('f2w-notify-retry-v144')?.addEventListener('click',loadNotificationsV144,{once:true});
+    }
+  }
+  window.toggleNotifications=function(event){
+    event?.preventDefault?.();event?.stopPropagation?.();
+    const menu=document.getElementById('notification-menu');if(!menu)return false;
+    menu.hidden=!menu.hidden;if(!menu.hidden)loadNotificationsV144();return false;
+  };
+  window.markAllNotificationsRead=async function(){
+    const db=getDb();try{const {error}=await db.rpc('mark_my_notifications_read_v125');if(error)throw error;await loadNotificationsV144()}catch(e){console.warn(e)}
+  };
+
+  function boot(){bindAccountModal();document.querySelectorAll('#account-btn').forEach(btn=>{btn.onclick=null;btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();stableOpenAccount()},true)})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.addEventListener('pageshow',boot,{passive:true});
+  new MutationObserver(bindAccountModal).observe(document.documentElement,{childList:true,subtree:true});
+})();
+// f2w-force-save:v144-account-notifications-username

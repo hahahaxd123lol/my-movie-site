@@ -3379,7 +3379,7 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=143" defer></script>
+  <script src="/global-header-chat-v1.js?v=144" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -6589,15 +6589,16 @@ setTimeout(loadLibraryFavorites,0);
 
       // "Not found" is only valid after a SUCCESSFUL database response with no row.
       if(!profileData){
-        // Never let a refresh erase a profile we already had for this username.
-        if(
-          viewedProfile &&
-          String(viewedProfile.username||'').toLowerCase()===wantedUsername
-        ){
-          console.warn('Profile refresh returned no row; preserving rendered profile.');
-          return;
-        }
-
+        // v144: a successful no-row response is authoritative. Never keep an old
+        // cached profile alive after its username has changed.
+        try{
+          localStorage.removeItem(`f2w_profile_cache_v24:${wantedUsername}`);
+          localStorage.removeItem(`f2w_profile_role_v110:${wantedUsername}`);
+          localStorage.removeItem(`f2w_profile_live_v134:${wantedUsername}`);
+          if(String(localStorage.getItem('f2w_profile_username_v24')||'').toLowerCase()===wantedUsername){
+            localStorage.removeItem('f2w_profile_username_v24');
+          }
+        }catch{}
         viewedProfile=null;
         viewedProfileFavorites=[];
         viewedSocial={

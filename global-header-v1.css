@@ -2634,3 +2634,14 @@ body.f2w-main-page>header #notification-menu,
 .f2w-v125-notification small{display:block!important;margin-top:7px!important;color:#60778f!important;font-size:.62rem!important}
 /* f2w-force-save:notifications-css-v125:1788300576 */
  
+
+/* F2W v144 — account modal contrast + username availability */
+#account-modal .account-card,#account-modal .account-card *{color:#f4f7fb}
+#account-modal .account-subtitle,#account-modal .account-user-email,#account-modal .account-username-change-note,#account-modal .f2w-oauth-note{color:#8fa2b8!important}
+#account-modal input,#account-modal textarea,#account-modal select{color:#fff!important;background:#070d14!important}
+#account-modal input::placeholder{color:#6f8298!important}
+.f2w-username-availability-v144{min-height:18px;margin-top:8px;font-size:.72rem;font-weight:800;color:#8fa2b8}
+.f2w-username-availability-v144[data-state="good"]{color:#4ade80}
+.f2w-username-availability-v144[data-state="bad"]{color:#fca5a5}
+.f2w-username-availability-v144[data-state="checking"]{color:#facc15}
+#f2w-notify-retry-v144{margin-left:6px;border:0;background:transparent;color:#ff5360;text-decoration:underline;cursor:pointer;font:inherit}
