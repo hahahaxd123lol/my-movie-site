@@ -32,6 +32,8 @@ function candidate(el){
   // Normal Chat and Account UI are interactive app shells, not enforcement/top-layer dialogs.
   // Moving Chat into the generic popover portal can strand its backdrop above Account and trap input.
   if(el.id==='chat-modal'||el.closest?.('#chat-modal'))return false;
+  // Support owns its ticket modal. Never portal/promote it: doing so breaks its X/backdrop close handlers.
+  if(el.id==='support-ticket-modal'||el.closest?.('#support-ticket-modal'))return false;
   if(el.id==='watch-login-overlay'||el.closest?.('#watch-login-overlay'))return false;
   if(el.id===PORTAL_ID||el.closest?.('#'+PORTAL_ID))return false;
   if(el.tagName==='DIALOG')return true;
@@ -102,3 +104,5 @@ window.__f2wPromoteViewportPopups=()=>scan(document);
 // f2w-force-save:v182-auth-portal-exclusion:20260902
 
 // f2w-force-save:v190-exclude-chat-auth-shells:20260902
+
+// f2w-force-save:v192-support-ticket-popup-exclusion:20260902

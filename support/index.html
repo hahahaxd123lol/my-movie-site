@@ -480,6 +480,7 @@ main{max-width:1050px;margin:auto;padding:24px 20px}h1{margin:0;font-size:2rem}p
   .support-v36-staff-moved{padding:30px;border:1px solid rgba(229,9,20,.20);border-radius:13px;background:rgba(229,9,20,.045);text-align:center}.support-v36-staff-moved>i{font-size:1.7rem;color:var(--accent)}.support-v36-staff-moved strong{display:block;font-size:1.18rem;margin-top:10px}.support-v36-staff-moved p{font-size:.98rem!important;line-height:1.6!important;margin:8px auto 16px!important;max-width:620px!important}.support-v36-staff-moved .support-v16-primary{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;min-width:230px!important;text-align:center!important}.support-v36-staff-moved .support-v16-primary i{display:inline-block!important;font-size:1rem!important;color:currentColor!important}
   .support-v36-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.78);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}.support-v36-modal[hidden]{display:none!important}
   .support-v36-chat{width:min(760px,100%);max-height:min(820px,calc(100vh - 36px));display:grid;grid-template-rows:auto minmax(220px,1fr) auto;border:1px solid #29394e;border-radius:18px;overflow:hidden;background:#07101a;box-shadow:0 30px 100px rgba(0,0,0,.72)}
+  .support-v36-chat,.support-v36-chat *{box-sizing:border-box}.support-v36-chat{color:#fff!important;pointer-events:auto!important}.support-v36-chat-title strong,.support-v36-chat-title span,.support-v36-bubble .body,.support-v36-bubble small{color:#fff!important}.support-v36-chat-title span,.support-v36-bubble small{color:#9fb0c4!important}.support-v36-close{pointer-events:auto!important;touch-action:manipulation!important;position:relative!important;z-index:3!important}
   .support-v36-chat-head{display:flex;gap:12px;align-items:center;padding:16px 17px;border-bottom:1px solid #1c2a3a;background:#091522}.support-v36-chat-title{min-width:0;flex:1}.support-v36-chat-title strong{display:block;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.support-v36-chat-title span{display:block;color:#8393a9;font-size:.73rem;margin-top:3px}.support-v36-close{margin:0!important;width:40px;height:40px;padding:0!important;display:grid!important;place-items:center;border:1px solid #25364a!important;border-radius:10px!important;background:#0d1926!important;color:#fff!important}
   .support-v36-messages{overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#07101a,#060c14)}
   .support-v36-bubble{max-width:78%;padding:10px 12px;border:1px solid #243447;border-radius:13px;background:#0c1723;align-self:flex-start}.support-v36-bubble.mine{align-self:flex-end;background:rgba(229,9,20,.10);border-color:rgba(229,9,20,.28)}.support-v36-bubble.staff,.support-v36-bubble.owner{border-color:rgba(168,85,247,.32)}.support-v36-bubble small{display:block;color:#8090a7;font-size:.67rem;margin-bottom:5px}.support-v36-bubble .body{font-size:.88rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.support-v36-bubble img{display:block;max-width:min(420px,100%);max-height:360px;object-fit:contain;border-radius:10px;margin-top:8px;border:1px solid rgba(255,255,255,.09);background:#03070c}
@@ -983,8 +984,13 @@ async function openTicketModal(id){
 
 function closeTicketModal(){
   const modal=document.getElementById('support-ticket-modal');
-  modal.hidden=true;modal.setAttribute('aria-hidden','true');
-  document.body.style.overflow='';
+  if(!modal)return;
+  modal.hidden=true;
+  modal.setAttribute('aria-hidden','true');
+  modal.classList.remove('show','open','active','f2w-viewport-popup');
+  document.documentElement.style.removeProperty('overflow');
+  document.body.style.removeProperty('overflow');
+  document.body.classList.remove('modal-open','no-scroll','f2w-modal-open','f2w-scroll-locked');
   activeSupportTicketId=null;pendingSupportImage=null;
 }
 
@@ -1061,7 +1067,11 @@ async function sendTicketModalReply(){
 async function reply(id){activeSupportTicketId=id;await sendTicketModalReply()}
 
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('support-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='support-ticket-modal')closeTicketModal()});
+  const supportModal=document.getElementById('support-ticket-modal');
+  const supportClose=supportModal?.querySelector('.support-v36-close');
+  supportClose?.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();closeTicketModal()});
+  supportModal?.addEventListener('pointerdown',event=>{if(event.target===supportModal){event.preventDefault();closeTicketModal()}});
+  supportModal?.addEventListener('click',event=>{if(event.target===supportModal)closeTicketModal()});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('support-ticket-modal')?.hidden)closeTicketModal()});
   document.getElementById('support-ticket-modal-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendTicketModalReply()}});
   const message=document.getElementById('ticket-message');
@@ -2307,7 +2317,7 @@ body.f2w-auth-v67-open {
 <script src="/v165-enforcement.js?v=183-20260902"></script>
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
 <script src="/v172-sitewide.js?v=172"></script>
-<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=190-20260902-auth-authority"></script>
+<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=192-20260902-support-ticket"></script>
 <script src="/v176-sitewide.js?v=190-20260902-auth-authority" defer></script></body></html>
 <!-- f2w-force-push-20260831-batch2:support:d47c388b82 -->
 <!-- f2w-update-marker: shared-chat-v7:support -->
@@ -2427,3 +2437,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v185-auth-cache-bust:20260902 -->
 
 <!-- f2w-force-save:v190-auth-controller-cleanup:20260902 -->
+
+<!-- f2w-force-save:v192-support-ticket-modal-fix:20260902 -->
