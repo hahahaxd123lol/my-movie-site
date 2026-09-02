@@ -1014,6 +1014,14 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 #staff-profile-role-picker .staff-role-toggle.active{color:#fff!important;background:linear-gradient(180deg,#ff2439 0%,#ed1029 58%,#c90b21 100%)!important;border-color:rgba(255,91,108,.78)!important;box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 7px 18px rgba(0,0,0,.22),0 0 16px rgba(255,24,53,.2)!important}
 @keyframes v178Fade{from{opacity:0}to{opacity:1}}
 </style>
+
+<style id="f2w-staff-profile-editor-v212-css">
+.staff-profile-v212-section{margin-top:16px;padding:16px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(255,255,255,.025)}
+.staff-profile-v212-head{display:flex;align-items:center;gap:10px;margin-bottom:13px}.staff-profile-v212-head>i{color:var(--accent,#e50914);font-size:1rem}.staff-profile-v212-head div{display:flex;flex-direction:column;gap:2px}.staff-profile-v212-head strong{font-size:.84rem}.staff-profile-v212-head span{color:#7f8da1;font-size:.68rem}
+.staff-profile-genres-v212{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.staff-profile-genre-v212{position:relative;display:flex!important;align-items:center!important;gap:8px!important;min-height:38px;padding:8px 10px!important;border:1px solid rgba(255,255,255,.1);border-radius:9px;background:rgba(255,255,255,.035);cursor:pointer;color:#cbd5e1;font-size:.72rem!important}.staff-profile-genre-v212 input{position:absolute;opacity:0;pointer-events:none}.staff-profile-genre-v212 .check{width:18px;height:18px;border-radius:5px;border:1px solid #435064;display:grid;place-items:center;flex:0 0 18px;color:transparent}.staff-profile-genre-v212:has(input:checked){border-color:var(--accent,#e50914);background:color-mix(in srgb,var(--accent,#e50914) 10%,transparent);color:#fff}.staff-profile-genre-v212:has(input:checked) .check{background:var(--accent,#e50914);border-color:var(--accent,#e50914);color:#fff}
+.staff-profile-social-grid-v212{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.staff-profile-social-grid-v212 label{display:flex;flex-direction:column;gap:6px}.staff-profile-social-grid-v212 label.full{grid-column:1/-1}.staff-profile-social-grid-v212 label>span{font-size:.65rem;color:#93a1b5;font-weight:800;letter-spacing:.04em}.staff-profile-social-grid-v212 label>span i{width:17px;text-align:center;color:var(--accent,#e50914)}
+@media(max-width:700px){.staff-profile-social-grid-v212{grid-template-columns:1fr}.staff-profile-social-grid-v212 label.full{grid-column:auto}}
+</style>
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
@@ -1372,6 +1380,23 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
               <option value="false">Public</option>
               <option value="true">Private</option>
             </select>
+          </div>
+        </div>
+
+        <div class="staff-profile-v212-section">
+          <div class="staff-profile-v212-head"><i class="fa-solid fa-film"></i><div><strong>Favorite genres</strong><span>These appear on the public profile below the bio.</span></div></div>
+          <div id="staff-profile-genres-v212" class="staff-profile-genres-v212"></div>
+        </div>
+
+        <div class="staff-profile-v212-section">
+          <div class="staff-profile-v212-head"><i class="fa-solid fa-share-nodes"></i><div><strong>Social links</strong><span>Edit the same links available in the member Edit Profile box.</span></div></div>
+          <div class="staff-profile-social-grid-v212">
+            <label><span><i class="fa-brands fa-instagram"></i> INSTAGRAM</span><input id="staff-profile-instagram" maxlength="80" placeholder="username"></label>
+            <label><span><i class="fa-brands fa-snapchat"></i> SNAPCHAT</span><input id="staff-profile-snapchat" maxlength="80" placeholder="username"></label>
+            <label><span><i class="fa-brands fa-tiktok"></i> TIKTOK</span><input id="staff-profile-tiktok" maxlength="80" placeholder="username"></label>
+            <label><span><i class="fa-brands fa-discord"></i> DISCORD</span><input id="staff-profile-discord" maxlength="80" placeholder="username"></label>
+            <label class="full"><span><i class="fa-solid fa-globe"></i> WEBSITE</span><input id="staff-profile-website" maxlength="2048" placeholder="example.com or https://example.com"></label>
+            <label class="full"><span><i class="fa-brands fa-steam"></i> STEAM</span><input id="staff-profile-steam" maxlength="2048" placeholder="Steam profile URL or username"></label>
           </div>
         </div>
 
@@ -2428,6 +2453,19 @@ async function setPermission(username,permission,allowed){try{try{await rpc('own
 let managedProfileSnapshot=null;
 let managedProfileRoles=new Set();
 let managedProfileIsStaff=false;
+const STAFF_PROFILE_GENRES_V212=['Action','Adventure','Animation','Comedy','Crime','Documentary','Drama','Family','Fantasy','History','Horror','Music','Mystery','Romance','Science Fiction','Thriller','TV Movie','War','Western'];
+function ensureManagedGenrePickerV212(){
+  const host=document.getElementById('staff-profile-genres-v212');
+  if(!host||host.dataset.ready==='1')return;
+  host.dataset.ready='1';
+  host.innerHTML=STAFF_PROFILE_GENRES_V212.map(g=>`<label class="staff-profile-genre-v212"><input type="checkbox" value="${esc(g)}"><span class="check"><i class="fa-solid fa-check"></i></span><span>${esc(g)}</span></label>`).join('');
+}
+function normalizeStaffWebsiteV212(raw){
+  raw=String(raw||'').trim();if(!raw)return '';
+  const url=/^https?:\/\//i.test(raw)?raw:`https://${raw}`;
+  try{const u=new URL(url);if(!u.hostname||(!u.hostname.includes('.')&&u.hostname!=='localhost'))return '';return u.href}catch{return ''}
+}
+function managedGenresV212(){return [...document.querySelectorAll('#staff-profile-genres-v212 input:checked')].map(x=>x.value)}
 
 function managedProfileUserId(){
   return managedProfileSnapshot?.profile?.user_id||'';
@@ -2529,6 +2567,19 @@ function renderManagedProfile(){
   document.getElementById('staff-profile-private').value=
     profile.is_private?'true':'false';
 
+  ensureManagedGenrePickerV212();
+  const selectedGenres=new Set(Array.isArray(profile.favorite_genres)?profile.favorite_genres:[]);
+  document.querySelectorAll('#staff-profile-genres-v212 input').forEach(input=>{input.checked=selectedGenres.has(input.value)});
+  const socialFields={
+    'staff-profile-instagram':profile.instagram_username,
+    'staff-profile-snapchat':profile.snapchat_username,
+    'staff-profile-tiktok':profile.tiktok_username,
+    'staff-profile-discord':profile.discord_username,
+    'staff-profile-website':profile.website_url,
+    'staff-profile-steam':profile.steam_profile
+  };
+  for(const [id,value] of Object.entries(socialFields)){const el=document.getElementById(id);if(el)el.value=value||''}
+
   previewManagedAvatar(profile.avatar_url||'');
   renderManagedRoles();
 }
@@ -2571,6 +2622,10 @@ async function loadManagedProfile(){
     }
 
     managedProfileSnapshot=data;
+    try{
+      const extras=await rpc('staff_get_profile_extras_v212',{p_user_id:data.profile.user_id});
+      if(extras&&typeof extras==='object')managedProfileSnapshot.profile={...managedProfileSnapshot.profile,...extras};
+    }catch(error){console.warn('Profile extras unavailable:',error)}
     if(input)input.value=data.profile.username||username;
 
     renderManagedProfile();
@@ -2613,23 +2668,41 @@ async function saveManagedProfile(){
 
   const isPrivate=
     document.getElementById('staff-profile-private')?.value==='true';
+  const genres=managedGenresV212();
+  const websiteRaw=String(document.getElementById('staff-profile-website')?.value||'').trim();
+  const website=normalizeStaffWebsiteV212(websiteRaw);
+  if(websiteRaw&&!website){toast('Website must be a valid domain or HTTP/HTTPS URL');return}
+  if(websiteRaw&&website!==websiteRaw){const el=document.getElementById('staff-profile-website');if(el)el.value=website}
+  const cleanHandle=id=>String(document.getElementById(id)?.value||'').trim().replace(/^@/,'').slice(0,80);
+  const instagram=cleanHandle('staff-profile-instagram');
+  const snapchat=cleanHandle('staff-profile-snapchat');
+  const tiktok=cleanHandle('staff-profile-tiktok');
+  const discord=cleanHandle('staff-profile-discord');
+  const steam=String(document.getElementById('staff-profile-steam')?.value||'').trim().slice(0,2048);
 
   const ok=await staffConfirm({
     title:`Save changes to @${managedProfileSnapshot.profile.username}?`,
-    copy:'Username, display name, bio, profile picture and privacy changes are applied immediately and written to the Staff audit log.',
+    copy:'Username, display name, bio, avatar, privacy, favorite genres and social links are applied immediately and written to the Staff audit log.',
     confirmText:'Save Profile'
   });
 
   if(!ok)return;
 
   try{
-    const updated=await rpc('staff_edit_user_profile',{
+    const updated=await rpc('staff_edit_user_profile_v212',{
       p_user_id:userId,
       p_username:username,
       p_display_name:displayName||null,
       p_bio:bio,
       p_avatar_url:avatarUrl||null,
-      p_is_private:isPrivate
+      p_is_private:isPrivate,
+      p_favorite_genres:genres,
+      p_website_url:website||null,
+      p_instagram_username:instagram||null,
+      p_discord_username:discord||null,
+      p_snapchat_username:snapchat||null,
+      p_steam_profile:steam||null,
+      p_tiktok_username:tiktok||null
     });
 
     managedProfileSnapshot.profile={
@@ -4432,3 +4505,5 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 <!-- f2w-force-save:v185-auth-cache-bust:20260902 -->
 
 <!-- f2w-force-save:v190-auth-controller-cleanup:20260902 -->
+
+<!-- f2w-force-save:v212-staff-profile-editor:20260902 -->
