@@ -1,0 +1,49 @@
+/* Flix2Watch v160 — final site-wide recovery authority */
+body.f2w-main-page > header .chat-online-dot,
+body.f2w-main-page > header .f2w-v160-chat-dot{
+  display:inline-block!important;width:8px!important;height:8px!important;min-width:8px!important;border-radius:999px!important;
+  background:#22df7f!important;box-shadow:0 0 0 1px rgba(34,223,127,.18),0 0 8px rgba(34,223,127,.55)!important;
+  margin-left:7px!important;opacity:1!important;position:static!important;vertical-align:middle!important;
+}
+body.f2w-main-page > header .f2w-v160-actions-gap{gap:12px!important;column-gap:12px!important}
+@media(min-width:1500px){body.f2w-main-page > header .f2w-v160-actions-gap{gap:14px!important;column-gap:14px!important}}
+
+/* One red language everywhere. */
+.f2w-red-v160,button.f2w-red-v160,a.f2w-red-v160,
+.btn.primary,.btn.red,.account-primary,.hero-primary,.watch-primary,
+#account-submit,#forum-compose-submit,#forum-reply-submit,[data-new-thread]{
+  background:linear-gradient(135deg,#ff333f 0%,#e10f22 48%,#ae0714 100%)!important;
+  border:1px solid rgba(255,93,103,.72)!important;color:#fff!important;border-radius:12px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 22px rgba(202,9,28,.22)!important;
+}
+button.f2w-red-v160:hover,a.f2w-red-v160:hover,.btn.primary:hover,.btn.red:hover{filter:brightness(1.07)!important;transform:translateY(-1px)!important}
+#account-modal[data-v160-mode="login"] #account-login-tab,
+#account-modal[data-v160-mode="signup"] #account-signup-tab{background:linear-gradient(135deg,#ff333f,#b40716)!important;color:#fff!important}
+#account-modal[data-v160-mode="login"] #account-signup-tab,
+#account-modal[data-v160-mode="signup"] #account-login-tab{background:#0d1016!important;color:#9aa5b5!important;box-shadow:none!important;border-color:#252a33!important}
+
+/* Followers/following modal must be a readable box, never a blur-only layer. */
+#social-modal.social-modal-overlay{position:fixed!important;inset:0!important;z-index:2147483200!important;background:rgba(0,0,0,.76)!important;backdrop-filter:none!important;display:none!important;align-items:center!important;justify-content:center!important;padding:22px!important}
+#social-modal.social-modal-overlay.show{display:flex!important}
+#social-modal .social-modal{width:min(560px,94vw)!important;max-height:min(680px,82vh)!important;background:#0b0d12!important;border:1px solid #2b313b!important;border-radius:18px!important;box-shadow:0 28px 90px rgba(0,0,0,.7)!important;overflow:hidden!important;filter:none!important;opacity:1!important}
+#social-modal .social-modal-head{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:16px 18px!important;border-bottom:1px solid #252a33!important;background:#11141b!important;color:#fff!important}
+#social-modal .social-list{padding:12px!important;overflow:auto!important;max-height:60vh!important;background:#0b0d12!important;color:#eaf0f6!important}
+#social-modal .social-user{display:flex!important;width:100%!important;align-items:center!important;gap:12px!important;padding:12px!important;margin:0 0 8px!important;background:#12161d!important;border:1px solid #252b35!important;border-radius:13px!important;color:#fff!important;text-align:left!important}
+#social-modal .social-avatar,#social-modal .social-avatar-fallback{width:44px!important;height:44px!important;border-radius:50%!important;flex:0 0 44px!important;object-fit:cover!important}
+#social-modal .profile-state{padding:28px 16px!important;text-align:center!important;color:#9ca8b7!important;background:transparent!important;filter:none!important}
+
+/* Enforcement is one account-scoped dialog; explicitly no global blur. */
+html.f2w-enforced body>*:not(#f2w-v160-enforcement):not(script):not(style){filter:none!important}
+#f2w-v160-enforcement{position:fixed!important;inset:0!important;z-index:2147483600!important;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,5,8,.88)!important;backdrop-filter:none!important}
+#f2w-v160-enforcement.show{display:flex!important}
+#f2w-v160-enforcement .panel{width:min(560px,94vw);background:#0c0f14;border:1px solid #343a45;border-radius:20px;padding:28px;text-align:center;color:#fff;box-shadow:0 30px 100px rgba(0,0,0,.75)}
+#f2w-v160-enforcement .icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:linear-gradient(135deg,#ff333f,#ad0714);font-size:28px;font-weight:900}
+#f2w-v160-enforcement .actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+#f2w-v160-enforcement .actions a,#f2w-v160-enforcement .actions button{padding:11px 16px;border-radius:10px;border:1px solid #333a46;background:#151922;color:#fff;text-decoration:none}
+
+/* Notification panel readability */
+#notification-menu{background:#0b0e13!important;border:1px solid #2a3039!important;box-shadow:0 22px 70px rgba(0,0,0,.62)!important;color:#fff!important}
+#notification-menu .f2w-v160-notification{display:block;padding:12px 14px;border-bottom:1px solid #20252d;color:#eaf0f6;text-decoration:none}
+#notification-menu .f2w-v160-notification.unread{background:rgba(236,24,42,.08)}
+#notification-menu .f2w-v160-notification strong,#notification-menu .f2w-v160-notification span,#notification-menu .f2w-v160-notification small{display:block;color:inherit}
+#notification-menu .f2w-v160-notification small{color:#8793a2;margin-top:4px}
