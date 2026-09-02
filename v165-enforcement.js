@@ -31,22 +31,9 @@ function fixAuthTabs(){
   const sync=()=>{const mode=m.dataset.v159Mode||m.dataset.mode||m.dataset.v160Mode||'login';m.dataset.v160Mode=mode;normalizeRed(m)};sync();
   new MutationObserver(sync).observe(m,{attributes:true,attributeFilter:['data-v159-mode','data-mode','class']});
 }
-function relative(v){const t=new Date(v).getTime(),ms=Math.max(0,Date.now()-t);if(!Number.isFinite(t))return'';if(ms<60000)return'just now';if(ms<3600000)return Math.floor(ms/60000)+'m ago';if(ms<86400000)return Math.floor(ms/3600000)+'h ago';return Math.floor(ms/86400000)+'d ago'}
-async function loadNotifications(){
-  const c=db(),list=document.getElementById('notification-list'),count=document.getElementById('notification-count');if(!c?.rpc||!list)return;
-  try{const {data,error}=await timeout(c.rpc('get_my_notifications_v160',{p_limit:60}),2500,'Notifications timed out');if(error)throw error;const rows=Array.isArray(data)?data:[];const unread=rows.filter(n=>!n.read_at).length;if(count){count.textContent=String(unread);count.hidden=!unread}
-    list.innerHTML=rows.length?rows.map(n=>`<a class="f2w-v160-notification ${n.read_at?'read':'unread'}" href="${esc(n.link||'#')}"><strong>${esc(n.title||'Notification')}</strong><span>${esc(n.message||'')}</span><small>${esc(relative(n.created_at))}</small></a>`).join(''):'<div class="v17-notification-empty">No notifications yet.</div>';
-  }catch(e){console.warn('v160 notification load',e);list.innerHTML='<div class="v17-notification-empty">Could not refresh notifications. Tap Notifications to retry.</div>'}
-}
-async function bindNotifications(session){
-  const c=db(),uid=session?.user?.id||'';if(!c)return;
-  if(notifyChannel){try{c.removeChannel(notifyChannel)}catch{}notifyChannel=null}notifyUserId=uid;clearInterval(notifyTimer);
-  if(!uid)return;
-  try{notifyChannel=c.channel('f2w-v160-notify-'+uid).on('postgres_changes',{event:'INSERT',schema:'public',table:'f2w_notifications_v125',filter:`user_id=eq.${uid}`},()=>loadNotifications()).on('postgres_changes',{event:'UPDATE',schema:'public',table:'f2w_notifications_v125',filter:`user_id=eq.${uid}`},()=>loadNotifications()).subscribe()}catch{}
-  loadNotifications();notifyTimer=setInterval(()=>{const menu=document.getElementById('notification-menu');if(document.visibilityState==='visible'&&menu&&!menu.hidden)loadNotifications()},30000);
-}
-window.toggleNotifications=function(e){e?.preventDefault?.();e?.stopPropagation?.();const menu=document.getElementById('notification-menu');if(!menu)return;menu.hidden=!menu.hidden;if(!menu.hidden)loadNotifications()};
-window.markAllNotificationsRead=async function(){const c=db();if(!c?.rpc)return;try{await c.rpc('mark_my_notifications_read_v160');await loadNotifications()}catch{}};
+function relative(v){return ''}
+async function loadNotifications(){}
+async function bindNotifications(){}
 function enforcementCacheKey(uid){return `f2w_enforcement_v165:${String(uid||'')}`}
 function legacyEnforcementKeys(uid){return [`f2w_enforcement_v162:${String(uid||'')}`,`f2w_enforcement_v160:${String(uid||'')}`,`f2w_enforcement_v159:${String(uid||'')}`,`f2w_enforcement_v146:${String(uid||'')}`]}
 function readCachedEnforcement(uid){
