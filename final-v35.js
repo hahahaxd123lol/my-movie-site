@@ -350,6 +350,9 @@ function f2wDebounce(fn,wait=140){
     catch{try{await client.rpc('touch_presence_v17',{p_session_id:presenceSessionId});}catch{}}
   }
   function startPresence(){
+    // V210: site-wide auth presence is owned by v160-bootstrap.js. Keep the
+    // playback/current-watching systems completely separate.
+    if(window.__f2wGlobalPresenceAuthorityV210)return;
     if(window.__f2wV205WatchPresenceAuthority&&location.pathname.startsWith('/watch'))return;
     if(presenceTimer)return;
     touchPresence();
@@ -2399,3 +2402,5 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:v205-live-authority:20260902
 
 // f2w-force-save:v207-sitewide-session-presence:20260902
+
+// f2w-force-save:v210-presence-dedup:20260902
