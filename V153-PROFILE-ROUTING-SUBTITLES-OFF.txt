@@ -1,0 +1,12 @@
+Flix2Watch v153
+
+- Keeps canonical profile URLs as /profile/@username site-wide.
+- Removes the profile-shell redirect to /profile/?user=.
+- Hardens 404, root fallback and service-worker routing so friendly profile URLs load the profile shell instead of Home.
+- Account -> My profile now uses /profile/@username again.
+- Converts remaining shared generated profile links to friendly URLs.
+- Flix2Watch API now adds ds_lang=off, cc=0 and subtitles=0 and sends best-effort subtitle/caption disable postMessages after iframe load and PLAYER_EVENTs.
+
+Important: the upstream player documentation exposes ds_lang only for choosing a default language and does not document an official force-off parameter or subtitle-control command. v153 applies every parent-page control available without modifying the cross-origin player itself. If the upstream player ignores those disable hints, a true guaranteed default-off setting must be added by the player provider on player.flix2watch.com.
+
+No Supabase SQL required.

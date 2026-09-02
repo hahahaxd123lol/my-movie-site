@@ -1,5 +1,5 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v151-username-rate-20260902';
+const CACHE='f2w-v153-profile-routing-cc-off-20260902';
 const CORE=[
   '/home/','/favorites/','/profile/','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
@@ -39,8 +39,20 @@ async function staleWhileRevalidate(request){
 
 async function navigationResponse(request){
   const cache=await caches.open(CACHE);
+  const path=new URL(request.url).pathname;
 
-  // v58: NETWORK-FIRST for HTML navigation.
+  // v153: friendly profile URLs are virtual routes. Serve the profile shell
+  // immediately instead of asking static hosting for a file that does not exist.
+  if(/^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){
+    const cachedShell=await cache.match('/profile/');
+    const freshShell=fetch('/profile/',{cache:'no-cache'}).then(r=>{
+      if(r&&r.ok){cache.put('/profile/',r.clone()).catch(()=>{});return r;}
+      return cachedShell;
+    }).catch(()=>cachedShell);
+    return cachedShell||freshShell;
+  }
+
+  // NETWORK-FIRST for ordinary HTML navigation.
   // This prevents an old cached page from surviving a new deployment.
   try{
     const network=await fetch(request,{cache:'no-cache'});
@@ -53,7 +65,6 @@ async function navigationResponse(request){
   const cached=await cache.match(request,{ignoreSearch:false});
   if(cached)return cached;
 
-  const path=new URL(request.url).pathname;
   // Friendly profile URLs (/profile/@name) use the same profile shell.
   // Without this, the service worker returned the literal word "Offline"
   // whenever navigation fallback was needed for an offline user/profile route.
