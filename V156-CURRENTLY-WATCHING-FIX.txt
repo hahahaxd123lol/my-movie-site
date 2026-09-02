@@ -1,0 +1,20 @@
+FLIX2WATCH v156 — CURRENTLY WATCHING FIX
+
+Fixes stale "Watching now" cards site-wide.
+
+WHAT CHANGED
+- /watch/ still heartbeats every 30 seconds.
+- Leaving /watch/ now sends an authenticated keepalive clear so the profile can stop showing the title immediately.
+- Current-watching is now a 70-second lease, so a crashed/closed browser cannot leave someone "watching" for minutes.
+- Profile pages refresh the live profile snapshot once every 30 seconds as a bounded fallback. Realtime remains the instant path.
+- The profile renderer now clears stale cached media IDs instead of leaving the previous movie card on screen.
+- Existing stale current_watching rows older than 70 seconds are removed by the migration.
+
+APPLY
+1. Run V156-CURRENTLY-WATCHING-FIX.sql in Supabase.
+2. Deploy this whole ZIP.
+3. Hard refresh / reopen once so the v156 service worker and final-v35.js load.
+
+EXPECTED
+- Navigate away from a movie: Currently Watching normally disappears immediately via Realtime.
+- If that exit request is interrupted: it disappears on the next 30-second profile refresh, with an absolute stale lease of 70 seconds.

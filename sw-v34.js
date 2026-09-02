@@ -1,5 +1,5 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v155-profile-route-hotfix-20260902';
+const CACHE='f2w-v156-current-watching-20260902';
 const CORE=['/v154-global-ui.css','/v154-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
