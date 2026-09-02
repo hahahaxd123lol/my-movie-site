@@ -32,15 +32,18 @@ button.f2w-red-v160:hover,a.f2w-red-v160:hover,.btn.primary:hover,.btn.red:hover
 #social-modal .social-avatar,#social-modal .social-avatar-fallback{width:44px!important;height:44px!important;border-radius:50%!important;flex:0 0 44px!important;object-fit:cover!important}
 #social-modal .profile-state{padding:28px 16px!important;text-align:center!important;color:#9ca8b7!important;background:transparent!important;filter:none!important}
 
-/* Enforcement is one account-scoped dialog; explicitly no global blur. */
-html.f2w-enforced body>*:not(#f2w-v160-enforcement):not(script):not(style){filter:none!important}
-#f2w-v160-enforcement{position:fixed!important;inset:0!important;z-index:2147483600!important;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,5,8,.88)!important;backdrop-filter:none!important}
+/* v162 enforcement: one static account-scoped screen, zero blur, zero interaction leakage. */
+html.f2w-enforced,html.f2w-enforced body{overflow:hidden!important}
+html.f2w-enforced body>*:not(#f2w-v160-enforcement):not(script):not(style){filter:none!important;pointer-events:none!important;user-select:none!important}
+#f2w-v160-enforcement[hidden]{display:none!important}
+#f2w-v160-enforcement{position:fixed!important;inset:0!important;z-index:2147483646!important;display:none;align-items:center!important;justify-content:center!important;padding:24px!important;background:rgba(2,3,6,.92)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;pointer-events:auto!important;overscroll-behavior:contain!important;touch-action:none!important}
 #f2w-v160-enforcement.show{display:flex!important}
-#f2w-v160-enforcement .panel{width:min(560px,94vw);background:#0c0f14;border:1px solid #343a45;border-radius:20px;padding:28px;text-align:center;color:#fff;box-shadow:0 30px 100px rgba(0,0,0,.75)}
-#f2w-v160-enforcement .icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:linear-gradient(135deg,#ff333f,#ad0714);font-size:28px;font-weight:900}
-#f2w-v160-enforcement .actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
-#f2w-v160-enforcement .actions a,#f2w-v160-enforcement .actions button{padding:11px 16px;border-radius:10px;border:1px solid #333a46;background:#151922;color:#fff;text-decoration:none}
-
+#f2w-v160-enforcement .panel{width:min(590px,94vw)!important;background:#0a111b!important;border:1px solid rgba(255,39,58,.58)!important;border-radius:20px!important;padding:32px 30px!important;text-align:center!important;color:#fff!important;box-shadow:0 34px 120px rgba(0,0,0,.82),0 0 42px rgba(234,16,38,.12)!important;outline:none!important;pointer-events:auto!important}
+#f2w-v160-enforcement .icon{width:62px!important;height:62px!important;border-radius:50%!important;display:grid!important;place-items:center!important;margin:0 auto 14px!important;background:linear-gradient(135deg,#ff3344 0%,#e00f24 52%,#a70413 100%)!important;font-size:30px!important;font-weight:1000!important;box-shadow:0 10px 32px rgba(229,15,35,.25)!important}
+#f2w-v160-enforcement .eyebrow{font:900 11px ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:1.8px!important;color:#ff3142!important;margin-bottom:8px!important}
+#f2w-v160-enforcement h1{margin:0 0 10px!important;font-size:clamp(28px,5vw,42px)!important;line-height:1.05!important;color:#fff!important}
+#f2w-v160-enforcement p{margin:0 auto!important;max-width:480px!important;color:#b9c6d4!important;line-height:1.55!important;font-size:15px!important}
+#f2w-v160-enforcement .hint{display:block!important;margin-top:18px!important;color:#778697!important;font-size:12px!important}
 /* Notification panel readability */
 #notification-menu{background:#0b0e13!important;border:1px solid #2a3039!important;box-shadow:0 22px 70px rgba(0,0,0,.62)!important;color:#fff!important}
 #notification-menu .f2w-v160-notification{display:block;padding:12px 14px;border-bottom:1px solid #20252d;color:#eaf0f6;text-decoration:none}

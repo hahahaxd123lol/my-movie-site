@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__f2wV160Recovery)return;window.__f2wV160Recovery=true;
+if(window.__f2wV162Recovery)return;window.__f2wV162Recovery=true;
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co',KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 let client=null,notifyChannel=null,enforcementChannel=null,profileRoleChannel=null,enforcementUserId='',notifyUserId='',notifyTimer=0;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -47,21 +47,90 @@ async function bindNotifications(session){
 }
 window.toggleNotifications=function(e){e?.preventDefault?.();e?.stopPropagation?.();const menu=document.getElementById('notification-menu');if(!menu)return;menu.hidden=!menu.hidden;if(!menu.hidden)loadNotifications()};
 window.markAllNotificationsRead=async function(){const c=db();if(!c?.rpc)return;try{await c.rpc('mark_my_notifications_read_v160');await loadNotifications()}catch{}};
-function enforcementOverlay(){let el=document.getElementById('f2w-v160-enforcement');if(el)return el;el=document.createElement('div');el.id='f2w-v160-enforcement';el.innerHTML='<div class="panel"><div class="icon">!</div><h1></h1><p></p><div class="actions"><a href="/support/">Contact Support</a><button type="button" data-v160-logout>Log out</button></div></div>';document.body.appendChild(el);el.querySelector('[data-v160-logout]').onclick=async()=>{try{await db()?.auth?.signOut()}catch{}location.href='/home/'};return el}
-function clearEnforcement(){const el=document.getElementById('f2w-v160-enforcement');el?.classList.remove('show');const legacy=document.getElementById('f2w-v159-enforcement');if(legacy){legacy.classList.remove('show');legacy.hidden=true}document.documentElement.classList.remove('f2w-enforced');window.__flix2watchAccountState={banned:false,site_suspended:false,account_banned:false}}
-function stopPlayback(){try{if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{})}catch{}document.querySelectorAll('video,audio').forEach(v=>{try{v.pause()}catch{}});document.querySelectorAll('iframe').forEach(f=>{if(/player\.flix2watch\.com|vidsrc|embed|vidlink/i.test(f.src||'')){try{f.src='about:blank'}catch{}}})}
+function enforcementCacheKey(uid){return `f2w_enforcement_v162:${String(uid||'')}`}
+function readCachedEnforcement(uid){
+  if(!uid)return null;
+  try{const raw=localStorage.getItem(enforcementCacheKey(uid));if(!raw)return null;const v=JSON.parse(raw);if(!v||String(v.user_id||'')!==String(uid))return null;return v}catch{return null}
+}
+function writeCachedEnforcement(uid,state){
+  if(!uid)return;
+  try{
+    if(state?.site_suspended||state?.account_banned)localStorage.setItem(enforcementCacheKey(uid),JSON.stringify({...state,user_id:uid,_cached_at:Date.now()}));
+    else localStorage.removeItem(enforcementCacheKey(uid));
+  }catch{}
+}
+function removeLegacyEnforcement(){
+  for(const id of ['f2w-v146-enforcement','f2w-v159-enforcement']){const x=document.getElementById(id);if(x)x.remove()}
+  document.querySelectorAll('.f2w-enforcement-overlay,[data-f2w-enforcement]').forEach(x=>{if(x.id!=='f2w-v160-enforcement')x.remove()});
+  document.body?.style?.removeProperty('filter');
+}
+function enforcementOverlay(){
+  let el=document.getElementById('f2w-v160-enforcement');
+  if(el)return el;
+  el=document.createElement('div');el.id='f2w-v160-enforcement';el.setAttribute('role','alertdialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-live','assertive');el.hidden=true;
+  el.innerHTML='<div class="panel" tabindex="-1"><div class="icon">!</div><div class="eyebrow">FLIX2WATCH ACCESS NOTICE</div><h1></h1><p></p><small class="hint">This restriction updates automatically. You do not need to refresh.</small></div>';
+  document.body.appendChild(el);return el
+}
+function clearEnforcement(uid=''){
+  const el=document.getElementById('f2w-v160-enforcement');if(el){el.classList.remove('show');el.hidden=true}
+  removeLegacyEnforcement();
+  document.documentElement.classList.remove('f2w-enforced');document.body?.classList.remove('f2w-enforced-body');
+  if(uid)writeCachedEnforcement(uid,{site_suspended:false,account_banned:false});
+  try{document.documentElement.style.removeProperty('overflow');document.body?.style.removeProperty('overflow')}catch{}
+  window.__flix2watchAccountState={banned:false,site_suspended:false,account_banned:false,user_id:uid||null};
+  window.dispatchEvent(new CustomEvent('flix2watch:enforcement-cleared'));
+}
+function stopPlayback(){
+  try{if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{})}catch{}
+  document.querySelectorAll('video,audio').forEach(v=>{try{v.pause()}catch{}});
+  document.querySelectorAll('iframe').forEach(f=>{if(/player\.flix2watch\.com|vidsrc|vidcore|ezvid|movie-src|vidlink|embed/i.test(f.src||'')){try{f.src='about:blank'}catch{}}});
+}
+function applyEnforcement(uid,state,{realtime=false,cached=false}={}){
+  if(String(state?.user_id||uid)!==String(uid)){clearEnforcement(uid);return false}
+  const active=!!(state?.site_suspended||state?.account_banned);
+  window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:active};
+  if(!active){clearEnforcement(uid);return false}
+  writeCachedEnforcement(uid,state);removeLegacyEnforcement();stopPlayback();
+  const el=enforcementOverlay();el.hidden=false;el.classList.add('show');
+  el.querySelector('h1').textContent=state.account_banned?'Account login banned':'Site access suspended';
+  el.querySelector('p').textContent=state.reason||'Staff have temporarily suspended access to Flix2Watch for this account.';
+  document.documentElement.classList.add('f2w-enforced');document.body?.classList.add('f2w-enforced-body');
+  try{document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.activeElement?.blur?.();el.querySelector('.panel')?.focus({preventScroll:true})}catch{}
+  if(realtime&&!cached){try{el.querySelector('.panel')?.animate([{transform:'scale(.97)',opacity:.6},{transform:'scale(1)',opacity:1}],{duration:170,easing:'ease-out'})}catch{}}
+  window.dispatchEvent(new CustomEvent('flix2watch:enforcement-active',{detail:window.__flix2watchAccountState}));return true
+}
 async function refreshEnforcement(session,{realtime=false}={}){
   const c=db(),uid=session?.user?.id||'';if(!uid){clearEnforcement();return}
-  try{const {data,error}=await timeout(c.rpc('get_my_account_enforcement_v160'),2200);if(error)throw error;const state=data||{};
-    if(String(state.user_id||'')&&String(state.user_id)!==String(uid)){clearEnforcement();return}
-    const active=!!(state.site_suspended||state.account_banned);window.__flix2watchAccountState={...state,banned:active};if(!active){clearEnforcement();return}
-    stopPlayback();const el=enforcementOverlay();el.querySelector('h1').textContent=state.account_banned?'Account login banned':'Site access suspended';el.querySelector('p').textContent=state.reason||'Staff have restricted this account. Contact Support if you believe this is an error.';el.classList.add('show');document.documentElement.classList.add('f2w-enforced');
-  }catch(e){console.warn('v160 enforcement refresh',e);clearEnforcement()}
+  try{
+    const {data,error}=await timeout(c.rpc('get_my_account_enforcement_v160'),2200);if(error)throw error;const state=data||{};
+    if(String(state.user_id||'')&&String(state.user_id)!==String(uid)){clearEnforcement(uid);return}
+    applyEnforcement(uid,state,{realtime});
+  }catch(e){
+    console.warn('v162 enforcement refresh',e);
+    // Fail closed only when this exact signed-in account already has a cached active restriction.
+    const cached=readCachedEnforcement(uid);if(cached?.site_suspended||cached?.account_banned)applyEnforcement(uid,cached,{cached:true});
+  }
 }
 async function bindEnforcement(session){
-  const c=db(),uid=session?.user?.id||'';clearEnforcement();if(enforcementChannel){try{c?.removeChannel(enforcementChannel)}catch{}enforcementChannel=null}enforcementUserId=uid;if(!uid)return;await refreshEnforcement(session);
-  try{enforcementChannel=c.channel('f2w-v160-enforce-'+uid).on('postgres_changes',{event:'*',schema:'public',table:'account_enforcement_v146',filter:`user_id=eq.${uid}`},()=>{c.auth.getSession().then(({data})=>refreshEnforcement(data?.session||null,{realtime:true}))}).subscribe()}catch{}
+  const c=db(),uid=session?.user?.id||'';
+  if(enforcementChannel){try{c?.removeChannel(enforcementChannel)}catch{}enforcementChannel=null}
+  enforcementUserId=uid;
+  if(!uid){clearEnforcement();return}
+  // Make a refresh/navigation remain blocked instantly for an already-suspended account.
+  const cached=readCachedEnforcement(uid);if(cached?.site_suspended||cached?.account_banned)applyEnforcement(uid,cached,{cached:true});else clearEnforcement(uid);
+  await refreshEnforcement(session);
+  try{enforcementChannel=c.channel('f2w-v162-enforce-'+uid).on('postgres_changes',{event:'*',schema:'public',table:'account_enforcement_v146',filter:`user_id=eq.${uid}`},payload=>{
+    const row=payload?.new||payload?.old||null;
+    if(row&&String(row.user_id||'')!==String(uid))return;
+    c.auth.getSession().then(({data})=>refreshEnforcement(data?.session||null,{realtime:true}));
+  }).subscribe()}catch{}
 }
+function blockWhileEnforced(e){
+  if(!document.documentElement.classList.contains('f2w-enforced'))return;
+  const overlay=document.getElementById('f2w-v160-enforcement');if(overlay?.contains(e.target))return;
+  e.preventDefault();e.stopImmediatePropagation();
+}
+for(const evt of ['click','pointerdown','mousedown','touchstart','submit','keydown'])document.addEventListener(evt,blockWhileEnforced,true);
 
 async function bindViewedProfileRoleRealtime(){
   if(!location.pathname.startsWith('/profile/'))return;

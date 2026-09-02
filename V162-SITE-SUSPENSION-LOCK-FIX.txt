@@ -1,0 +1,12 @@
+Flix2Watch v162 — Site Suspension lock fix
+
+- Site Suspension is now a single account-scoped realtime authority.
+- Removed legacy v146/v159 enforcement scripts from every page so multiple overlays cannot fight each other.
+- Active suspension is cached only against the exact signed-in UUID, so refresh/navigation immediately restores the blocking screen for that same account while Supabase confirms it.
+- Realtime removal clears the overlay, dim layer, local cache and interaction lock immediately.
+- No CSS blur is used.
+- While suspended, the page is static: underlying clicks, forms and keyboard interaction are blocked and playback/fullscreen is stopped.
+- A restriction event for another user ID is ignored.
+- Service worker cache bumped to v162.
+
+No SQL or Edge Function change is required for this UI/runtime fix if v160.x SQL is already installed.
