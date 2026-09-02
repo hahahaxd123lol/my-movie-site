@@ -4,6 +4,7 @@ if(window.__f2wV201Enforcement)return;window.__f2wV201Enforcement=true;
 window.__f2wV165Enforcement=true;
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co',KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 let client=null,notifyChannel=null,enforcementChannel=null,profileRoleChannel=null,enforcementUserId='',notifyUserId='',notifyTimer=0,enforcementTimer=0;
+const SUPPORT_EXEMPT=location.pathname==='/support'||location.pathname.startsWith('/support/');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function db(){return client||(client=window.f2wSupabase||window.chatSupabase||window.supabaseClient||(window.supabase?.createClient?window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null))}
 const timeout=(p,ms,msg='Request timed out')=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error(msg)),ms))]);
@@ -104,7 +105,7 @@ function stopPlayback(){
 }
 function applyEnforcement(uid,state,{realtime=false,cached=false}={}){
   if(String(state?.user_id||uid)!==String(uid)){clearEnforcement(uid);return false}
-  const supportExempt=location.pathname.startsWith('/support')&&!!(state?.site_suspended||state?.account_banned);
+  const supportExempt=SUPPORT_EXEMPT&&!!(state?.site_suspended||state?.account_banned);
   if(supportExempt){scrubEnforcementVisuals();window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:false,support_exempt:true};writeCachedEnforcement(uid,state);return false}
   const active=!!(state?.site_suspended||state?.account_banned);
   window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:active};
@@ -201,3 +202,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 // f2w-force-save:v201-enforcement-viewport:20260902
 
 // f2w-force-save:v209-support-exempt-account-ban:20260902
+if(SUPPORT_EXEMPT){
+  const clearSupportBlockers=()=>{
+    try{scrubEnforcementVisuals()}catch{}
+    try{document.getElementById('f2w-account-block-overlay')?.remove()}catch{}
+    try{document.getElementById('v35-account-ban')?.remove()}catch{}
+    try{document.documentElement.style.removeProperty('overflow');document.body?.style.removeProperty('overflow');document.body?.classList.remove('f2w-account-blocked','f2w-enforced-body')}catch{}
+  };
+  clearSupportBlockers();
+  const mo=new MutationObserver(clearSupportBlockers);
+  if(document.body)mo.observe(document.body,{childList:true,subtree:false,attributes:true,attributeFilter:['class','style']});
+  window.addEventListener('pageshow',clearSupportBlockers,{passive:true});
+}
+// f2w-force-save:v211-support-account-ban-hard-exemption:20260902

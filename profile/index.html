@@ -1,55 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script id="f2w-v206-social-link-authority">
+<script id="f2w-v211-social-link-authority">
 (()=>{
   'use strict';
-  if(window.__f2wV206SocialLinkAuthority)return;
-  window.__f2wV206SocialLinkAuthority=true;
-
-  function socialAnchor(target){
-    try{return target?.closest?.('a.v199-social-link[href]')||null}catch{return null}
-  }
-
-  function openSocialLink(event){
-    const a=socialAnchor(event.target);
-    if(!a)return;
-    const href=String(a.href||'').trim();
-    if(!/^https?:\/\//i.test(href))return;
-
-    // This listener is installed before the legacy site click routers. Keep the
-    // navigation inside the original trusted user gesture so browsers treat it
-    // as a normal explicit new-tab request rather than a delayed popup.
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    let opened=null;
-    try{opened=window.open(href,'_blank','noopener,noreferrer')}catch{}
-    if(opened){
-      try{opened.opener=null}catch{}
-      return;
-    }
-
-    // Fallback to the browser's native target=_blank anchor activation. Some
-    // privacy extensions allow this even when window.open itself is restricted.
+  if(window.__f2wV211SocialLinkAuthority)return;
+  window.__f2wV211SocialLinkAuthority=true;
+  // Capture the native opener before legacy Flix2Watch scripts can wrap/replace it.
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  function anchorFrom(target){try{return target?.closest?.('#v199-public-socials a.v199-social-link[href]')||null}catch{return null}}
+  function openExternal(event){
+    const a=anchorFrom(event.target); if(!a)return;
+    const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
+    // Run at WINDOW capture phase and stop the old document routers before they can cancel navigation.
+    event.preventDefault(); event.stopImmediatePropagation(); event.stopPropagation();
     try{
-      const native=document.createElement('a');
-      native.href=href;
-      native.target='_blank';
-      native.rel='noopener noreferrer external';
-      native.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;';
-      (document.body||document.documentElement).appendChild(native);
-      native.click();
-      native.remove();
+      const tab=nativeOpen?.('about:blank','_blank');
+      if(tab){
+        try{tab.opener=null}catch{}
+        try{tab.location.replace(href)}catch{try{tab.location.href=href}catch{}}
+        return;
+      }
     }catch{}
+    // If the browser itself blocks new tabs, preserve the URL on the anchor; a browser security policy cannot be bypassed by page code.
   }
-
-  // Capture-phase and installed in <head>, before the old document click
-  // handlers, so they cannot cancel profile social navigation afterward.
-  document.addEventListener('click',openSocialLink,true);
+  window.addEventListener('click',openExternal,true);
 })();
 </script>
-<style id="f2w-v206-social-link-pointer-fix">
+<style id="f2w-v211-social-link-pointer-fix">
 #v199-public-socials{position:relative!important;z-index:20!important;pointer-events:auto!important}
 #v199-public-socials a.v199-social-link[href]{position:relative!important;z-index:21!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
 #v199-public-socials a.v199-social-link[href] *{pointer-events:none!important}
@@ -10985,3 +10963,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v205-profile-live-authority:20260902 -->
 
 <!-- f2w-force-save:v206-social-link-click-authority:20260902 -->
+
+<!-- f2w-force-save:v211-social-links-native-new-tab:20260902 -->

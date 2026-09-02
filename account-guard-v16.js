@@ -398,6 +398,12 @@
   }
 
   function showBlockOverlay(state) {
+    // v211: Support is always reachable for both site suspensions and account-login bans.
+    // This legacy guard must never recreate its blocker on /support/.
+    if (location.pathname === '/support' || location.pathname.startsWith('/support/')) {
+      removeBlockOverlay();
+      return;
+    }
     // v165 is the authoritative suspension/login-ban UI. Keeping this legacy
     // blocker active as well causes duplicate flashing overlays and duplicate polling.
     if (window.__f2wV165Enforcement) { removeBlockOverlay(); return; }
@@ -454,6 +460,7 @@
   }
 
   async function refreshAccountGuardState() {
+    if (location.pathname === '/support' || location.pathname.startsWith('/support/')) { removeBlockOverlay(); }
     if (!activeUser) {
       removeBlockOverlay();
       return null;
@@ -479,6 +486,7 @@
   }
 
   async function checkNow() {
+    if (location.pathname === '/support' || location.pathname.startsWith('/support/')) { removeBlockOverlay(); }
     if (!activeUser) return;
     await pollEvents();
 
@@ -682,3 +690,5 @@
 })();
 
 // f2w-force-save:v183-account-guard-low-egress-no-duplicate-blocker:20260902
+
+// f2w-force-save:v211-support-account-ban-legacy-guard-exemption:20260902
