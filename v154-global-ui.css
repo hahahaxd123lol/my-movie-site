@@ -67,3 +67,21 @@
 
 /* Preserve circular/square icon-only controls instead of turning them into pills. */
 .f2w-red-button-v154.f2w-red-icon-button-v154{border-radius:9px!important}
+
+/* v157 header spacing baseline — runtime JS reapplies this after legacy TV rules. */
+body.f2w-main-page > header .f2w-action-cluster{
+  gap:12px!important;
+  column-gap:12px!important;
+}
+body.f2w-main-page > header .f2w-action-cluster > *,
+body.f2w-main-page > header #notification-wrap,
+body.f2w-main-page > header #staff-control-nav{
+  margin-left:0!important;
+  margin-right:0!important;
+}
+@media (min-width:1181px) and (max-width:1480px){
+  body.f2w-main-page > header .f2w-action-cluster{gap:9px!important;column-gap:9px!important}
+}
+@media (min-width:1700px){
+  body.f2w-main-page > header .f2w-action-cluster{gap:14px!important;column-gap:14px!important}
+}
