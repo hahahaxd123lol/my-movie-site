@@ -1,0 +1,13 @@
+Flix2Watch v170
+
+Fixes in this build:
+1. Notifications now use one schema-safe JSONB RPC (get_my_notifications_v170) so UUID/bigint id differences cannot break the result shape. The menu and its contents are both controlled by one site-wide script. Mark all read uses mark_my_notifications_read_v170 and keeps the panel open.
+2. Account suspension / account ban / unban notices are forced to the CURRENT browser viewport center, regardless of how far the user has scrolled down the document.
+3. Leaderboard metric tabs now have exactly one red selected tab. The old global red-button scanner could tag XP Ranking on first paint and leave it red after another metric was selected; v170 explicitly overrides that stale marker.
+
+Apply:
+- Run V170-NOTIFICATIONS-FIX.sql in Supabase.
+- Deploy the complete ZIP.
+- Close old Flix2Watch tabs and hard-refresh once.
+
+No Rapid Worker change is required for v170.

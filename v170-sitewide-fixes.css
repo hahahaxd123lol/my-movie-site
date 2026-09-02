@@ -1,0 +1,18 @@
+/* v170 notification rows */
+#notification-menu .f2w-v170-note{display:block!important;padding:13px 15px!important;border-bottom:1px solid #202a35!important;text-decoration:none!important;color:#eaf2fb!important;background:#0b1119!important}
+#notification-menu .f2w-v170-note.unread{background:linear-gradient(90deg,rgba(239,18,42,.12),rgba(11,17,25,.98))!important}
+#notification-menu .f2w-v170-note:hover{background:#101c29!important}
+#notification-menu .f2w-v170-note strong,#notification-menu .f2w-v170-note span,#notification-menu .f2w-v170-note small{display:block!important;color:inherit!important}
+#notification-menu .f2w-v170-note span{margin-top:4px!important;color:#b8c6d6!important}
+#notification-menu .f2w-v170-note small{margin-top:6px!important;color:#7f90a3!important}
+
+/* Leaderboard: exactly one selected metric is red. Global red-button normalizer may leave a marker class behind. */
+.lb140-tabs .lb140-tab,.lb140-tabs .lb140-tab.f2w-red-button-v154{background:transparent!important;background-image:none!important;color:#91a5ba!important;box-shadow:none!important;border:1px solid transparent!important;transform:none!important}
+.lb140-tabs .lb140-tab:hover{background:#0f2133!important;color:#dce6ef!important}
+.lb140-tabs .lb140-tab.active,.lb140-tabs .lb140-tab.active.f2w-red-button-v154{background:linear-gradient(135deg,#ff333f 0%,#e10f22 48%,#ae0714 100%)!important;color:#fff!important;border-color:rgba(255,93,103,.72)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 22px rgba(202,9,28,.22)!important}
+
+/* Viewport-centered account/moderation notices. Position is tied to the current viewport, never document scroll position. */
+.f2w-v170-viewport-overlay{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:24px!important;overflow:hidden!important}
+.f2w-v170-viewport-dialog{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;margin:0!important;transform:none!important;max-height:calc(100dvh - 48px)!important;overflow:auto!important}
+#f2w-v165-enforcement{position:fixed!important;inset:0!important;align-items:center!important;justify-content:center!important}
+#f2w-v165-enforcement .panel{margin:auto!important;position:relative!important;top:auto!important;left:auto!important;transform:none!important;max-height:calc(100dvh - 48px)!important;overflow:auto!important}
