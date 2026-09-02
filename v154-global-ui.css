@@ -1,0 +1,69 @@
+/* Flix2Watch v154 — site-wide button polish + header spacing */
+:root{
+  --f2w-red-1:#ff2439;
+  --f2w-red-2:#ed1029;
+  --f2w-red-3:#c90b21;
+  --f2w-red-glow:rgba(255,24,53,.28);
+}
+
+/* Keep desktop header controls visually detached without wasting TV width. */
+@media (min-width:1181px){
+  body.f2w-main-page > header > .header-tools{gap:10px!important}
+  body.f2w-main-page > header .f2w-primary-nav{gap:5px!important}
+  body.f2w-main-page > header .f2w-search-pair{gap:10px!important;margin-left:4px!important;margin-right:4px!important}
+  body.f2w-main-page > header .f2w-action-cluster{gap:10px!important}
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn,
+  body.f2w-main-page > header #staff-control-nav{margin:0!important}
+}
+@media (min-width:1181px) and (max-width:1480px){
+  body.f2w-main-page > header > .header-tools{gap:7px!important}
+  body.f2w-main-page > header .f2w-primary-nav{gap:3px!important}
+  body.f2w-main-page > header .f2w-search-pair{gap:7px!important;margin-left:2px!important;margin-right:2px!important}
+  body.f2w-main-page > header .f2w-action-cluster{gap:7px!important}
+}
+@media (min-width:1900px){
+  body.f2w-main-page > header > .header-tools{gap:12px!important}
+  body.f2w-main-page > header .f2w-action-cluster{gap:12px!important}
+}
+
+/* Runtime adds this class only to controls that are actually red buttons. */
+.f2w-red-button-v154{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  color:#fff!important;
+  background:linear-gradient(180deg,var(--f2w-red-1) 0%,var(--f2w-red-2) 58%,var(--f2w-red-3) 100%)!important;
+  border:1px solid rgba(255,91,108,.78)!important;
+  border-radius:11px!important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.18) inset,
+    0 -1px 0 rgba(88,0,10,.25) inset,
+    0 7px 18px rgba(0,0,0,.22),
+    0 0 0 1px rgba(255,35,58,.05)!important;
+  text-shadow:0 1px 0 rgba(82,0,8,.28)!important;
+  font-weight:800!important;
+  transition:transform .14s ease,filter .14s ease,box-shadow .14s ease!important;
+}
+.f2w-red-button-v154:hover:not(:disabled):not([aria-disabled="true"]){
+  filter:brightness(1.08) saturate(1.04)!important;
+  transform:translateY(-1px)!important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.24) inset,
+    0 -1px 0 rgba(88,0,10,.22) inset,
+    0 10px 24px rgba(0,0,0,.28),
+    0 0 18px var(--f2w-red-glow)!important;
+}
+.f2w-red-button-v154:active:not(:disabled):not([aria-disabled="true"]){
+  transform:translateY(0) scale(.985)!important;
+  filter:brightness(.97)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.12) inset,0 4px 10px rgba(0,0,0,.24)!important;
+}
+.f2w-red-button-v154:focus-visible{
+  outline:2px solid rgba(255,255,255,.95)!important;
+  outline-offset:3px!important;
+}
+.f2w-red-button-v154:disabled,
+.f2w-red-button-v154[aria-disabled="true"]{opacity:.55!important;cursor:not-allowed!important;transform:none!important;filter:saturate(.72)!important}
+
+/* Preserve circular/square icon-only controls instead of turning them into pills. */
+.f2w-red-button-v154.f2w-red-icon-button-v154{border-radius:9px!important}

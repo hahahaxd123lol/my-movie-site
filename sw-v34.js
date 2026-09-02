@@ -1,6 +1,6 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v153-profile-routing-cc-off-20260902';
-const CORE=[
+const CACHE='f2w-v154-global-ui-header-spacing-20260902';
+const CORE=['/v154-global-ui.css','/v154-global-ui.js',
   '/home/','/favorites/','/profile/','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',

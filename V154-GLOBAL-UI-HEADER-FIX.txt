@@ -1,0 +1,13 @@
+Flix2Watch v154 — global red-button style + desktop/TV header spacing
+
+Changes
+- Adds one shared site-wide UI layer to every HTML page.
+- Every button/control that is actually rendered red is detected at runtime and receives the same polished Flix2Watch red treatment: bright red gradient, rounded 11px corners, subtle top highlight, depth/shadow, hover lift, press feedback, keyboard focus, and disabled state.
+- Dynamic red buttons created after page load are styled too.
+- Does not recolor ordinary dark/nav buttons; it only normalizes controls already intended to be red.
+- Desktop/TV header spacing increased so Chat, Favorites, Profile, Support, Account and Notifications are visually detached instead of touching.
+- Uses slightly tighter spacing on narrower desktop widths to avoid header overflow, and more room on ultra-wide/TV displays.
+- Service-worker cache bumped to v154 and new global assets are pre-cached.
+
+No Supabase SQL is required.
+Deploy the whole ZIP and hard-refresh/reopen once.
