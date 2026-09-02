@@ -95,6 +95,8 @@ const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 const $=s=>document.querySelector(s);
 let fallback=null,authRouting=false,repairQueued=false;
+let f2wPostLoginCloseUntil=0;
+let f2wPostLoginCloseTimers=[];
 function db(){
   const existing=window.f2wSupabase||window.chatSupabase||window.supabaseClient;
   if(existing)return existing;
@@ -155,6 +157,7 @@ function setMode(mode='login',animate=true){
   if(animate)modeAnimation(mode);
 }
 function openAuth(mode='login'){
+  if(Date.now()<f2wPostLoginCloseUntil)return false;
   const m=accountModal();if(!m)return false;
   // v190: Account is the only interactive overlay here. Keep it directly under body and
   // remove stale inert/top-layer/transition state before any field can receive focus.
@@ -283,8 +286,31 @@ document.addEventListener('keydown',e=>{
     try{if(typeof window.f2wV159?.submitAuth==='function')window.f2wV159.submitAuth();else window.submitAccountAuth?.()}catch{}
   }
 },true);
+function successfulLoginCloseShield(){
+  f2wPostLoginCloseUntil=Date.now()+2600;
+  for(const t of f2wPostLoginCloseTimers)clearTimeout(t);
+  f2wPostLoginCloseTimers=[];
+  const shut=()=>{
+    if(Date.now()>f2wPostLoginCloseUntil)return;
+    try{closeAuth()}catch{}
+    try{releaseAuthLocks()}catch{}
+    const m=accountModal();
+    if(m){
+      m.classList.remove('open','show','active','f2w-v183-auth-open','f2w-v185-auth-open','f2w-auth-modal-open-v60','f2w-v159-auth-open','f2w-auth-hard-open-v58','f2w-auth-v67','f2w-viewport-popup');
+      m.setAttribute('aria-hidden','true');
+      m.setAttribute('inert','');
+      m.style.setProperty('display','none','important');
+      m.style.setProperty('visibility','hidden','important');
+      m.style.setProperty('opacity','0','important');
+      m.style.setProperty('pointer-events','none','important');
+    }
+  };
+  shut();
+  for(const ms of [0,40,100,220,450,900,1500,2400])f2wPostLoginCloseTimers.push(setTimeout(shut,ms));
+}
+
 window.openHeaderAuth=openAuth;window.f2wOpenAuth=openAuth;window.closeAccountModal=closeAuth;window.showAccountMode=(m='login')=>setMode(m,true);window.__f2wRouteOwnProfileV183=routeOwnProfile;
-function boot(){legacyControlReset();repair();void stabilizeMemberAge();void syncEditProfile();const mo=new MutationObserver(queueRepair);mo.observe(document.documentElement,{subtree:true,childList:true});const c=db();try{c?.auth?.onAuthStateChange?.((event,session)=>{if(event==='SIGNED_OUT'){releaseAuthLocks()}if(session?.user&&authOpen())closeAuth();if(location.pathname.startsWith('/profile'))setTimeout(syncEditProfile,50)})}catch{}}
+function boot(){legacyControlReset();repair();void stabilizeMemberAge();void syncEditProfile();window.addEventListener('f2w:auth-success',successfulLoginCloseShield);const mo=new MutationObserver(queueRepair);mo.observe(document.documentElement,{subtree:true,childList:true});const c=db();try{c?.auth?.onAuthStateChange?.((event,session)=>{if(event==='SIGNED_OUT'){releaseAuthLocks()}if(event==='SIGNED_IN'&&session?.user){successfulLoginCloseShield()}else if(session?.user&&authOpen()){closeAuth()}if(location.pathname.startsWith('/profile'))setTimeout(syncEditProfile,50)})}catch{}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.addEventListener('pageshow',()=>{repair();void stabilizeMemberAge();void syncEditProfile()},{passive:true});
 // v196: bounded auth repair. The previous observer watched the whole document and
@@ -767,3 +793,5 @@ if(document.readyState==='loading'){
   window.addEventListener('focus',ping,{passive:true});
 })();
 /* f2w-force-save:v200-presence-and-dm:20260902 */
+
+// f2w-force-save:v208-post-login-close-shield:20260902
