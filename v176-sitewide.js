@@ -256,3 +256,199 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 window.addEventListener('pageshow',()=>{repair();void stabilizeMemberAge();void syncEditProfile()},{passive:true});
 })();
 // f2w-force-save:v185-auth-modal-interaction-hardfix:20260902
+
+/* v187 TV header layout — injected after page-local legacy styles so they cannot override it. */
+(() => {
+  'use strict';
+  if (window.__f2wTvHeaderV187) return;
+  window.__f2wTvHeaderV187 = true;
+
+  const css = `
+/* F2W v187 — stable desktop/TV header */
+@media (min-width:1181px) and (max-width:1740px) {
+  body.f2w-main-page > header {
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    align-content:center!important;
+    height:auto!important;
+    min-height:124px!important;
+    padding:8px 14px 10px!important;
+    column-gap:10px!important;
+    row-gap:8px!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    order:1!important;
+    flex:0 0 126px!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    order:2!important;
+    flex:0 1 auto!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    order:3!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    flex:1 1 380px!important;
+    width:auto!important;
+    min-width:320px!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0 0 0 auto!important;
+    gap:8px!important;
+    overflow:visible!important;
+    position:relative!important;
+    z-index:5!important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container {
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    position:relative!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  body.f2w-main-page > header .search-bar,
+  body.f2w-main-page > header .user-search-bar {
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:40px!important;
+    box-sizing:border-box!important;
+  }
+
+  body.f2w-main-page > header .user-search-bar {
+    padding-right:48px!important;
+  }
+
+  body.f2w-main-page > header .user-search-submit {
+    position:absolute!important;
+    right:4px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    width:36px!important;
+    min-width:36px!important;
+    max-width:36px!important;
+    height:32px!important;
+    margin:0!important;
+    z-index:7!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    order:4!important;
+    display:flex!important;
+    flex:0 0 100%!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:40px!important;
+    min-height:40px!important;
+    margin:0!important;
+    gap:7px!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    overflow:visible!important;
+    position:relative!important;
+    z-index:4!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > button,
+  body.f2w-main-page > header .f2w-action-cluster > a,
+  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap {
+    position:relative!important;
+    inset:auto!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster .tool-btn,
+  body.f2w-main-page > header .f2w-action-cluster .f2w-auth-top-btn {
+    min-width:0!important;
+    width:auto!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+    white-space:nowrap!important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    min-width:88px!important;
+    width:auto!important;
+    max-width:none!important;
+    padding:0 13px!important;
+  }
+
+  body.f2w-main-page > header #notification-wrap {
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+
+  body.f2w-main-page > header #notification-wrap > button {
+    width:auto!important;
+    min-width:0!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+}
+
+/* Extremely constrained desktop/TV browser viewport: keep the same two-row shell,
+   but let primary navigation compress before either search box can overlap actions. */
+@media (min-width:1181px) and (max-width:1360px) {
+  body.f2w-main-page > header > .logo {
+    flex-basis:112px!important;
+    width:112px!important;
+    min-width:112px!important;
+    max-width:112px!important;
+  }
+  body.f2w-main-page > header .f2w-primary-nav {
+    gap:6px!important;
+  }
+  body.f2w-main-page > header .f2w-search-pair {
+    min-width:290px!important;
+    flex-basis:330px!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster {
+    gap:5px!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster .tool-btn,
+  body.f2w-main-page > header .f2w-action-cluster .f2w-auth-top-btn {
+    padding-left:10px!important;
+    padding-right:10px!important;
+  }
+}
+`;
+
+  function install() {
+    let style = document.getElementById('f2w-tv-header-v187');
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'f2w-tv-header-v187';
+      document.head.appendChild(style);
+    }
+    if (style.textContent !== css) style.textContent = css;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', install, { once:true });
+  } else {
+    install();
+  }
+  window.addEventListener('pageshow', install, { passive:true });
+})();
+// f2w-force-save:v187-tv-header-final-layer:20260902
