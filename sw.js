@@ -109,3 +109,5 @@ self.addEventListener('fetch',event=>{
 // f2w-force-save:service-worker-network-first-v58:1788221340
  
 // f2w-force-save:v128-instant-profile-presence:1788304200
+
+// v177-force-refresh-2026-09-02

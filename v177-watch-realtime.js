@@ -95,3 +95,5 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 window.addEventListener('pageshow',()=>{bindAuthRepair();heartbeat()});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){lastWatchCreditAt=Date.now();heartbeat()}});
 })();
+
+// v177-force-refresh-2026-09-02

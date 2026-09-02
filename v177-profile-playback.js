@@ -38,3 +38,5 @@ function start(){refresh();clearInterval(timer);timer=setInterval(paintClock,100
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
 })();
+
+// v177-force-refresh-2026-09-02

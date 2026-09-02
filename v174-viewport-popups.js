@@ -86,3 +86,5 @@ function start(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 window.__f2wPromoteViewportPopups=()=>scan(document);
 })();
+
+// v177-force-refresh-2026-09-02

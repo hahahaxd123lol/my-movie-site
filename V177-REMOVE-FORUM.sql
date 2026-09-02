@@ -13,3 +13,5 @@ drop function if exists public.f2w_forum_sync_author_v145() cascade;
 drop function if exists public.f2w_forum_sync_author_v159() cascade;
 drop table if exists public.forum_posts cascade;
 drop table if exists public.forum_threads cascade;
+
+-- v177-force-refresh-2026-09-02

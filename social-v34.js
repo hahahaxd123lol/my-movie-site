@@ -109,3 +109,4 @@
   function boot(){forceBrand();installSearch();initRating();initProfileSocial();const obs=new MutationObserver(()=>forceBrand());obs.observe(document.body,{attributes:true,attributeFilter:['class'],subtree:false});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+// v177-force-refresh-2026-09-02

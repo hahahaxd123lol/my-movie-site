@@ -74,3 +74,5 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0),{once:true}); else setTimeout(boot,0);
   window.addEventListener('pageshow',()=>setTimeout(boot,0),{passive:true});
 })();
+
+// v177-force-refresh-2026-09-02

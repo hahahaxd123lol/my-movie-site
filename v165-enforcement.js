@@ -165,3 +165,5 @@ async function sync(session){setAuthHeader(session);ensureChatDot();normalizeRed
 async function boot(){scrubEnforcementVisuals();const c=db();if(!c?.auth)return;let session=null;try{session=(await timeout(c.auth.getSession(),1800)).data?.session||null}catch{}await sync(session);c.auth.onAuthStateChange?.((_e,s)=>{clearEnforcement();setTimeout(()=>sync(s),0)});const mo=new MutationObserver(m=>{ensureChatDot();normalizeRed();fixAuthTabs();forumIcons()});mo.observe(document.documentElement,{subtree:true,childList:true});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')c.auth.getSession().then(({data})=>{setAuthHeader(data?.session||null);refreshEnforcement(data?.session||null)})},{passive:true})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+
+// v177-force-refresh-2026-09-02

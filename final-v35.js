@@ -2363,3 +2363,5 @@ function f2wDebounce(fn,wait=140){
   window.f2wWarmProfileV134=(username)=>fetchOne(username);
 })();
 // f2w-force-save:v134-instant-sitewide-live-profile:1788313000
+
+// v177-force-refresh-2026-09-02

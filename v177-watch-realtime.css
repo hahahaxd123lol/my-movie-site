@@ -8,3 +8,5 @@ body.f2w-watch-page #watch-login-overlay,
 html.f2w-popup-scroll-lock:not(.f2w-enforced),body.f2w-popup-scroll-lock:not(.f2w-enforced){overflow:auto!important}
 
 body:has(#account-modal.open) #watch-login-overlay{visibility:hidden!important;pointer-events:none!important}
+
+/* v177-force-refresh-2026-09-02 */

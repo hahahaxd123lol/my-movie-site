@@ -2696,3 +2696,5 @@ window.f2wOpenGuestDmAuthV98=function(mode){
   setTimeout(install,250);
   setTimeout(install,1200);
 })();
+
+// v177-force-refresh-2026-09-02

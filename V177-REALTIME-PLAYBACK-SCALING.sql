@@ -61,3 +61,5 @@ as $$
   limit 1;
 $$;
 grant execute on function public.get_public_current_watching_v177(text) to anon,authenticated;
+
+-- v177-force-refresh-2026-09-02

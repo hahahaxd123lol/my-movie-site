@@ -86,3 +86,5 @@ function boot(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+
+// v177-force-refresh-2026-09-02

@@ -162,3 +162,5 @@ function boot(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.f2wV159={db,openAuth,closeAuth,setAuthMode,submitAuth,normalizeRedButtons,prewarmChat};
 })();
+
+// v177-force-refresh-2026-09-02

@@ -35,3 +35,5 @@ bind();initAuth();refreshAll(false);setInterval(tick,1000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastRefresh>=REFRESH_MS)refreshAll(false)});
 document.getElementById('user-search')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&typeof window.submitUserDirectorySearch==='function')window.submitUserDirectorySearch()});
 })();
+
+// v177-force-refresh-2026-09-02
