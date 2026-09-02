@@ -1,13 +1,13 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v161-notifications-20260902';
-const CORE=['/v161-notifications.js','/v161-notifications.css','/v160-recovery.css','/v160-bootstrap.js','/v160-recovery.js','/v159-core.css','/v159-core.js','/v146-live-ops.css','/v146-live-ops.js','/v154-global-ui.css','/v154-global-ui.js',
+const CACHE='f2w-v163-announcement-bottom-20260902';
+const CORE=['/v161-notifications.js','/v161-notifications.css','/v160-recovery.css','/v160-bootstrap.js','/v160-recovery.js','/v159-core.css','/v159-core.js','/v154-global-ui.css','/v154-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
   '/final-v35.css','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',
   '/leaderboard-v140.css','/leaderboard-v140.js',
-  '/v145-sitewide-fixes.css','/v145-sitewide-fixes.js','/v146-live-ops.css','/v146-live-ops.js','/v147-account-logout.js','/v150-account-route.js',
+  '/v145-sitewide-fixes.css','/v145-sitewide-fixes.js','/v147-account-logout.js','/v150-account-route.js',
   '/flix2watch-logo-red-v34.png'
 ];
 
