@@ -338,6 +338,7 @@ function f2wDebounce(fn,wait=140){
     catch{try{await client.rpc('touch_presence_v17',{p_session_id:presenceSessionId});}catch{}}
   }
   function startPresence(){
+    if(window.__f2wV205WatchPresenceAuthority&&location.pathname.startsWith('/watch'))return;
     if(presenceTimer)return;
     touchPresence();
     presenceTimer=setInterval(touchPresence,10000);
@@ -1204,6 +1205,7 @@ function f2wDebounce(fn,wait=140){
   }
 
   async function renderProfilePresence(){
+    if(window.__f2wV205ProfileLiveAuthority)return;
     if(!location.pathname.startsWith('/profile'))return;
     const profile=viewedProfileObject();if(!profile?.username)return;
     ensureProfileRealtimePanels();
@@ -2280,6 +2282,7 @@ function f2wDebounce(fn,wait=140){
     return new Date(t).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
   }
   function paint(row){
+    if(window.__f2wV205ProfileLiveAuthority&&location.pathname.startsWith('/profile'))return;
     if(!row)return;
     // Authoritative member age paints immediately and also repairs the older
     // profile object/cache so legacy 30-second renderers cannot overwrite it.
@@ -2380,3 +2383,5 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:v191-profile-editor-load-fix:20260902
 
 // f2w-force-save:v203-presence-authority:20260902
+
+// f2w-force-save:v205-live-authority:20260902

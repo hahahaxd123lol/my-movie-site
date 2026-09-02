@@ -12,6 +12,7 @@ let heartbeatTimer=0,busy=false,immediateTimer=0,lastImmediateAt=0,telemetryWatc
 let creditBucket=0,lastCreditSampleAt=Date.now();
 let bc=null;
 try{bc=new BroadcastChannel('f2w-playback-v182')}catch{}
+let presenceTimer=0,presenceSessionId='';
 
 function client(){return window.f2wSupabase||window.chatSupabase||window.supabaseClient||null}
 function identity(){const q=new URLSearchParams(location.search);return {id:Number(q.get('id')||0),type:q.get('type')==='tv'?'tv':'movie'}}
@@ -159,6 +160,17 @@ function bindAuthRepair(){
   if(gate){gate.style.position='absolute';gate.style.inset='0';gate.querySelectorAll('button').forEach(b=>b.style.pointerEvents='auto')}
   const m=$('#account-modal');if(m&&m.classList.contains('open'))m.querySelectorAll('input,textarea,select,button').forEach(el=>el.removeAttribute('inert'));
 }
+async function touchWatchPresence(){
+  const c=client();if(!c?.rpc||!c?.auth)return;
+  try{
+    const {data}=await c.auth.getSession();if(!data?.session?.user)return;
+    if(!presenceSessionId){
+      try{presenceSessionId=sessionStorage.getItem('f2w_presence_session_v17')||'';if(!presenceSessionId){presenceSessionId=crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`;sessionStorage.setItem('f2w_presence_session_v17',presenceSessionId)}}catch{presenceSessionId=`${Date.now()}-${Math.random().toString(36).slice(2)}`}
+    }
+    await c.rpc('touch_presence_v203',{p_session_id:presenceSessionId});
+  }catch(e){console.warn('v205 watch presence unavailable:',e?.message||e)}
+}
+async function leaveWatchPresence(){const c=client();if(!presenceSessionId||!c?.rpc)return;try{await c.rpc('leave_presence_v203',{p_session_id:presenceSessionId})}catch{}}
 async function heartbeat(force=false){
   if(busy||(!force&&!visiblePlayback()))return;
   const c=client();if(!c?.rpc||!c?.auth)return;const {id,type}=identity();if(!id)return;busy=true;
@@ -194,7 +206,8 @@ function requestPlayerTelemetry(){
   for(const probe of probes){try{w.postMessage(probe,target)}catch{}}
 }
 function start(){
-  bindAuthRepair();lastCreditSampleAt=Date.now();heartbeat();clearInterval(heartbeatTimer);heartbeatTimer=setInterval(()=>heartbeat(),30000);
+  bindAuthRepair();lastCreditSampleAt=Date.now();heartbeat();clearInterval(heartbeatTimer);heartbeatTimer=setInterval(()=>heartbeat(),10000);
+  window.__f2wV205WatchPresenceAuthority=true;touchWatchPresence();clearInterval(presenceTimer);presenceTimer=setInterval(touchWatchPresence,10000);
   const f=frame();f?.addEventListener('load',()=>{resetTelemetry();bindAuthRepair();bindNativeVideos()});
   bindNativeVideos();clearInterval(telemetryWatchdog);telemetryWatchdog=setInterval(watchdogTelemetry,2000);
   clearInterval(statePollTimer);statePollTimer=setInterval(requestPlayerTelemetry,2000);setTimeout(requestPlayerTelemetry,900);
@@ -205,12 +218,14 @@ function start(){
   const mo=new MutationObserver(()=>{bindAuthRepair();bindNativeVideos()});mo.observe(document.body,{subtree:true,childList:true});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-window.addEventListener('pageshow',()=>{bindAuthRepair();lastCreditSampleAt=Date.now();heartbeat()});
+window.addEventListener('pageshow',()=>{bindAuthRepair();lastCreditSampleAt=Date.now();touchWatchPresence();heartbeat()});
 document.addEventListener('visibilitychange',()=>{accrue();lastCreditSampleAt=Date.now();if(document.visibilityState==='visible')heartbeat()});
-window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog);clearInterval(statePollTimer);void heartbeat(true)});
+window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog);clearInterval(statePollTimer);clearInterval(presenceTimer);void heartbeat(true);void leaveWatchPresence()});
 })();
 // f2w-force-save:v182-watch-telemetry-pause-poster:20260902
 
 // f2w-force-save:v183-watch-pause-all-supported-sources:20260902
 
 // f2w-force-save:v201-playback-profile-clock:20260902
+
+// f2w-force-save:v205-watch-presence-playback-10s:20260902
