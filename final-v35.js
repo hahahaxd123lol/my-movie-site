@@ -834,10 +834,20 @@ function f2wDebounce(fn,wait=140){
   function installProfileEditor(){
     if(!location.pathname.startsWith('/profile'))return;
     const profile=viewedProfileObject();if(!isOwnProfile(profile))return;
-    if(document.getElementById('v35-edit-profile'))return;
-    const target=document.querySelector('.profile-actions,.profile-owner-actions,.profile-social-actions,.profile-identity')||document.querySelector('main');if(!target)return;
-    const button=document.createElement('button');button.id='v35-edit-profile';button.className='f2w-edit-profile-btn';button.type='button';button.innerHTML='<i class="fa-solid fa-pen-to-square"></i> Edit Profile';button.onclick=openProfileEditor;
-    target.appendChild(button);
+    let button=document.getElementById('v35-edit-profile');
+    const actions=document.querySelector('.profile-actions');
+    if(!button){
+      button=document.createElement('button');
+      button.id='v35-edit-profile';
+      button.className='profile-action-btn f2w-edit-profile-btn';
+      button.type='button';
+      button.innerHTML='<i class="fa-solid fa-pen-to-square"></i> <span>Edit Profile</span>';
+      button.onclick=openProfileEditor;
+    }
+    if(actions){
+      const copy=document.getElementById('copy-profile-link-btn');
+      if(button.parentElement!==actions || (copy && button.nextElementSibling!==copy)) actions.insertBefore(button,copy||actions.firstChild);
+    }
     renderProfileExtras(profile);
   }
   function renderProfileExtras(profile){
@@ -2374,3 +2384,5 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:v134-instant-sitewide-live-profile:1788313000
 
 // f2w-force-save:v178-profile-editor-leaderboard:20260902
+
+// v180 force-refresh: profile edit button placement + stable member age

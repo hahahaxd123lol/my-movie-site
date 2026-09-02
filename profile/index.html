@@ -173,7 +173,7 @@ html{overflow-y:scroll}
       // for the first couple of seconds without making another network request.
       [50,150,350,700,1200,2000].forEach(ms=>setTimeout(run,ms));
     };
-    try{const cached=localStorage.getItem(cacheKey); if(cached)paint(cached)}catch{}
+    // v180: do not paint cached account age; wait for the authoritative RPC so the value never flashes stale.
     // Start the tiny RPC immediately in <head>; do not wait for DOMContentLoaded,
     // the large profile bootstrap, auth hydration, presence or current-watching.
     fetch(`${API}/rest/v1/rpc/get_profile_member_since_v139`,{
@@ -6398,8 +6398,9 @@ setTimeout(loadLibraryFavorites,0);
     bio.textContent=viewedProfile.bio?.trim()||'No bio yet.';
     bio.classList.toggle('empty',!viewedProfile.bio?.trim());
 
-    const joined=viewedProfile.created_at
-      ? new Date(viewedProfile.created_at).toLocaleDateString(undefined,{
+    const stableJoinedAt=window.__F2W_MEMBER_SINCE_V139||viewedProfile.created_at;
+    const joined=stableJoinedAt
+      ? new Date(stableJoinedAt).toLocaleDateString(undefined,{
           year:'numeric',
           month:'short'
         })
@@ -10299,12 +10300,13 @@ body.f2w-auth-v67-open {
       const {data,error}=await client.rpc('get_profile_member_since_v129',{p_username:username});
       if(error)throw error;
       if(data){
-        el.textContent=ageText(window.__F2W_MEMBER_SINCE_V139||data);
+        const effective=window.__F2W_MEMBER_SINCE_V139||data;
+        el.textContent=ageText(effective);
         const joined=document.getElementById('profile-joined');
-        if(joined)joined.textContent=`Joined ${new Date(data).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
+        if(joined)joined.textContent=`Joined ${new Date(effective).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
         const member=document.getElementById('f2w-profile-member');
-        if(member)member.textContent=new Date(data).toLocaleDateString(undefined,{month:'short',year:'numeric'});
-        try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=data}catch{}
+        if(member)member.textContent=new Date(effective).toLocaleDateString(undefined,{month:'short',year:'numeric'});
+        try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=effective}catch{}
       }
     }catch{}
   }
@@ -10564,4 +10566,4 @@ body.f2w-auth-v67-open {
  
 <!-- f2w-force-save:v128-instant-profile-presence:1788304200 -->
 
-<!-- v177-force-refresh-2026-09-02 -->
+<!-- v180 force-refresh: edit profile placement + stable member age -->
