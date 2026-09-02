@@ -90,7 +90,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* v183 site-wide auth / profile / navigation hardening */
 (()=>{
 'use strict';
-if(window.__f2wV183Sitewide)return;window.__f2wV183Sitewide=true;
+if(window.__f2wV185Sitewide)return;window.__f2wV185Sitewide=true;
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 const $=s=>document.querySelector(s);
@@ -108,14 +108,29 @@ function releaseAuthLocks(){
   for(const el of [root,body]){
     if(!el)continue;
     ['f2w-auth-open-v56','f2w-auth-v67-open','f2w-auth-open-v60','f2w-auth-modal-open','f2w-auth-hard-open','f2w-popup-scroll-lock','f2w-auth-hard-open-v58'].forEach(c=>el.classList.remove(c));
-    el.style.removeProperty('overflow');el.style.removeProperty('pointer-events');el.style.removeProperty('height');el.style.removeProperty('position');
+    el.style.removeProperty('overflow');el.style.removeProperty('pointer-events');el.style.removeProperty('height');el.style.removeProperty('position');el.style.removeProperty('top');el.style.removeProperty('left');el.style.removeProperty('right');el.style.removeProperty('width');
   }
+  document.documentElement.classList.remove('f2w-transition-leaving');
+  document.documentElement.classList.add('f2w-transition-ready');
 }
 function detachFromPortal(){
   const m=accountModal();if(!m)return;
   const portal=m.closest?.('#f2w-viewport-modal-portal');
   if(portal&&m.parentElement===portal){try{document.body.appendChild(m)}catch{}}
   m.classList.remove('f2w-viewport-popup');
+}
+function legacyControlReset(){
+  const m=accountModal();if(!m||m.dataset.f2wV185Controls==='1')return;
+  m.dataset.f2wV185Controls='1';
+  for(const sel of ['.chat-close,.account-close','#account-login-tab','#account-signup-tab']){
+    const old=m.querySelector(sel);if(!old||old.dataset.f2wV185Clean==='1')continue;
+    const fresh=old.cloneNode(true);fresh.dataset.f2wV185Clean='1';old.replaceWith(fresh);
+  }
+}
+function setPortalSuppressed(on){
+  const p=document.getElementById('f2w-viewport-modal-portal');if(!p)return;
+  if(on){try{if(p.matches(':popover-open'))p.hidePopover()}catch{};p.dataset.f2wAuthSuppressed='1'}
+  else if(p.dataset.f2wAuthSuppressed==='1'){delete p.dataset.f2wAuthSuppressed;try{if(!p.matches(':popover-open'))p.showPopover()}catch{};try{window.__f2wPromoteViewportPopups?.()}catch{}}
 }
 function authOpen(){const m=accountModal();return !!(m&&m.classList.contains('open')&&m.getAttribute('aria-hidden')!=='true')}
 function modeAnimation(mode){
@@ -137,22 +152,24 @@ function setMode(mode='login',animate=true){
 }
 function openAuth(mode='login'){
   const m=accountModal();if(!m)return false;
-  detachFromPortal();releaseAuthLocks();
-  m.removeAttribute('inert');m.hidden=false;m.removeAttribute('hidden');m.setAttribute('aria-hidden','false');m.dataset.f2wV183='open';
-  m.classList.add('open','f2w-v183-auth-open');
+  legacyControlReset();detachFromPortal();releaseAuthLocks();setPortalSuppressed(true);
+  document.documentElement.classList.remove('f2w-transition-leaving');document.documentElement.classList.add('f2w-transition-ready');
+  m.removeAttribute('inert');m.hidden=false;m.removeAttribute('hidden');m.setAttribute('aria-hidden','false');m.dataset.f2wV185='open';
+  m.classList.add('open','f2w-v183-auth-open','f2w-v185-auth-open');
   m.style.setProperty('display','flex','important');m.style.setProperty('visibility','visible','important');m.style.setProperty('opacity','1','important');m.style.setProperty('pointer-events','auto','important');
   m.querySelectorAll('input,textarea,select,button,a').forEach(el=>{el.removeAttribute('inert');el.style.setProperty('pointer-events','auto','important')});
+  ['account-email','account-password','account-username','account-confirm'].forEach(id=>{const el=document.getElementById(id);if(el){el.disabled=false;el.readOnly=false;el.tabIndex=0;}});
   setMode(mode,true);
-  setTimeout(()=>{const t=$(mode==='signup'?'#account-username':'#account-email');try{t?.focus({preventScroll:true})}catch{try{t?.focus()}catch{}}},90);
+  setTimeout(()=>{const t=$(mode==='signup'?'#account-username':'#account-email');try{t?.focus({preventScroll:true})}catch{try{t?.focus()}catch{}}},60);
   return false;
 }
 function closeAuth(e){
   if(e){e.preventDefault?.();e.stopPropagation?.();e.stopImmediatePropagation?.()}
   const m=accountModal();if(!m)return false;
-  m.dataset.f2wV183='closed';m.classList.remove('open','f2w-v183-auth-open','f2w-auth-modal-open-v60','f2w-v159-auth-open','f2w-auth-hard-open-v58','f2w-auth-v67','f2w-viewport-popup');
+  m.dataset.f2wV183='closed';m.dataset.f2wV185='closed';m.classList.remove('open','f2w-v183-auth-open','f2w-v185-auth-open','f2w-auth-modal-open-v60','f2w-v159-auth-open','f2w-auth-hard-open-v58','f2w-auth-v67','f2w-viewport-popup');
   m.setAttribute('aria-hidden','true');m.setAttribute('inert','');
   m.style.setProperty('display','none','important');m.style.setProperty('visibility','hidden','important');m.style.setProperty('opacity','0','important');m.style.setProperty('pointer-events','none','important');
-  releaseAuthLocks();
+  releaseAuthLocks();setPortalSuppressed(false);
   return false;
 }
 function isCloseControl(t){
@@ -179,8 +196,16 @@ function ensureLeaderboard(){
     let a=nav.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"],[data-f2w-v183-leaderboard]');
     if(!a){a=document.createElement('a');a.className='f2w-nav-link';a.href='/leaderboard/';a.dataset.f2wV183Leaderboard='1';a.innerHTML='<i class="fa-solid fa-trophy"></i> Leaderboard'}
     const genreWrap=nav.querySelector('.f2w-genre-wrap');
+    const search=nav.querySelector('.f2w-search-wrap,.header-search,.search-wrap,input[type="search"]')?.closest?.('.f2w-search-wrap,.header-search,.search-wrap')||null;
     if(genreWrap){if(a.parentElement!==nav||a.previousElementSibling!==genreWrap)genreWrap.insertAdjacentElement('afterend',a)}
+    else if(search){if(a.parentElement!==nav||a.nextElementSibling!==search)search.insertAdjacentElement('beforebegin',a)}
     else if(a.parentElement!==nav)nav.appendChild(a);
+  });
+  // A couple of utility pages use a compact topbar instead of f2w-primary-nav.
+  document.querySelectorAll('header.topbar').forEach(bar=>{
+    if(bar.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"],[data-f2w-v183-leaderboard]'))return;
+    const a=document.createElement('a');a.href='/leaderboard/';a.dataset.f2wV183Leaderboard='1';a.className=bar.querySelector('.toplink')?'toplink':'top-link';a.innerHTML='<i class="fa-solid fa-trophy"></i> Leaderboard';
+    const account=bar.querySelector('a[href="/account/"],a[href="/account"]');if(account)account.insertAdjacentElement('beforebegin',a);else bar.appendChild(a);
   });
 }
 function viewedUsername(){try{return decodeURIComponent((location.pathname.match(/^\/profile\/@([^/?#]+)/)||[])[1]||new URLSearchParams(location.search).get('user')||'').replace(/^@/,'')}catch{return ''}}
@@ -226,8 +251,8 @@ document.addEventListener('pointerdown',e=>{const c=isCloseControl(e.target);if(
 document.addEventListener('click',capture,true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&authOpen())closeAuth(e)},true);
 window.openHeaderAuth=openAuth;window.f2wOpenAuth=openAuth;window.closeAccountModal=closeAuth;window.showAccountMode=(m='login')=>setMode(m,true);window.__f2wRouteOwnProfileV183=routeOwnProfile;
-function boot(){repair();void stabilizeMemberAge();void syncEditProfile();const mo=new MutationObserver(queueRepair);mo.observe(document.documentElement,{subtree:true,childList:true});const c=db();try{c?.auth?.onAuthStateChange?.((event,session)=>{if(event==='SIGNED_OUT'){releaseAuthLocks()}if(session?.user&&authOpen())closeAuth();if(location.pathname.startsWith('/profile'))setTimeout(syncEditProfile,50)})}catch{}}
+function boot(){legacyControlReset();repair();void stabilizeMemberAge();void syncEditProfile();const mo=new MutationObserver(queueRepair);mo.observe(document.documentElement,{subtree:true,childList:true});const c=db();try{c?.auth?.onAuthStateChange?.((event,session)=>{if(event==='SIGNED_OUT'){releaseAuthLocks()}if(session?.user&&authOpen())closeAuth();if(location.pathname.startsWith('/profile'))setTimeout(syncEditProfile,50)})}catch{}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.addEventListener('pageshow',()=>{repair();void stabilizeMemberAge();void syncEditProfile()},{passive:true});
 })();
-// f2w-force-save:v183-sitewide-auth-nav-profile:20260902
+// f2w-force-save:v185-auth-modal-interaction-hardfix:20260902

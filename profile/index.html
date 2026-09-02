@@ -7,7 +7,7 @@
 <script id="f2w-transition-boot-v135">
 try{document.documentElement.classList.add('f2w-transition-boot')}catch(e){}
 </script>
-<link rel="stylesheet" href="/page-transitions-v135.css?v=135-1788314000">
+<link rel="stylesheet" href="/page-transitions-v135.css?v=183-20260902">
 
 
 <script id="f2w-profile-route-stability-v153">
@@ -148,43 +148,22 @@ html{overflow-y:scroll}
     const API='https://viqufxlcxwgboyxbdhjb.supabase.co';
     const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
     const match=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
-    const username=match?decodeURIComponent(match[1]):new URLSearchParams(location.search).get('user');
+    const username=(match?decodeURIComponent(match[1]):new URLSearchParams(location.search).get('user')||'').replace(/^@/,'');
     if(!username)return;
-    const cacheKey=`f2w_member_since_v139:${String(username).toLowerCase()}`;
-    const ageText=(value)=>{
-      const start=new Date(value),now=new Date(); if(!Number.isFinite(start.getTime()))return '—';
-      if(start>now)return 'TODAY';
-      let y=now.getUTCFullYear()-start.getUTCFullYear(),m=now.getUTCMonth()-start.getUTCMonth(),d=now.getUTCDate()-start.getUTCDate();
-      if(d<0){m--;d+=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),0)).getUTCDate()}
-      if(m<0){y--;m+=12}
-      if(y>0)return m?`${y}Y ${m}MO`:`${y}Y`; if(m>0)return `${m}MO`;
-      const days=Math.max(0,Math.floor((Date.now()-start.getTime())/86400000)); return days<1?'TODAY':`${days}D`;
-    };
-    const paint=(ts)=>{
-      if(!ts)return; window.__F2W_MEMBER_SINCE_V139=ts;
-      const run=()=>{
-        const age=document.getElementById('v16-profile-age'); if(age)age.textContent=ageText(ts);
-        const joined=document.getElementById('profile-joined'); if(joined)joined.textContent=`Joined ${new Date(ts).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
-        const member=document.getElementById('f2w-profile-member'); if(member)member.textContent=new Date(ts).toLocaleDateString(undefined,{month:'short',year:'numeric'});
-        try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=ts}catch{}
-      };
-      run(); if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});
-      // Legacy profile renderers can paint later; reassert the authoritative value
-      // for the first couple of seconds without making another network request.
-      [50,150,350,700,1200,2000].forEach(ms=>setTimeout(run,ms));
-    };
-    // v180: do not paint cached account age; wait for the authoritative RPC so the value never flashes stale.
-    // Start the tiny RPC immediately in <head>; do not wait for DOMContentLoaded,
-    // the large profile bootstrap, auth hydration, presence or current-watching.
-    fetch(`${API}/rest/v1/rpc/get_profile_member_since_v139`,{
-      method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({p_username:String(username)})
-    }).then(r=>r.ok?r.json():Promise.reject(new Error(`member age ${r.status}`))).then(ts=>{
-      if(!ts)return; try{localStorage.setItem(cacheKey,ts)}catch{} paint(ts);
-    }).catch(()=>{});
+    const cacheKey=`f2w:v183:member-since:${username.toLowerCase()}`;
+    const style=document.createElement('style');style.id='f2w-v183-member-age-guard';
+    style.textContent='#v16-profile-age:not([data-f2w-member-authoritative="1"]){visibility:hidden!important}#v16-profile-age[data-f2w-member-authoritative="1"]{visibility:visible!important}';document.head.appendChild(style);
+    const ageText=value=>{const t=new Date(value).getTime();if(!Number.isFinite(t))return '—';const d=Math.max(0,Date.now()-t),sec=1000,min=60000,h=3600000,day=86400000,w=604800000,mo=2629800000,y=31557600000;let n,u;if(d<min){n=Math.max(1,Math.floor(d/sec));u='second'}else if(d<h){n=Math.max(1,Math.floor(d/min));u='minute'}else if(d<day){n=Math.max(1,Math.floor(d/h));u='hour'}else if(d<w){n=Math.max(1,Math.floor(d/day));u='day'}else if(d<mo){n=Math.max(1,Math.floor(d/w));u='week'}else if(d<y){n=Math.max(1,Math.floor(d/mo));u='month'}else{n=Math.max(1,Math.floor(d/y));u='year'}return `${n} ${u}${n===1?'':'s'}`};
+    let authoritative='';let observer=null;
+    const paint=()=>{if(!authoritative)return;window.__F2W_MEMBER_SINCE_V139=authoritative;const age=document.getElementById('v16-profile-age');if(age){age.dataset.f2wMemberAuthoritative='1';age.textContent=ageText(authoritative);age.classList.add('f2w-member-age-ready')}const joined=document.getElementById('profile-joined');if(joined){joined.textContent=`Joined ${new Date(authoritative).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;joined.style.display='inline-flex';joined.style.alignItems='center';joined.style.justifyContent='center'}const member=document.getElementById('f2w-profile-member');if(member)member.textContent=new Date(authoritative).toLocaleDateString(undefined,{month:'short',year:'numeric'});try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=authoritative}catch{}};
+    const lock=()=>{if(!authoritative)return;paint();try{observer?.disconnect()}catch{};let fixing=false;observer=new MutationObserver(()=>{if(fixing)return;fixing=true;queueMicrotask(()=>{paint();fixing=false})});for(const id of ['v16-profile-age','profile-joined','f2w-profile-member']){const el=document.getElementById(id);if(el)observer.observe(el,{childList:true,subtree:true,characterData:true,attributes:id==='v16-profile-age',attributeFilter:id==='v16-profile-age'?['data-f2w-member-authoritative']:undefined})}};
+    const use=ts=>{if(!ts||!Number.isFinite(new Date(ts).getTime()))return false;authoritative=ts;window.__F2W_MEMBER_SINCE_V139=ts;if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',lock,{once:true});else lock();return true};
+    let cached='';try{cached=localStorage.getItem(cacheKey)||''}catch{}if(use(cached))return;
+    fetch(`${API}/rest/v1/rpc/get_profile_member_since_v139`,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({p_username:String(username)}),cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject(new Error(`member age ${r.status}`))).then(ts=>{if(!use(ts))throw new Error('missing member age');try{localStorage.setItem(cacheKey,ts)}catch{}}).catch(()=>{const reveal=()=>{const age=document.getElementById('v16-profile-age');if(age){age.dataset.f2wMemberAuthoritative='1';age.textContent='—'}};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal()});
   })();
   </script>
   <script src="/silent-account-v16.js"></script>
-  <script src="/account-guard-v16.js" defer></script>
+  <script src="/account-guard-v16.js?v=183-20260902" defer></script>
 
   
   <script>
@@ -3379,7 +3358,7 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=159" defer></script>
+  <script src="/global-header-chat-v1.js?v=183-20260902" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -3889,7 +3868,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
   <script src="/v154-global-ui.js?v=159" defer></script>
 <link rel="stylesheet" href="/v165-enforcement.css?v=165">
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
-<link rel="stylesheet" href="/v176-sitewide.css?v=176"></head>
+<link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"></head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
 <header>
@@ -4319,6 +4298,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
       </div>
 
       <div class="profile-actions">
+        <button class="profile-action-btn f2w-edit-profile-btn" id="v35-edit-profile" type="button" hidden><i class="fa-solid fa-pen-to-square"></i> <span>Edit Profile</span></button>
         <button class="profile-action-btn" id="copy-profile-link-btn" type="button" onclick="copyViewedProfileLink()"><i class="fa-solid fa-link"></i> <span>Copy Link</span></button>
         <button class="profile-action-btn" id="profile-report-btn" type="button" hidden onclick="reportViewedProfile()"><i class="fa-solid fa-flag"></i> <span>Report</span></button>
       </div>
@@ -6398,7 +6378,7 @@ setTimeout(loadLibraryFavorites,0);
     bio.textContent=viewedProfile.bio?.trim()||'No bio yet.';
     bio.classList.toggle('empty',!viewedProfile.bio?.trim());
 
-    const stableJoinedAt=window.__F2W_MEMBER_SINCE_V139||viewedProfile.created_at;
+    const stableJoinedAt=window.__F2W_MEMBER_SINCE_V139||null;
     const joined=stableJoinedAt
       ? new Date(stableJoinedAt).toLocaleDateString(undefined,{
           year:'numeric',
@@ -6422,6 +6402,7 @@ setTimeout(loadLibraryFavorites,0);
     const own=isOwnViewedProfile();
     root?.classList.toggle('profile-own',own);
     setTimeout(syncAuthenticatedOwnerUI,0);
+    setTimeout(()=>window.f2wRenderProfileActivityV182?.(),0);
 
     if(bioInput){
       bioInput.value=own?(viewedProfile.bio||''):'';
@@ -8139,6 +8120,7 @@ renderViewedProfile();
 
       if(error||!sessionUser||!viewedProfile){
         document.body.classList.remove('profile-authenticated-owner');
+        const edit=document.getElementById('v35-edit-profile');if(edit){edit.hidden=true;edit.style.display='none'}
         return false;
       }
 
@@ -8147,11 +8129,14 @@ renderViewedProfile();
 
       if(!ownsProfile){
         document.body.classList.remove('profile-authenticated-owner');
+        const edit=document.getElementById('v35-edit-profile');if(edit){edit.hidden=true;edit.style.display='none'}
         return false;
       }
 
       currentUser=sessionUser;
       document.body.classList.add('profile-authenticated-owner');
+      const edit=document.getElementById('v35-edit-profile');
+      if(edit){edit.hidden=false;edit.style.display='inline-flex';edit.onclick=()=>window.f2wOpenProfileEditorV182?.()}
       return true;
     }catch(error){
       console.error('Could not sync owner profile controls:',error);
@@ -8710,8 +8695,8 @@ return true;
   </div>
 
   <script src="/interaction-v7.js" defer></script>
-  <script src="/realtime-v7.js" defer></script>
-  <script src="/final-v35.js?v=156-20260902" defer></script>
+  <script src="/realtime-v7.js?v=183-20260902" defer></script>
+  <script src="/final-v35.js?v=183-20260902" defer></script>
 
 <style id="f2w-auth-hardfix-v58-css">
 #account-modal.f2w-auth-hard-open-v58 {
@@ -10268,47 +10253,32 @@ body.f2w-auth-v67-open {
   }
 
   function ageText(created){
-    const start=new Date(created);
-    if(!Number.isFinite(start.getTime()))return '—';
-    const now=new Date();
-    if(start>now)return 'TODAY';
-    let years=now.getUTCFullYear()-start.getUTCFullYear();
-    let months=now.getUTCMonth()-start.getUTCMonth();
-    let days=now.getUTCDate()-start.getUTCDate();
-    if(days<0){months--;const prev=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),0));days+=prev.getUTCDate()}
-    if(months<0){years--;months+=12}
-    if(years>0)return months?`${years}Y ${months}MO`:`${years}Y`;
-    if(months>0)return `${months}MO`;
-    const totalDays=Math.max(0,Math.floor((Date.now()-start.getTime())/86400000));
-    return totalDays<1?'TODAY':`${totalDays}D`;
+    const t=new Date(created).getTime();if(!Number.isFinite(t))return '—';
+    const d=Math.max(0,Date.now()-t),sec=1000,min=60000,h=3600000,day=86400000,w=604800000,mo=2629800000,y=31557600000;
+    let n,unit;
+    if(d<min){n=Math.max(1,Math.floor(d/sec));unit='second'}
+    else if(d<h){n=Math.max(1,Math.floor(d/min));unit='minute'}
+    else if(d<day){n=Math.max(1,Math.floor(d/h));unit='hour'}
+    else if(d<w){n=Math.max(1,Math.floor(d/day));unit='day'}
+    else if(d<mo){n=Math.max(1,Math.floor(d/w));unit='week'}
+    else if(d<y){n=Math.max(1,Math.floor(d/mo));unit='month'}
+    else{n=Math.max(1,Math.floor(d/y));unit='year'}
+    return `${n} ${unit}${n===1?'':'s'}`;
   }
 
   function refreshMemberAge(){
     try{
-      const profile=typeof viewedProfile!=='undefined'?viewedProfile:null;
       const el=document.getElementById('v16-profile-age');
       const authoritative=window.__F2W_MEMBER_SINCE_V139;
-      if(el&&(authoritative||profile?.created_at))el.textContent=ageText(authoritative||profile.created_at);
+      if(el&&authoritative){el.textContent=ageText(authoritative);el.classList.add('f2w-member-age-ready')}
     }catch{}
   }
 
   async function correctMemberAgeFromAccount(){
-    const username=viewedUsername();
-    const el=document.getElementById('v16-profile-age');
-    if(!username||!el||!client?.rpc)return;
-    try{
-      const {data,error}=await client.rpc('get_profile_member_since_v129',{p_username:username});
-      if(error)throw error;
-      if(data){
-        const effective=window.__F2W_MEMBER_SINCE_V139||data;
-        el.textContent=ageText(effective);
-        const joined=document.getElementById('profile-joined');
-        if(joined)joined.textContent=`Joined ${new Date(effective).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
-        const member=document.getElementById('f2w-profile-member');
-        if(member)member.textContent=new Date(effective).toLocaleDateString(undefined,{month:'short',year:'numeric'});
-        try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=effective}catch{}
-      }
-    }catch{}
+    const effective=window.__F2W_MEMBER_SINCE_V139;if(!effective)return;
+    const el=document.getElementById('v16-profile-age');if(el){el.textContent=ageText(effective);el.classList.add('f2w-member-age-ready')}
+    const joined=document.getElementById('profile-joined');if(joined)joined.textContent=`Joined ${new Date(effective).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
+    const member=document.getElementById('f2w-profile-member');if(member)member.textContent=new Date(effective).toLocaleDateString(undefined,{month:'short',year:'numeric'});
   }
 
   let currentWatchingBusy=false;
@@ -10417,21 +10387,21 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:profile-watching-v130:1788306600 */
 </script>
 
-<script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
+<script src="/page-transitions-v135.js?v=183-20260902" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
-  <script src="/v147-account-logout.js?v=147"></script>
+  <script src="/v147-account-logout.js?v=183-20260902"></script>
   <script src="/v149-account-route.js?v=153"></script>
 
 <!-- F2W v159 core recovery -->
 <link rel="stylesheet" href="/v159-core.css?v=159">
-<script src="/v159-core.js?v=159" defer></script>
-<script src="/v165-enforcement.js?v=165"></script>
+<script src="/v159-core.js?v=183-20260902" defer></script>
+<script src="/v165-enforcement.js?v=183-20260902"></script>
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
 <script src="/v172-sitewide.js?v=172"></script>
-<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=175"></script>
-<script src="/v176-sitewide.js?v=176" defer></script><link rel="stylesheet" href="/v177-profile-playback.css?v=177-20260902">
-<script src="/v177-profile-playback.js?v=177-20260902" defer></script>
+<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=183-20260902"></script>
+<script src="/v176-sitewide.js?v=185-20260902-authfix" defer></script><link rel="stylesheet" href="/v177-profile-playback.css?v=177-20260902">
+<script src="/v177-profile-playback.js?v=183-20260902" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
@@ -10567,3 +10537,9 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v128-instant-profile-presence:1788304200 -->
 
 <!-- v180 force-refresh: edit profile placement + stable member age -->
+
+<!-- f2w-force-save:v182-profile-ui-authoritative-age:20260902 -->
+
+<!-- f2w-force-save:v183-sitewide-cache-bust:20260902 -->
+
+<!-- f2w-force-save:v185-auth-cache-bust:20260902 -->

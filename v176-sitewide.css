@@ -25,3 +25,18 @@ body #profile-hero #profile-username-line{font-size:.86rem!important;font-weight
 #v35-edit-profile:not([hidden]){display:inline-flex!important;align-items:center!important}
 #profile-joined{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;vertical-align:middle!important;line-height:1!important;min-height:34px!important}
 /* f2w-force-save:v183-sitewide-css:20260902 */
+
+/* v185 canonical auth interaction: never let legacy transition/scroll locks block the account form. */
+#account-modal.f2w-v185-auth-open{
+  display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+  position:fixed!important;inset:0!important;z-index:2147483646!important;
+}
+#account-modal.f2w-v185-auth-open .account-card,
+#account-modal.f2w-v185-auth-open .account-card *,
+#account-modal.f2w-v185-auth-open input,
+#account-modal.f2w-v185-auth-open textarea,
+#account-modal.f2w-v185-auth-open select,
+#account-modal.f2w-v185-auth-open button{pointer-events:auto!important}
+#account-modal.f2w-v185-auth-open input,
+#account-modal.f2w-v185-auth-open textarea{user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important}
+/* f2w-force-save:v185-auth-css-hardfix:20260902 */
