@@ -1,0 +1,4 @@
+/* v176 profile identity sizing */
+body #profile-hero #profile-name{font-size:1.72rem!important;font-weight:900!important;line-height:1.12!important}
+body #profile-hero #profile-username-line{font-size:.86rem!important;font-weight:800!important;line-height:1.25!important;margin-top:4px!important}
+@media(max-width:760px){body #profile-hero #profile-name{font-size:1.48rem!important}body #profile-hero #profile-username-line{font-size:.82rem!important}}

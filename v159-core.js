@@ -5,6 +5,12 @@ const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 const EDGE=`${URL}/functions/v1/rapid-worker`;
 let client=null,authBusy=false,legacyOpenAuth=null;
+const AUTH_RATE_KEY='f2w:v176:auth-attempts',AUTH_RATE_WINDOW=60000,AUTH_RATE_MAX=5;
+function consumeAuthAttempt(){
+  const t=Date.now();let a=[];try{a=JSON.parse(localStorage.getItem(AUTH_RATE_KEY)||'[]')}catch{}a=(Array.isArray(a)?a:[]).filter(x=>t-Number(x)<AUTH_RATE_WINDOW);
+  if(a.length>=AUTH_RATE_MAX)return Math.max(1,Math.ceil((AUTH_RATE_WINDOW-(t-Number(a[0])))/1000));
+  a.push(t);try{localStorage.setItem(AUTH_RATE_KEY,JSON.stringify(a))}catch{}return 0;
+}
 function db(){
   if(client)return client;
   client=window.chatSupabase||window.f2wSupabase||window.supabaseClient||window.__supabaseClient||null;
@@ -60,6 +66,7 @@ async function edgeLogin(identifier,password){
 }
 async function submitAuth(){
   if(authBusy)return;const m=modal(),c=db();if(!m||!c?.auth)return;
+  const rateWait=consumeAuthAttempt();if(rateWait){authMessage(`Too many attempts. Try again in ${rateWait}s.`,true);return;}
   const signup=m.dataset.v159Mode==='signup';
   const email=String(m.querySelector('#account-email')?.value||'').trim();
   const username=String(m.querySelector('#account-username')?.value||'').trim();
