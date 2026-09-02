@@ -4036,7 +4036,32 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
   <script src="/v154-global-ui.js?v=159" defer></script>
 <link rel="stylesheet" href="/v165-enforcement.css?v=165">
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
-<link rel="stylesheet" href="/v176-sitewide.css?v=176"></head>
+<link rel="stylesheet" href="/v176-sitewide.css?v=176">
+<style id="f2w-rating-v215-css">
+.f2w-v215-rating-card{position:relative!important;overflow:hidden!important;border-color:rgba(255,255,255,.12)!important;background:radial-gradient(circle at 10% -10%,rgba(229,9,20,.14),transparent 34%),linear-gradient(145deg,rgba(8,19,33,.98),rgba(4,10,18,.99))!important}
+.f2w-v215-rating-card:before{content:""!important;position:absolute!important;inset:0 0 auto!important;height:2px!important;background:linear-gradient(90deg,transparent,var(--accent,#e50914),transparent)!important;opacity:.9!important}
+.f2w-v215-rating-picker{display:flex!important;flex-direction:column!important;gap:10px!important;align-items:flex-start!important}
+.f2w-v215-rating-card .f2w-v34-rating-stars{gap:10px!important}
+.f2w-v215-rating-card .f2w-v34-rating-stars button{width:58px!important;height:58px!important;border-radius:14px!important;position:relative!important;font-size:21px!important;box-shadow:0 8px 22px rgba(0,0,0,.18)!important}
+.f2w-v215-rating-card .f2w-v34-rating-stars button span{position:absolute!important;right:7px!important;bottom:4px!important;font-size:9px!important;font-weight:900!important;color:#718096!important;line-height:1!important}
+.f2w-v215-rating-card .f2w-v34-rating-stars button.selected,.f2w-v215-rating-card .f2w-v34-rating-stars button.preview{color:#ffd43b!important;border-color:#fbbf24!important;background:linear-gradient(180deg,#192334,#111a28)!important;box-shadow:0 0 0 1px rgba(251,191,36,.14),0 10px 28px rgba(251,191,36,.12)!important}
+.f2w-v215-rating-card .f2w-v34-rating-stars button.selected span,.f2w-v215-rating-card .f2w-v34-rating-stars button.preview span{color:#fbbf24!important}
+.f2w-v215-rating-label{min-height:18px!important;color:#a7b5c8!important;font-size:13px!important;font-weight:750!important}
+.f2w-v215-rating-card .f2w-v34-rating-summary{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;padding:8px!important}
+.f2w-v215-summary-cell{min-width:0!important;padding:12px!important;border-radius:10px!important;background:rgba(255,255,255,.025)!important;display:flex!important;flex-direction:column!important;gap:5px!important}
+.f2w-v215-summary-cell strong{font-size:22px!important}
+.f2w-v215-review-wrap{grid-column:1/-1!important;position:relative!important}
+.f2w-v215-review-wrap #f2w-v34-rating-review{padding-bottom:34px!important}
+#f2w-v215-review-count{position:absolute!important;right:12px!important;bottom:10px!important;color:#687b91!important;font-size:10px!important;font-weight:800!important;pointer-events:none!important}
+.f2w-v215-save-state{font-size:12px!important;color:#8da2b8!important;font-weight:700!important;margin-left:3px!important}
+.f2w-v215-save-state.ok{color:#4ade80!important}.f2w-v215-save-state.error{color:#fb7185!important}
+#f2w-v34-save-rating.saving{opacity:.72!important;cursor:wait!important}
+#f2w-v34-save-rating.saved{background:#15803d!important;border-color:#22c55e!important}
+@media(max-width:760px){.f2w-v215-rating-card .f2w-v34-rating-stars{width:100%!important;display:grid!important;grid-template-columns:repeat(5,1fr)!important}.f2w-v215-rating-card .f2w-v34-rating-stars button{width:100%!important;height:52px!important}.f2w-v215-rating-card .f2w-v34-rating-summary{grid-template-columns:repeat(3,1fr)!important}.f2w-v215-review-wrap{grid-column:auto!important}.f2w-v34-rating-actions{flex-wrap:wrap!important}.f2w-v215-save-state{width:100%!important;margin-left:0!important}}
+@media(max-width:420px){.f2w-v215-rating-card .f2w-v34-rating-stars button{height:48px!important;font-size:18px!important}.f2w-v215-summary-cell{padding:9px 7px!important}.f2w-v215-summary-cell strong{font-size:18px!important}.f2w-v215-summary-cell span{font-size:9px!important}}
+</style>
+
+</head>
 <body class="theme-red f2w-main-page f2w-watch-page watch-locked">
 <header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
@@ -4527,23 +4552,40 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
     </div>
 
 
-    <section class="f2w-v34-rating-card" id="f2w-v34-rating-card">
+        <section class="f2w-v34-rating-card f2w-v215-rating-card" id="f2w-v34-rating-card">
       <div class="f2w-v34-rating-copy">
         <div class="f2w-ultra-kicker">YOUR RATING</div>
         <h2>Rate this title</h2>
-        <p>Score it from 1 to 5 stars. Your rating appears publicly on your profile.</p>
+        <p>Pick 1–5 stars and optionally leave a short review. Saved ratings appear on your public profile.</p>
       </div>
-      
-      <div class="f2w-v34-rating-stars" id="f2w-v117-rating-stars" role="radiogroup" aria-label="Rate this title out of five stars">
-        <button type="button" data-rating="1" aria-label="1 star"><i class="fa-regular fa-star"></i></button>
-        <button type="button" data-rating="2" aria-label="2 stars"><i class="fa-regular fa-star"></i></button>
-        <button type="button" data-rating="3" aria-label="3 stars"><i class="fa-regular fa-star"></i></button>
-        <button type="button" data-rating="4" aria-label="4 stars"><i class="fa-regular fa-star"></i></button>
-        <button type="button" data-rating="5" aria-label="5 stars"><i class="fa-regular fa-star"></i></button>
+
+      <div class="f2w-v215-rating-picker">
+        <div class="f2w-v34-rating-stars" id="f2w-v117-rating-stars" role="radiogroup" aria-label="Rate this title out of five stars">
+          <button type="button" data-rating="1" role="radio" aria-checked="false" aria-label="1 star — Poor"><i class="fa-regular fa-star"></i><span>1</span></button>
+          <button type="button" data-rating="2" role="radio" aria-checked="false" aria-label="2 stars — Fair"><i class="fa-regular fa-star"></i><span>2</span></button>
+          <button type="button" data-rating="3" role="radio" aria-checked="false" aria-label="3 stars — Good"><i class="fa-regular fa-star"></i><span>3</span></button>
+          <button type="button" data-rating="4" role="radio" aria-checked="false" aria-label="4 stars — Great"><i class="fa-regular fa-star"></i><span>4</span></button>
+          <button type="button" data-rating="5" role="radio" aria-checked="false" aria-label="5 stars — Amazing"><i class="fa-regular fa-star"></i><span>5</span></button>
+        </div>
+        <div class="f2w-v215-rating-label" id="f2w-v215-rating-label">Choose your score</div>
       </div>
-      <div class="f2w-v34-rating-summary"><strong id="f2w-v34-your-rating">—</strong><span>Your score</span><strong id="f2w-v34-community-rating">—</strong><span>Site average</span></div>
-      <textarea id="f2w-v34-rating-review" maxlength="600" placeholder="Optional short review..."></textarea>
-      <div class="f2w-v34-rating-actions"><button type="button" id="f2w-v34-save-rating"><i class="fa-solid fa-star"></i> Save rating</button><button type="button" id="f2w-v34-clear-rating">Clear</button></div>
+
+      <div class="f2w-v34-rating-summary">
+        <div class="f2w-v215-summary-cell"><strong id="f2w-v34-your-rating">—</strong><span>Your score</span></div>
+        <div class="f2w-v215-summary-cell"><strong id="f2w-v34-community-rating">—</strong><span>Site average</span></div>
+        <div class="f2w-v215-summary-cell"><strong id="f2w-v215-rating-count">0</strong><span>Ratings</span></div>
+      </div>
+
+      <div class="f2w-v215-review-wrap">
+        <textarea id="f2w-v34-rating-review" maxlength="600" placeholder="Optional short review… What did you think?"></textarea>
+        <span id="f2w-v215-review-count">0 / 600</span>
+      </div>
+
+      <div class="f2w-v34-rating-actions">
+        <button type="button" id="f2w-v34-save-rating"><i class="fa-solid fa-star"></i> <span>Save rating</span></button>
+        <button type="button" id="f2w-v34-clear-rating"><i class="fa-solid fa-trash-can"></i> Clear</button>
+        <span class="f2w-v215-save-state" id="f2w-v215-rating-state" aria-live="polite"></span>
+      </div>
     </section>
 
     <section class="f2w-ultra-section" id="f2w-title-lab">
@@ -10059,95 +10101,30 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 </script>
 
 
-<script id="f2w-rating-v117-js">
+<script id="f2w-rating-v215-js">
 (() => {
   'use strict';
-  let selected=0;
-
-  function client(){
-    return window.chatSupabase?.rpc?window.chatSupabase:null;
-  }
-  function identity(){
-    const p=new URLSearchParams(location.search);
-    return {id:Number(p.get('id')||0),type:p.get('type')==='tv'?'tv':'movie'};
-  }
-  function paint(value,preview=false){
-    document.querySelectorAll('#f2w-v117-rating-stars button').forEach(btn=>{
-      const n=Number(btn.dataset.rating);
-      btn.classList.toggle('selected',!preview&&n<=value);
-      btn.classList.toggle('preview',preview&&n<=value);
-      const icon=btn.querySelector('i');
-      if(icon)icon.className=n<=value?'fa-solid fa-star':'fa-regular fa-star';
-    });
-  }
-  async function session(){
-    try{return (await client()?.auth.getSession())?.data?.session||null}catch{return null}
-  }
-  function auth(){
-    try{window.openHeaderAuth?.('login')}catch{}
-  }
-  async function load(){
-    const c=client(); if(!c)return;
-    const {id,type}=identity(); if(!id)return;
-    try{
-      const [mine,summary]=await Promise.all([
-        c.rpc('get_my_rating_v117',{p_media_type:type,p_media_id:id}),
-        c.rpc('get_title_rating_summary_v117',{p_media_type:type,p_media_id:id})
-      ]);
-      const my=Array.isArray(mine.data)?mine.data[0]:mine.data;
-      const sum=Array.isArray(summary.data)?summary.data[0]:summary.data;
-      selected=Number(my?.rating||0);
-      paint(selected);
-      document.getElementById('f2w-v34-your-rating').textContent=selected?`${selected} / 5`:'—';
-      document.getElementById('f2w-v34-community-rating').textContent=sum?.rating_count?`${Number(sum.average_rating||0).toFixed(1)} / 5`:'—';
-      const review=document.getElementById('f2w-v34-rating-review');
-      if(review&&my?.review)review.value=my.review;
-    }catch(error){console.warn('Rating load unavailable:',error)}
-  }
-
-  function bind(){
-    const stars=[...document.querySelectorAll('#f2w-v117-rating-stars button')];
-    stars.forEach(btn=>{
-      btn.addEventListener('mouseenter',()=>paint(Number(btn.dataset.rating),true));
-      btn.addEventListener('focus',()=>paint(Number(btn.dataset.rating),true));
-      btn.addEventListener('click',()=>{selected=Number(btn.dataset.rating);paint(selected);document.getElementById('f2w-v34-your-rating').textContent=`${selected} / 5`; });
-    });
-    document.getElementById('f2w-v117-rating-stars')?.addEventListener('mouseleave',()=>paint(selected));
-    document.getElementById('f2w-v117-rating-stars')?.addEventListener('focusout',event=>{if(!event.currentTarget.contains(event.relatedTarget))paint(selected)});
-
-    document.getElementById('f2w-v34-save-rating')?.addEventListener('click',async event=>{
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      const s=await session();
-      if(!s?.user){try{f2wToast('Log in or create an account to rate this title.','fa-user-lock')}catch{};auth();return}
-      if(!selected){try{f2wToast('Choose 1 to 5 stars first.','fa-star')}catch{};return}
-      const c=client(); const {id,type}=identity();
-      const title=document.getElementById('detail-title')?.textContent?.trim()||'';
-      const poster=document.getElementById('detail-poster')?.getAttribute('src')||'';
-      const posterPath=poster.includes('image.tmdb.org')?new URL(poster).pathname.replace(/^\/t\/p\/[^/]+/,''):'';
-      const review=document.getElementById('f2w-v34-rating-review')?.value?.trim()||'';
-      const {error}=await c.rpc('save_user_rating_v117',{p_media_type:type,p_media_id:id,p_rating:selected,p_review:review||null,p_title:title||null,p_poster_path:posterPath||null});
-      if(error){console.error(error);try{f2wToast('Could not save rating.','fa-triangle-exclamation')}catch{};return}
-      try{f2wToast('Rating saved to your public profile.','fa-star')}catch{}
-      load();
-    },true);
-
-    document.getElementById('f2w-v34-clear-rating')?.addEventListener('click',async event=>{
-      event.preventDefault();event.stopImmediatePropagation();
-      const s=await session(); if(!s?.user){auth();return}
-      const c=client(); const {id,type}=identity();
-      const {error}=await c.rpc('clear_user_rating_v117',{p_media_type:type,p_media_id:id});
-      if(error)return;
-      selected=0;paint(0);
-      document.getElementById('f2w-v34-your-rating').textContent='—';
-      document.getElementById('f2w-v34-rating-review').value='';
-      load();
-    },true);
-  }
-
+  if(window.__f2wRatingV215)return;
+  window.__f2wRatingV215=true;
+  const LABELS={0:'Choose your score',1:'Poor',2:'Fair',3:'Good',4:'Great',5:'Amazing'};
+  let selected=0,savedRating=0,busy=false;
+  const client=()=>window.chatSupabase?.rpc?window.chatSupabase:(window.f2wSupabase?.rpc?window.f2wSupabase:null);
+  const identity=()=>{const q=new URLSearchParams(location.search);const id=Number(q.get('id')||0);return {id:Number.isFinite(id)?id:0,type:q.get('type')==='tv'?'tv':'movie'}};
+  async function session(){const c=client();if(!c?.auth)return null;try{return (await c.auth.getSession())?.data?.session||null}catch{return null}}
+  function state(text='',kind=''){const el=document.getElementById('f2w-v215-rating-state');if(!el)return;el.textContent=text;el.className=`f2w-v215-save-state ${kind}`.trim()}
+  function setBusy(next){busy=!!next;const save=document.getElementById('f2w-v34-save-rating'),clear=document.getElementById('f2w-v34-clear-rating');document.querySelectorAll('#f2w-v117-rating-stars button').forEach(b=>b.disabled=busy);if(save){save.disabled=busy;save.classList.toggle('saving',busy)}if(clear)clear.disabled=busy}
+  function paint(value,preview=false){const safe=Math.max(0,Math.min(5,Number(value)||0));document.querySelectorAll('#f2w-v117-rating-stars button').forEach(btn=>{const n=Number(btn.dataset.rating),on=n<=safe;btn.classList.toggle('selected',!preview&&on);btn.classList.toggle('preview',preview&&on);btn.setAttribute('aria-checked',String(!preview&&n===safe));const icon=btn.querySelector('i');if(icon)icon.className=on?'fa-solid fa-star':'fa-regular fa-star'});const label=document.getElementById('f2w-v215-rating-label');if(label)label.textContent=safe?`${safe}/5 · ${LABELS[safe]}`:LABELS[0]}
+  function updateReviewCount(){const area=document.getElementById('f2w-v34-rating-review'),count=document.getElementById('f2w-v215-review-count');if(count)count.textContent=`${area?.value?.length||0} / 600`}
+  function titleData(){const title=(document.getElementById('detail-title')?.textContent||'').trim(),poster=document.getElementById('detail-poster')?.getAttribute('src')||'';let posterPath='';try{if(poster.includes('image.tmdb.org'))posterPath=new URL(poster,location.href).pathname.replace(/^\/t\/p\/[^/]+/,'')}catch{}return {title,posterPath}}
+  async function refreshSummary(){const c=client(),{id,type}=identity();if(!c||!id)return;try{const res=await c.rpc('get_title_rating_summary_v215',{p_media_type:type,p_media_id:id});if(res.error)throw res.error;const sum=Array.isArray(res.data)?res.data[0]:res.data,count=Number(sum?.rating_count||0),avg=Number(sum?.average_rating||0);const avgEl=document.getElementById('f2w-v34-community-rating'),countEl=document.getElementById('f2w-v215-rating-count');if(avgEl)avgEl.textContent=count?`${avg.toFixed(1)} / 5`:'—';if(countEl)countEl.textContent=String(count)}catch(error){console.warn('Rating summary unavailable:',error)}}
+  async function loadMine(){const c=client(),{id,type}=identity();if(!c||!id)return;const s=await session();if(!s?.user){selected=savedRating=0;paint(0);const mine=document.getElementById('f2w-v34-your-rating');if(mine)mine.textContent='—';return}try{const res=await c.rpc('get_my_rating_v215',{p_media_type:type,p_media_id:id});if(res.error)throw res.error;const row=Array.isArray(res.data)?res.data[0]:res.data;selected=savedRating=Number(row?.rating||0);paint(selected);const mine=document.getElementById('f2w-v34-your-rating');if(mine)mine.textContent=selected?`${selected} / 5`:'—';const review=document.getElementById('f2w-v34-rating-review');if(review)review.value=String(row?.review||'');updateReviewCount();state(selected?'Saved to your profile.':'')}catch(error){console.warn('Your rating unavailable:',error)}}
+  async function load(){await Promise.all([loadMine(),refreshSummary()])}
+  function requireAuth(){try{window.openHeaderAuth?.('login')}catch{try{window.f2wOpenAuth?.('login')}catch{}}}
+  async function save(){if(busy)return;const s=await session();if(!s?.user){state('Log in to save a rating.','error');try{window.f2wToast?.('Log in or create an account to rate this title.','fa-user-lock')}catch{}requireAuth();return}if(!selected){state('Choose 1 to 5 stars first.','error');try{window.f2wToast?.('Choose 1 to 5 stars first.','fa-star')}catch{}return}const c=client(),{id,type}=identity();if(!c||!id)return;const review=(document.getElementById('f2w-v34-rating-review')?.value||'').trim().slice(0,600),{title,posterPath}=titleData();setBusy(true);state('Saving…');try{const res=await c.rpc('save_user_rating_v215',{p_media_type:type,p_media_id:id,p_rating:selected,p_review:review||null,p_title:title||null,p_poster_path:posterPath||null});if(res.error)throw res.error;savedRating=selected;const mine=document.getElementById('f2w-v34-your-rating');if(mine)mine.textContent=`${selected} / 5`;const saveBtn=document.getElementById('f2w-v34-save-rating');if(saveBtn){saveBtn.classList.add('saved');const span=saveBtn.querySelector('span');if(span)span.textContent='Saved';setTimeout(()=>{saveBtn.classList.remove('saved');if(span)span.textContent='Save rating'},1400)}state('Saved to your profile.','ok');await refreshSummary();try{window.f2wToast?.('Rating saved to your profile.','fa-star')}catch{}}catch(error){console.error('Rating save failed:',error);state(error?.message||'Could not save rating.','error');try{window.f2wToast?.('Could not save rating.','fa-triangle-exclamation')}catch{}}finally{setBusy(false)}}
+  async function clear(){if(busy)return;const s=await session();if(!s?.user){requireAuth();return}const c=client(),{id,type}=identity();if(!c||!id)return;setBusy(true);state('Removing…');try{const res=await c.rpc('clear_user_rating_v215',{p_media_type:type,p_media_id:id});if(res.error)throw res.error;selected=savedRating=0;paint(0);const mine=document.getElementById('f2w-v34-your-rating'),review=document.getElementById('f2w-v34-rating-review');if(mine)mine.textContent='—';if(review)review.value='';updateReviewCount();state('Rating removed.','ok');await refreshSummary()}catch(error){console.error('Rating clear failed:',error);state('Could not clear rating.','error')}finally{setBusy(false)}}
+  function bind(){const stars=[...document.querySelectorAll('#f2w-v117-rating-stars button')];stars.forEach(btn=>{const value=Number(btn.dataset.rating);btn.addEventListener('mouseenter',()=>paint(value,true));btn.addEventListener('focus',()=>paint(value,true));btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();selected=value;paint(selected);const mine=document.getElementById('f2w-v34-your-rating');if(mine)mine.textContent=`${selected} / 5`;state(selected===savedRating&&selected?'Already saved.':'Ready to save.')},true);btn.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();const delta=(e.key==='ArrowRight'||e.key==='ArrowUp')?1:-1;selected=Math.max(1,Math.min(5,(selected||value)+delta));paint(selected);stars[selected-1]?.focus()})});document.getElementById('f2w-v117-rating-stars')?.addEventListener('mouseleave',()=>paint(selected));document.getElementById('f2w-v117-rating-stars')?.addEventListener('focusout',e=>{if(!e.currentTarget.contains(e.relatedTarget))paint(selected)});document.getElementById('f2w-v34-rating-review')?.addEventListener('input',()=>{updateReviewCount();state(selected?'Ready to save.':'')});document.getElementById('f2w-v34-save-rating')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();save()},true);document.getElementById('f2w-v34-clear-rating')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();clear()},true);window.addEventListener('pageshow',load,{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});try{client()?.auth?.onAuthStateChange?.(()=>setTimeout(load,0))}catch{}updateReviewCount()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{bind();load()},{once:true});else{bind();load()}
 })();
-/* f2w-force-save:rating-v117-js:1788295984 */
 </script>
 
 
@@ -10473,3 +10450,5 @@ body.f2w-watch-page #account-modal .account-card {
 <!-- f2w-force-save:v205-watch-live:20260902 -->
 
 <!-- f2w-force-save:seo-social-v214:/watch/ -->
+
+<!-- f2w-force-save:v215-ratings-watch:20260903 -->

@@ -3882,6 +3882,18 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
   <link rel="stylesheet" href="/v166-notifications.css?v=166">
 <link rel="stylesheet" href="/v168-notifications.css?v=168">
   <link rel="stylesheet" href="/v176-sitewide.css?v=200-20260902">
+
+<style id="f2w-profile-ratings-v215-css">
+.profile-ratings-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))!important;gap:16px!important}
+.profile-rating-card.f2w-v215-rating{position:relative!important;display:block!important;border:1px solid rgba(255,255,255,.10)!important;border-radius:14px!important;overflow:hidden!important;background:linear-gradient(160deg,#09131f,#060c14)!important;text-decoration:none!important;color:inherit!important;box-shadow:0 14px 34px rgba(0,0,0,.20)!important;transition:transform .16s ease,border-color .16s ease!important}
+.profile-rating-card.f2w-v215-rating:hover{transform:translateY(-3px)!important;border-color:rgba(229,9,20,.55)!important}
+.profile-rating-card.f2w-v215-rating .profile-rating-poster{aspect-ratio:2/3!important;position:relative!important}
+.profile-rating-card.f2w-v215-rating .profile-rating-poster:after{content:""!important;position:absolute!important;inset:auto 0 0!important;height:34%!important;background:linear-gradient(transparent,rgba(0,0,0,.72))!important;pointer-events:none!important}
+.profile-rating-card.f2w-v215-rating .profile-rating-stars{color:#fbbf24!important;font-size:.86rem!important;letter-spacing:2px!important;white-space:nowrap!important}
+.profile-rating-card.f2w-v215-rating .profile-rating-score{display:inline-flex!important;margin-left:7px!important;padding:3px 6px!important;border-radius:6px!important;background:rgba(251,191,36,.10)!important;color:#ffd43b!important;font-size:.65rem!important;font-weight:900!important;letter-spacing:0!important}
+.profile-rating-card.f2w-v215-rating .profile-rating-review{display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important;min-height:0!important}
+</style>
+
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -10221,41 +10233,20 @@ body.f2w-auth-v67-open {
 </style>
 
 
-<script id="f2w-profile-ratings-v117-js">
+<script id="f2w-profile-ratings-v215-js">
 (() => {
   'use strict';
+  if(window.__f2wProfileRatingsV215)return;
+  window.__f2wProfileRatingsV215=true;
   const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
-  function username(){
-    const p=new URLSearchParams(location.search);
-    return String(p.get('user')||document.getElementById('profile-username-line')?.textContent||'').trim().replace(/^@/,'');
-  }
-  function card(r){
-    const title=esc(r.title||`${r.media_type==='tv'?'TV':'Movie'} #${r.media_id}`);
-    const poster=r.poster_path?`https://image.tmdb.org/t/p/w342${r.poster_path}`:'';
-    const n=Math.max(1,Math.min(5,Number(r.rating)||1));
-    const stars='★'.repeat(n)+'☆'.repeat(5-n);
-    return `<a class="profile-rating-card" href="/watch/?id=${encodeURIComponent(r.media_id)}&type=${encodeURIComponent(r.media_type)}">
-      <div class="profile-rating-poster">${poster?`<img src="${poster}" alt="${title} poster" loading="lazy">`:''}</div>
-      <div class="profile-rating-info"><div class="profile-rating-title">${title}</div><div class="profile-rating-stars">${stars} · ${n}/5</div>${r.review?`<div class="profile-rating-review">${esc(r.review)}</div>`:''}</div>
-    </a>`;
-  }
-  async function load(){
-    const host=document.getElementById('profile-ratings-grid'); if(!host)return;
-    const u=username(); if(!u)return;
-    const c=(typeof chatSupabase!=='undefined'?chatSupabase:null); if(!c?.rpc){host.innerHTML='<div class="profile-state">No ratings yet.</div>';return;}
-    try{
-      const {data,error}=await c.rpc('get_public_profile_ratings_v117',{p_username:u});
-      if(error)throw error;
-      const rows=Array.isArray(data)?data:[];
-      host.innerHTML=rows.length?rows.map(card).join(''):'<div class="profile-state">No public ratings yet.</div>';
-    }catch(error){
-      console.warn('Public ratings unavailable:',error);
-      host.innerHTML='<div class="profile-state">No ratings yet.</div>';
-    }
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(load,250),{once:true});else setTimeout(load,250);
+  function username(){const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);if(m)return decodeURIComponent(m[1]);return String(new URLSearchParams(location.search).get('user')||document.getElementById('profile-username-line')?.textContent||'').trim().replace(/^@/,'')}
+  const client=()=>window.chatSupabase?.rpc?window.chatSupabase:(window.f2wSupabase?.rpc?window.f2wSupabase:null);
+  function card(r){const title=esc(r.title||`${r.media_type==='tv'?'TV':'Movie'} #${r.media_id}`),poster=r.poster_path?`https://image.tmdb.org/t/p/w342${esc(r.poster_path)}`:'',n=Math.max(1,Math.min(5,Number(r.rating)||1)),stars='★'.repeat(n)+'☆'.repeat(5-n),type=r.media_type==='tv'?'tv':'movie';return `<a class="profile-rating-card f2w-v215-rating" href="/watch/?id=${encodeURIComponent(r.media_id)}&type=${type}"><div class="profile-rating-poster">${poster?`<img src="${poster}" alt="${title} poster" loading="lazy" decoding="async">`:''}</div><div class="profile-rating-info"><div class="profile-rating-title">${title}</div><div class="profile-rating-stars">${stars}<span class="profile-rating-score">${n}/5</span></div>${r.review?`<div class="profile-rating-review">${esc(r.review)}</div>`:''}</div></a>`}
+  function hosts(){return [...new Set([document.getElementById('profile-ratings-grid'),document.getElementById('f2w-v34-profile-ratings')].filter(Boolean))]}
+  async function load(){const c=client(),u=username(),list=hosts();if(!list.length||!u)return;if(!c){list.forEach(h=>h.innerHTML='<div class="profile-state">No ratings yet.</div>');return}try{const {data,error}=await c.rpc('get_public_profile_ratings_v215',{p_username:u});if(error)throw error;const rows=Array.isArray(data)?data:[],html=rows.length?rows.map(card).join(''):'<div class="profile-state">No ratings yet.</div>';list.forEach(h=>h.innerHTML=html)}catch(error){console.warn('Public ratings unavailable:',error);list.forEach(h=>h.innerHTML='<div class="profile-state">Ratings are temporarily unavailable.</div>')}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(load,150),{once:true});else setTimeout(load,150);
+  window.addEventListener('pageshow',()=>setTimeout(load,100),{passive:true});
 })();
-/* f2w-force-save:profile-ratings-v117-js:1788295984 */
 </script>
 
 
@@ -10968,3 +10959,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v211-social-links-native-new-tab:20260902 -->
 
 <!-- f2w-force-save:seo-social-v214:/profile/ -->
+
+<!-- f2w-force-save:v215-ratings-profile:20260903 -->
