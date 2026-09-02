@@ -2404,3 +2404,130 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:v207-sitewide-session-presence:20260902
 
 // f2w-force-save:v210-presence-dedup:20260902
+
+
+/* ============================================================
+   F2W v213 — OWNER CHAT USES NORMAL SIGNED-IN AUTH
+   Josh no longer needs the legacy separate owner-chat password.
+   The Edge Function verifies OWNER_UUID from the Supabase access token.
+   ============================================================ */
+(() => {
+  'use strict';
+  if (window.__f2wV213OwnerChatAutoAuth) return;
+  window.__f2wV213OwnerChatAutoAuth = true;
+
+  function installOwnerChatAutoAuth(){
+    try{
+      if (typeof ensureChatIdentity !== 'function' || typeof workerRequest !== 'function') return false;
+
+      // Hide/remove the obsolete activation UI everywhere it exists.
+      const ownerAuth=document.getElementById('owner-chat-auth');
+      if(ownerAuth){
+        ownerAuth.classList.remove('show');
+        ownerAuth.hidden=true;
+        ownerAuth.style.setProperty('display','none','important');
+      }
+
+      // Replace the identity creator so the backend can return owner=true for
+      // the authenticated OWNER_UUID instead of requiring a second password.
+      createNormalChatIdentity = async function(alias){
+        const created=await workerRequest('create_identity',{},'');
+        if(!created?.success||!created?.token){
+          throw new Error(created?.error||'Unable to create chat identity.');
+        }
+
+        const {data:sessionData}=await chatSupabase.auth.getSession();
+        const supabaseAccessToken=sessionData?.session?.access_token||'';
+        if(!supabaseAccessToken){
+          throw new Error('Your signed-in session could not be verified.');
+        }
+
+        const assigned=await workerRequest(
+          'set_alias',
+          {alias,supabase_access_token:supabaseAccessToken},
+          created.token
+        );
+        if(!assigned?.success||!assigned?.token){
+          throw new Error(assigned?.error||'Unable to attach your username to chat.');
+        }
+
+        chatToken=assigned.token;
+        localStorage.setItem('josh_chat_token',chatToken);
+        chatOwner=Boolean(assigned.owner);
+        chatStaff=Boolean(assigned.moderator);
+        chatBanned=Boolean(assigned.banned);
+        chatAlias=String(assigned.alias||alias||'').trim() || alias;
+        chatReady=true;
+      };
+
+      ensureChatIdentity = async function(){
+        if(!currentUser){
+          chatReady=false;
+          chatOwner=false;
+          chatStaff=false;
+          chatBanned=false;
+          try{updateChatControls();}catch{}
+          return false;
+        }
+
+        chatAlias=isCurrentUserOwner()?'josh':getAccountUsername();
+        if(!chatAlias){
+          chatReady=false;
+          try{setChatStatus('ACCOUNT USERNAME REQUIRED','error');}catch{}
+          try{updateChatControls();}catch{}
+          return false;
+        }
+
+        try{
+          if(await verifyStoredChatIdentity()){
+            try{updateChatControls();}catch{}
+            try{refreshAccountUI();}catch{}
+            return true;
+          }
+
+          // Owner now follows the same authenticated identity path as members.
+          await createNormalChatIdentity(chatAlias);
+          await refreshChatRole();
+          try{updateChatControls();}catch{}
+          try{refreshAccountUI();}catch{}
+          return true;
+        }catch(error){
+          console.error('Chat identity error:',error);
+          chatReady=false;
+          try{setChatStatus(`CHAT AUTH ERROR: ${error?.message||'Unable to authenticate chat.'}`,'error');}catch{}
+          try{updateChatControls();}catch{}
+          return false;
+        }
+      };
+
+      // The old Account renderer may try to reveal the activation block again.
+      const hideLegacyOwnerAuth=()=>{
+        const box=document.getElementById('owner-chat-auth');
+        if(!box)return;
+        box.classList.remove('show');
+        box.hidden=true;
+        box.style.setProperty('display','none','important');
+      };
+      hideLegacyOwnerAuth();
+      const root=document.documentElement;
+      if(root && !root.dataset.f2wV213OwnerChatObserver){
+        root.dataset.f2wV213OwnerChatObserver='1';
+        new MutationObserver(hideLegacyOwnerAuth).observe(document.body||root,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','style']});
+      }
+
+      return true;
+    }catch(error){
+      console.warn('F2W v213 owner chat auto-auth install deferred:',error);
+      return false;
+    }
+  }
+
+  if(!installOwnerChatAutoAuth()){
+    if(document.readyState==='loading'){
+      document.addEventListener('DOMContentLoaded',installOwnerChatAutoAuth,{once:true});
+    }else{
+      setTimeout(installOwnerChatAutoAuth,0);
+    }
+  }
+})();
+// f2w-force-save:v213-owner-chat-auto-auth:20260902

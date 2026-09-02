@@ -2264,16 +2264,6 @@ Deno.serve(async (request: Request) => {
         );
       }
 
-      if (normalizeAlias(alias) === "josh") {
-        return json(
-          {
-            success: false,
-            error: "The Josh alias is reserved for the website owner.",
-          },
-          403,
-        );
-      }
-
       const supabaseAccessToken = String(
         body.supabase_access_token ?? "",
       ).trim();
@@ -2303,11 +2293,25 @@ Deno.serve(async (request: Request) => {
         );
       }
 
+      // v213: the authenticated owner uses the normal signed-in chat flow.
+      // OWNER_UUID is authoritative, so no second owner-chat password is needed.
       if (authData.user.id === OWNER_UUID) {
+        const ownerToken = await createChatToken(true, "josh", OWNER_UUID);
+        return json({
+          success: true,
+          token: ownerToken,
+          alias: "josh",
+          owner: true,
+          moderator: false,
+          banned: false,
+        });
+      }
+
+      if (normalizeAlias(alias) === "josh") {
         return json(
           {
             success: false,
-            error: "Owner chat must use Owner activation.",
+            error: "The Josh alias is reserved for the website owner.",
           },
           403,
         );
@@ -2790,3 +2794,4 @@ Deno.serve(async (request: Request) => {
 // f2w-force-save:public-chat-slowmode-v37:1788218042
 // f2w-force-save:strict-ban-evasion-v39:1788218599
  
+// f2w-force-save:v213-owner-chat-auto-auth:20260902
