@@ -142,48 +142,7 @@ html{overflow-y:scroll}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/v160-bootstrap.js?v=160"></script>
-  <script id="f2w-member-age-v139-early">
-  (()=>{
-    'use strict';
-    const API='https://viqufxlcxwgboyxbdhjb.supabase.co';
-    const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
-    const match=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
-    const username=match?decodeURIComponent(match[1]):new URLSearchParams(location.search).get('user');
-    if(!username)return;
-    const cacheKey=`f2w_member_since_v139:${String(username).toLowerCase()}`;
-    const ageText=(value)=>{
-      const start=new Date(value),now=new Date(); if(!Number.isFinite(start.getTime()))return '—';
-      if(start>now)return 'TODAY';
-      let y=now.getUTCFullYear()-start.getUTCFullYear(),m=now.getUTCMonth()-start.getUTCMonth(),d=now.getUTCDate()-start.getUTCDate();
-      if(d<0){m--;d+=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),0)).getUTCDate()}
-      if(m<0){y--;m+=12}
-      if(y>0)return m?`${y}Y ${m}MO`:`${y}Y`; if(m>0)return `${m}MO`;
-      const days=Math.max(0,Math.floor((Date.now()-start.getTime())/86400000)); return days<1?'TODAY':`${days}D`;
-    };
-    const paint=(ts)=>{
-      if(!ts)return; window.__F2W_MEMBER_SINCE_V139=ts;
-      const run=()=>{
-        const age=document.getElementById('v16-profile-age'); if(age)age.textContent=ageText(ts);
-        const joined=document.getElementById('profile-joined'); if(joined)joined.textContent=`Joined ${new Date(ts).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
-        const member=document.getElementById('f2w-profile-member'); if(member)member.textContent=new Date(ts).toLocaleDateString(undefined,{month:'short',year:'numeric'});
-        try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=ts}catch{}
-      };
-      run(); if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});
-      // Legacy profile renderers can paint later; reassert the authoritative value
-      // for the first couple of seconds without making another network request.
-      [50,150,350,700,1200,2000].forEach(ms=>setTimeout(run,ms));
-    };
-    try{const cached=localStorage.getItem(cacheKey); if(cached)paint(cached)}catch{}
-    // Start the tiny RPC immediately in <head>; do not wait for DOMContentLoaded,
-    // the large profile bootstrap, auth hydration, presence or current-watching.
-    fetch(`${API}/rest/v1/rpc/get_profile_member_since_v139`,{
-      method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({p_username:String(username)})
-    }).then(r=>r.ok?r.json():Promise.reject(new Error(`member age ${r.status}`))).then(ts=>{
-      if(!ts)return; try{localStorage.setItem(cacheKey,ts)}catch{} paint(ts);
-    }).catch(()=>{});
-  })();
-  </script>
-  <script src="/silent-account-v16.js"></script>
+<script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js" defer></script>
 
   
@@ -4320,6 +4279,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
       </div>
 
       <div class="profile-actions">
+        <button class="profile-action-btn" id="v199-edit-profile-btn" type="button" hidden><i class="fa-solid fa-pen-to-square"></i> <span>Edit Profile</span></button>
         <button class="profile-action-btn" id="copy-profile-link-btn" type="button" onclick="copyViewedProfileLink()"><i class="fa-solid fa-link"></i> <span>Copy Link</span></button>
         <button class="profile-action-btn" id="profile-report-btn" type="button" hidden onclick="reportViewedProfile()"><i class="fa-solid fa-flag"></i> <span>Report</span></button>
       </div>
@@ -10441,6 +10401,82 @@ body.f2w-auth-v67-open {
 <script src="/v165-enforcement.js?v=165"></script>
   <script src="/v166-notifications.js?v=166"></script>
 <script src="/v168-notifications.js?v=168" defer></script>
+
+
+<!-- F2W v199 isolated profile editor: keeps the known-good profile loader untouched. -->
+<div id="v199-profile-editor" class="v199-editor-overlay" hidden aria-hidden="true">
+  <section class="v199-editor-card" role="dialog" aria-modal="true" aria-labelledby="v199-editor-title">
+    <header class="v199-editor-head">
+      <div><span class="v199-editor-kicker">FLIX2WATCH</span><h2 id="v199-editor-title">Edit Profile</h2></div>
+      <button id="v199-editor-close" class="v199-editor-close" type="button" aria-label="Close edit profile"><i class="fa-solid fa-xmark"></i></button>
+    </header>
+    <div class="v199-editor-body">
+      <label>Username<input id="v199-username" maxlength="30" autocomplete="off" placeholder="Username"></label>
+      <label>Display name<input id="v199-display-name" maxlength="50" placeholder="Display name"></label>
+      <label>Bio <small>(optional)</small><textarea id="v199-bio" maxlength="500" placeholder="Tell people about yourself..."></textarea></label>
+      <fieldset class="v199-genres"><legend>Favorite genres</legend><div id="v199-genre-grid"></div></fieldset>
+      <div class="v199-editor-section-title">Social links</div>
+      <div class="v199-social-fields">
+        <label><i class="fa-brands fa-instagram"></i> Instagram<input id="v199-instagram" maxlength="80" placeholder="username"></label>
+        <label><i class="fa-brands fa-snapchat"></i> Snapchat<input id="v199-snapchat" maxlength="80" placeholder="username"></label>
+        <label><i class="fa-brands fa-tiktok"></i> TikTok<input id="v199-tiktok" maxlength="80" placeholder="username"></label>
+        <label><i class="fa-brands fa-discord"></i> Discord<input id="v199-discord" maxlength="80" placeholder="username"></label>
+        <label><i class="fa-solid fa-globe"></i> Website<input id="v199-website" maxlength="2048" placeholder="https://example.com"></label>
+        <label><i class="fa-brands fa-steam"></i> Steam<input id="v199-steam" maxlength="2048" placeholder="Steam profile URL or name"></label>
+      </div>
+      <div id="v199-editor-status" class="v199-editor-status" aria-live="polite"></div>
+      <button id="v199-editor-save" class="v199-editor-save" type="button"><i class="fa-solid fa-floppy-disk"></i> Save changes</button>
+    </div>
+  </section>
+</div>
+<style id="v199-profile-fixes-css">
+#profile-joined{display:inline-flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;vertical-align:middle!important;padding-top:0!important;padding-bottom:0!important;min-height:42px!important}
+#v16-profile-age{visibility:hidden}.v199-age-ready #v16-profile-age{visibility:visible}
+.v199-editor-overlay{position:fixed;inset:0;z-index:200000;background:rgba(0,0,0,.72);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}
+.v199-editor-overlay[hidden]{display:none!important}.v199-editor-card{width:min(760px,100%);max-height:min(860px,92vh);overflow:hidden;display:flex;flex-direction:column;background:#071321;border:1px solid color-mix(in srgb,var(--accent) 55%,#334155);border-radius:18px;box-shadow:0 28px 90px rgba(0,0,0,.72),0 0 34px var(--accent-glow);color:#fff}
+.v199-editor-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.1)}.v199-editor-head h2{font:700 1.5rem var(--font-body);margin:2px 0 0;text-transform:none;letter-spacing:0}.v199-editor-kicker{font:700 .62rem var(--font-mono);letter-spacing:.18em;color:var(--accent)}
+.v199-editor-close{width:38px;height:38px;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(255,255,255,.04);color:#fff;cursor:pointer}.v199-editor-close:hover{border-color:var(--accent);background:rgba(255,255,255,.09)}
+.v199-editor-body{overflow:auto;padding:20px;display:grid;gap:15px}.v199-editor-body label{display:grid;gap:7px;color:#cbd5e1;font:600 .76rem var(--font-body)}.v199-editor-body small{font-weight:400;color:#7f8da3}.v199-editor-body input,.v199-editor-body textarea{width:100%;border:1px solid #29415b;border-radius:9px;background:#06111e;color:#fff;padding:11px 12px;outline:none;font:400 .82rem var(--font-body)}.v199-editor-body textarea{min-height:100px;resize:vertical}.v199-editor-body input:focus,.v199-editor-body textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}
+.v199-genres{border:1px solid #29415b;border-radius:11px;padding:13px}.v199-genres legend,.v199-editor-section-title{font:700 .76rem var(--font-body);color:#fff}.v199-genre-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:7px}.v199-genre-option{display:inline-flex!important;grid-template-columns:none!important;align-items:center;gap:6px!important;padding:7px 9px;border:1px solid #29415b;border-radius:999px;background:#081727;cursor:pointer}.v199-genre-option input{width:auto!important;padding:0!important;accent-color:var(--accent)}
+.v199-social-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.v199-social-fields label i{color:var(--accent);margin-right:5px}.v199-editor-status{min-height:20px;color:#9fb1c7;font:.72rem var(--font-body)}.v199-editor-status.error{color:#fca5a5}.v199-editor-save{border:0;border-radius:10px;background:var(--accent);color:#fff;padding:12px 16px;font:700 .82rem var(--font-body);cursor:pointer;box-shadow:0 0 18px var(--accent-glow)}
+#v199-public-socials{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.v199-social-link{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.035);color:#dbeafe;text-decoration:none;font:600 .7rem var(--font-body)}a.v199-social-link:hover{border-color:var(--accent);color:#fff}.v199-social-link i{color:var(--accent)}
+@media(max-width:650px){.v199-social-fields{grid-template-columns:1fr}.v199-editor-overlay{padding:10px}.v199-editor-card{max-height:96vh}}
+</style>
+<script id="v199-profile-isolated-fixes">
+(()=>{
+'use strict';
+const API='https://viqufxlcxwgboyxbdhjb.supabase.co';
+const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+const GENRES=['Action','Adventure','Animation','Comedy','Crime','Documentary','Drama','Family','Fantasy','History','Horror','Music','Mystery','Romance','Science Fiction','Thriller','TV Movie','War','Western'];
+let client=null,memberSince=null,presenceBusy=false,presenceTimer=null,me=null;
+function db(){ if(client)return client; client=window.chatSupabase||window.supabase?.createClient?.(API,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}); return client; }
+function username(){const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);return m?decodeURIComponent(m[1]):String(new URLSearchParams(location.search).get('user')||'').replace(/[^A-Za-z0-9]/g,'');}
+function plural(n,one,many){return `${n} ${n===1?one:many}`}
+function ageText(ts){const t=new Date(ts).getTime();if(!Number.isFinite(t))return '—';let sec=Math.max(0,Math.floor((Date.now()-t)/1000));if(sec<60)return plural(Math.max(1,sec),'second','seconds');let min=Math.floor(sec/60);if(min<60)return plural(min,'minute','minutes');let hr=Math.floor(min/60);if(hr<24)return plural(hr,'hour','hours');let d=Math.floor(hr/24);if(d<7)return plural(d,'day','days');if(d<30){let w=Math.floor(d/7);return plural(w,'week','weeks')}if(d<365){let mo=Math.max(1,Math.floor(d/30.4375));return plural(mo,'month','months')}let y=Math.max(1,Math.floor(d/365.2425));return plural(y,'year','years')}
+function joinedText(ts){const d=new Date(ts);return Number.isFinite(d.getTime())?`Joined ${d.toLocaleDateString(undefined,{month:'short',year:'numeric'})}`:'Flix2Watch member'}
+function paintAge(){if(!memberSince)return;const a=document.getElementById('v16-profile-age'),j=document.getElementById('profile-joined');if(a&&a.textContent!==ageText(memberSince))a.textContent=ageText(memberSince);if(j&&j.textContent!==joinedText(memberSince))j.textContent=joinedText(memberSince);document.documentElement.classList.add('v199-age-ready');try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=memberSince}catch{}}
+async function loadAge(){const u=username();if(!u)return;try{const {data,error}=await db().rpc('get_profile_member_since_v199',{p_username:u});if(error)throw error;if(data){memberSince=data;paintAge();const a=document.getElementById('v16-profile-age');if(a)new MutationObserver(()=>paintAge()).observe(a,{childList:true,characterData:true,subtree:true});const j=document.getElementById('profile-joined');if(j)new MutationObserver(()=>paintAge()).observe(j,{childList:true,characterData:true,subtree:true});}}catch(e){console.warn('v199 member age unavailable',e?.message||e);const fallback=(()=>{try{return viewedProfile?.created_at}catch{return null}})();if(fallback){memberSince=fallback;paintAge()}}}
+function rel(ts){const t=new Date(ts).getTime();if(!Number.isFinite(t))return 'not recorded yet';const s=Math.max(0,Math.floor((Date.now()-t)/1000));if(s<15)return 'just now';if(s<60)return `${s} seconds ago`;const m=Math.floor(s/60);if(m<60)return `${m} minute${m===1?'':'s'} ago`;const h=Math.floor(m/60);if(h<24)return `${h} hour${h===1?'':'s'} ago`;const d=Math.floor(h/24);return `${d} day${d===1?'':'s'} ago`}
+async function touchMe(){try{const c=db();const {data}=await c.auth.getSession();me=data?.session?.user||null;if(me&&document.visibilityState==='visible')await c.rpc('touch_presence_v199')}catch{}}
+async function renderPresence(){if(presenceBusy)return;const u=username(),badge=document.getElementById('v17-profile-presence');if(!u||!badge)return;presenceBusy=true;try{const {data,error}=await db().rpc('get_public_profile_presence_v199',{p_username:u});if(error)throw error;const row=Array.isArray(data)?data[0]:data;const online=Boolean(row?.online);badge.classList.toggle('online',online);badge.classList.toggle('offline',!online);const label=badge.querySelector('span');if(label)label.textContent=online?'Online':row?.last_seen_at?`Last online ${rel(row.last_seen_at)}`:'Last online not recorded yet'}catch(e){console.warn('v199 presence unavailable',e?.message||e)}finally{presenceBusy=false}}
+function profileObj(){try{return viewedProfile||null}catch{return null}}
+function isOwner(){const p=profileObj();return Boolean(me&&p?.user_id&&String(me.id)===String(p.user_id))}
+function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function normalizeUrl(v){v=String(v||'').trim();if(!v)return '';return /^https?:\/\//i.test(v)?v:`https://${v}`}
+function socialUrl(kind,v){v=String(v||'').trim().replace(/^@/,'');if(!v)return '';if(kind==='instagram')return `https://instagram.com/${encodeURIComponent(v)}`;if(kind==='snapchat')return `https://www.snapchat.com/add/${encodeURIComponent(v)}`;if(kind==='tiktok')return `https://www.tiktok.com/@${encodeURIComponent(v)}`;if(kind==='website')return normalizeUrl(v);if(kind==='steam')return /^https?:\/\//i.test(v)?v:`https://steamcommunity.com/id/${encodeURIComponent(v)}`;return ''}
+function renderSocials(){const p=profileObj();if(!p)return;let host=document.getElementById('v199-public-socials');if(!host){host=document.createElement('div');host.id='v199-public-socials';document.getElementById('profile-bio')?.insertAdjacentElement('afterend',host)}if(!host)return;const items=[['instagram','fa-brands fa-instagram','Instagram',p.instagram_username],['snapchat','fa-brands fa-snapchat','Snapchat',p.snapchat_username],['tiktok','fa-brands fa-tiktok','TikTok',p.tiktok_username],['discord','fa-brands fa-discord','Discord',p.discord_username],['website','fa-solid fa-globe','Website',p.website_url],['steam','fa-brands fa-steam','Steam',p.steam_profile]];host.innerHTML=items.filter(x=>String(x[3]||'').trim()).map(([k,ic,label,val])=>{const href=socialUrl(k,val);const text=k==='discord'?`${label}: ${esc(val)}`:label;return href?`<a class="v199-social-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer"><i class="${ic}"></i>${text}</a>`:`<span class="v199-social-link"><i class="${ic}"></i>${text}</span>`}).join('')}
+function fillEditor(){const p=profileObj();if(!p)return;document.getElementById('v199-username').value=p.username||'';document.getElementById('v199-display-name').value=p.display_name||'';document.getElementById('v199-bio').value=p.bio||'';document.getElementById('v199-instagram').value=p.instagram_username||'';document.getElementById('v199-snapchat').value=p.snapchat_username||'';document.getElementById('v199-tiktok').value=p.tiktok_username||'';document.getElementById('v199-discord').value=p.discord_username||'';document.getElementById('v199-website').value=p.website_url||'';document.getElementById('v199-steam').value=p.steam_profile||'';const selected=new Set(Array.isArray(p.favorite_genres)?p.favorite_genres:[]);document.querySelectorAll('#v199-genre-grid input').forEach(x=>x.checked=selected.has(x.value))}
+function openEditor(){if(!isOwner())return;fillEditor();const m=document.getElementById('v199-profile-editor');m.hidden=false;m.setAttribute('aria-hidden','false');document.documentElement.style.overflow='hidden';document.getElementById('v199-username')?.focus()}
+function closeEditor(){const m=document.getElementById('v199-profile-editor');m.hidden=true;m.setAttribute('aria-hidden','true');document.documentElement.style.removeProperty('overflow')}
+async function saveEditor(){if(!isOwner())return;const save=document.getElementById('v199-editor-save'),status=document.getElementById('v199-editor-status');status.className='v199-editor-status';status.textContent='Saving…';save.disabled=true;try{const c=db(),p=profileObj(),nextUser=document.getElementById('v199-username').value.trim();if(!/^[A-Za-z0-9]{2,30}$/.test(nextUser))throw new Error('Username must be 2–30 letters or numbers.');let changedUsername=false;if(nextUser.toLowerCase()!==String(p.username||'').toLowerCase()){const {data,error}=await c.rpc('change_my_username_v199',{p_username:nextUser});if(error)throw error;if(!data)throw new Error('Could not change username.');changedUsername=true}
+const genres=[...document.querySelectorAll('#v199-genre-grid input:checked')].map(x=>x.value);const payload={p_display_name:document.getElementById('v199-display-name').value.trim(),p_bio:document.getElementById('v199-bio').value.trim(),p_favorite_genres:genres,p_website_url:document.getElementById('v199-website').value.trim(),p_instagram_username:document.getElementById('v199-instagram').value.trim(),p_discord_username:document.getElementById('v199-discord').value.trim(),p_snapchat_username:document.getElementById('v199-snapchat').value.trim(),p_steam_profile:document.getElementById('v199-steam').value.trim(),p_tiktok_username:document.getElementById('v199-tiktok').value.trim()};const {data,error}=await c.rpc('update_my_profile_v199',payload);if(error)throw error;if(data&&typeof viewedProfile!=='undefined')viewedProfile={...viewedProfile,...data};status.textContent='Profile saved.';renderSocials();try{renderViewedProfile?.()}catch{};if(changedUsername){history.replaceState({},'',`/profile/@${encodeURIComponent(nextUser)}`)}setTimeout(closeEditor,700)}catch(e){status.className='v199-editor-status error';status.textContent=e?.message||'Could not save profile.'}finally{save.disabled=false}}
+function syncOwnerUi(){const btn=document.getElementById('v199-edit-profile-btn');if(btn)btn.hidden=!isOwner();renderSocials()}
+function bootEditor(){document.getElementById('v199-genre-grid').innerHTML=GENRES.map(g=>`<label class="v199-genre-option"><input type="checkbox" value="${g}"><span>${g}</span></label>`).join('');document.getElementById('v199-edit-profile-btn')?.addEventListener('click',openEditor);document.getElementById('v199-editor-close')?.addEventListener('click',closeEditor);document.getElementById('v199-profile-editor')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditor()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('v199-profile-editor').hidden)closeEditor()});document.getElementById('v199-editor-save')?.addEventListener('click',saveEditor)}
+async function boot(){bootEditor();await touchMe();await Promise.allSettled([loadAge(),renderPresence()]);window.renderProfilePresence=renderPresence;syncOwnerUi();let tries=0;const waiter=setInterval(()=>{tries++;syncOwnerUi();if(profileObj()){if(!memberSince&&profileObj().created_at){memberSince=profileObj().created_at;paintAge()}renderSocials()}if(tries>40||profileObj())clearInterval(waiter)},150);presenceTimer=setInterval(async()=>{await touchMe();await renderPresence();paintAge()},15000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchMe().then(renderPresence);paintAge()}});db().auth.onAuthStateChange((_e,session)=>{me=session?.user||null;if(me)touchMe().then(renderPresence);syncOwnerUi()})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+/* f2w-force-save:v199-profile-isolated:20260902 */
+</script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
@@ -10574,5 +10610,3 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:social-list-v125fix -->
  
 <!-- f2w-force-save:v128-instant-profile-presence:1788304200 -->
-
-<!-- f2w-force-refresh:v198-known-working-profile-restore:20260902 -->
