@@ -4006,7 +4006,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
         <button class="tool-btn" id="favorites-nav-btn" onclick="window.location.href='/favorites/'" style="display:none"><i class="fa-regular fa-heart"></i> Favorites</button>
         <button class="tool-btn" id="profile-nav-btn" onclick="openMyProfile()" style="display:none"><i class="fa-regular fa-id-card"></i> Profile</button>
         <button class="tool-btn f2w-hide-tablet" id="support-nav-btn" onclick="window.location.href='/support/'" style="display:none"><i class="fa-regular fa-life-ring"></i> Support</button>
-        <button class="tool-btn" id="account-btn" onclick="openAccountModal()" style="display:none"><i class="fa-regular fa-user"></i> Account</button>
+        <button class="tool-btn" id="account-btn" onclick="window.location.href='/account/'" style="display:none"><i class="fa-regular fa-user"></i> Account</button>
 
 
         <div class="v17-notification-wrap" id="notification-wrap" style="display:none">
@@ -6141,7 +6141,7 @@ if(currentUser){
           <i class="fa-solid fa-lock"></i>
           <h2>Sign In First</h2>
           <p>Your favorites are attached to your Flix2Watch account. Sign in, then come back here.</p>
-          <button class="browse-favorites-btn" type="button" onclick="openAccountModal()">
+          <button class="browse-favorites-btn" type="button" onclick="window.location.href='/account/'">
             <i class="fa-solid fa-user"></i><span>Open Account</span>
           </button>
         </div>`;
@@ -10430,6 +10430,7 @@ body.f2w-auth-v67-open {
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
   <script src="/v146-live-ops.js?v=146" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
+  <script src="/v148-account-route.js?v=148"></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->

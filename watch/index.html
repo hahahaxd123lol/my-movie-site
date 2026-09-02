@@ -4150,7 +4150,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
         <button class="tool-btn" id="favorites-nav-btn" onclick="window.location.href='/favorites/'" style="display:none"><i class="fa-regular fa-heart"></i> Favorites</button>
         <button class="tool-btn" id="profile-nav-btn" onclick="openMyProfile()" style="display:none"><i class="fa-regular fa-id-card"></i> Profile</button>
         <button class="tool-btn f2w-hide-tablet" id="support-nav-btn" onclick="window.location.href='/support/'" style="display:none"><i class="fa-regular fa-life-ring"></i> Support</button>
-        <button class="tool-btn" id="account-btn" onclick="openAccountModal()" style="display:none"><i class="fa-regular fa-user"></i> Account</button>
+        <button class="tool-btn" id="account-btn" onclick="window.location.href='/account/'" style="display:none"><i class="fa-regular fa-user"></i> Account</button>
 
 
         <div class="v17-notification-wrap" id="notification-wrap" style="display:none">
@@ -4691,7 +4691,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
       <div class="watch-footer-links">
         <a href="/home/">Home</a>
         <button type="button" onclick="openGlobalChat(); return false;">Chat</button>
-        <button type="button" onclick="openAccountModal()">Account</button>
+        <button type="button" onclick="window.location.href='/account/'">Account</button>
         <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
       </div>
     </footer>
@@ -10649,6 +10649,7 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
   <script src="/v146-live-ops.js?v=146" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
+  <script src="/v148-account-route.js?v=148"></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
