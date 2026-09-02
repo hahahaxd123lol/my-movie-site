@@ -1,0 +1,10 @@
+Flix2Watch v163 — Site-wide announcement placement
+
+- Announcement banner is now fixed at the bottom center of the viewport on every page.
+- Keeps the same announcement backend and dismiss button.
+- Uses safe-area spacing on phones/TV browsers.
+- Small slide-up entrance; reduced-motion users get no animation.
+- Service-worker cache bumped to v163 so old top-position CSS is replaced.
+- No Supabase SQL or Rapid Worker changes required.
+
+Deploy the full ZIP, then hard-refresh/reopen once.
