@@ -1,6 +1,6 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v158-current-watching-20260902';
-const CORE=['/v154-global-ui.css','/v154-global-ui.js',
+const CACHE='f2w-v159-full-recovery-20260902';
+const CORE=['/v159-core.css','/v159-core.js','/v146-live-ops.css','/v146-live-ops.js','/v154-global-ui.css','/v154-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
@@ -84,7 +84,7 @@ async function navigationResponse(request){
   // Prefer the cached home shell over a blank one-word failure page.
   const home=await cache.match('/home/');
   if(home)return home;
-  return new Response('Temporarily unavailable',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
+  return home || fetch('/home/index.html',{cache:'reload'});
 }
 
 self.addEventListener('fetch',event=>{

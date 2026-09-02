@@ -1,0 +1,89 @@
+/* Flix2Watch v159 — final sitewide recovery/UI normalization */
+:root{
+  --f159-red-top:#ff2135;
+  --f159-red-mid:#ec1027;
+  --f159-red-bottom:#bd071c;
+  --f159-red-border:#ff3346;
+  --f159-red-glow:rgba(255,20,46,.28);
+}
+
+/* All controls that are semantically red/primary use one visual language. */
+.f2w-red-v159,
+button.red,.btn.red,.btn.primary,.account-primary,.f2w-quick-login-btn.primary,
+#account-submit,#forum-compose-submit,#forum-reply-submit,
+[data-new-thread].red,.hero-primary,.watch-primary,
+.account-tab.active,.f2w-auth-tab.active,
+.staff-confirm-primary,.f2w-danger-primary,
+input[type="submit"].red{
+  color:#fff!important;
+  background:linear-gradient(180deg,var(--f159-red-top) 0%,var(--f159-red-mid) 55%,var(--f159-red-bottom) 100%)!important;
+  border:1px solid var(--f159-red-border)!important;
+  border-radius:11px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 7px 18px rgba(0,0,0,.22),0 0 16px rgba(255,16,39,.12)!important;
+  font-weight:850!important;
+  text-shadow:0 1px 0 rgba(70,0,7,.3)!important;
+  transition:transform .14s ease,filter .14s ease,box-shadow .14s ease!important;
+}
+.f2w-red-v159:hover:not(:disabled),button.red:hover:not(:disabled),.btn.red:hover:not(:disabled),.btn.primary:hover:not(:disabled),
+.account-primary:hover:not(:disabled),#account-submit:hover:not(:disabled),#forum-compose-submit:hover:not(:disabled),#forum-reply-submit:hover:not(:disabled){
+  filter:brightness(1.08) saturate(1.04)!important;transform:translateY(-1px)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 10px 24px rgba(0,0,0,.28),0 0 20px var(--f159-red-glow)!important;
+}
+.f2w-red-v159:active:not(:disabled),button.red:active:not(:disabled),.btn.red:active:not(:disabled),.btn.primary:active:not(:disabled),
+.account-primary:active:not(:disabled),#account-submit:active:not(:disabled){transform:scale(.985)!important}
+
+/* Inactive auth tabs must NOT stay red. */
+#account-modal .account-tab:not(.active),#account-modal .f2w-auth-tab:not(.active),
+.f2w-quick-auth-tabs button:not(.active){
+  background:#071828!important;border-color:#294058!important;color:#97a8bd!important;box-shadow:none!important;text-shadow:none!important;
+}
+
+/* Site-wide detached header action buttons. */
+body.f2w-main-page header .f2w-action-cluster,
+body.f2w-main-page header .header-actions,
+body.f2w-main-page header .header-buttons{
+  gap:12px!important;column-gap:12px!important;row-gap:10px!important;
+}
+body.f2w-main-page header .f2w-action-cluster>*{margin-inline:0!important}
+@media (min-width:1700px){body.f2w-main-page header .f2w-action-cluster{gap:14px!important;column-gap:14px!important}}
+@media (min-width:1181px) and (max-width:1450px){body.f2w-main-page header .f2w-action-cluster{gap:9px!important;column-gap:9px!important}}
+
+/* Canonical auth modal: closeable, readable and consistent everywhere. */
+#account-modal.f2w-v159-auth-open{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;align-items:center!important;justify-content:center!important;inset:0!important;position:fixed!important;z-index:2147483200!important;background:rgba(0,0,0,.78)!important;backdrop-filter:blur(8px)!important}
+#account-modal .account-card{max-height:92vh!important;overflow:auto!important}
+#account-modal .f2w-v159-auth-pane{transition:transform .22s ease,opacity .22s ease}
+#account-modal[data-v159-mode="signup"] .f2w-v159-auth-pane{animation:f159-swipe-left .22s ease}
+#account-modal[data-v159-mode="login"] .f2w-v159-auth-pane{animation:f159-swipe-right .22s ease}
+@keyframes f159-swipe-left{from{transform:translateX(12px);opacity:.7}to{transform:none;opacity:1}}
+@keyframes f159-swipe-right{from{transform:translateX(-12px);opacity:.7}to{transform:none;opacity:1}}
+
+/* Realtime moderation is a sharp modal, never a blur-only screen. */
+#f2w-v159-enforcement{position:fixed;inset:0;z-index:2147483647;display:none;place-items:center;padding:22px;background:rgba(0,0,0,.82)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color:#fff}
+#f2w-v159-enforcement.show{display:grid!important}
+#f2w-v159-enforcement .panel{width:min(560px,100%);background:#07131f;border:1px solid #ff1e31;border-radius:20px;padding:32px;text-align:center;box-shadow:0 34px 100px rgba(0,0,0,.8)}
+#f2w-v159-enforcement .icon{width:68px;height:68px;margin:0 auto 16px;border:1px solid #ff1e31;border-radius:18px;display:grid;place-items:center;font-size:28px;color:#ff2a3d}
+#f2w-v159-enforcement h1{margin:0 0 10px;font-size:30px}#f2w-v159-enforcement p{color:#aebdd0;line-height:1.6}
+#f2w-v159-enforcement .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+#f2w-v159-enforcement .actions a,#f2w-v159-enforcement .actions button{min-height:42px;padding:0 17px;border-radius:10px;border:1px solid #2a425a;background:#0a1a29;color:#fff;text-decoration:none;font-weight:800;cursor:pointer}
+
+/* Forum icon fallback uses inline SVG, so missing icon fonts never render squares. */
+.forum-v159-icon{width:16px;height:16px;display:inline-block;vertical-align:-2px;flex:none;fill:currentColor}
+.forum-v30-nav .forum-v159-icon,[data-new-thread] .forum-v159-icon,.forum-v159-browse .forum-v159-icon{margin-right:8px}
+
+/* Public-chat image UI is gone. */
+#chat-image-button,#chat-image-input,.chat-image-upload,.public-chat-image-action,[data-chat-image]{display:none!important}
+
+/* Loading surfaces should look intentional and never become a giant dead black area. */
+#f2w-player-starting{background:radial-gradient(circle at center,rgba(17,31,48,.7),rgba(0,0,0,.94))!important}
+#f2w-player-starting .fa-circle-notch,#f2w-player-starting .spinner,.f2w-v159-spinner{animation:f159-spin .7s linear infinite!important}
+@keyframes f159-spin{to{transform:rotate(360deg)}}
+/* Home quick-auth slider: exactly one active tab is red. */
+#home-inline-login-tab.active,#home-inline-signup-tab.active,#home-quick-login-btn,#home-quick-signup-btn{
+  color:#fff!important;background:linear-gradient(180deg,var(--f159-red-top),var(--f159-red-mid) 55%,var(--f159-red-bottom))!important;border-color:var(--f159-red-border)!important;
+}
+#home-inline-login-tab:not(.active),#home-inline-signup-tab:not(.active){background:#071828!important;border-color:#294058!important;color:#9aabc0!important;box-shadow:none!important}
+/* Explicit forum/hero/action red coverage for old page-specific classes. */
+.forum-v30-hero [data-new-thread],.forum-v30-feed-head [data-new-thread],.forum-v30-compose-submit,
+#hero-link,.hero-primary-btn,.f2w-watch-now,.staff-modal .btn.red,.danger-btn,.primary-btn{
+  color:#fff!important;background:linear-gradient(180deg,var(--f159-red-top),var(--f159-red-mid) 55%,var(--f159-red-bottom))!important;border-color:var(--f159-red-border)!important;
+}
