@@ -3867,7 +3867,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
         <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
         <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
         <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
-        <a class="f2w-nav-link" id="f2w-nav-forum" href="/forum/"><i class="fa-solid fa-comments"></i> Community</a>
+        <a class="f2w-nav-link" id="f2w-nav-leaderboard" href="/leaderboard/"><i class="fa-solid fa-trophy"></i> Leaderboard</a>
 
           <div class="f2w-genre-wrap">
             <button class="f2w-nav-button" id="f2w-nav-genres" type="button" onclick="toggleF2WGenreMenu(event)">
@@ -4273,6 +4273,7 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
         <button class="profile-private-toggle" id="profile-private-toggle" type="button" onclick="togglePrivateProfile()" aria-label="Toggle private profile"></button>
       </div>
       <div class="profile-bio empty" id="profile-bio">Loading profile...</div>
+      <div id="v202-public-genres" class="v202-public-genres" aria-label="Favorite genres"></div>
 
       <div class="profile-meta">
         <button class="profile-chip profile-chip-button" id="profile-favorite-count" type="button" onclick="document.getElementById('profile-favorites-grid')?.scrollIntoView({behavior:'smooth',block:'start'})">0 favorites</button>
@@ -4365,11 +4366,6 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
     <div class="profile-v16-panel-head"><h2><i class="fa-solid fa-star" style="color:var(--accent)"></i> Ratings & Reviews</h2><span>Recent movie and TV scores</span></div>
     
     <div class="f2w-v34-profile-ratings" id="f2w-v34-profile-ratings"><div class="profile-v16-none">No ratings yet.</div></div>
-  </section>
-
-  <section class="profile-v16-panel f2w-v34-profile-social">
-    <div class="profile-v16-panel-head"><h2><i class="fa-solid fa-comments" style="color:var(--accent)"></i> Community Activity</h2><span>Recent threads and posts</span></div>
-    <div class="f2w-v34-profile-forum" id="f2w-v34-profile-forum"><div class="profile-v16-none">No community posts yet.</div></div>
   </section>
 
   
@@ -10495,11 +10491,32 @@ async function renderPresence(){if(presenceBusy)return;const u=username(),badge=
 function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function normalizeUrl(v){v=String(v||'').trim();if(!v)return '';return /^https?:\/\//i.test(v)?v:`https://${v}`}
 function socialUrl(k,v){v=String(v||'').trim().replace(/^@/,'');if(!v)return '';if(k==='instagram')return `https://instagram.com/${encodeURIComponent(v)}`;if(k==='snapchat')return `https://www.snapchat.com/add/${encodeURIComponent(v)}`;if(k==='tiktok')return `https://www.tiktok.com/@${encodeURIComponent(v)}`;if(k==='website')return normalizeUrl(v);if(k==='steam')return /^https?:\/\//i.test(v)?v:`https://steamcommunity.com/id/${encodeURIComponent(v)}`;return ''}
-function renderSocials(){const p=profileObj();if(!p)return;let host=document.getElementById('v199-public-socials');if(!host){host=document.createElement('div');host.id='v199-public-socials';document.getElementById('profile-bio')?.insertAdjacentElement('afterend',host)}if(!host)return;const items=[['instagram','fa-brands fa-instagram','Instagram',p.instagram_username],['snapchat','fa-brands fa-snapchat','Snapchat',p.snapchat_username],['tiktok','fa-brands fa-tiktok','TikTok',p.tiktok_username],['discord','fa-brands fa-discord','Discord',p.discord_username],['website','fa-solid fa-globe','Website',p.website_url],['steam','fa-brands fa-steam','Steam',p.steam_profile]];host.innerHTML=items.filter(x=>String(x[3]||'').trim()).map(([k,ic,label,val])=>{const href=socialUrl(k,val),text=k==='discord'?`${label}: ${esc(val)}`:label;return href?`<a class="v199-social-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer"><i class="${ic}"></i>${text}</a>`:`<span class="v199-social-link"><i class="${ic}"></i>${text}</span>`}).join('')}
+function renderSocials(){
+  const p=profileObj(); if(!p)return;
+  let host=document.getElementById('v199-public-socials');
+  if(!host){host=document.createElement('div');host.id='v199-public-socials';document.getElementById('profile-bio')?.insertAdjacentElement('afterend',host)}
+  if(!host)return;
+  const items=[
+    ['instagram','fa-brands fa-instagram','Instagram',p.instagram_username],
+    ['snapchat','fa-brands fa-snapchat','Snapchat',p.snapchat_username],
+    ['tiktok','fa-brands fa-tiktok','TikTok',p.tiktok_username],
+    ['discord','fa-brands fa-discord','Discord',p.discord_username],
+    ['website','fa-solid fa-globe','Website',p.website_url],
+    ['steam','fa-brands fa-steam','Steam',p.steam_profile]
+  ];
+  host.innerHTML=items.filter(x=>String(x[3]||'').trim()).map(([k,ic,label,val])=>{
+    const raw=String(val||'').trim(); const href=socialUrl(k,raw);
+    let shown=raw.replace(/^@/,'');
+    if(['instagram','tiktok'].includes(k))shown='@'+shown;
+    if(k==='website'){try{shown=new URL(normalizeUrl(raw)).hostname.replace(/^www\./,'')}catch{shown=raw}}
+    const content=`<i class="${ic}" aria-hidden="true"></i><span class="v202-social-copy"><strong>${label}</strong><em>${esc(shown)}</em></span>`;
+    return href?`<a class="v199-social-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${label} profile">${content}</a>`:`<span class="v199-social-link" aria-label="${label}">${content}</span>`;
+  }).join('');
+}
 function sanitizeDisplayNamePaint(){const p=profileObj();if(p?.display_name){const clean=String(p.display_name).replace(/@/g,'').trim();if(clean!==p.display_name)p.display_name=clean}const el=document.getElementById('profile-name');if(el&&!/loading/i.test(el.textContent||'')){const t=(el.textContent||'').replace(/@/g,'').trim();if(t&&t!==el.textContent)el.textContent=t}}
 function selectTab(name){document.querySelectorAll('.v200-nav-item').forEach(b=>b.classList.toggle('active',b.dataset.v200Tab===name));document.querySelectorAll('.v200-tab').forEach(p=>p.classList.toggle('active',p.dataset.v200Panel===name))}
 function fillEditor(){const p=profileObj();if(!p)return;document.getElementById('v199-username').value=p.username||'';document.getElementById('v199-display-name').value=String(p.display_name||'').replace(/@/g,'');document.getElementById('v199-bio').value=p.bio||'';for(const [id,key] of [['v199-instagram','instagram_username'],['v199-snapchat','snapchat_username'],['v199-tiktok','tiktok_username'],['v199-discord','discord_username'],['v199-website','website_url'],['v199-steam','steam_profile']])document.getElementById(id).value=p[key]||'';document.getElementById('v200-private').checked=Boolean(p.is_private);const selected=new Set(Array.isArray(p.favorite_genres)?p.favorite_genres:[]);document.querySelectorAll('#v199-genre-grid input').forEach(x=>x.checked=selected.has(x.value))}
-function openEditor(){if(!isOwner())return;fillEditor();selectTab('profile');const m=document.getElementById('v199-profile-editor');m.hidden=false;m.setAttribute('aria-hidden','false');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';requestAnimationFrame(()=>document.getElementById('v199-username')?.focus())}
+function openEditor(){if(!isOwner())return;fillEditor();selectTab('profile');const m=document.getElementById('v199-profile-editor');m.hidden=false;m.setAttribute('aria-hidden','false');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';requestAnimationFrame(()=>{try{document.getElementById('v199-username')?.focus({preventScroll:true})}catch{}})}
 function closeEditor(){const m=document.getElementById('v199-profile-editor');m.hidden=true;m.setAttribute('aria-hidden','true');document.documentElement.style.removeProperty('overflow');document.body.style.removeProperty('overflow')}
 async function saveEditor(){if(!isOwner())return;const save=document.getElementById('v199-editor-save'),status=document.getElementById('v199-editor-status');status.className='v200-editor-status';status.textContent='Saving…';save.disabled=true;try{const c=db(),p=profileObj(),nextUser=document.getElementById('v199-username').value.trim();if(!/^[A-Za-z0-9]{2,30}$/.test(nextUser))throw new Error('Username must be 2–30 letters or numbers.');let changed=false;if(nextUser.toLowerCase()!==String(p.username||'').toLowerCase()){const {data,error}=await c.rpc('change_my_username_v200',{p_username:nextUser});if(error)throw error;if(!data)throw new Error('Could not change username.');changed=true}const display=document.getElementById('v199-display-name').value.replace(/@/g,'').trim();document.getElementById('v199-display-name').value=display;const genres=[...document.querySelectorAll('#v199-genre-grid input:checked')].map(x=>x.value);const payload={p_display_name:display,p_bio:document.getElementById('v199-bio').value.trim(),p_favorite_genres:genres,p_website_url:document.getElementById('v199-website').value.trim(),p_instagram_username:document.getElementById('v199-instagram').value.trim(),p_discord_username:document.getElementById('v199-discord').value.trim(),p_snapchat_username:document.getElementById('v199-snapchat').value.trim(),p_steam_profile:document.getElementById('v199-steam').value.trim(),p_tiktok_username:document.getElementById('v199-tiktok').value.trim(),p_is_private:document.getElementById('v200-private').checked};const {data,error}=await c.rpc('update_my_profile_v200',payload);if(error)throw error;if(data&&typeof viewedProfile!=='undefined')viewedProfile={...viewedProfile,...data};sanitizeDisplayNamePaint();renderSocials();try{renderViewedProfile?.()}catch{};status.textContent='Profile saved.';if(changed)history.replaceState({},'',`/profile/@${encodeURIComponent(nextUser)}`);setTimeout(closeEditor,550)}catch(e){status.className='v200-editor-status error';status.textContent=e?.message||'Could not save profile.'}finally{save.disabled=false}}
 function syncOwnerUi(){const btn=document.getElementById('v199-edit-profile-btn');if(btn)btn.hidden=!isOwner();sanitizeDisplayNamePaint();renderSocials()}
@@ -10580,6 +10597,181 @@ function start(){bindObserver();resolveOwn();fetchRow();clearInterval(tickTimer)
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>
+
+<style id="f2w-v202-profile-polish">
+/* Followers / Following must be a real, centered modal, never just a dim backdrop. */
+#social-modal.social-modal-overlay{
+  position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+  z-index:2147483000!important;align-items:center!important;justify-content:center!important;
+  padding:clamp(12px,3vw,28px)!important;pointer-events:auto!important;
+}
+#social-modal.social-modal-overlay.show{display:flex!important}
+#social-modal>.social-modal{
+  display:block!important;position:relative!important;inset:auto!important;transform:none!important;
+  width:min(520px,calc(100vw - 28px))!important;max-height:min(72dvh,680px)!important;
+  pointer-events:auto!important;visibility:visible!important;opacity:1!important;z-index:1!important;
+}
+#social-modal .social-list{min-height:90px!important;max-height:calc(min(72dvh,680px) - 58px)!important;overflow:auto!important}
+
+/* The editor is always viewport-centred and opening it must never scroll the profile page. */
+#v199-profile-editor.v200-editor-overlay{
+  position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+  display:grid!important;place-items:center!important;overflow:hidden!important;
+  padding:clamp(10px,2vw,22px)!important;z-index:2147482500!important;
+  pointer-events:auto!important;overscroll-behavior:contain!important;
+}
+#v199-profile-editor[hidden]{display:none!important}
+#v199-profile-editor .v200-editor-card{
+  position:relative!important;inset:auto!important;transform:none!important;margin:0!important;
+  width:min(920px,calc(100vw - 24px))!important;height:min(760px,calc(100dvh - 24px))!important;
+  max-height:calc(100dvh - 24px)!important;overflow:hidden!important;
+}
+#v199-profile-editor .v200-editor-content{overflow-y:auto!important;overscroll-behavior:contain!important}
+
+/* Public profile genres: below bio, above Favorites / Joined. */
+.v202-public-genres{display:none;flex-wrap:wrap;gap:7px;margin:10px 0 2px;align-items:center}
+.v202-public-genres.show{display:flex}
+.v202-genre-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.035);color:#dbe7f4;font:600 .68rem var(--font-body);white-space:nowrap}
+.v202-genre-chip i{color:var(--accent);font-size:.62rem}
+
+/* Socials show logo + service + saved username/value. */
+#v199-public-socials{margin:10px 0 0!important}
+.v199-social-link{min-height:42px!important;padding:7px 11px!important}
+.v199-social-link>i{font-size:1rem!important;width:18px!important;text-align:center!important}
+.v202-social-copy{display:flex;flex-direction:column;gap:1px;min-width:0}
+.v202-social-copy strong{font-size:.64rem;line-height:1.1;color:#9eb0c4}
+.v202-social-copy em{font-style:normal;font-size:.72rem;color:#fff;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Private profile presentation for non-owners. */
+body.v202-viewing-private #profile-favorites-section,
+body.v202-viewing-private #f2w-current-watching-panel,
+body.v202-viewing-private #v16-profile-ratings-panel{display:none!important}
+body.v202-viewing-private #profile-favorite-count{pointer-events:none!important}
+
+/* Keep the existing Favorites / Joined row visually aligned. */
+.profile-meta{align-items:center!important}
+#profile-joined{display:inline-flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;min-height:40px!important;padding-top:0!important;padding-bottom:0!important}
+</style>
+<script id="f2w-v202-profile-functional-fix">
+(()=>{
+'use strict';
+if(window.__f2wProfileV202)return; window.__f2wProfileV202=true;
+const cleanUser=()=>{const m=location.pathname.match(/\/profile\/@([A-Za-z0-9]+)\/?$/);return m?decodeURIComponent(m[1]):new URLSearchParams(location.search).get('user')||''};
+const client=()=>window.chatSupabase||window.supabaseClient||window.f2wSupabase||null;
+const prof=()=>typeof viewedProfile!=='undefined'?viewedProfile:null;
+const owner=()=>Boolean(window.currentUser&&prof()?.user_id&&window.currentUser.id===prof().user_id);
+const esc2=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+
+function renderGenres(){
+  const host=document.getElementById('v202-public-genres'); if(!host)return;
+  const gs=Array.isArray(prof()?.favorite_genres)?prof().favorite_genres.filter(Boolean):[];
+  host.classList.toggle('show',gs.length>0);
+  host.innerHTML=gs.map(g=>`<span class="v202-genre-chip"><i class="fa-solid fa-tag"></i>${esc2(g)}</span>`).join('');
+}
+function applyPrivacy(){
+  const p=prof(); if(!p)return;
+  const restricted=Boolean(p.is_private&&!owner());
+  document.body.classList.toggle('v202-viewing-private',restricted);
+  if(restricted){
+    const grid=document.getElementById('profile-favorites-grid');
+    if(grid)grid.innerHTML='<div class="profile-state"><i class="fa-solid fa-lock"></i> This profile is private.</div>';
+    const count=document.getElementById('profile-favorite-count'); if(count)count.textContent='Private';
+  }
+}
+async function loadExtras(){
+  const c=client(),u=cleanUser(); if(!c?.rpc||!u)return;
+  try{
+    const {data,error}=await c.rpc('get_public_profile_extras_v202',{p_username:u}); if(error)throw error;
+    const x=Array.isArray(data)?data[0]:data; if(!x)return;
+    if(prof())Object.assign(prof(),x);
+    try{renderGenres();renderSocials?.();applyPrivacy();}catch{}
+    const toggle=document.getElementById('profile-private-toggle'); if(toggle)toggle.classList.toggle('active',Boolean(x.is_private));
+  }catch(e){console.warn('Profile extras unavailable:',e?.message||e)}
+}
+
+window.__f2wProfileV202ReloadExtras=loadExtras;
+
+// Replace the old followers/following loader with one backend path that works for both anon and signed-in viewers.
+window.openSocialList=async function(type){
+  const p=prof(),c=client(); if(!p||!c?.rpc)return;
+  const overlay=document.getElementById('social-modal'), title=document.getElementById('social-modal-title'), list=document.getElementById('social-list');
+  if(!overlay||!title||!list)return;
+  // Keep one overlay/card together. Generic popup code used to split them apart.
+  if(overlay.parentElement!==document.body)document.body.appendChild(overlay);
+  overlay.classList.remove('f2w-viewport-popup');
+  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
+  title.textContent=type==='following'?'Following':'Followers';
+  list.innerHTML='<div class="profile-state">Loading…</div>';
+  try{
+    const fn=type==='following'?'get_profile_following_v202':'get_profile_followers_v202';
+    const {data,error}=await c.rpc(fn,{p_profile_user_id:p.user_id}); if(error)throw error;
+    const rows=Array.isArray(data)?data:[];
+    if(!rows.length){list.innerHTML='<div class="profile-state">Nobody here yet.</div>';return}
+    list.innerHTML=rows.map(r=>`<button class="social-user" type="button" data-user="${esc2(r.username)}">${r.avatar_url?`<img class="social-avatar" src="${esc2(r.avatar_url)}" alt="">`:`<div class="social-avatar-fallback">${esc2(String(r.username||'?').slice(0,2).toUpperCase())}</div>`}<span class="social-copy"><span class="social-display">${esc2((r.display_name||'').replace(/@/g,'').trim()||r.username)}</span><span class="social-username">@${esc2(r.username)}</span></span></button>`).join('');
+    list.querySelectorAll('.social-user').forEach(b=>b.addEventListener('click',()=>location.href=`/profile/@${encodeURIComponent(b.dataset.user)}`));
+  }catch(e){list.innerHTML='<div class="profile-state">This list could not be loaded right now.</div>';console.error(e)}
+};
+window.closeSocialList=function(){const m=document.getElementById('social-modal');if(m){m.classList.remove('show','f2w-viewport-popup');m.setAttribute('aria-hidden','true')}};
+
+// Fix Edit Profile opening at document-bottom: move it under body and never focus-scroll.
+function hardenEditor(){
+  const m=document.getElementById('v199-profile-editor'); if(!m)return;
+  if(m.parentElement!==document.body)document.body.appendChild(m);
+  m.classList.remove('f2w-viewport-popup');
+  const btn=document.getElementById('v199-edit-profile-btn');
+  if(btn&&!btn.dataset.v202Bound){btn.dataset.v202Bound='1';btn.addEventListener('click',e=>{
+    e.preventDefault();e.stopImmediatePropagation();
+    if(!owner())return;
+    const y=window.scrollY;
+    try{fillEditor?.();selectTab?.('profile')}catch{}
+    m.hidden=false;m.setAttribute('aria-hidden','false');
+    document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';
+    requestAnimationFrame(()=>{window.scrollTo({top:y,left:window.scrollX,behavior:'instant'});try{document.getElementById('v199-username')?.focus({preventScroll:true})}catch{}});
+  },true)}
+}
+
+// Ensure saving updates the visible genres/socials/privacy immediately, then re-read authoritative extras.
+const saveBtn=()=>document.getElementById('v199-editor-save');
+function bindSaveRefresh(){const b=saveBtn();if(!b||b.dataset.v202Refresh)return;b.dataset.v202Refresh='1';b.addEventListener('click',()=>setTimeout(loadExtras,650),false)}
+
+function boot(){
+  hardenEditor(); bindSaveRefresh();
+  let n=0;const t=setInterval(()=>{hardenEditor();bindSaveRefresh();if(prof()){loadExtras();clearInterval(t)}else if(++n>80)clearInterval(t)},125);
+  document.getElementById('social-modal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)window.closeSocialList()},true);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')window.closeSocialList()});
+  // Refresh extras after privacy changes and when returning to the tab.
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadExtras()});
+  window.addEventListener('focus',loadExtras);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
+
+<script id="f2w-v202-private-toggle-override">
+(()=>{
+'use strict';
+window.togglePrivateProfile=async function(){
+  const c=window.chatSupabase||window.supabaseClient||window.f2wSupabase;
+  const p=typeof viewedProfile!=='undefined'?viewedProfile:null;
+  const me=window.currentUser||null;
+  if(!c?.rpc||!p||!me||me.id!==p.user_id)return;
+  const btn=document.getElementById('profile-private-toggle');
+  const next=!Boolean(p.is_private); if(btn)btn.disabled=true;
+  try{
+    const {data,error}=await c.rpc('set_my_profile_private_v202',{p_private:next}); if(error)throw error;
+    p.is_private=Boolean(data);
+    btn?.classList.toggle('active',p.is_private);
+    const editorToggle=document.getElementById('v200-private'); if(editorToggle)editorToggle.checked=p.is_private;
+    try{window.__f2wProfileV202ReloadExtras?.()}catch{}
+    try{setProfileStatus?.(p.is_private?'Profile is now private.':'Profile is now public.')}catch{}
+  }catch(e){try{setProfileStatus?.(e?.message||'Could not update profile privacy.',true)}catch{};console.error(e)}
+  finally{if(btn)btn.disabled=false}
+};
+})();
+</script>
+
+<!-- f2w-force-save:v202-profile-socials-genres-editor-private:20260902 -->
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
