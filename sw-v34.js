@@ -1,5 +1,5 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v156-current-watching-20260902';
+const CACHE='f2w-v158-current-watching-20260902';
 const CORE=['/v154-global-ui.css','/v154-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
@@ -41,7 +41,7 @@ async function navigationResponse(request){
   const cache=await caches.open(CACHE);
   const path=new URL(request.url).pathname;
 
-  // v155: /profile/@username is a virtual route on static hosting.
+  // v158: /profile/@username is a virtual route on static hosting.
   // NEVER request that virtual URL from the origin. Always serve the real
   // profile document and preserve the friendly address in the browser.
   if(/^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){

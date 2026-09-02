@@ -1,0 +1,17 @@
+Flix2Watch v158 emergency recovery
+
+1. Run V158-EMERGENCY-RECOVERY.sql in Supabase.
+2. Deploy the full v158 ZIP.
+3. Close every Flix2Watch tab and reopen/hard refresh once.
+4. If a test account is still stuck from an old Site Suspension, open Staff Control Center for that account and press Clear all restrictions once. v158 clears both the v146 realtime state and the old legacy ban state.
+
+Main fixes:
+- Site Suspension no longer calls the old global staff_set_ban path when enabling it. That legacy path was causing forum/favorites/profile/leaderboard RPCs to act as if the account was permanently banned.
+- Realtime restriction UI is one immediate blocking dialog, no blur/backdrop filter and no repeated Accept popups.
+- Active playback exits fullscreen and stops immediately when a real restriction arrives.
+- Moderation guard cannot leave the Watch page black forever if its initial RPC is slow.
+- Flix2Watch API embed URL is back to a provider-safe autoplay URL; unsupported ds_lang=off/cc/subtitles query flags were removed because they could produce a black provider boot.
+- Subtitle-off postMessage now targets the actual #video-frame iframe.
+- Owner can grant/remove Staff again via owner_set_staff_v158 and manage permission overrides.
+- Flix2Watch API is reasserted enabled, priority #1.
+- All live-ops scripts and service worker cache are bumped to v158.
