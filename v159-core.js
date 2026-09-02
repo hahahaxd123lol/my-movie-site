@@ -4,7 +4,7 @@ if(window.__f2wV159Core)return;window.__f2wV159Core=true;
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 const EDGE=`${URL}/functions/v1/rapid-worker`;
-let client=null,authBusy=false,legacyOpenAuth=null;
+let client=null,authBusy=false,legacyOpenAuth=null,authIntent='';
 const AUTH_RATE_KEY='f2w:v176:auth-attempts',AUTH_RATE_WINDOW=60000,AUTH_RATE_MAX=5;
 function consumeAuthAttempt(){
   const t=Date.now();let a=[];try{a=JSON.parse(localStorage.getItem(AUTH_RATE_KEY)||'[]')}catch{}a=(Array.isArray(a)?a:[]).filter(x=>t-Number(x)<AUTH_RATE_WINDOW);
@@ -38,8 +38,20 @@ function authMessage(text,error=false){
   if(!el){el=document.createElement('div');el.className='f2w-auth-message';m.querySelector('.account-body,.f2w-auth-body')?.appendChild(el)}
   if(el){el.textContent=text||'';el.style.color=error?'#ff6572':'#9fb2c8'}
 }
+function releaseAuthLocks(){
+  for(const el of [document.documentElement,document.body]){
+    if(!el)continue;
+    ['f2w-auth-open-v56','f2w-auth-v67-open','f2w-auth-open-v60','f2w-auth-modal-open','f2w-auth-modal-open-v60','f2w-auth-hard-open','f2w-auth-hard-open-v58','f2w-popup-scroll-lock'].forEach(c=>el.classList.remove(c));
+    for(const prop of ['overflow','height','position','top','left','right','width','pointer-events','filter','transform'])el.style.removeProperty(prop);
+  }
+}
+function releaseAuthPortal(){
+  const m=modal();if(!m)return;
+  if(m.closest?.('#f2w-viewport-modal-portal')){try{document.body.appendChild(m)}catch{}}
+  m.classList.remove('f2w-viewport-popup');
+}
 function setAuthMode(next='login',animate=true){
-  const m=modal();if(!m)return;const signup=next==='signup';m.dataset.v159Mode=signup?'signup':'login';
+  const m=modal();if(!m)return;const signup=next==='signup';next=signup?'signup':'login';m.dataset.v159Mode=next;m.dataset.mode=next;m.dataset.f2wAuthMode=next;
   const lt=m.querySelector('#account-login-tab'),st=m.querySelector('#account-signup-tab');
   lt?.classList.toggle('active',!signup);st?.classList.toggle('active',signup);
   lt?.classList.toggle('f2w-red-v159',!signup);st?.classList.toggle('f2w-red-v159',signup);
@@ -47,16 +59,35 @@ function setAuthMode(next='login',animate=true){
   if(uw)uw.style.display=signup?'block':'none';if(cw)cw.style.display=signup?'block':'none';
   const label=m.querySelector('#account-email-label');if(label)label.textContent=signup?'EMAIL':'USERNAME OR EMAIL';
   const submit=m.querySelector('#account-submit');if(submit)submit.textContent=signup?'Create Account':'Log In';
-  if(animate){const pane=m.querySelector('.account-body,.f2w-auth-body');if(pane){pane.classList.remove('f2w-v159-auth-pane');void pane.offsetWidth;pane.classList.add('f2w-v159-auth-pane')}}
+  const pw=m.querySelector('#account-password');if(pw)pw.autocomplete=signup?'new-password':'current-password';
+  if(animate){const pane=m.querySelector('#account-logged-out,.account-body,.f2w-auth-body');if(pane?.animate){try{pane.getAnimations?.().forEach(a=>a.cancel());pane.animate(signup?[{opacity:.72,transform:'translateX(32px)'},{opacity:1,transform:'translateX(0)'}]:[{opacity:.72,transform:'translateX(-32px)'},{opacity:1,transform:'translateX(0)'}],{duration:420,easing:'cubic-bezier(.2,.8,.2,1)'})}catch{}}}
   authMessage('');normalizeRedButtons(m);
 }
-function openAuth(next='login'){
-  try{legacyOpenAuth?.(next)}catch{}
-  const m=modal();if(!m)return;
-  m.classList.add('open','f2w-v159-auth-open');m.removeAttribute('inert');m.removeAttribute('aria-hidden');m.hidden=false;setAuthMode(next,false);
-  setTimeout(()=>m.querySelector(next==='signup'?'#account-username':'#account-email')?.focus(),40);
+function openAuth(next='login',intent=''){
+  const m=modal();if(!m)return false;
+  if(intent)authIntent=intent;
+  releaseAuthPortal();releaseAuthLocks();
+  m.hidden=false;m.removeAttribute('hidden');m.removeAttribute('inert');m.setAttribute('aria-hidden','false');m.dataset.f2wV183='open';
+  m.classList.remove('f2w-viewport-popup');m.classList.add('open','f2w-v159-auth-open','f2w-v183-auth-open');
+  m.style.setProperty('display','flex','important');m.style.setProperty('visibility','visible','important');m.style.setProperty('opacity','1','important');m.style.setProperty('pointer-events','auto','important');
+  m.querySelectorAll('input,textarea,select,button,a').forEach(el=>{el.removeAttribute('inert');el.style.setProperty('pointer-events','auto','important')});
+  setAuthMode(next,false);
+  setTimeout(()=>{const el=m.querySelector(next==='signup'?'#account-username':'#account-email');try{el?.focus({preventScroll:true})}catch{el?.focus?.()}},60);
+  return false;
 }
-function closeAuth(){const m=modal();if(!m)return;m.classList.remove('open','f2w-v159-auth-open','f2w-auth-hard-open-v58','f2w-auth-modal-open-v60');m.setAttribute('aria-hidden','true');}
+function closeAuth(){
+  const m=modal();if(!m)return false;
+  m.dataset.f2wV183='closed';m.classList.remove('open','f2w-v159-auth-open','f2w-v183-auth-open','f2w-auth-hard-open-v58','f2w-auth-modal-open-v60','f2w-auth-v67','f2w-viewport-popup');
+  m.setAttribute('aria-hidden','true');m.setAttribute('inert','');m.style.setProperty('display','none','important');m.style.setProperty('visibility','hidden','important');m.style.setProperty('opacity','0','important');m.style.setProperty('pointer-events','none','important');
+  releaseAuthLocks();return false;
+}
+async function ownUsername(user){
+  if(!user?.id)return '';const k=`f2w:v183:username:${user.id}`;try{const cached=sessionStorage.getItem(k);if(cached)return cached}catch{}
+  try{const {data}=await db().from('profiles').select('username').eq('user_id',user.id).maybeSingle();const u=String(data?.username||'').replace(/^@/,'').trim();if(u)try{sessionStorage.setItem(k,u)}catch{};return u}catch{return ''}
+}
+async function routeOwnProfile(){
+  try{const {data:{session}}=await db().auth.getSession();if(!session?.user){openAuth('login','profile');return}const u=await ownUsername(session.user);if(u)location.assign('/profile/@'+encodeURIComponent(u));else openAuth('login','profile')}catch{openAuth('login','profile')}
+}
 async function edgeLogin(identifier,password){
   const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),6500);
   try{
@@ -93,7 +124,7 @@ async function submitAuth(){
       }else{
         const token=await edgeLogin(email,password);out=await timeout(c.auth.setSession({access_token:String(token.access_token||''),refresh_token:String(token.refresh_token||'')}),4000);if(out.error)throw out.error;
       }
-      authMessage('Logged in. Loading…');window.dispatchEvent(new CustomEvent('flix2watch:auth-complete',{detail:{mode:'login'}}));setTimeout(()=>location.reload(),100);
+      authMessage('Logged in. Loading…');window.dispatchEvent(new CustomEvent('flix2watch:auth-complete',{detail:{mode:'login'}}));const intent=authIntent;authIntent='';if(intent==='profile'){const u=await ownUsername(out?.data?.user||out?.data?.session?.user);if(u){location.assign('/profile/@'+encodeURIComponent(u));return}}setTimeout(()=>location.reload(),100);
     }
   }catch(e){authMessage(e?.message||'Authentication failed.',true)}finally{authBusy=false;if(btn)btn.disabled=false;setAuthMode(signup?'signup':'login',false)}
 }
@@ -117,10 +148,10 @@ function forumIcons(){if(!false)return;
   });
 }
 
-/* ---------- low-cost chat prewarm: one cached RPC per 60 seconds ---------- */
+/* ---------- low-cost chat prewarm: user-intent only, never automatic ---------- */
 async function prewarmChat(){
   if(location.pathname.startsWith('/chat'))return;let cached=null;try{cached=JSON.parse(sessionStorage.getItem('f2w_chat_snapshot_v159')||'null')}catch{}
-  if(cached&&Date.now()-Number(cached.at||0)<60000){window.__flix2watchPreloadedChat=cached.snapshot;return}
+  if(cached&&Date.now()-Number(cached.at||0)<300000){window.__flix2watchPreloadedChat=cached.snapshot;return}
   const c=db();if(!c?.rpc)return;
   try{const {data,error}=await timeout(c.rpc('get_public_chat_bootstrap'),2500);if(error)throw error;const snap=data||{};window.__flix2watchPreloadedChat=snap;sessionStorage.setItem('f2w_chat_snapshot_v159',JSON.stringify({at:Date.now(),snapshot:snap}))}catch{}
 }
@@ -132,35 +163,57 @@ function warmPlayer(){
   try{fetch('https://player.flix2watch.com/',{mode:'no-cors',cache:'force-cache',priority:'low'}).catch(()=>{})}catch{}
 }
 
-/* ---------- event interception loaded LAST, so old page handlers cannot win ---------- */
+/* ---------- event interception: authoritative account modal ---------- */
+function isAuthClose(target){
+  const m=modal();if(!m||!m.contains(target))return false;const b=target.closest?.('.chat-close,.account-close,.f2w-auth-close-v56,[data-close-auth],[data-close],[aria-label*="close" i],button');if(!b)return false;
+  return b.matches('.chat-close,.account-close,.f2w-auth-close-v56,[data-close-auth],[data-close]')||/close|dismiss/i.test(String(b.getAttribute('aria-label')||b.title||''))||!!b.querySelector?.('.fa-xmark,.fa-times');
+}
+function closeChatShell(){for(const sel of ['#chat-modal','.v17-chat-hub','.chat-modal']){const el=document.querySelector(sel);if(!el)continue;el.classList.remove('open','show','active');el.setAttribute('aria-hidden','true');if(el.id==='chat-modal')el.style.setProperty('display','none','important')}}
+document.addEventListener('pointerdown',e=>{if(window.__f2wV190CanonicalAuth)return;if(isAuthClose(e.target)){e.preventDefault();e.stopImmediatePropagation();closeAuth()}},true);
 document.addEventListener('click',e=>{
-  const login=e.target.closest?.('#header-login-btn,[data-auth="login"],.login-btn');
-  const signup=e.target.closest?.('#header-signup-btn,[data-auth="signup"],.signup-btn');
+  // v190: the newer site-wide controller owns modal open/close/routing. Do not
+  // stop propagation here or it can permanently block the newer handler.
+  if(window.__f2wV190CanonicalAuth)return;
+  const login=e.target.closest?.('#header-login-btn,[data-auth="login"],[data-f2w-auth="login"],.login-btn');
+  const signup=e.target.closest?.('#header-signup-btn,[data-auth="signup"],[data-f2w-auth="signup"],.signup-btn');
   if(login){e.preventDefault();e.stopImmediatePropagation();openAuth('login');return}
   if(signup){e.preventDefault();e.stopImmediatePropagation();openAuth('signup');return}
+  if(e.target.closest?.('#profile-nav-btn')){e.preventDefault();e.stopImmediatePropagation();void routeOwnProfile();return}
+  if(location.pathname.startsWith('/watch')){
+    const gate=e.target.closest?.('#watch-login-overlay button,.watch-login-actions button,[data-watch-auth]');
+    if(gate){e.preventDefault();e.stopImmediatePropagation();openAuth(/create|sign\s*up|register/i.test(String(gate.textContent||''))?'signup':'login');return}
+  }
+  if(location.pathname.startsWith('/chat')&&e.target.closest?.('#v17-chat-dm-tab,[data-chat-mode="dm"],.v17-chat-dm-tab')){e.preventDefault();e.stopImmediatePropagation();void (async()=>{try{const {data:{session}}=await db().auth.getSession();if(session?.user){window.switchChatMode?.('dm');return}}catch{}closeChatShell();openAuth('login')})();return}
   const m=modal();if(m&&m.contains(e.target)){
-    if(e.target.closest('#account-login-tab')){e.preventDefault();e.stopImmediatePropagation();setAuthMode('login');return}
-    if(e.target.closest('#account-signup-tab')){e.preventDefault();e.stopImmediatePropagation();setAuthMode('signup');return}
-    if(e.target.closest('.chat-close,.account-close,.f2w-auth-close-v56,[data-close-auth]')){e.preventDefault();e.stopImmediatePropagation();closeAuth();return}
+    if(isAuthClose(e.target)){e.preventDefault();e.stopImmediatePropagation();closeAuth();return}
+    if(e.target.closest('#account-login-tab')){e.preventDefault();e.stopImmediatePropagation();setAuthMode('login',true);return}
+    if(e.target.closest('#account-signup-tab')){e.preventDefault();e.stopImmediatePropagation();setAuthMode('signup',true);return}
     if(e.target.closest('#account-submit')){e.preventDefault();e.stopImmediatePropagation();submitAuth();return}
   }
+  if(m&&e.target===m&&m.classList.contains('open')){e.preventDefault();e.stopImmediatePropagation();closeAuth()}
 },true);
 document.addEventListener('keydown',e=>{
-  const m=modal();if(e.key==='Escape'&&m?.classList.contains('f2w-v159-auth-open')){e.preventDefault();closeAuth();return}
-  if(e.key==='Enter'&&m?.classList.contains('f2w-v159-auth-open')&&m.contains(e.target)&&!e.shiftKey){e.preventDefault();submitAuth()}
+  if(window.__f2wV190CanonicalAuth)return;
+  const m=modal();if(e.key==='Escape'&&m?.classList.contains('open')){e.preventDefault();e.stopImmediatePropagation();closeAuth();return}
+  if(e.key==='Enter'&&m?.classList.contains('open')&&m.contains(e.target)&&!e.shiftKey){e.preventDefault();submitAuth()}
 },true);
 
 function boot(){
-  legacyOpenAuth=(typeof window.openHeaderAuth==='function'&&window.openHeaderAuth!==openAuth)?window.openHeaderAuth.bind(window):null;
-  window.openHeaderAuth=openAuth;
+  legacyOpenAuth=null;window.openHeaderAuth=openAuth;window.f2wOpenAuth=openAuth;window.closeAccountModal=closeAuth;window.showAccountMode=setAuthMode;
   window.openAccountModal=async()=>{try{const {data:{session}}=await db().auth.getSession();if(session?.user)location.href='/account/';else openAuth('login')}catch{openAuth('login')}};
-  normalizeRedButtons();forumIcons();warmPlayer();setTimeout(prewarmChat,350);
-  const mo=new MutationObserver(muts=>{for(const m of muts){for(const n of m.addedNodes){if(n.nodeType===1){normalizeRedButtons(n);if(false)forumIcons()}}}});mo.observe(document.documentElement,{childList:true,subtree:true});
-  // Fix any leaderboard/page script that replaced auth/profile actions with Home redirects.
-  window.openMyProfile=async()=>{try{const c=db();const {data:{user}}=await c.auth.getUser();if(!user)return openAuth('login');const {data:p}=await c.from('profiles').select('username').eq('user_id',user.id).maybeSingle();if(p?.username)location.href='/profile/@'+encodeURIComponent(p.username)}catch{}};
+  normalizeRedButtons();forumIcons();warmPlayer();
+  // Chat bootstrap is fetched only when the user actually heads for Chat, not on every page load.
+  let warmed=false;const warm=()=>{if(warmed)return;warmed=true;void prewarmChat()};
+  document.querySelectorAll('a[href^="/chat"],.chat-button,[data-chat-link]').forEach(el=>{el.addEventListener('pointerenter',warm,{once:true,passive:true});el.addEventListener('focus',warm,{once:true,passive:true});el.addEventListener('touchstart',warm,{once:true,passive:true})});
+  const mo=new MutationObserver(muts=>{for(const m of muts){for(const n of m.addedNodes){if(n.nodeType===1)normalizeRedButtons(n)}}});mo.observe(document.documentElement,{childList:true,subtree:true});
+  window.openMyProfile=routeOwnProfile;
+  releaseAuthPortal();if(modal()&&!modal().classList.contains('open'))closeAuth();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.addEventListener('pageshow',()=>{releaseAuthPortal();releaseAuthLocks();if(modal()&&!modal().classList.contains('open'))closeAuth()},{passive:true});
 window.f2wV159={db,openAuth,closeAuth,setAuthMode,submitAuth,normalizeRedButtons,prewarmChat};
 })();
 
-// v177-force-refresh-2026-09-02
+// f2w-force-save:v183-canonical-auth-low-egress:20260902
+
+// f2w-force-save:v190-yield-auth-events-to-canonical-controller:20260902

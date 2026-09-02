@@ -90,7 +90,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* v183 site-wide auth / profile / navigation hardening */
 (()=>{
 'use strict';
-if(window.__f2wV185Sitewide)return;window.__f2wV185Sitewide=true;
+if(window.__f2wV185Sitewide)return;window.__f2wV185Sitewide=true;window.__f2wV190CanonicalAuth=true;
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 const $=s=>document.querySelector(s);
@@ -112,6 +112,10 @@ function releaseAuthLocks(){
   }
   document.documentElement.classList.remove('f2w-transition-leaving');
   document.documentElement.classList.add('f2w-transition-ready');
+  document.documentElement.removeAttribute('inert');
+  document.body?.removeAttribute('inert');
+  document.documentElement.style.setProperty('pointer-events','auto','important');
+  document.body?.style.setProperty('pointer-events','auto','important');
 }
 function detachFromPortal(){
   const m=accountModal();if(!m)return;
@@ -152,11 +156,18 @@ function setMode(mode='login',animate=true){
 }
 function openAuth(mode='login'){
   const m=accountModal();if(!m)return false;
+  // v190: Account is the only interactive overlay here. Keep it directly under body and
+  // remove stale inert/top-layer/transition state before any field can receive focus.
+  try{if(m.parentElement!==document.body)document.body.appendChild(m)}catch{}
+  document.documentElement.removeAttribute('inert');document.body?.removeAttribute('inert');
+  document.documentElement.style.setProperty('pointer-events','auto','important');
+  document.body?.style.setProperty('pointer-events','auto','important');
   legacyControlReset();detachFromPortal();releaseAuthLocks();setPortalSuppressed(true);
   document.documentElement.classList.remove('f2w-transition-leaving');document.documentElement.classList.add('f2w-transition-ready');
   m.removeAttribute('inert');m.hidden=false;m.removeAttribute('hidden');m.setAttribute('aria-hidden','false');m.dataset.f2wV185='open';
   m.classList.add('open','f2w-v183-auth-open','f2w-v185-auth-open');
-  m.style.setProperty('display','flex','important');m.style.setProperty('visibility','visible','important');m.style.setProperty('opacity','1','important');m.style.setProperty('pointer-events','auto','important');
+  m.style.setProperty('position','fixed','important');m.style.setProperty('inset','0','important');m.style.setProperty('z-index','2147483646','important');m.style.setProperty('display','flex','important');m.style.setProperty('visibility','visible','important');m.style.setProperty('opacity','1','important');m.style.setProperty('pointer-events','auto','important');
+  const card=m.querySelector('.account-card');if(card){card.removeAttribute('inert');card.style.setProperty('pointer-events','auto','important')}
   m.querySelectorAll('input,textarea,select,button,a').forEach(el=>{el.removeAttribute('inert');el.style.setProperty('pointer-events','auto','important')});
   ['account-email','account-password','account-username','account-confirm'].forEach(id=>{const el=document.getElementById(id);if(el){el.disabled=false;el.readOnly=false;el.tabIndex=0;}});
   setMode(mode,true);
@@ -170,6 +181,7 @@ function closeAuth(e){
   m.setAttribute('aria-hidden','true');m.setAttribute('inert','');
   m.style.setProperty('display','none','important');m.style.setProperty('visibility','hidden','important');m.style.setProperty('opacity','0','important');m.style.setProperty('pointer-events','none','important');
   releaseAuthLocks();setPortalSuppressed(false);
+  document.documentElement.style.removeProperty('pointer-events');document.body?.style.removeProperty('pointer-events');
   return false;
 }
 function isCloseControl(t){
@@ -189,8 +201,21 @@ async function routeOwnProfile(){
   if(authRouting)return;authRouting=true;
   try{const user=await sessionUser();if(!user){openAuth('login');return}const u=await ownUsername(user);if(u){location.assign('/profile/@'+encodeURIComponent(u));return}openAuth('login')}finally{authRouting=false}
 }
-function hideChatForAuth(){const chat=$('#chat-modal');if(chat){chat.classList.remove('open','show','active');chat.setAttribute('aria-hidden','true');chat.style.setProperty('display','none','important');chat.style.setProperty('pointer-events','none','important')}}
-async function dmClick(){const user=await sessionUser();if(user){try{window.switchChatMode?.('dm')}catch{};return}hideChatForAuth();openAuth('login')}
+function hideChatForAuth(){
+  const chat=$('#chat-modal');
+  try{window.closeChat?.()}catch{}
+  if(chat){chat.classList.remove('open','show','active','f2w-viewport-popup');chat.setAttribute('aria-hidden','true');chat.style.setProperty('display','none','important');chat.style.setProperty('visibility','hidden','important');chat.style.setProperty('opacity','0','important');chat.style.setProperty('pointer-events','none','important')}
+  document.documentElement.classList.remove('chat-open','f2w-chat-open','f2w-popup-scroll-lock');
+  document.body?.classList.remove('chat-open','f2w-chat-open','f2w-popup-scroll-lock');
+  const portal=document.getElementById('f2w-viewport-modal-portal');
+  if(portal&&chat?.parentElement===portal){try{document.body.appendChild(chat)}catch{}}
+}
+function dmClick(){
+  if(window.currentUser||document.body?.classList.contains('f2w-authenticated')){try{window.switchChatMode?.('dm')}catch{};return}
+  // Guest path is synchronous: close Chat first, then open Account on the next paint.
+  hideChatForAuth();
+  requestAnimationFrame(()=>openAuth('login'));
+}
 function ensureLeaderboard(){
   document.querySelectorAll('.f2w-primary-nav').forEach(nav=>{
     let a=nav.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"],[data-f2w-v183-leaderboard]');
@@ -239,23 +264,42 @@ function capture(e){
   const close=isCloseControl(t);if(close){closeAuth(e);return}
   if(e.type!=='click')return;
   if(accountModal()&&authOpen()&&t===accountModal()){closeAuth(e);return}
-  const login=t.closest('#header-login-btn,[data-f2w-auth="login"]');if(login){e.preventDefault();e.stopImmediatePropagation();openAuth('login');return}
-  const signup=t.closest('#header-signup-btn,[data-f2w-auth="signup"]');if(signup){e.preventDefault();e.stopImmediatePropagation();openAuth('signup');return}
+  const login=t.closest('#header-login-btn,[data-f2w-auth="login"],[data-auth="login"],.login-btn');if(login){e.preventDefault();e.stopImmediatePropagation();openAuth('login');return}
+  const signup=t.closest('#header-signup-btn,[data-f2w-auth="signup"],[data-auth="signup"],.signup-btn');if(signup){e.preventDefault();e.stopImmediatePropagation();openAuth('signup');return}
   if(t.closest('#account-login-tab')&&authOpen()){e.preventDefault();e.stopImmediatePropagation();setMode('login',true);return}
   if(t.closest('#account-signup-tab')&&authOpen()){e.preventDefault();e.stopImmediatePropagation();setMode('signup',true);return}
   if(t.closest('#profile-nav-btn')){e.preventDefault();e.stopImmediatePropagation();void routeOwnProfile();return}
   if(location.pathname.startsWith('/watch')){const gate=t.closest('#watch-login-overlay button,.watch-login-actions button');if(gate){e.preventDefault();e.stopImmediatePropagation();openAuth(/create|sign\s*up/i.test(gate.textContent||'')?'signup':'login');return}}
-  if(location.pathname.startsWith('/chat')&&t.closest('#v17-chat-dm-tab,[data-chat-mode="dm"],.v17-chat-dm-tab')){e.preventDefault();e.stopImmediatePropagation();void dmClick();return}
+  if(location.pathname.startsWith('/chat')&&t.closest('#v17-chat-dm-tab,[data-chat-mode="dm"],.v17-chat-dm-tab')){e.preventDefault();e.stopImmediatePropagation();dmClick();return}
 }
 document.addEventListener('pointerdown',e=>{const c=isCloseControl(e.target);if(c)closeAuth(e)},true);
 document.addEventListener('click',capture,true);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&authOpen())closeAuth(e)},true);
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&authOpen()){closeAuth(e);return}
+  if(e.key==='Enter'&&authOpen()&&accountModal()?.contains(e.target)&&!e.shiftKey){
+    const tag=String(e.target?.tagName||'');if(tag==='TEXTAREA')return;
+    e.preventDefault();e.stopImmediatePropagation();
+    try{if(typeof window.f2wV159?.submitAuth==='function')window.f2wV159.submitAuth();else window.submitAccountAuth?.()}catch{}
+  }
+},true);
 window.openHeaderAuth=openAuth;window.f2wOpenAuth=openAuth;window.closeAccountModal=closeAuth;window.showAccountMode=(m='login')=>setMode(m,true);window.__f2wRouteOwnProfileV183=routeOwnProfile;
 function boot(){legacyControlReset();repair();void stabilizeMemberAge();void syncEditProfile();const mo=new MutationObserver(queueRepair);mo.observe(document.documentElement,{subtree:true,childList:true});const c=db();try{c?.auth?.onAuthStateChange?.((event,session)=>{if(event==='SIGNED_OUT'){releaseAuthLocks()}if(session?.user&&authOpen())closeAuth();if(location.pathname.startsWith('/profile'))setTimeout(syncEditProfile,50)})}catch{}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.addEventListener('pageshow',()=>{repair();void stabilizeMemberAge();void syncEditProfile()},{passive:true});
+// v190: if any legacy observer mutates Account after it opens, immediately restore interactivity.
+const authGuard=new MutationObserver(()=>{
+  if(!authOpen())return;
+  const m=accountModal();if(!m)return;
+  m.removeAttribute('inert');document.documentElement.removeAttribute('inert');document.body?.removeAttribute('inert');
+  m.style.setProperty('pointer-events','auto','important');
+  m.querySelector('.account-card')?.style.setProperty('pointer-events','auto','important');
+  m.querySelectorAll('input,textarea,select,button,a').forEach(el=>{el.removeAttribute('inert');el.style.setProperty('pointer-events','auto','important');if('disabled' in el && ['INPUT','TEXTAREA','SELECT'].includes(el.tagName))el.disabled=false});
+  document.documentElement.classList.remove('f2w-transition-leaving','f2w-popup-scroll-lock');document.documentElement.classList.add('f2w-transition-ready');
+  document.body?.classList.remove('f2w-popup-scroll-lock');
+});
+if(document.documentElement)authGuard.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['class','style','inert','aria-hidden','hidden']});
 })();
-// f2w-force-save:v185-auth-modal-interaction-hardfix:20260902
+// f2w-force-save:v190-auth-modal-canonical-authority:20260902
 
 /* v187 TV header layout — injected after page-local legacy styles so they cannot override it. */
 (() => {

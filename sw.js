@@ -1,8 +1,8 @@
 /* Flix2Watch v185 — fresh critical-code service worker */
-const CACHE='f2w-v189-tv-header-inner-20260902';
+const CACHE='f2w-v190-auth-authority-20260902';
 const CORE=[
   '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
-  '/v174-viewport-popups.js','/v176-sitewide.js','/final-v35.js',
+  '/v159-core.js','/v174-viewport-popups.js','/v176-sitewide.js','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',
   '/v177-watch-realtime.js','/v177-profile-playback.js'
 ];
@@ -54,3 +54,5 @@ self.addEventListener('fetch',event=>{
   if(/\.(?:png|jpe?g|webp|svg|ico|woff2?)$/i.test(u.pathname)){event.respondWith(imageSWR(request));return}
 });
 // f2w-force-save:v189-tv-header-service-worker:20260902
+
+// f2w-force-save:v190-auth-cache-bust:20260902
