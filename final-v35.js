@@ -18,6 +18,7 @@ function f2wDebounce(fn,wait=140){
   let authUser=null;
   let presenceTimer=null;
   let presenceSessionId='';
+  let presenceAccessToken='';
   let watchTimeTimer=null;
   let watchOpenRecordedKey='';
   let profileRealtimeChannel=null;
@@ -316,7 +317,7 @@ function f2wDebounce(fn,wait=140){
 
   /* ---------- presence ---------- */
   async function touchPresence(){
-    if(!authUser||document.visibilityState==='hidden')return;
+    if(!authUser)return;
     const client=db();if(!client)return;
     if(!presenceSessionId){
       try{
@@ -329,24 +330,39 @@ function f2wDebounce(fn,wait=140){
         presenceSessionId=`${Date.now()}-${Math.random().toString(36).slice(2)}`;
       }
     }
-    try{await client.rpc('touch_presence_v17',{p_session_id:presenceSessionId});}
-    catch{try{await client.rpc('touch_presence');}catch{}}
+    try{
+      const {data:{session}}=await client.auth.getSession();
+      if(session?.access_token)presenceAccessToken=session.access_token;
+    }catch{}
+    try{await client.rpc('touch_presence_v203',{p_session_id:presenceSessionId});}
+    catch{try{await client.rpc('touch_presence_v17',{p_session_id:presenceSessionId});}catch{}}
   }
   function startPresence(){
     if(presenceTimer)return;
     touchPresence();
-    presenceTimer=setInterval(touchPresence,30000);
+    presenceTimer=setInterval(touchPresence,10000);
+    window.__f2wTouchPresenceV203=touchPresence;
   }
   function stopPresence(){
     if(presenceTimer){clearInterval(presenceTimer);presenceTimer=null;}
   }
 
-  async function leavePresence(){
-    if(!authUser||!presenceSessionId)return;
-    const client=db();if(!client)return;
-    try{
-      await client.rpc('leave_presence_v17',{p_session_id:presenceSessionId});
-    }catch{}
+  function leavePresence({keepalive=false}={}){
+    if(!presenceSessionId)return Promise.resolve();
+    const client=db();
+    if(keepalive&&presenceAccessToken){
+      try{
+        return fetch(`${SUPABASE_URL}/rest/v1/rpc/leave_presence_v203`,{
+          method:'POST',keepalive:true,cache:'no-store',
+          headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${presenceAccessToken}`,'Content-Type':'application/json'},
+          body:JSON.stringify({p_session_id:presenceSessionId})
+        }).catch(()=>{});
+      }catch{}
+    }
+    if(!client?.rpc)return Promise.resolve();
+    return client.rpc('leave_presence_v203',{p_session_id:presenceSessionId}).catch(()=>
+      client.rpc('leave_presence_v17',{p_session_id:presenceSessionId}).catch(()=>{})
+    );
   }
 
   /* ---------- account login ban realtime ---------- */
@@ -1167,22 +1183,19 @@ function f2wDebounce(fn,wait=140){
   }
 
   let f2wProfilePresenceGenerationV108=0;
-  const f2wProfilePresenceCacheV108=new Map();
-  const F2W_PRESENCE_CACHE_PREFIX='f2w_presence_snapshot_v128:';
 
-  function profilePresenceStateV128(row){
+  function profilePresenceStateV203(row){
     const lastSeen=row?.last_seen_at||null;
-    const onlineUntil=row?.online_until||null;
-    const online=Boolean(row?.online ?? (onlineUntil && new Date(onlineUntil).getTime()>Date.now()));
+    const online=Boolean(row?.online);
     const text=online
       ? 'Online'
       : lastSeen
         ? `Last online ${formatRelative(lastSeen)}`
-        : 'Offline';
-    return {online,text,last_seen_at:lastSeen,online_until:onlineUntil};
+        : 'Last online not recorded yet';
+    return {online,text,last_seen_at:lastSeen};
   }
 
-  function paintProfilePresenceV128(badge,state){
+  function paintProfilePresenceV203(badge,state){
     if(!badge||!state)return;
     badge.classList.toggle('online',Boolean(state.online));
     badge.classList.toggle('offline',!state.online);
@@ -1190,85 +1203,25 @@ function f2wDebounce(fn,wait=140){
     if(label)label.textContent=state.text;
   }
 
-  function cachedProfilePresenceV128(userId){
-    let state=f2wProfilePresenceCacheV108.get(userId)||null;
-    if(state)return state;
-    try{
-      const raw=localStorage.getItem(F2W_PRESENCE_CACHE_PREFIX+userId);
-      if(!raw)return null;
-      const saved=JSON.parse(raw);
-      // Recalculate online from online_until so a stale cached "Online" never
-      // stays online after its heartbeat window has expired.
-      state=profilePresenceStateV128(saved);
-      f2wProfilePresenceCacheV108.set(userId,state);
-      return state;
-    }catch{return null}
-  }
-
-  function saveProfilePresenceV128(userId,state){
-    f2wProfilePresenceCacheV108.set(userId,state);
-    try{
-      localStorage.setItem(F2W_PRESENCE_CACHE_PREFIX+userId,JSON.stringify({
-        last_seen_at:state.last_seen_at||null,
-        online_until:state.online_until||null,
-        saved_at:Date.now()
-      }));
-    }catch{}
-  }
-
-  async function fetchProfilePresenceV128(profile){
-    const client=db();
-    if(client){
-      // Fast path: user_presence is publicly readable and indexed by user_id.
-      // This avoids waiting on an RPC just to paint one tiny profile badge.
-      try{
-        const {data,error}=await client
-          .from('user_presence')
-          .select('last_seen_at,online_until')
-          .eq('user_id',profile.user_id)
-          .maybeSingle();
-        if(!error)return data||{last_seen_at:null,online_until:null};
-      }catch{}
-    }
-
-    // Compatibility fallback for installations that only expose the RPC.
-    const rows=await rpc('get_public_profile_presence',{p_user_id:profile.user_id});
-    return Array.isArray(rows)?(rows[0]||null):rows;
-  }
-
   async function renderProfilePresence(){
     if(!location.pathname.startsWith('/profile'))return;
-    const profile=viewedProfileObject();if(!profile?.user_id)return;
+    const profile=viewedProfileObject();if(!profile?.username)return;
     ensureProfileRealtimePanels();
-
     const badge=document.getElementById('v17-profile-presence');if(!badge)return;
-    const userId=String(profile.user_id);
     const requestId=++f2wProfilePresenceGenerationV108;
-
-    // Paint the last known state synchronously. On repeat visits this removes
-    // the visible "Checking status…" wait completely.
-    const cached=cachedProfilePresenceV128(userId);
-    if(cached)paintProfilePresenceV128(badge,cached);
-
     try{
-      const row=await fetchProfilePresenceV128(profile);
+      const client=db();if(!client?.rpc)return;
+      let {data,error}=await client.rpc('get_public_profile_presence_v203',{p_username:profile.username});
+      if(error){({data,error}=await client.rpc('get_public_profile_presence_v200',{p_username:profile.username}));}
+      if(error)throw error;
       if(requestId!==f2wProfilePresenceGenerationV108)return;
-
-      const state=profilePresenceStateV128(row);
-      saveProfilePresenceV128(userId,state);
-      paintProfilePresenceV128(badge,state);
+      const row=Array.isArray(data)?data[0]:data;
+      paintProfilePresenceV203(badge,profilePresenceStateV203(row||{}));
     }catch{
       if(requestId!==f2wProfilePresenceGenerationV108)return;
-
-      // Never turn a temporary network error into a false Offline state.
-      const previous=cachedProfilePresenceV128(userId);
-      if(previous){
-        paintProfilePresenceV128(badge,previous);
-      }else{
-        badge.classList.remove('online','offline');
-        const label=badge.querySelector('span');
-        if(label)label.textContent='Status unavailable';
-      }
+      badge.classList.remove('online','offline');
+      const label=badge.querySelector('span');
+      if(label)label.textContent='Status unavailable';
     }
   }
 
@@ -1371,7 +1324,7 @@ function f2wDebounce(fn,wait=140){
     profileUiTimer=setInterval(()=>{
       renderProfilePresence();
       renderProfileActivity();
-    },30000);
+    },10000);
   }
 
   function bootProfileRealtime(){
@@ -1743,8 +1696,8 @@ function f2wDebounce(fn,wait=140){
     roleDecorateTimer=null;
     const client=db();
     try{client?.auth?.onAuthStateChange?.(()=>setTimeout(()=>{syncAuthUI();enforceUsernameGate();recordWatchOpen();startWatchTime();installProfileEditor();bootProfileRealtime();renderProfileComments()},0))}catch{}
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchPresence();recordWatchOpen();}else{leavePresence();}});
-    window.addEventListener('pagehide',()=>{leavePresence()});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchPresence();recordWatchOpen();}});
+    window.addEventListener('pagehide',()=>{leavePresence({keepalive:true})});
     let f2wDomRefreshTimer=null;
     const observer=new MutationObserver(()=>{
       clearTimeout(f2wDomRefreshTimer);
@@ -2342,15 +2295,9 @@ function f2wDebounce(fn,wait=140){
         if(parsed?.profile){parsed.profile.created_at=authoritative;localStorage.setItem(ck,JSON.stringify(parsed))}
       }catch{}
     }
-    const badge=document.getElementById('v17-profile-presence');
-    if(badge){
-      const online=Boolean(row.online_until&&new Date(row.online_until).getTime()>Date.now());
-      badge.classList.toggle('online',online);badge.classList.toggle('offline',!online);
-      const label=badge.querySelector('span');
-      if(label)label.textContent=online?'Online':row.last_seen_at?`Last online ${rel(row.last_seen_at)}`:'Last online not recorded yet';
-    }
+    // v203: legacy cached live-profile snapshots no longer paint presence.
     const host=document.getElementById('f2w-current-watching-card');
-    if(host && !window.__f2wV177ProfilePlayback){
+    if(host && !window.__f2wV177ProfilePlayback && !window.__f2wV201ProfilePlayback){
       const fresh=row.watching_media_id&&row.watching_last_seen_at&&(Date.now()-new Date(row.watching_last_seen_at).getTime()<95000);
       if(fresh){
         const type=row.watching_media_type==='tv'?'tv':'movie';
@@ -2403,11 +2350,11 @@ function f2wDebounce(fn,wait=140){
     // 30 seconds. Realtime still handles instant updates; this is the bounded
     // fallback that expires a stale Currently Watching lease even when no
     // database change event occurs after somebody leaves the watch page.
-    if(!window.__F2W_PROFILE_LIVE_30S_V156){
-      window.__F2W_PROFILE_LIVE_30S_V156=setInterval(()=>{
+    if(!window.__F2W_PROFILE_LIVE_10S_V203){
+      window.__F2W_PROFILE_LIVE_10S_V203=setInterval(()=>{
         if(document.visibilityState!=='visible')return;
         const u=usernameFromUrl(); if(u)fetchOne(u,{paintNow:true});
-      },30000);
+      },10000);
     }
     // Warm a small number of visible profile destinations in idle time. Capped
     // deliberately so "instant" does not turn into excessive Supabase load.
@@ -2431,3 +2378,5 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:v182-profile-editor-recent-member:20260902
 
 // f2w-force-save:v191-profile-editor-load-fix:20260902
+
+// f2w-force-save:v203-presence-authority:20260902
