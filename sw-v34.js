@@ -1,7 +1,7 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v154-global-ui-header-spacing-20260902';
+const CACHE='f2w-v155-profile-route-hotfix-20260902';
 const CORE=['/v154-global-ui.css','/v154-global-ui.js',
-  '/home/','/favorites/','/profile/','/support/','/chat/','/account/',
+  '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
   '/final-v35.css','/final-v35.js',
@@ -41,15 +41,23 @@ async function navigationResponse(request){
   const cache=await caches.open(CACHE);
   const path=new URL(request.url).pathname;
 
-  // v153: friendly profile URLs are virtual routes. Serve the profile shell
-  // immediately instead of asking static hosting for a file that does not exist.
+  // v155: /profile/@username is a virtual route on static hosting.
+  // NEVER request that virtual URL from the origin. Always serve the real
+  // profile document and preserve the friendly address in the browser.
   if(/^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){
-    const cachedShell=await cache.match('/profile/');
-    const freshShell=fetch('/profile/',{cache:'no-cache'}).then(r=>{
-      if(r&&r.ok){cache.put('/profile/',r.clone()).catch(()=>{});return r;}
-      return cachedShell;
-    }).catch(()=>cachedShell);
-    return cachedShell||freshShell;
+    const cachedShell=(await cache.match('/profile/index.html')) || (await cache.match('/profile/'));
+    try{
+      const fresh=await fetch('/profile/index.html',{cache:'no-store'});
+      if(fresh&&fresh.ok){
+        cache.put('/profile/index.html',fresh.clone()).catch(()=>{});
+        cache.put('/profile/',fresh.clone()).catch(()=>{});
+        return fresh;
+      }
+    }catch{}
+    if(cachedShell)return cachedShell;
+    // Last-resort: let the browser request the physical file directly rather
+    // than returning the old one-line 503 response.
+    return fetch('/profile/index.html',{cache:'reload'});
   }
 
   // NETWORK-FIRST for ordinary HTML navigation.
@@ -69,7 +77,7 @@ async function navigationResponse(request){
   // Without this, the service worker returned the literal word "Offline"
   // whenever navigation fallback was needed for an offline user/profile route.
   if(path==='/profile/' || path==='/profile' || /^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){
-    const shell=await cache.match('/profile/');
+    const shell=(await cache.match('/profile/index.html')) || (await cache.match('/profile/'));
     if(shell)return shell;
   }
 

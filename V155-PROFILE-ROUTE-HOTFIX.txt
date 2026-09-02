@@ -1,0 +1,20 @@
+Flix2Watch v155 — /profile/@username routing hotfix
+
+Cause
+- The service worker still had an old fallback that could return the literal text "Temporarily unavailable".
+- The friendly /profile/@username route depended on a cached /profile/ shell, and the service-worker registration was still cache-busted as v149.
+
+Fix
+- /profile/@username is intercepted before any origin navigation and always serves /profile/index.html while keeping the friendly URL visible.
+- /profile/index.html is now precached explicitly.
+- Both /profile/ and /profile/index.html are accepted as profile-shell fallbacks.
+- The service worker cache is bumped to v155 and registration is cache-busted to v155 so browsers actually install the repaired worker.
+- The friendly URL remains /profile/@username site-wide.
+
+No Supabase SQL required.
+
+Deployment
+1. Deploy the full v155 ZIP.
+2. Close all Flix2Watch tabs.
+3. Reopen the site and hard refresh once.
+4. If a browser still shows the old one-line 503 once, clear that site's service worker/cache and reload.
