@@ -2,19 +2,181 @@
 :root{--bg:#030814;--panel:#071525;--line:#263c54;--muted:#8da0b6;--red:#ff1738;--red2:#b80722}*{box-sizing:border-box}html{background:var(--bg);color-scheme:dark}body{margin:0;min-height:100vh;background:radial-gradient(circle at 85% 0,rgba(255,23,56,.12),transparent 31%),var(--bg);color:#fff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.topbar{height:74px;display:flex;align-items:center;gap:14px;padding:0 clamp(16px,4vw,56px);border-bottom:1px solid #1b2d41;background:rgba(3,8,20,.94);position:sticky;top:0;z-index:20}.logo img{width:146px;display:block}.spacer{flex:1}.toplink{height:40px;padding:0 14px;display:inline-flex;align-items:center;gap:8px;border:1px solid #30445b;border-radius:10px;background:#081727;color:#fff;text-decoration:none;font:900 .78rem/1 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(900px,calc(100% - 28px));margin:38px auto 80px}.eyebrow{color:var(--red);font-size:.7rem;font-weight:950;letter-spacing:.15em;text-transform:uppercase}.title{margin:7px 0 8px;font-size:clamp(2.2rem,6vw,4rem);line-height:1;font-weight:950;letter-spacing:-.04em}.sub{color:var(--muted);line-height:1.55}.card{margin-top:24px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#09192b,#06111f);box-shadow:0 28px 80px rgba(0,0,0,.26);overflow:hidden}.head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #20344a}.head strong{font-size:1rem}.head .spacer{flex:1}.mark{border:1px solid #ff3b52;border-radius:10px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;padding:9px 12px;font:900 .82rem/1 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}.mark:disabled{opacity:.65;cursor:wait}.list{min-height:180px}.note{display:block;padding:15px 18px;border-bottom:1px solid #17283a;color:#eef5fc;text-decoration:none;background:#071320}.note.unread{background:linear-gradient(90deg,rgba(239,18,42,.13),#071320 55%)}.note:hover{background:#0b1b2d}.note strong,.note span,.note small{display:block}.note span{margin-top:4px;color:#bac8d8;line-height:1.45}.note small{margin-top:7px;color:#72869b}.empty,.loading,.error{padding:36px 18px;text-align:center;color:var(--muted)}.error{color:#ff9aaa}.badge{min-width:24px;height:24px;padding:0 7px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:#e50920;color:#fff;font-size:.72rem;font-weight:950}.badge[hidden]{display:none}.retry{margin-top:12px}.spinner{display:inline-block;width:22px;height:22px;border:2px solid #29425c;border-top-color:var(--red);border-radius:50%;animation:s .7s linear infinite}.pager{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;border-top:1px solid #20344a}.pager[hidden]{display:none}.page-btn{min-width:38px;height:36px;border:1px solid #30445b;border-radius:9px;background:#081727;color:#fff;font:800 .78rem/1 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}.page-btn.active{background:#e50920;border-color:#ff3851}.page-btn:disabled{opacity:.42;cursor:default}.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);padding:11px 16px;border:1px solid #2d5e45;border-radius:10px;background:#0a2418;color:#caffdf;font:800 .82rem/1.2 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;opacity:0;pointer-events:none;transition:.2s;z-index:1000}.toast.show{opacity:1;transform:translate(-50%,0)}@keyframes s{to{transform:rotate(360deg)}}@media(max-width:650px){.logo img{width:126px}.topbar{height:66px;padding:0 14px}.shell{margin-top:24px}.head{align-items:flex-start;flex-wrap:wrap}.mark{width:100%}}
 </style><link rel="stylesheet" href="/v176-sitewide.css?v=178"></head><body><header class="topbar"><a class="logo" href="/home/"><img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch"></a><div class="spacer"></div><a class="toplink" href="/home/"><i class="fa-solid fa-house"></i> Home</a><a class="toplink" href="/account/"><i class="fa-solid fa-user"></i> Account</a></header><main class="shell"><div class="eyebrow">Flix2Watch</div><h1 class="title">Notifications</h1><div class="sub">Your account notifications in one place. New notifications appear here automatically.</div><section class="card"><div class="head"><strong>Notifications</strong><span class="badge" id="unread-badge" hidden>0</span><div class="spacer"></div><button class="mark" id="mark-read" type="button">Mark all read</button></div><div class="list" id="notification-page-list"><div class="loading"><span class="spinner"></span><br><br>Loading notifications…</div></div><nav class="pager" id="notification-pager" aria-label="Notification pages" hidden></nav></section></main><div class="toast" id="notification-toast" role="status" aria-live="polite"></div><script>
 (()=>{'use strict';
-const URL='https://viqufxlcxwgboyxbdhjb.supabase.co',KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge',PAGE_SIZE=10;
-let c=window.f2wSupabase||window.chatSupabase||window.supabaseClient||window.__supabaseClient||null;if(!c?.rpc)c=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let uid='',rows=[],chan=null,timer=0,loading=false,page=1,pageCount=1,total=0;
-const list=document.getElementById('notification-page-list'),badge=document.getElementById('unread-badge'),mark=document.getElementById('mark-read'),pager=document.getElementById('notification-pager'),toast=document.getElementById('notification-toast');
+const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+const PAGE_SIZE=10;
+let c=window.f2wSupabase||window.chatSupabase||window.supabaseClient||window.__supabaseClient||null;
+if(!c?.rpc)c=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+let uid='',rows=[],channels=[],timer=0,loading=false,page=1,pageCount=1,total=0,refreshTimer=0;
+const list=document.getElementById('notification-page-list');
+const badge=document.getElementById('unread-badge');
+const mark=document.getElementById('mark-read');
+const pager=document.getElementById('notification-pager');
+const toast=document.getElementById('notification-toast');
 const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const rel=v=>{const t=new Date(v).getTime();if(!Number.isFinite(t))return'';const d=Math.max(0,Date.now()-t);if(d<6e4)return'just now';if(d<36e5)return Math.floor(d/6e4)+'m ago';if(d<864e5)return Math.floor(d/36e5)+'h ago';return Math.floor(d/864e5)+'d ago'};
-function normalize(raw){if(!raw)return{rows:[],unread_count:0,total_count:0,page:1,page_count:1};if(Array.isArray(raw))return{rows:raw,unread_count:raw.filter(x=>!x.read_at).length,total_count:raw.length,page:1,page_count:1};return{rows:Array.isArray(raw.rows)?raw.rows:[],unread_count:Number(raw.unread_count||0),total_count:Number(raw.total_count||0),page:Number(raw.page||1),page_count:Math.max(1,Number(raw.page_count||1))}}
+const missingRpc=e=>['PGRST202','42883'].includes(e?.code)||/function .* does not exist|could not find the function/i.test(String(e?.message||''));
+function asRows(raw){
+  if(Array.isArray(raw))return raw;
+  if(raw&&Array.isArray(raw.rows))return raw.rows;
+  return [];
+}
+function normalizeRow(x,source){
+  return {
+    id:String(x?.id??''),
+    source,
+    notification_type:x?.notification_type||x?.type||x?.kind||'system',
+    title:x?.title||'Notification',
+    message:x?.message??x?.body??x?.text??'',
+    link:x?.link||x?.url||x?.href||'#',
+    read_at:x?.read_at||((x?.is_read===true)?new Date().toISOString():null),
+    created_at:x?.created_at||x?.inserted_at||x?.updated_at||new Date().toISOString()
+  };
+}
+function dedupe(input){
+  const out=[],seen=new Map();
+  input.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  for(const n of input){
+    const content=[String(n.title).trim().toLowerCase(),String(n.message).trim().toLowerCase(),String(n.link||'').trim().toLowerCase()].join('|');
+    const prior=seen.get(content)||[];
+    const time=new Date(n.created_at).getTime()||0;
+    if(prior.some(p=>p.source!==n.source&&Math.abs(p.time-time)<=6000))continue;
+    out.push(n);prior.push({source:n.source,time});seen.set(content,prior);
+  }
+  return out;
+}
 function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),2600)}
-function paintPager(){pager.hidden=pageCount<=1;if(pager.hidden){pager.innerHTML='';return}const buttons=[];buttons.push(`<button class="page-btn" data-page="${Math.max(1,page-1)}" ${page<=1?'disabled':''} aria-label="Previous page">‹</button>`);const start=Math.max(1,Math.min(page-2,pageCount-4)),end=Math.min(pageCount,start+4);for(let p=start;p<=end;p++)buttons.push(`<button class="page-btn ${p===page?'active':''}" data-page="${p}" ${p===page?'aria-current="page"':''}>${p}</button>`);buttons.push(`<button class="page-btn" data-page="${Math.min(pageCount,page+1)}" ${page>=pageCount?'disabled':''} aria-label="Next page">›</button>`);pager.innerHTML=buttons.join('')}
-function paint(){list.innerHTML=rows.length?rows.map(x=>{const title=x.title||x.type||x.kind||'Notification',msg=x.message||x.body||x.text||'',link=x.link||x.url||x.href||'#',read=x.read_at||x.is_read===true;return `<a class="note ${read?'':'unread'}" href="${esc(link)}"><strong>${esc(title)}</strong><span>${esc(msg)}</span><small>${esc(rel(x.created_at||x.inserted_at||x.updated_at))}</small></a>`}).join(''):'<div class="empty">No notifications yet.</div>';paintPager()}
-async function fetchRows(targetPage=page){if(loading||!uid)return;loading=true;try{const out=await c.rpc('get_my_notifications_v179',{p_page:Math.max(1,targetPage),p_page_size:PAGE_SIZE});if(out.error)throw out.error;const x=normalize(out.data);rows=x.rows;page=x.page;pageCount=x.page_count;total=x.total_count;badge.textContent=String(x.unread_count);badge.hidden=!x.unread_count;paint()}catch(e){console.error('notifications v179',e);list.innerHTML='<div class="error">Notifications could not be loaded.<div><button class="mark retry" type="button" id="notif-retry">Retry</button></div></div>';pager.hidden=true}finally{loading=false}}
-async function boot(){const s=(await c.auth.getSession()).data?.session;if(!s?.user){location.replace('/home/');return}uid=s.user.id;await fetchRows(1);try{chan=c.channel('f2w-notifications-v179-'+uid).on('postgres_changes',{event:'*',schema:'public',table:'f2w_notifications_v125',filter:`user_id=eq.${uid}`},()=>fetchRows(page)).subscribe()}catch(e){console.warn(e)}timer=setInterval(()=>{if(document.visibilityState==='visible')fetchRows(page)},30000)}
-list.addEventListener('click',e=>{if(e.target.closest('#notif-retry')){e.preventDefault();fetchRows(page)}});pager.addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(!b||b.disabled)return;fetchRows(Number(b.dataset.page)||1).then(()=>window.scrollTo({top:0,behavior:'smooth'}))});
-mark.addEventListener('click',async()=>{if(mark.disabled||!uid)return;mark.disabled=true;const old=mark.textContent;mark.textContent='Marking…';try{const out=await c.rpc('mark_my_notifications_read_v179');if(out.error)throw out.error;rows=rows.map(x=>({...x,read_at:x.read_at||new Date().toISOString(),is_read:true}));badge.textContent='0';badge.hidden=true;paint();showToast('Successfully read all messages');setTimeout(()=>fetchRows(page),150)}catch(e){showToast(e.message||'Could not mark notifications as read')}finally{mark.disabled=false;mark.textContent=old}});boot();
+function setPayload(input,targetPage=page){
+  rows=input.rows;page=input.page;pageCount=input.page_count;total=input.total_count;
+  badge.textContent=String(input.unread_count||0);badge.hidden=!Number(input.unread_count||0);paint();
+}
+function paintPager(){
+  pager.hidden=pageCount<=1;
+  if(pager.hidden){pager.innerHTML='';return}
+  const buttons=[];
+  buttons.push(`<button class="page-btn" data-page="${Math.max(1,page-1)}" ${page<=1?'disabled':''} aria-label="Previous page">‹</button>`);
+  const start=Math.max(1,Math.min(page-2,pageCount-4)),end=Math.min(pageCount,start+4);
+  for(let p=start;p<=end;p++)buttons.push(`<button class="page-btn ${p===page?'active':''}" data-page="${p}" ${p===page?'aria-current="page"':''}>${p}</button>`);
+  buttons.push(`<button class="page-btn" data-page="${Math.min(pageCount,page+1)}" ${page>=pageCount?'disabled':''} aria-label="Next page">›</button>`);
+  pager.innerHTML=buttons.join('');
+}
+function paint(){
+  list.innerHTML=rows.length?rows.map(x=>`<a class="note ${x.read_at?'':'unread'}" href="${esc(x.link||'#')}"><strong>${esc(x.title||'Notification')}</strong><span>${esc(x.message||'')}</span><small>${esc(rel(x.created_at))}</small></a>`).join(''):'<div class="empty">No notifications yet.</div>';
+  paintPager();
+}
+async function fetchF2wLegacy(){
+  const attempts=[
+    ['get_my_notifications_v170',{p_limit:100}],
+    ['get_my_notifications_v166',{p_limit:100}],
+    ['get_my_notifications_v161',{p_limit:100}],
+    ['get_my_notifications_v160',{p_limit:100}],
+    ['get_my_notifications_v125',{p_limit:100}]
+  ];
+  let lastError=null;
+  for(const [fn,args] of attempts){
+    try{
+      const out=await c.rpc(fn,args);
+      if(!out?.error)return asRows(out?.data).map(x=>normalizeRow(x,'f2w'));
+      lastError=out.error;
+      if(!missingRpc(out.error))break;
+    }catch(e){lastError=e}
+  }
+  if(lastError&&!missingRpc(lastError))throw lastError;
+  return [];
+}
+async function fetchLegacyAll(){
+  const userPromise=(async()=>{
+    try{
+      const out=await c.rpc('get_my_notifications',{p_limit:100});
+      if(out?.error)throw out.error;
+      return asRows(out?.data).map(x=>normalizeRow(x,'user'));
+    }catch(e){console.warn('legacy user notifications unavailable',e);return []}
+  })();
+  const f2wPromise=(async()=>{try{return await fetchF2wLegacy()}catch(e){console.warn('legacy f2w notifications unavailable',e);return []}})();
+  const merged=dedupe([...(await userPromise),...(await f2wPromise)]);
+  return merged;
+}
+async function fetchRows(targetPage=page){
+  if(loading||!uid)return;
+  loading=true;
+  try{
+    const wanted=Math.max(1,targetPage);
+    let canonical=null;
+    try{
+      const out=await c.rpc('get_my_notifications_v181',{p_page:wanted,p_page_size:PAGE_SIZE});
+      if(out?.error)throw out.error;
+      if(out?.data&&typeof out.data==='object'&&Array.isArray(out.data.rows))canonical=out.data;
+    }catch(e){
+      if(!missingRpc(e))console.warn('v181 notification RPC fallback',e);
+    }
+    if(canonical){
+      setPayload({
+        rows:canonical.rows.map(x=>normalizeRow(x,'user')),
+        unread_count:Number(canonical.unread_count||0),
+        total_count:Number(canonical.total_count||0),
+        page:Math.max(1,Number(canonical.page||wanted)),
+        page_count:Math.max(1,Number(canonical.page_count||1))
+      });
+      return;
+    }
+    const all=await fetchLegacyAll();
+    const pages=Math.max(1,Math.ceil(all.length/PAGE_SIZE));
+    const actual=Math.min(wanted,pages);
+    const start=(actual-1)*PAGE_SIZE;
+    setPayload({
+      rows:all.slice(start,start+PAGE_SIZE),
+      unread_count:all.filter(x=>!x.read_at).length,
+      total_count:all.length,
+      page:actual,
+      page_count:pages
+    });
+  }catch(e){
+    console.error('notifications v181',e);
+    list.innerHTML='<div class="error">Notifications could not be loaded.<div><button class="mark retry" type="button" id="notif-retry">Retry</button></div></div>';
+    pager.hidden=true;
+  }finally{loading=false}
+}
+function scheduleRefresh(){clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>fetchRows(page),180)}
+async function subscribe(){
+  for(const ch of channels){try{c.removeChannel(ch)}catch{}}
+  channels=[];
+  const specs=[['user_notifications','canonical'],['f2w_notifications_v125','legacy']];
+  for(const [table,label] of specs){
+    try{
+      const ch=c.channel(`f2w-notifications-v181-${label}-${uid}`).on('postgres_changes',{event:'*',schema:'public',table,filter:`user_id=eq.${uid}`},scheduleRefresh).subscribe();
+      channels.push(ch);
+    }catch(e){console.warn('notifications realtime '+table,e)}
+  }
+}
+async function boot(){
+  const s=(await c.auth.getSession()).data?.session;
+  if(!s?.user){location.replace('/home/');return}
+  uid=s.user.id;
+  await fetchRows(1);
+  await subscribe();
+  timer=setInterval(()=>{if(document.visibilityState==='visible')fetchRows(page)},30000);
+  c.auth.onAuthStateChange?.((_event,next)=>{const nextUid=next?.user?.id||'';if(!nextUid){location.replace('/home/');return}if(nextUid!==uid){uid=nextUid;fetchRows(1);subscribe()}});
+}
+list.addEventListener('click',e=>{if(e.target.closest('#notif-retry')){e.preventDefault();fetchRows(page)}});
+pager.addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(!b||b.disabled)return;fetchRows(Number(b.dataset.page)||1).then(()=>window.scrollTo({top:0,behavior:'smooth'}))});
+mark.addEventListener('click',async()=>{
+  if(mark.disabled||!uid)return;
+  mark.disabled=true;
+  const old=mark.textContent;mark.textContent='Marking…';
+  try{
+    let success=false;
+    try{const out=await c.rpc('mark_my_notifications_read_v181');if(!out?.error)success=true;else if(!missingRpc(out.error))throw out.error}catch(e){if(!missingRpc(e))console.warn(e)}
+    const fallbacks=await Promise.allSettled([
+      c.rpc('mark_all_notifications_read'),
+      c.rpc('mark_my_notifications_read_v170'),
+      c.rpc('mark_my_notifications_read_v179')
+    ]);
+    if(fallbacks.some(r=>r.status==='fulfilled'&&!r.value?.error))success=true;
+    if(!success)throw new Error('Could not mark notifications as read');
+    const now=new Date().toISOString();rows=rows.map(x=>({...x,read_at:x.read_at||now}));badge.textContent='0';badge.hidden=true;paint();showToast('Successfully read all messages');setTimeout(()=>fetchRows(page),150);
+  }catch(e){showToast(e?.message||'Could not mark notifications as read')}
+  finally{mark.disabled=false;mark.textContent=old}
+});
+boot();
 })();
-</script><script src="/v165-enforcement.js?v=171"></script><script src="/v172-sitewide.js?v=172"></script><link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=175"></script><script src="/v176-sitewide.js?v=178" defer></script><!-- f2w-force-save:v179-notifications-page --></body></html>
+</script><script src="/v165-enforcement.js?v=171"></script><script src="/v172-sitewide.js?v=172"></script><link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=175"></script><script src="/v176-sitewide.js?v=178" defer></script><!-- f2w-force-save:v181-notifications-page:20260902 --></body></html>
