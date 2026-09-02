@@ -295,7 +295,7 @@
   'use strict';
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/sw-v34.js?v=159-20260902',{scope:'/'})
+    navigator.serviceWorker.register('/sw-v34.js?v=160-20260902',{scope:'/'})
       .catch(error=>console.warn('F2W service worker registration failed:',error));
   },{once:true,passive:true});
 })();
@@ -383,14 +383,7 @@
       client?.auth?.getSession?.().catch?.(()=>{});
     }catch{}
 
-    // Lightweight network warmup to Supabase REST endpoint.
-    fetch('https://viqufxlcxwgboyxbdhjb.supabase.co/rest/v1/',{
-      method:'HEAD',
-      mode:'cors',
-      cache:'no-store',
-      credentials:'omit',
-      headers:{apikey:'sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge'}
-    }).catch(()=>{});
+    // v160: no REST HEAD warmup; preconnect is enough and costs no database request.
   }
 
   if('requestIdleCallback' in window)requestIdleCallback(warmChat,{timeout:700});
@@ -2400,6 +2393,8 @@ window.f2wOpenGuestDmAuthV98=function(mode){
   'use strict';
   if(window.__f2wNotificationsV125)return;
   window.__f2wNotificationsV125=true;
+  // v160: delegated to /v160-recovery.js to avoid duplicate clients/channels.
+  return;
 
   const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
   const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';

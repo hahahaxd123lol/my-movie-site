@@ -136,6 +136,7 @@ html{overflow-y:scroll}
   <meta name="apple-mobile-web-app-title" content="Flix2Watch">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/v160-bootstrap.js?v=160"></script>
   <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js" defer></script>
   <meta name="theme-color" content="#09090f">
@@ -986,6 +987,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   <link rel="stylesheet" href="/v146-live-ops.css?v=159">
   <link rel="stylesheet" href="/v154-global-ui.css?v=159">
   <script src="/v154-global-ui.js?v=159" defer></script>
+<link rel="stylesheet" href="/v160-recovery.css?v=160">
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
@@ -1359,6 +1361,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <div>
           <label>PUBLIC PROFILE ROLES</label>
           <div class="staff-role-picker" id="staff-profile-role-picker">
+            <button class="staff-role-toggle" id="staff-profile-staff-toggle" data-role="staff" type="button" onclick="toggleManagedStaff()"><i class="fa-solid fa-shield-halved"></i> Give Staff</button>
             <button class="staff-role-toggle" data-role="moderator" type="button" onclick="toggleManagedRole('moderator')"><i class="fa-solid fa-gavel"></i> Moderator</button>
             <button class="staff-role-toggle" data-role="curator" type="button" onclick="toggleManagedRole('curator')"><i class="fa-solid fa-clapperboard"></i> Curator</button>
             <button class="staff-role-toggle" data-role="support" type="button" onclick="toggleManagedRole('support')"><i class="fa-solid fa-headset"></i> Support</button>
@@ -1740,7 +1743,7 @@ const PAGE_ROLE_TABS={
 };
 async function resolveStaffPageContext(){
   let core={role:'member',username:'',permissions:[]};
-  try{core=await rpc('get_staff_context')||core}catch(_e){}
+  try{core=await rpc('get_staff_context_v160')||await rpc('get_staff_context')||core}catch(_e){}
   if(['owner','staff'].includes(core.role))return core;
   const {data:{session}}=await db.auth.getSession();
   if(!session?.user)return core;
@@ -2382,6 +2385,7 @@ async function setPermission(username,permission,allowed){try{try{await rpc('own
 
 let managedProfileSnapshot=null;
 let managedProfileRoles=new Set();
+let managedProfileIsStaff=false;
 
 function managedProfileUserId(){
   return managedProfileSnapshot?.profile?.user_id||'';
@@ -2405,12 +2409,12 @@ function renderManagedRoles(){
   document.querySelectorAll('#staff-profile-role-picker .staff-role-toggle')
     .forEach(button=>{
       const role=button.dataset.role;
-      button.classList.toggle('active',managedProfileRoles.has(role));
-      button.disabled=!hasPerm('profile_roles_manage');
-      button.setAttribute(
-        'aria-pressed',
-        managedProfileRoles.has(role)?'true':'false'
-      );
+      const isStaffRole=role==='staff';
+      const on=isStaffRole?managedProfileIsStaff:managedProfileRoles.has(role);
+      button.classList.toggle('active',on);
+      button.disabled=isStaffRole?(staffContext?.role!=='owner'):!hasPerm('profile_roles_manage');
+      if(isStaffRole)button.innerHTML=`<i class="fa-solid fa-shield-halved"></i> ${on?'Remove Staff':'Give Staff'}`;
+      button.setAttribute('aria-pressed',on?'true':'false');
     });
 }
 
@@ -2429,7 +2433,11 @@ async function loadManagedRoles(){
   }
 
   try{
-    const data=await rpc('staff_get_profile_roles',{p_user_id:userId});
+    const [data,staffState]=await Promise.all([
+      rpc('staff_get_profile_roles',{p_user_id:userId}),
+      rpc('staff_get_profile_staff_state_v160',{p_user_id:userId}).catch(()=>false)
+    ]);
+    managedProfileIsStaff=Boolean(staffState);
     managedProfileRoles=new Set(
       (Array.isArray(data)?data:[]).map(value=>String(value))
     );
@@ -2471,6 +2479,16 @@ function renderManagedProfile(){
   renderManagedRoles();
 }
 
+let v160ManagedRoleChannel=null;
+async function bindManagedRoleRealtime(){
+  const userId=managedProfileUserId();if(!userId||!db?.channel)return;
+  try{if(v160ManagedRoleChannel)db.removeChannel(v160ManagedRoleChannel)}catch{}
+  v160ManagedRoleChannel=db.channel('staff-profile-roles-v160-'+userId)
+    .on('postgres_changes',{event:'*',schema:'public',table:'profile_role_assignments',filter:`user_id=eq.${userId}`},()=>loadManagedRoles())
+    .on('postgres_changes',{event:'*',schema:'public',table:'account_enforcement_v146',filter:`user_id=eq.${userId}`},()=>loadQuickModerationState?.())
+    .subscribe();
+}
+
 async function loadManagedProfile(){
   const input=document.getElementById('profile-manager-target');
   const username=String(input?.value||'')
@@ -2503,6 +2521,7 @@ async function loadManagedProfile(){
 
     renderManagedProfile();
     await loadManagedRoles();
+    await bindManagedRoleRealtime();
   }catch(error){
     toast(error.message);
   }
@@ -2626,6 +2645,18 @@ async function uploadManagedProfileAvatar(file){
 function clearManagedProfileAvatar(){
   document.getElementById('staff-profile-avatar-url').value='';
   previewManagedAvatar('');
+}
+
+async function toggleManagedStaff(){
+  const userId=managedProfileUserId();if(!userId)return;
+  if(staffContext?.role!=='owner'){toast('Only Owner can grant or remove Staff');return}
+  const enabled=!managedProfileIsStaff;
+  try{
+    await rpc('owner_set_staff_v160',{p_user_id:userId,p_enabled:enabled});
+    managedProfileIsStaff=enabled;renderManagedRoles();
+    toast(enabled?'Staff granted':'Staff removed');
+    await Promise.allSettled([loadLiveModeration(),loadStats()]);
+  }catch(error){toast(error.message)}
 }
 
 async function toggleManagedRole(role){
@@ -4619,6 +4650,7 @@ body.f2w-auth-v67-open {
 <!-- F2W v159 core recovery -->
 <link rel="stylesheet" href="/v159-core.css?v=159">
 <script src="/v159-core.js?v=159" defer></script>
+<script src="/v160-recovery.js?v=160"></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->

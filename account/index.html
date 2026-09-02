@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="/v146-live-ops.css?v=159">
 <script>try{document.documentElement.classList.add('f2w-transition-boot')}catch(e){}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/v160-bootstrap.js?v=160"></script>
 <style>
 :root{--bg:#030814;--panel:#071525;--panel2:#0a1b2e;--line:#263c54;--muted:#8da0b6;--red:#ff1738;--red2:#c20b2b;--good:#36d489;--bad:#ff6478;--yellow:#ffca45}
 *{box-sizing:border-box}
@@ -30,6 +31,7 @@ a{color:inherit;text-decoration:none}
 </style>
   <link rel="stylesheet" href="/v154-global-ui.css?v=159">
   <script src="/v154-global-ui.js?v=159" defer></script>
+<link rel="stylesheet" href="/v160-recovery.css?v=160">
 </head>
 <body>
 <header class="topbar">
@@ -120,7 +122,7 @@ function consumeUsernameAttempt(){
 }
 async function roleFor(user){
   if(!user)return 'MEMBER';
-  try{const {data}=await c.rpc('get_staff_context');const r=String(data?.role||'').trim().toUpperCase();if(r)return r;}catch{}
+  try{const {data}=await c.rpc('get_staff_context_v160');const r=String(data?.role||'').trim().toUpperCase();if(r)return r;}catch{}
   return 'MEMBER';
 }
 async function boot(){
@@ -128,12 +130,13 @@ async function boot(){
     const {data}=await c.auth.getSession();
     sessionUser=data?.session?.user||null;
     if(!sessionUser){location.replace('/home/');return;}
-    const {data:profile}=await c.from('profiles').select('username,display_name').eq('user_id',sessionUser.id).maybeSingle();
-    currentUsername=String(profile?.username||sessionUser.user_metadata?.username||sessionUser.user_metadata?.chat_alias||'').trim().replace(/^@/,'');
+    let summary=null;
+    try{const {data,error}=await Promise.race([c.rpc('get_my_account_summary_v160'),new Promise((_,rej)=>setTimeout(()=>rej(new Error('Account summary timeout')),2200))]);if(!error)summary=data||null}catch{}
+    currentUsername=String(summary?.username||sessionUser.user_metadata?.username||sessionUser.user_metadata?.chat_alias||'').trim().replace(/^@/,'');
     $('account-email').textContent=sessionUser.email||'Signed-in user';
     $('account-username').textContent=currentUsername?'@'+currentUsername:'@username';
     $('new-username').value=currentUsername;
-    const role=await roleFor(sessionUser);$('account-role').textContent=role;
+    const role=String(summary?.role||await roleFor(sessionUser)||'MEMBER').toUpperCase();$('account-role').textContent=role;
     if(['OWNER','STAFF','MODERATOR','SUPPORT','DEVELOPER'].includes(role))$('staff-link').hidden=false;
     $('profile-link').href=currentUsername?'/profile/@'+encodeURIComponent(currentUsername):'/profile/';
     $('account-loading').hidden=true;$('account-content').hidden=false;
@@ -199,5 +202,6 @@ boot();
 <!-- F2W v159 core recovery -->
 <link rel="stylesheet" href="/v159-core.css?v=159">
 <script src="/v159-core.js?v=159" defer></script>
+<script src="/v160-recovery.js?v=160"></script>
 </body>
 </html>

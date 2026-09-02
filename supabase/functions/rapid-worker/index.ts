@@ -1929,17 +1929,20 @@ async function getBearerUser(request: Request) {
 }
 
 async function activeAccountLoginBan(userId: string) {
+  // v160: account_enforcement_v146 is the ONLY login-ban authority.
+  // A historical account_login_bans row left behind by an old Site Suspension
+  // must never block a user after Staff has removed the restriction.
   const { data, error } = await supabase
-    .from("account_login_bans")
-    .select("reason,expires_at")
+    .from("account_enforcement_v146")
+    .select("account_banned,reason,expires_at")
     .eq("user_id", userId)
     .maybeSingle();
 
-  if (error || !data) return null;
+  if (error || !data || data.account_banned !== true) return null;
   if (data.expires_at && new Date(data.expires_at).getTime() <= Date.now()) {
     return null;
   }
-  return data;
+  return { reason: data.reason, expires_at: data.expires_at };
 }
 
 
