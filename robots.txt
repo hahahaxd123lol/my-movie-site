@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /account/
 Disallow: /staff/
+Disallow: /notifications/
+Disallow: /favorites/
 
 Sitemap: https://flix2watch.com/sitemap.xml

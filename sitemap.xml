@@ -1,10 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://flix2watch.com/home/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>https://flix2watch.com/users/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flix2watch.com/support/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://flix2watch.com/leaderboard/</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://flix2watch.com/privacy/</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://flix2watch.com/chat/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/copyright/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/action/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/adventure/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/animation/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/comedy/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/crime/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/documentary/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/drama/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/family/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/fantasy/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/history/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/horror/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/music/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/mystery/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/romance/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/sci-fi/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/thriller/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/war/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/genre/western/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/home/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://flix2watch.com/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://flix2watch.com/law-enforcement/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/leaderboard/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://flix2watch.com/movies/search/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/privacy/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/profile/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://flix2watch.com/removal-requests/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/support/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/terms/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/users/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/users/search/</loc><lastmod>2026-09-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flix2watch.com/watch/</loc><lastmod>2026-09-02</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
 </urlset>
-
-<!-- v177-force-refresh-2026-09-02 -->
