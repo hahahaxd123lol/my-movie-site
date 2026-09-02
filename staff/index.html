@@ -2225,8 +2225,7 @@ async function updateReport(id,status){
     : '';
   if(status==='resolved'&&resolution===null)return;
   try{
-    await rpc('staff_update_report',{p_report_id:id,p_status:status,p_resolution:resolution||null});
-    toast('Report updated');
+    if(status==='dismissed'){await rpc('staff_delete_report_v171',{p_report_id:String(id)});toast('Report dismissed and permanently deleted')}else{await rpc('staff_update_report',{p_report_id:id,p_status:status,p_resolution:resolution||null});toast('Report updated')};
     await Promise.all([loadReports(),loadStats()]);
   }catch(e){toast(e.message)}
 }
@@ -2873,9 +2872,9 @@ async function sendStaffTicketReply(){
   if(!activeStaffTicketId)return;const input=document.getElementById('staff-ticket-reply');const button=document.getElementById('staff-ticket-send');const text=input.value.trim();if(!text&&!pendingStaffTicketImage){setStaffTicketStatus('Write a reply or choose an image.',true);return}button.disabled=true;setStaffTicketStatus(pendingStaffTicketImage?'Uploading image…':'Sending…');
   try{const imageUrl=await uploadStaffTicketImage(activeStaffTicketId);const payload=`${text}${text&&imageUrl?'\n':''}${imageUrl?`[[support-image:${imageUrl}]]`:''}`.slice(0,4000);await rpc('add_support_ticket_message',{p_ticket_id:activeStaffTicketId,p_message:payload});const priority=document.getElementById('staff-ticket-priority').value;await rpc('staff_update_ticket',{p_ticket_id:activeStaffTicketId,p_status:'waiting_user',p_priority:priority});input.value='';pendingStaffTicketImage=null;document.getElementById('staff-ticket-image').value='';document.getElementById('staff-ticket-file').textContent='No image selected';toast('Reply sent');setStaffTicketStatus('Sent.');await Promise.all([loadTickets(),loadStats()])}catch(e){setStaffTicketStatus(e.message||'Could not send reply.',true)}finally{button.disabled=false}
 }
-async function setActiveTicketStatus(status){if(!activeStaffTicketId)return;const p=document.getElementById('staff-ticket-priority').value;try{await rpc('staff_update_ticket',{p_ticket_id:activeStaffTicketId,p_status:status,p_priority:p});toast('Ticket updated');await Promise.all([loadTickets(),loadStats()]);if(status==='resolved'||status==='closed')closeStaffTicketModal()}catch(e){setStaffTicketStatus(e.message,true)}}
+async function setActiveTicketStatus(status){if(!activeStaffTicketId)return;const p=document.getElementById('staff-ticket-priority').value;try{if(status==='resolved'||status==='closed'){await rpc('staff_delete_ticket_v171',{p_ticket_id:String(activeStaffTicketId)});toast('Ticket resolved and permanently deleted');closeStaffTicketModal()}else{await rpc('staff_update_ticket',{p_ticket_id:activeStaffTicketId,p_status:status,p_priority:p});toast('Ticket updated')}await Promise.all([loadTickets(),loadStats()])}catch(e){setStaffTicketStatus(e.message,true)}}
 async function replyTicket(id){openStaffTicketModal(id)}
-async function updateTicket(id,status,priority){try{await rpc('staff_update_ticket',{p_ticket_id:id,p_status:status,p_priority:priority});toast('Ticket updated');await Promise.all([loadTickets(),loadStats()])}catch(e){toast(e.message)}}
+async function updateTicket(id,status,priority){try{if(status==='resolved'||status==='closed'){await rpc('staff_delete_ticket_v171',{p_ticket_id:String(id)});toast('Ticket resolved and permanently deleted')}else{await rpc('staff_update_ticket',{p_ticket_id:id,p_status:status,p_priority:priority});toast('Ticket updated')}await Promise.all([loadTickets(),loadStats()])}catch(e){toast(e.message)}}
 
 async function loadSettings(){
   try{
@@ -4683,7 +4682,7 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 })();
 </script>\n  <script src="/v170-notifications.js?v=170" defer></script>
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
-</body>
+<script src="/v171-sitewide.js?v=171"></script></body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->
 <!-- f2w-update-marker: shared-chat-v7:staff -->

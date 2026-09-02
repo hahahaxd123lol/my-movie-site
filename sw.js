@@ -1,13 +1,13 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v170-notifications-modal-leaderboard-20260902';
-const CORE=['/v170-notifications.js','/v170-sitewide-fixes.css','/v170-sitewide-fixes.js','/v166-enforcement.css','/v160-bootstrap.js','/v166-enforcement.js','/v159-core.css','/v159-core.js','/v154-global-ui.css','/v154-global-ui.js',
+const CACHE='f2w-v171-notifications-modal-leaderboard-20260902';
+const CORE=['/v171-notifications.js','/v171-sitewide-fixes.css','/v171-sitewide-fixes.js','/v171-enforcement.css','/v171-bootstrap.js','/v171-enforcement.js','/v171-core.css','/v171-core.js','/v171-global-ui.css','/v171-global-ui.js',
   '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
   '/final-v35.css','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',
   '/leaderboard-v140.css','/leaderboard-v140.js',
-  '/v145-sitewide-fixes.css','/v145-sitewide-fixes.js','/v147-account-logout.js','/v150-account-route.js',
+  '/v145-sitewide-fixes.css','/v145-sitewide-fixes.js','/v147-account-logout.js','/v171-account-route.js',
   '/flix2watch-logo-red-v34.png'
 ];
 
@@ -41,7 +41,7 @@ async function navigationResponse(request){
   const cache=await caches.open(CACHE);
   const path=new URL(request.url).pathname;
 
-  // v158: /profile/@username is a virtual route on static hosting.
+  // v171: /profile/@username is a virtual route on static hosting.
   // NEVER request that virtual URL from the origin. Always serve the real
   // profile document and preserve the friendly address in the browser.
   if(/^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){
