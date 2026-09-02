@@ -1556,9 +1556,9 @@
     if(account){
       account.style.display=logged?'flex':'none';
       if(logged){
-        account.innerHTML=roleKey==='owner'
-          ? '<i class="fa-solid fa-crown"></i> Owner'
-          : '<i class="fa-regular fa-user"></i> Account';
+        // v147: the account trigger is always labelled Account for every role.
+        // Staff/owner privileges remain available through the separate Staff Control button.
+        account.innerHTML='<i class="fa-regular fa-user"></i> Account';
       }
     }
 
