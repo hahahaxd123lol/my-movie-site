@@ -1,0 +1,12 @@
+Flix2Watch v171
+
+1. Run V171-STAFF-DELETE-ACTIONS.sql.
+2. Deploy the full build.
+3. Close old tabs and hard-refresh once.
+
+Changes:
+- Notifications now open /notifications/ instead of the unstable dropdown.
+- Notifications page reads your own notification rows directly, with RPC fallback, realtime updates, 30s fallback, and working Mark all read.
+- Account suspended/banned UI is a native top-layer dialog, centered in the CURRENT viewport regardless of page scroll or transformed ancestors.
+- Dismiss Report permanently deletes the report and Resolve/Close Ticket permanently deletes the ticket/messages from the database.
+- /chat close X is hardwired to leave chat to /home/.

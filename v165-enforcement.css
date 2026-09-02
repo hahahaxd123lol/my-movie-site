@@ -70,3 +70,9 @@ html.f2w-enforced body>*:not(#f2w-v165-enforcement):not(script):not(style){point
 #f2w-v165-enforcement .hint{display:block!important;margin-top:15px!important;color:#778697!important;font-size:12px!important}
 /* A stale old restriction implementation may have left these properties inline. v165 never uses them. */
 html:not(.f2w-enforced),html:not(.f2w-enforced) body{filter:none!important;-webkit-filter:none!important}
+
+/* v171: enforcement is a top-layer modal, so transforms/scroll containers cannot move it down the document. */
+#f2w-v165-enforcement{position:fixed!important;inset:0!important;margin:0!important;width:100vw!important;max-width:none!important;height:100dvh!important;max-height:none!important;padding:24px!important;border:0!important;background:transparent!important;overflow:hidden!important;display:none!important;align-items:center!important;justify-content:center!important;transform:none!important}
+#f2w-v165-enforcement[open],#f2w-v165-enforcement.show{display:flex!important}
+#f2w-v165-enforcement::backdrop{background:rgba(2,4,8,.68)!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important}
+#f2w-v165-enforcement .panel{position:relative!important;inset:auto!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;margin:auto!important;transform:none!important;max-height:calc(100dvh - 48px)!important;overflow:auto!important}

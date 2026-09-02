@@ -61,13 +61,13 @@ function scrubEnforcementVisuals(uid=''){
 function enforcementOverlay(){
   let el=document.getElementById('f2w-v165-enforcement');
   if(el)return el;
-  el=document.createElement('div');el.id='f2w-v165-enforcement';el.setAttribute('role','alertdialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-live','assertive');el.hidden=true;
+  el=document.createElement('dialog');el.id='f2w-v165-enforcement';el.setAttribute('role','alertdialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-live','assertive');el.hidden=true;
   el.innerHTML='<div class="panel" tabindex="-1"><div class="icon">!</div><div class="eyebrow">FLIX2WATCH ACCESS NOTICE</div><h1></h1><p></p><div class="actions"><a class="support" href="/support/">Support</a><button class="logout" type="button">Log Out</button></div><small class="hint">This restriction updates automatically. You do not need to refresh.</small></div>';
   el.querySelector('.logout')?.addEventListener('click',async()=>{try{await db()?.auth?.signOut?.({scope:'local'})}catch{}try{localStorage.removeItem(enforcementCacheKey(enforcementUserId))}catch{}location.replace('/home/')});
   document.body.appendChild(el);return el
 }
 function clearEnforcement(uid=''){
-  const el=document.getElementById('f2w-v165-enforcement');if(el)el.remove()
+  const el=document.getElementById('f2w-v165-enforcement');if(el){try{if(el.open)el.close()}catch{}el.remove()}
   scrubEnforcementVisuals(uid);
   if(uid)writeCachedEnforcement(uid,{site_suspended:false,account_banned:false});
   window.__flix2watchAccountState={banned:false,site_suspended:false,account_banned:false,user_id:uid||null};
@@ -84,7 +84,7 @@ function applyEnforcement(uid,state,{realtime=false,cached=false}={}){
   window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:active};
   if(!active){clearEnforcement(uid);return false}
   writeCachedEnforcement(uid,state);scrubEnforcementVisuals();stopPlayback();
-  const el=enforcementOverlay();el.hidden=false;el.classList.add('show');
+  const el=enforcementOverlay();el.hidden=false;el.classList.add('show');try{if(!el.open)el.showModal()}catch{};
   el.querySelector('h1').textContent=state.account_banned?'Account banned':'Account suspended';
   el.querySelector('p').textContent=state.reason||(state.account_banned?'This account has been banned. Please contact Support if you believe this is a mistake.':'Your access to Flix2Watch has been suspended. Please contact Support if you need help.');
   el.dataset.kind=state.account_banned?'account-ban':'site-suspension';
