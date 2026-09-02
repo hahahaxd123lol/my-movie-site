@@ -1,6 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script id="f2w-v206-social-link-authority">
+(()=>{
+  'use strict';
+  if(window.__f2wV206SocialLinkAuthority)return;
+  window.__f2wV206SocialLinkAuthority=true;
+
+  function socialAnchor(target){
+    try{return target?.closest?.('a.v199-social-link[href]')||null}catch{return null}
+  }
+
+  function openSocialLink(event){
+    const a=socialAnchor(event.target);
+    if(!a)return;
+    const href=String(a.href||'').trim();
+    if(!/^https?:\/\//i.test(href))return;
+
+    // This listener is installed before the legacy site click routers. Keep the
+    // navigation inside the original trusted user gesture so browsers treat it
+    // as a normal explicit new-tab request rather than a delayed popup.
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    let opened=null;
+    try{opened=window.open(href,'_blank','noopener,noreferrer')}catch{}
+    if(opened){
+      try{opened.opener=null}catch{}
+      return;
+    }
+
+    // Fallback to the browser's native target=_blank anchor activation. Some
+    // privacy extensions allow this even when window.open itself is restricted.
+    try{
+      const native=document.createElement('a');
+      native.href=href;
+      native.target='_blank';
+      native.rel='noopener noreferrer external';
+      native.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;';
+      (document.body||document.documentElement).appendChild(native);
+      native.click();
+      native.remove();
+    }catch{}
+  }
+
+  // Capture-phase and installed in <head>, before the old document click
+  // handlers, so they cannot cancel profile social navigation afterward.
+  document.addEventListener('click',openSocialLink,true);
+})();
+</script>
+<style id="f2w-v206-social-link-pointer-fix">
+#v199-public-socials{position:relative!important;z-index:20!important;pointer-events:auto!important}
+#v199-public-socials a.v199-social-link[href]{position:relative!important;z-index:21!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+#v199-public-socials a.v199-social-link[href] *{pointer-events:none!important}
+</style>
 <link href="https://player.flix2watch.com" rel="preconnect" crossorigin>
 <link href="https://player.flix2watch.com" rel="dns-prefetch">
 
@@ -10930,3 +10983,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v204-profile-username-prefill-social-links:20260902 -->
 
 <!-- f2w-force-save:v205-profile-live-authority:20260902 -->
+
+<!-- f2w-force-save:v206-social-link-click-authority:20260902 -->
