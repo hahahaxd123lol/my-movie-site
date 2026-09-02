@@ -1,13 +1,13 @@
 /* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v146-live-ops-20260902';
+const CACHE='f2w-v148-account-page-20260902';
 const CORE=[
-  '/home/','/favorites/','/profile/','/support/','/chat/',
+  '/home/','/favorites/','/profile/','/support/','/chat/','/account/',
   '/leaderboard/','/forum/','/users/',
   '/global-header-v1.css','/global-header-chat-v1.js',
   '/final-v35.css','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',
   '/leaderboard-v140.css','/leaderboard-v140.js',
-  '/v145-sitewide-fixes.css','/v145-sitewide-fixes.js','/v146-live-ops.css','/v146-live-ops.js',
+  '/v145-sitewide-fixes.css','/v145-sitewide-fixes.js','/v146-live-ops.css','/v146-live-ops.js','/v147-account-logout.js','/v148-account-route.js',
   '/flix2watch-logo-red-v34.png'
 ];
 

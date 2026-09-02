@@ -1,0 +1,25 @@
+FLIX2WATCH v147 — SITE-WIDE ACCOUNT / LOGOUT FIX
+================================================
+
+WHAT CHANGED
+- Fixed Log Out site-wide. The old pages still contain page-local signOutAccount() functions
+  that depend on chatSupabase and could override the newer global account runtime.
+- v147 loads a final canonical logout runtime after every page's legacy scripts, then intercepts
+  logout clicks in capture phase so stale inline handlers cannot swallow the click.
+- Uses the active Supabase client when available, then clears the local Supabase auth session as
+  a fail-safe so logout still works if the network or an old page client is broken.
+- Redirects with location.replace('/home/') so Back does not resurrect stale protected UI.
+- Logout is broadcast to other Flix2Watch tabs in the same browser.
+- The top header button is now always labelled "Account" for MEMBER, STAFF, MODERATOR, OWNER,
+  SUPPORT and DEVELOPER roles. Staff privileges are still available through Staff Control Center.
+- Service worker cache bumped to v147.
+
+SUPABASE SQL
+- None required.
+
+APPLY
+1. Deploy the full v147 ZIP.
+2. Hard-refresh/reopen once so the v147 service-worker/cache takes over.
+3. Sign in, open Account, click Log Out from Home/Profile/Watch/Forum/Leaderboard/Staff.
+4. Owner/staff accounts should still see the separate Staff Control Center button, but the normal
+   account trigger itself should say "Account" like every other user.
