@@ -17,20 +17,14 @@ try{document.documentElement.classList.add('f2w-transition-boot')}catch(e){}
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
 <link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"></head>
 <body style="margin:0;background:#020914;color:white;font-family:Arial,sans-serif">
-<script id="f2w-404-friendly-profile-v153">
-(async()=>{
-  const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
+<script id="f2w-404-profile-route-v195">
+(()=>{
+  const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/i);
   if(m){
-    for(let attempt=0;attempt<2;attempt++){
-      try{
-        const r=await fetch('/profile/index.html',{cache:'no-cache'});
-        if(!r.ok)throw new Error('Profile route unavailable');
-        const html=await r.text();
-        document.open();document.write(html);document.close();
-        return;
-      }catch{ if(attempt===0) await new Promise(r=>setTimeout(r,180)); }
-    }
-    document.body.innerHTML='<main style="min-height:100vh;display:grid;place-items:center;background:#020914;color:#fff;font:600 16px Arial"><div>Profile is temporarily unavailable. <button onclick="location.reload()" style="margin-left:10px">Retry</button></div></main>';
+    const username=encodeURIComponent(m[1]);
+    // Load the real profile document. profile/index.html restores the clean
+    // /profile/@username URL with history.replaceState after boot.
+    location.replace(`/profile/?user=${username}&route=v195`);
     return;
   }
   location.replace('/home/');
@@ -44,8 +38,8 @@ try{document.documentElement.classList.add('f2w-transition-boot')}catch(e){}
 <script src="/v165-enforcement.js?v=183-20260902"></script>
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
 
-<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=190-20260902-auth-authority"></script>
-<script src="/v176-sitewide.js?v=190-20260902-auth-authority" defer></script></body>
+<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=195-20260902-profile-route"></script>
+<script src="/v176-sitewide.js?v=195-20260902-profile-route" defer></script></body>
 </html>
 <!-- f2w-force-save:v125-cache:1788300576:404.html -->
  
@@ -54,3 +48,5 @@ try{document.documentElement.classList.add('f2w-transition-boot')}catch(e){}
 <!-- f2w-force-save:v185-auth-cache-bust:20260902 -->
 
 <!-- f2w-force-save:v190-auth-controller-cleanup:20260902 -->
+
+<!-- f2w-force-save:v195-profile-route:20260902 -->
