@@ -989,6 +989,16 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   <script src="/v154-global-ui.js?v=159" defer></script>
 <link rel="stylesheet" href="/v165-enforcement.css?v=165">
   <link rel="stylesheet" href="/v166-notifications.css?v=166">
+<link rel="stylesheet" href="/v168-notifications.css?v=168">
+
+<style id="v168-staff-ticket-hotfix">
+#staff-ticket-modal.staff-ticket-modal{position:fixed!important;inset:0!important;z-index:2147483600!important;display:grid!important;place-items:center!important;background:rgba(1,6,12,.88)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
+#staff-ticket-modal[hidden]{display:none!important}
+#staff-ticket-modal .staff-ticket-chat{grid-template-rows:auto minmax(260px,1fr) auto auto!important;width:min(900px,calc(100vw - 32px))!important;max-height:min(860px,calc(100vh - 32px))!important;background:#07111c!important}
+#staff-ticket-modal-messages{display:flex!important;min-height:260px!important;max-height:56vh!important;overflow:auto!important;background:#050b12!important;color:#fff!important}
+#staff-ticket-modal-messages .staff-ticket-bubble{display:block!important;color:#fff!important}
+#staff-ticket-modal-messages .staff-ticket-bubble .body{color:#f4f7fb!important}
+</style>
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
@@ -1489,8 +1499,6 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <button class="btn primary" id="staff-dialog-ok" type="button">Continue</button>
       </div>
     </div>
-    <div id="staff-ticket-modal-messages" class="staff-ticket-messages"></div>
-    <div id="staff-ticket-statusline"></div>
   </div>
 </div>
 
@@ -2986,7 +2994,8 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 <div class="staff-ticket-modal" id="staff-ticket-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="staff-ticket-modal-title">
   <div class="staff-ticket-chat">
     <div class="staff-ticket-head"><div class="staff-ticket-head-copy"><strong id="staff-ticket-modal-title">Support ticket</strong><span id="staff-ticket-modal-meta"></span></div><button class="btn staff-ticket-close" type="button" onclick="closeStaffTicketModal()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
-    
+    <div id="staff-ticket-modal-messages" class="staff-ticket-messages"></div>
+    <div id="staff-ticket-statusline" class="staff-ticket-statusline" style="padding:0 16px"></div>
     <div class="staff-ticket-compose">
       <textarea id="staff-ticket-reply" maxlength="4000" placeholder="Reply to this ticket…"></textarea>
       <div class="staff-ticket-compose-actions">
@@ -4652,7 +4661,30 @@ body.f2w-auth-v67-open {
 <script src="/v159-core.js?v=159" defer></script>
 <script src="/v165-enforcement.js?v=165"></script>
   <script src="/v166-notifications.js?v=166"></script>
-</body>
+<script src="/v168-notifications.js?v=168" defer></script>
+
+<script id="v168-staff-command-rate-limit">
+(()=>{
+'use strict';
+if(window.__f2wV168StaffRateLimit)return;window.__f2wV168StaffRateLimit=true;
+const WINDOW=30000, MAX=2;
+let attempts=[];
+const KEY='f2w-staff-command-rate-v168';
+const ACTION_RE=/(applyInstantRestriction|toggleManagedStaff|toggleManagedRole|setPermission|setSetting|clearChat|setSlowMode|toggleUploads|pinChat|unpinChat|publishAnnouncement|clearAnnouncement|createCollection|setContentBlock|saveMaintenance|warnUser|addNote|setStaff\(|quickUnban|quickUnmute|resolveWarning|updateReport|deleteCollection|updateCollectionSettings|addCollectionItem|removeCollectionItem|saveSource|setActiveTicketStatus|sendStaffTicketReply|saveManagedProfile|clearManagedProfileAvatar|runRetentionCleanup)/i;
+function read(){try{const a=JSON.parse(sessionStorage.getItem(KEY)||'[]');attempts=Array.isArray(a)?a:[]}catch{attempts=[]}}
+function write(){try{sessionStorage.setItem(KEY,JSON.stringify(attempts))}catch{}}
+function prune(){const now=Date.now();attempts=attempts.filter(t=>now-t<WINDOW);write()}
+function remaining(){prune();if(attempts.length<MAX)return 0;return Math.max(1,Math.ceil((WINDOW-(Date.now()-attempts[0]))/1000))}
+function allow(){prune();if(attempts.length>=MAX)return false;attempts.push(Date.now());write();return true}
+function notice(){const r=remaining();const msg=`Staff action rate limit: wait ${r}s. Maximum ${MAX} actions every 30 seconds.`;try{window.toast?.(msg)}catch{};let host=document.getElementById('staff-rate-limit-toast');if(!host){host=document.createElement('div');host.id='staff-rate-limit-toast';host.style.cssText='position:fixed;right:18px;bottom:18px;z-index:2147483647;padding:12px 14px;border:1px solid #ef334d;border-radius:12px;background:#09131f;color:#fff;font:700 13px/1.35 system-ui;box-shadow:0 18px 50px rgba(0,0,0,.55)';document.body.appendChild(host)}host.textContent=msg;clearTimeout(host._t);host._t=setTimeout(()=>host.remove(),2600)}
+function actionControl(node){if(!node?.closest)return null;const el=node.closest('button,[role="button"],input[type="checkbox"],select');if(!el)return null;const code=[el.getAttribute('onclick')||'',el.getAttribute('onchange')||'',el.id||'',el.name||''].join(' ');return ACTION_RE.test(code)?el:null}
+read();
+document.addEventListener('click',e=>{const el=actionControl(e.target);if(!el)return;const now=Date.now();if(Number(el.dataset.f2wRateCountAt||0)&&now-Number(el.dataset.f2wRateCountAt)<500)return;if(!allow()){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();notice();return}el.dataset.f2wRateCountAt=String(now)},true);
+document.addEventListener('change',e=>{const el=actionControl(e.target);if(!el)return;const now=Date.now();if(Number(el.dataset.f2wRateCountAt||0)&&now-Number(el.dataset.f2wRateCountAt)<700)return;if(!allow()){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();try{if('checked' in el)el.checked=!el.checked}catch{}notice();return}el.dataset.f2wRateCountAt=String(now)},true);
+document.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.repeat)return;const el=actionControl(e.target);if(!el)return;const now=Date.now();if(Number(el.dataset.f2wRateCountAt||0)&&now-Number(el.dataset.f2wRateCountAt)<500)return;if(!allow()){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();notice();return}el.dataset.f2wRateCountAt=String(now)},true);
+window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,max:MAX,windowMs:WINDOW});
+})();
+</script>\n</body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->
 <!-- f2w-update-marker: shared-chat-v7:staff -->
