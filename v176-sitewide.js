@@ -203,7 +203,8 @@ async function routeOwnProfile(){
 }
 function hideChatForAuth(){
   const chat=$('#chat-modal');
-  try{window.closeChat?.()}catch{}
+  // v200: never call /chat/'s closeChat() here because that function navigates to /home/.
+  // Guest Direct Messages must close the chat UI in place, then open auth on the same page.
   if(chat){chat.classList.remove('open','show','active','f2w-viewport-popup');chat.setAttribute('aria-hidden','true');chat.style.setProperty('display','none','important');chat.style.setProperty('visibility','hidden','important');chat.style.setProperty('opacity','0','important');chat.style.setProperty('pointer-events','none','important')}
   document.documentElement.classList.remove('chat-open','f2w-chat-open','f2w-popup-scroll-lock');
   document.body?.classList.remove('chat-open','f2w-chat-open','f2w-popup-scroll-lock');
@@ -747,3 +748,22 @@ if(document.readyState==='loading'){
 // f2w-force-save:v189-tv-header-inner-container-latch:20260902
 
 // f2w-force-save:v196-stop-auth-mutationobserver-freeze:20260902
+
+
+/* v200 site-wide presence heartbeat: low-cost, visible-tab only. */
+(()=>{
+  if(window.__f2wPresenceV200)return;window.__f2wPresenceV200=true;
+  const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge',URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  let c=null,busy=false,timer=null;
+  const db=()=>c||(c=window.chatSupabase||window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
+  async function ping(){
+    if(busy||document.visibilityState!=='visible')return;
+    busy=true;
+    try{const x=db();if(!x)return;const {data}=await x.auth.getSession();if(data?.session?.user)await x.rpc('touch_presence_v200')}catch{}finally{busy=false}
+  }
+  function start(){clearInterval(timer);ping();timer=setInterval(ping,30000)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')ping()});
+  window.addEventListener('focus',ping,{passive:true});
+})();
+/* f2w-force-save:v200-presence-and-dm:20260902 */

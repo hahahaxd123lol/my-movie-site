@@ -2640,7 +2640,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   <script src="/v154-global-ui.js?v=159" defer></script>
 <link rel="stylesheet" href="/v165-enforcement.css?v=165">
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
-<link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"></head>
+<link rel="stylesheet" href="/v176-sitewide.css?v=200-20260902"></head>
 
 <body class="theme-red f2w-main-page f2w-home-page">
 <header>
@@ -5628,6 +5628,8 @@ if(currentUser){
     }finally{clearTimeout(timer)}
   }
 
+  window.f2wLoadHomeCategoryV200=f2wLoadHomeCategoryV125;
+
   function switchCategory(category,btn){
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     if(btn)btn.classList.add('active');
@@ -5940,7 +5942,7 @@ if(requestedAccount==='login'||requestedAccount==='signup'){
       catalogPage=1;
       document.getElementById('section-title').textContent=
         requestedTab==='movie'?'Trending Movies':'Trending TV Series';
-      loadCatalogPage(requestedPage,false);
+      f2wLoadHomeCategoryV125(requestedTab,requestedPage);
     }else{
       catalogMode='trending';
       catalogGenreId=null;
@@ -8322,7 +8324,34 @@ body.f2w-auth-v67-open {
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
 <script src="/v172-sitewide.js?v=172"></script>
 <link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=190-20260902-auth-authority"></script>
-<script src="/v176-sitewide.js?v=190-20260902-auth-authority" defer></script></body>
+<script src="/v176-sitewide.js?v=200-20260902" defer></script>
+<script id="f2w-home-catalog-rescue-v200">
+(()=>{
+  'use strict';
+  let rescueBusy=false,rescues=0;
+  function mode(){const t=String(new URLSearchParams(location.search).get('tab')||'').toLowerCase();return t==='movie'||t==='tv'?t:'trending'}
+  async function rescue(){
+    const grid=document.getElementById('movie-grid');
+    if(!grid||rescueBusy||rescues>=3)return;
+    const stuck=/Loading titles/i.test(grid.textContent||'')||grid.children.length===0;
+    if(!stuck)return;
+    rescueBusy=true;rescues++;
+    try{
+      const m=mode(),page=Math.max(1,Number(new URLSearchParams(location.search).get('page'))||1);
+      if(m==='movie'||m==='tv'){
+        if(typeof window.f2wLoadHomeCategoryV200==='function')await window.f2wLoadHomeCategoryV200(m,page);
+        else if(typeof f2wLoadHomeCategoryV125==='function')await f2wLoadHomeCategoryV125(m,page);
+      }else if(typeof window.f2wLoadInitialTrendingV102==='function'){
+        window.__f2wInitialTrendingV102=false;await window.f2wLoadInitialTrendingV102();
+      }
+    }catch(e){console.warn('v200 catalogue rescue',e)}finally{rescueBusy=false}
+  }
+  [2500,5500,9500].forEach(ms=>setTimeout(rescue,ms));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(rescue,300)});
+})();
+/* f2w-force-save:v200-home-catalog-rescue:20260902 */
+</script>
+</body>
 </html>
 <!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
 <!-- f2w-update-marker: shared-chat-v7:home -->
@@ -8464,3 +8493,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v185-auth-cache-bust:20260902 -->
 
 <!-- f2w-force-save:v190-auth-controller-cleanup:20260902 -->
+
+<!-- f2w-force-save:v200:home/index.html:20260902 -->

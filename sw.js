@@ -1,8 +1,8 @@
 /* Flix2Watch v185 — fresh critical-code service worker */
-const CACHE='f2w-v194-auth-authority-20260902';
+const CACHE='f2w-v200-profile-auth-catalog-20260902';
 const CORE=[
   '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
-  '/v159-core.js','/v174-viewport-popups.js','/v176-sitewide.js','/final-v35.js',
+  '/v159-core.js','/v174-viewport-popups.js','/v176-sitewide.js','/v176-sitewide.css','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',
   '/v177-watch-realtime.js','/v177-profile-playback.js'
 ];
@@ -59,6 +59,6 @@ self.addEventListener('fetch',event=>{
 
 // f2w-force-save:v194-rating-auth:20260902
 
-// f2w-force-save:v197-auth-freeze-cache-bust:20260902
+// f2w-force-save:v196-auth-freeze-cache-bust:20260902
 
-// f2w-force-save:v197-profile-loader-cache-bust:20260902
+// f2w-force-save:v200-cache-bust:20260902
