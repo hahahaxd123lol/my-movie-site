@@ -4339,7 +4339,8 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
           class="profile-display-name-input"
           type="text"
           maxlength="50"
-          placeholder="Add a display name"
+          placeholder="Add a display name (no @)"
+          oninput="if(this.value.includes('@'))this.value=this.value.replace(/@/g,'')"
         >
 
         <label class="profile-edit-label" for="profile-bio-input">Your bio</label>
@@ -7059,6 +7060,7 @@ renderViewedProfile();
     const displayName=document
       .getElementById('profile-display-name-input')
       .value
+      .replace(/@/g,'')
       .trim()
       .slice(0,50);
 
@@ -10440,7 +10442,7 @@ body.f2w-auth-v67-open {
 <script src="/v165-enforcement.js?v=165"></script>
   <script src="/v170-notifications.js?v=170" defer></script>
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
-<script src="/v171-sitewide.js?v=171"></script></body>
+<script src="/v172-sitewide.js?v=172"></script></body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
 <!-- f2w-update-marker: shared-chat-v7:profile -->

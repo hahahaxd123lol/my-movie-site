@@ -2554,7 +2554,7 @@ async function saveManagedProfile(){
 
   const displayName=String(
     document.getElementById('staff-profile-display-name')?.value||''
-  ).trim().slice(0,50);
+  ).replace(/@/g,'').trim().slice(0,50);
 
   const bio=String(
     document.getElementById('staff-profile-bio')?.value||''
@@ -4682,7 +4682,7 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 })();
 </script>\n  <script src="/v170-notifications.js?v=170" defer></script>
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
-<script src="/v171-sitewide.js?v=171"></script></body>
+<script src="/v172-sitewide.js?v=172"></script></body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->
 <!-- f2w-update-marker: shared-chat-v7:staff -->
