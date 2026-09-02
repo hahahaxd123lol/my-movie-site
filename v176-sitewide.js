@@ -286,18 +286,66 @@ window.openHeaderAuth=openAuth;window.f2wOpenAuth=openAuth;window.closeAccountMo
 function boot(){legacyControlReset();repair();void stabilizeMemberAge();void syncEditProfile();const mo=new MutationObserver(queueRepair);mo.observe(document.documentElement,{subtree:true,childList:true});const c=db();try{c?.auth?.onAuthStateChange?.((event,session)=>{if(event==='SIGNED_OUT'){releaseAuthLocks()}if(session?.user&&authOpen())closeAuth();if(location.pathname.startsWith('/profile'))setTimeout(syncEditProfile,50)})}catch{}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.addEventListener('pageshow',()=>{repair();void stabilizeMemberAge();void syncEditProfile()},{passive:true});
-// v190: if any legacy observer mutates Account after it opens, immediately restore interactivity.
-const authGuard=new MutationObserver(()=>{
+// v196: bounded auth repair. The previous observer watched the whole document and
+// rewrote the same observed attributes from inside its callback, which could create
+// an endless MutationObserver microtask loop as soon as Account opened.
+let authRepairScheduled=false;
+function repairOpenAuthInteractivity(){
+  authRepairScheduled=false;
   if(!authOpen())return;
   const m=accountModal();if(!m)return;
-  m.removeAttribute('inert');document.documentElement.removeAttribute('inert');document.body?.removeAttribute('inert');
-  m.style.setProperty('pointer-events','auto','important');
-  m.querySelector('.account-card')?.style.setProperty('pointer-events','auto','important');
-  m.querySelectorAll('input,textarea,select,button,a').forEach(el=>{el.removeAttribute('inert');el.style.setProperty('pointer-events','auto','important');if('disabled' in el && ['INPUT','TEXTAREA','SELECT'].includes(el.tagName))el.disabled=false});
-  document.documentElement.classList.remove('f2w-transition-leaving','f2w-popup-scroll-lock');document.documentElement.classList.add('f2w-transition-ready');
-  document.body?.classList.remove('f2w-popup-scroll-lock');
+
+  // Temporarily disconnect so our own corrective writes can never recurse.
+  try{authGuard.disconnect()}catch{}
+  try{
+    if(m.hasAttribute('inert'))m.removeAttribute('inert');
+    if(document.documentElement.hasAttribute('inert'))document.documentElement.removeAttribute('inert');
+    if(document.body?.hasAttribute('inert'))document.body.removeAttribute('inert');
+
+    if(m.style.getPropertyValue('pointer-events')!=='auto' || m.style.getPropertyPriority('pointer-events')!=='important')
+      m.style.setProperty('pointer-events','auto','important');
+
+    const card=m.querySelector('.account-card');
+    if(card && (card.style.getPropertyValue('pointer-events')!=='auto' || card.style.getPropertyPriority('pointer-events')!=='important'))
+      card.style.setProperty('pointer-events','auto','important');
+
+    m.querySelectorAll('input,textarea,select,button,a').forEach(el=>{
+      if(el.hasAttribute('inert'))el.removeAttribute('inert');
+      if(el.style.getPropertyValue('pointer-events')!=='auto' || el.style.getPropertyPriority('pointer-events')!=='important')
+        el.style.setProperty('pointer-events','auto','important');
+      if('disabled' in el && ['INPUT','TEXTAREA','SELECT'].includes(el.tagName) && el.disabled)el.disabled=false;
+    });
+
+    document.documentElement.classList.remove('f2w-transition-leaving','f2w-popup-scroll-lock');
+    if(!document.documentElement.classList.contains('f2w-transition-ready'))document.documentElement.classList.add('f2w-transition-ready');
+    document.body?.classList.remove('f2w-popup-scroll-lock');
+  }finally{
+    // Watch only Account + the two roots. Do not observe every style mutation site-wide.
+    try{
+      authGuard.observe(m,{subtree:true,attributes:true,attributeFilter:['class','style','inert','aria-hidden','hidden','disabled']});
+      authGuard.observe(document.documentElement,{attributes:true,attributeFilter:['class','style','inert']});
+      if(document.body)authGuard.observe(document.body,{attributes:true,attributeFilter:['class','style','inert']});
+    }catch{}
+  }
+}
+const authGuard=new MutationObserver(()=>{
+  if(!authOpen()||authRepairScheduled)return;
+  authRepairScheduled=true;
+  requestAnimationFrame(repairOpenAuthInteractivity);
 });
-if(document.documentElement)authGuard.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['class','style','inert','aria-hidden','hidden']});
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>{
+    const m=accountModal();
+    if(m)authGuard.observe(m,{subtree:true,attributes:true,attributeFilter:['class','style','inert','aria-hidden','hidden','disabled']});
+    authGuard.observe(document.documentElement,{attributes:true,attributeFilter:['class','style','inert']});
+    if(document.body)authGuard.observe(document.body,{attributes:true,attributeFilter:['class','style','inert']});
+  },{once:true});
+}else{
+  const m=accountModal();
+  if(m)authGuard.observe(m,{subtree:true,attributes:true,attributeFilter:['class','style','inert','aria-hidden','hidden','disabled']});
+  authGuard.observe(document.documentElement,{attributes:true,attributeFilter:['class','style','inert']});
+  if(document.body)authGuard.observe(document.body,{attributes:true,attributeFilter:['class','style','inert']});
+}
 })();
 // f2w-force-save:v190-auth-modal-canonical-authority:20260902
 
@@ -697,3 +745,5 @@ if(document.documentElement)authGuard.observe(document.documentElement,{subtree:
   if(document.documentElement)mo.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['style','class','hidden']});
 })();
 // f2w-force-save:v189-tv-header-inner-container-latch:20260902
+
+// f2w-force-save:v196-stop-auth-mutationobserver-freeze:20260902
