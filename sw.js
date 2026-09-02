@@ -66,3 +66,5 @@ self.addEventListener('fetch',event=>{
 // f2w-force-save:v203-presence-playback-cache:20260902
 
 // f2w-force-save:v204-profile-editor-socials-cache:20260902
+
+// f2w-force-save:v207-sitewide-presence:20260902

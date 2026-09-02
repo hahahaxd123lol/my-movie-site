@@ -317,8 +317,23 @@ function f2wDebounce(fn,wait=140){
 
   /* ---------- presence ---------- */
   async function touchPresence(){
-    if(!authUser)return;
     const client=db();if(!client)return;
+
+    // V207: session state is authoritative. Do not depend on the older in-memory
+    // authUser value being hydrated first; that made presence work on Watch
+    // (which has its own heartbeat) but fail on ordinary logged-in pages.
+    let session=null;
+    try{
+      const {data}=await client.auth.getSession();
+      session=data?.session||null;
+    }catch{}
+    if(!session?.user){
+      authUser=null;
+      return;
+    }
+    authUser=session.user;
+    if(session.access_token)presenceAccessToken=session.access_token;
+
     if(!presenceSessionId){
       try{
         presenceSessionId=sessionStorage.getItem('f2w_presence_session_v17')||'';
@@ -330,10 +345,7 @@ function f2wDebounce(fn,wait=140){
         presenceSessionId=`${Date.now()}-${Math.random().toString(36).slice(2)}`;
       }
     }
-    try{
-      const {data:{session}}=await client.auth.getSession();
-      if(session?.access_token)presenceAccessToken=session.access_token;
-    }catch{}
+
     try{await client.rpc('touch_presence_v203',{p_session_id:presenceSessionId});}
     catch{try{await client.rpc('touch_presence_v17',{p_session_id:presenceSessionId});}catch{}}
   }
@@ -2385,3 +2397,5 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:v203-presence-authority:20260902
 
 // f2w-force-save:v205-live-authority:20260902
+
+// f2w-force-save:v207-sitewide-session-presence:20260902
