@@ -6378,9 +6378,8 @@ setTimeout(loadLibraryFavorites,0);
     bio.textContent=viewedProfile.bio?.trim()||'No bio yet.';
     bio.classList.toggle('empty',!viewedProfile.bio?.trim());
 
-    const stableJoinedAt=window.__F2W_MEMBER_SINCE_V139||null;
-    const joined=stableJoinedAt
-      ? new Date(stableJoinedAt).toLocaleDateString(undefined,{
+    const joined=viewedProfile.created_at
+      ? new Date(viewedProfile.created_at).toLocaleDateString(undefined,{
           year:'numeric',
           month:'short'
         })
@@ -6500,7 +6499,6 @@ setTimeout(loadLibraryFavorites,0);
             f2wProfileResolvedUsername=String(parsed.profile.username||username).toLowerCase();
             renderViewedProfile();
             renderViewedFavorites();
-            try{window.dispatchEvent(new CustomEvent('f2w:profile-ready',{detail:{profile:viewedProfile,cached:true}}));}catch{}
             // v128: profile identity is already known from cache; start the
             // public presence lookup now instead of waiting for full app boot.
             try{window.renderProfilePresence?.();}catch{}
@@ -6538,41 +6536,15 @@ setTimeout(loadLibraryFavorites,0);
        * WHOLE request and the catch block incorrectly changed a valid profile into
        * "Profile Not Found".
        */
-      const timeoutError=()=>new Error('Profile request timed out');
-      const withTimeout=(promise,ms=6500)=>Promise.race([
-        promise,
-        new Promise((_,reject)=>setTimeout(()=>reject(timeoutError()),ms))
-      ]);
+      const controller=new AbortController();
+      const timeout=setTimeout(()=>controller.abort(),6000);
 
-      let result={data:null,error:null};
-      let rpcFailure=null;
+      let result;
       try{
-        const rpcResult=await withTimeout(
-          chatSupabase.rpc('get_public_profile_v191',{p_username:username}),
-          6500
-        );
+        const rpcResult=await chatSupabase.rpc('get_public_profile_v160',{p_username:username});
         result={data:rpcResult?.data||null,error:rpcResult?.error||null};
-        if(result.error)throw result.error;
-      }catch(error191){
-        rpcFailure=error191;
-        try{
-          const rpcResult=await withTimeout(
-            chatSupabase.rpc('get_public_profile_v160',{p_username:username}),
-            6500
-          );
-          result={data:rpcResult?.data||null,error:rpcResult?.error||null};
-          if(result.error)throw result.error;
-        }catch(error160){
-          try{
-            const direct=await withTimeout(
-              chatSupabase.from('profiles').select('*').ilike('username',username).maybeSingle(),
-              6500
-            );
-            result={data:direct?.data||null,error:direct?.error||null};
-          }catch(directError){
-            throw rpcFailure||error160||directError;
-          }
-        }
+      }finally{
+        clearTimeout(timeout);
       }
 
       if(requestGeneration!==f2wProfileLoadGeneration)return;
@@ -6661,8 +6633,6 @@ setTimeout(loadLibraryFavorites,0);
       renderViewedFavorites();
       try{window.renderProfilePresence?.();}catch{}
       loadViewedProfileRoleBadge();
-      try{window.dispatchEvent(new CustomEvent('f2w:profile-ready',{detail:{profile:viewedProfile}}));}catch{}
-      setTimeout(()=>window.f2wInstallProfileEditorV191?.(),0);
 
     }catch(error){
       if(requestGeneration!==f2wProfileLoadGeneration)return;
@@ -7055,7 +7025,6 @@ renderViewedProfile();
     const displayName=document
       .getElementById('profile-display-name-input')
       .value
-      .replace(/@/g,'')
       .trim()
       .slice(0,50);
 
@@ -8725,7 +8694,7 @@ return true;
 
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js?v=183-20260902" defer></script>
-  <script src="/final-v35.js?v=195-20260902-profile-core" defer></script>
+  <script src="/final-v35.js?v=197-20260902-profile-loader-restore" defer></script>
 
 
 <style id="f2w-auth-hardfix-v58-css">
@@ -9992,7 +9961,6 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:profile-watching-v130:1788306600 */
 </script>
 
-<script src="/profile-v195-core.js?v=195-20260902" defer></script>
 <script src="/page-transitions-v135.js?v=183-20260902" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
@@ -10157,3 +10125,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v193-profile-rescue-page:20260902 -->
 
 <!-- f2w-force-save:v195-profile-core-page:20260902 -->
+
+<!-- f2w-force-save:v197-profile-loader-restored-from-known-working-index:20260902 -->

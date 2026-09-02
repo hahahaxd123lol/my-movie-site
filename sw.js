@@ -59,4 +59,6 @@ self.addEventListener('fetch',event=>{
 
 // f2w-force-save:v194-rating-auth:20260902
 
-// f2w-force-save:v196-auth-freeze-cache-bust:20260902
+// f2w-force-save:v197-auth-freeze-cache-bust:20260902
+
+// f2w-force-save:v197-profile-loader-cache-bust:20260902
