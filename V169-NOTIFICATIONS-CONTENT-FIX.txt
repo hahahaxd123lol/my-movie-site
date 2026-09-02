@@ -1,0 +1,13 @@
+Flix2Watch v169 — notifications content persistence fix
+
+- Removed the old v166/v168 notification controllers from all HTML pages so two notification loaders no longer race each other.
+- Added one site-wide v169 notification controller.
+- Notification rows are cached for 15 minutes per signed-in account and painted immediately.
+- A transient empty RPC response can no longer erase already-loaded notification rows.
+- The controller prefers the established v125 notification RPC, then falls back to v166/v161/v160 for compatibility.
+- Mark all read prefers the v125 RPC and falls back to newer aliases. It updates the visible rows immediately and keeps the panel open.
+- A MutationObserver restores the v169 rows if any remaining legacy page code tries to replace them with "No notifications yet".
+- Realtime remains account-filtered, with the existing 30-second fallback only while the panel is open.
+- Service worker bumped to v169.
+
+No SQL change is required if V166.1 notifications SQL ran successfully.
