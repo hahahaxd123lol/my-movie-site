@@ -4051,7 +4051,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
         <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
         <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
         <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
-        <a class="f2w-nav-link" id="f2w-nav-forum" href="/forum/"><i class="fa-solid fa-comments"></i> Community</a>
+        
 
           <div class="f2w-genre-wrap">
             <button class="f2w-nav-button" id="f2w-nav-genres" type="button" onclick="toggleF2WGenreMenu(event)">
@@ -4540,7 +4540,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
         <button type="button" data-rating="4" aria-label="4 stars"><i class="fa-regular fa-star"></i></button>
         <button type="button" data-rating="5" aria-label="5 stars"><i class="fa-regular fa-star"></i></button>
       </div>
-      <div class="f2w-v34-rating-summary"><strong id="f2w-v34-your-rating">—</strong><span>Your score</span><strong id="f2w-v34-community-rating">—</strong><span>Community</span></div>
+      <div class="f2w-v34-rating-summary"><strong id="f2w-v34-your-rating">—</strong><span>Your score</span><strong id="f2w-v34-community-rating">—</strong><span>Site average</span></div>
       <textarea id="f2w-v34-rating-review" maxlength="600" placeholder="Optional short review..."></textarea>
       <div class="f2w-v34-rating-actions"><button type="button" id="f2w-v34-save-rating"><i class="fa-solid fa-star"></i> Save rating</button><button type="button" id="f2w-v34-clear-rating">Clear</button></div>
     </section>
@@ -10627,6 +10627,7 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
   }
 
   async function pingWatching(){
+    return; // v177 owns the consolidated playback heartbeat
     if(watchingPingBusy||document.visibilityState!=='visible')return;
     const c=watchingClient();
     if(!c?.rpc||!c?.auth)return;
@@ -10720,7 +10721,9 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
 <script src="/v172-sitewide.js?v=172"></script>
 <link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=175"></script>
-<script src="/v176-sitewide.js?v=176" defer></script></body>
+<script src="/v176-sitewide.js?v=176" defer></script><link rel="stylesheet" href="/v177-watch-realtime.css?v=177-20260902">
+<script src="/v177-watch-realtime.js?v=177-20260902" defer></script>
+</body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
 <!-- f2w-update-marker: shared-chat-v7:watch -->
@@ -10831,7 +10834,16 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 <!-- f2w-force-save:v112-cache:1788290771:watch/index.html -->
 <!-- f2w-force-save:v113-cache:1788290934:watch/index.html -->
 <!-- f2w-force-save:v114-cache:1788291301:watch/index.html -->
-<!-
+<!-- f2w-force-save:watch-more-like-v115:1788295289 -->
+<!-- f2w-force-save:v115-cache:1788295289:watch/index.html -->
+<!-- f2w-force-save:v116-cache:1788295578:watch/index.html -->
+<!-- f2w-force-save:watch-v117:1788295984 -->
+<!-- f2w-force-save:v117-cache:1788295984:watch/index.html -->
+<!-- f2w-force-save:v118-cache:1788296424:watch/index.html -->
+<!-- f2w-force-save:v119-cache:1788296897:watch/index.html -->
+<!-- f2w-force-save:v120-cache:1788297036:watch/index.html -->
+<!-- f2w-force-save:v121-cache:1788297958:watch/index.html -->
+<!-- f2w-force-save:v123-cache:1788298849:watch/index.html -->
 <!-- f2w-force-save:v124-cache:1788299294:watch/index.html -->
 <!-- f2w-force-save:watch-bounty-v125:1788300576 -->
 <!-- f2w-force-save:v125-cache:1788300576:watch/index.html -->
