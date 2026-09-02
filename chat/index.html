@@ -8812,7 +8812,79 @@ body.f2w-auth-v67-open {
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
 <script src="/v172-sitewide.js?v=172"></script>
 <link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=183-20260902"></script>
-<script src="/v176-sitewide.js?v=185-20260902-authfix" defer></script></body>
+
+<script id="f2w-guest-dm-open-auth-v188">
+(() => {
+  'use strict';
+  if (window.__f2wGuestDmOpenAuthV188) return;
+  window.__f2wGuestDmOpenAuthV188 = true;
+
+  function isLoggedIn(){
+    return !!window.currentUser;
+  }
+
+  function fullyCloseChat(){
+    try { window.closeChat?.(); } catch (_) {}
+    const chat = document.getElementById('chat-modal');
+    if (chat) {
+      chat.classList.remove('open');
+      chat.setAttribute('aria-hidden','true');
+      chat.style.removeProperty('pointer-events');
+    }
+    document.documentElement.classList.remove('chat-open','f2w-chat-open');
+    document.body?.classList.remove('chat-open','f2w-chat-open');
+  }
+
+  function openWorkingAuth(mode){
+    const normalized = mode === 'signup' ? 'signup' : 'login';
+    fullyCloseChat();
+
+    // Let the chat backdrop leave the rendering tree before opening Account.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      try {
+        if (typeof window.openHeaderAuth === 'function') {
+          window.openHeaderAuth(normalized);
+          return;
+        }
+        if (typeof window.f2wOpenAuth === 'function') {
+          window.f2wOpenAuth(normalized);
+          return;
+        }
+        window.openAccountModal?.();
+        window.showAccountMode?.(normalized);
+      } catch (err) {
+        console.warn('[F2W] guest DM auth open failed', err);
+      }
+    }));
+  }
+
+  // Highest-priority guest behavior: clicking Direct Messages itself closes
+  // Chat and opens the normal responsive Log In view immediately.
+  document.addEventListener('click', (event) => {
+    const dm = event.target?.closest?.('#v17-chat-dm-tab');
+    if (!dm || isLoggedIn()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    openWorkingAuth('login');
+  }, true);
+
+  // If an older guest-DM lock is ever rendered, its buttons use the same path.
+  document.addEventListener('click', (event) => {
+    const btn = event.target?.closest?.('[data-f2w-dm-auth]');
+    if (!btn || isLoggedIn()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    openWorkingAuth(btn.getAttribute('data-f2w-dm-auth'));
+  }, true);
+
+  window.f2wOpenGuestDmAuthV188 = openWorkingAuth;
+})();
+// f2w-force-save:guest-dm-open-auth-v188:20260902
+</script>
+
+<script src="/v176-sitewide.js?v=188-20260902-guest-dm-auth" defer></script></body>
 </html>
 <!-- f2w-force-github-update: 2026-08-31-chat-dm-font-v2 -->
 <!-- f2w-force-push-20260831-batch2:chat:4cb2d50896 -->
@@ -8950,3 +9022,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v183-sitewide-cache-bust:20260902 -->
 
 <!-- f2w-force-save:v185-auth-cache-bust:20260902 -->
+
+<!-- f2w-force-save:v188-guest-dm-auth:20260902 -->
