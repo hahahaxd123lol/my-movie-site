@@ -1,0 +1,12 @@
+Flix2Watch v150 — announcement UI fix
+
+Fixes the stray raw “ANNOUNCEMENT ×” text appearing at the bottom-left of /account/ and any other page that failed to load the announcement stylesheet.
+
+Changes:
+- Announcement container now starts with the native hidden attribute, so it cannot appear unstyled.
+- It is only unhidden when Supabase returns a real non-empty announcement.
+- Dismiss now hides it both via class and native hidden state.
+- /account/ now explicitly loads v146-live-ops.css.
+- Live Ops asset query bumped to v150 to bypass stale browser/service-worker cache.
+
+No Supabase SQL is required. Deploy the full build and hard-refresh once.
