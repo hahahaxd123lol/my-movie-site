@@ -3379,7 +3379,7 @@ html{overflow-y:scroll}
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=144" defer></script>
+  <script src="/global-header-chat-v1.js?v=145" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -3883,6 +3883,8 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 /* f2w-force-save:profile-bounty-css-v125:1788300576 */
 </style>
 
+  <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
+  <link rel="stylesheet" href="/v146-live-ops.css?v=146">
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -6587,18 +6589,9 @@ setTimeout(loadLibraryFavorites,0);
 
       if(profileError)throw profileError;
 
-      // "Not found" is only valid after a SUCCESSFUL database response with no row.
+      // Successful no-row is authoritative. Clear stale cache so renamed usernames disappear immediately.
       if(!profileData){
-        // v144: a successful no-row response is authoritative. Never keep an old
-        // cached profile alive after its username has changed.
-        try{
-          localStorage.removeItem(`f2w_profile_cache_v24:${wantedUsername}`);
-          localStorage.removeItem(`f2w_profile_role_v110:${wantedUsername}`);
-          localStorage.removeItem(`f2w_profile_live_v134:${wantedUsername}`);
-          if(String(localStorage.getItem('f2w_profile_username_v24')||'').toLowerCase()===wantedUsername){
-            localStorage.removeItem('f2w_profile_username_v24');
-          }
-        }catch{}
+        try{localStorage.removeItem(`f2w_profile_cache_v24:${wantedUsername}`);}catch{}
         viewedProfile=null;
         viewedProfileFavorites=[];
         viewedSocial={
@@ -10434,6 +10427,8 @@ body.f2w-auth-v67-open {
 
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
+  <script src="/v145-sitewide-fixes.js?v=145" defer></script>
+  <script src="/v146-live-ops.js?v=146" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->

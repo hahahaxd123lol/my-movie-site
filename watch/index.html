@@ -3000,7 +3000,7 @@ html{overflow-y:scroll}
   <link rel="stylesheet" href="/final-v35.css?v=125-1788300576">
   <!-- Unified Watch-page header + preloaded chat -->
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
-  <script src="/global-header-chat-v1.js?v=144" defer></script>
+  <script src="/global-header-chat-v1.js?v=145" defer></script>
 
 
 
@@ -4028,6 +4028,8 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
 #flix-player-container{position:relative}
 #video-frame{position:relative;z-index:1}
 </style>
+  <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
+  <link rel="stylesheet" href="/v146-live-ops.css?v=146">
 </head>
 <body class="theme-red f2w-main-page f2w-watch-page watch-locked">
 <header>
@@ -4425,7 +4427,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
       </div>
       <div class="player-container" id="flix-player-container">
         <iframe id="video-frame" src="data:text/html,%3Cbody%20style%3D%22margin%3A0%3Bbackground%3A%23000%22%3E" style="display:none;background:#000" aria-hidden="true" referrerpolicy="origin" allow="accelerometer *; autoplay *; clipboard-write *; encrypted-media *; gyroscope *; picture-in-picture *; fullscreen *" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
-        <div id="f2w-player-starting" aria-live="polite" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:radial-gradient(circle at center,#0b1522 0,#03070d 72%);color:#d7e3ef;z-index:2;pointer-events:none;font:700 12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;color:var(--accent,#e50914)"></i><span>STARTING FLIX2WATCH API…</span></div>
+        <div id="f2w-player-starting" aria-live="polite" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:radial-gradient(circle at center,#0b1522 0,#03070d 72%);color:#d7e3ef;z-index:2;pointer-events:none;font:700 12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em"><i id="f2w-v146-player-spinner" class="fa-solid fa-spinner fa-spin f2w-v146-spin" style="font-size:24px;color:var(--accent,#e50914)"></i><span>STARTING FLIX2WATCH API…</span></div>
 
         <div class="watch-login-overlay" id="watch-login-overlay">
           <div class="watch-login-card">
@@ -7048,9 +7050,11 @@ if(currentUser){
       if(starting) starting.style.display=(currentServer==='flix2watchapi')?'flex':'none';
       iframe.src = embedUrl;
       if(currentServer==='flix2watchapi'){
+        // Keep the animated startup cover visible until the player reports
+        // actual playback, instead of exposing the provider's black boot frame.
+        // A fallback removes it if that provider event is unavailable.
         const clearStarting=()=>{ if(starting) starting.style.display='none'; };
-        iframe.addEventListener('load',()=>setTimeout(clearStarting,650),{once:true});
-        setTimeout(clearStarting,7000);
+        setTimeout(clearStarting,8000);
       }
       const targetLabel = mediaType === 'tv' ? `S${seasonNum}E${episodeNum}` : 'Movie';
       logTerminal(`Stream routed via ${currentServer.toUpperCase()} [${targetLabel}].`, 'success');
@@ -10642,6 +10646,8 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
+  <script src="/v145-sitewide-fixes.js?v=145" defer></script>
+  <script src="/v146-live-ops.js?v=146" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->

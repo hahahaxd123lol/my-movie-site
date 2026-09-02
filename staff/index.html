@@ -829,7 +829,7 @@ html{overflow-y:scroll}
   <link rel="stylesheet" href="/final-v26.css">
   <link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
   <script src="/seo-v17.js" defer></script>
-  <script src="/global-header-chat-v1.js?v=144" defer></script>
+  <script src="/global-header-chat-v1.js?v=145" defer></script>
 
 <style id="f2w-header-gorilla-lock-v30">
 @media(min-width:1181px){
@@ -982,16 +982,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 /* f2w-force-save:staff-lock-css-v123:1788298849 */
 </style>
 
-
-<style id="staff-ticket-v144-visual-fix">
-#staff-ticket-modal.staff-ticket-modal{background:rgba(0,0,0,.90)!important;backdrop-filter:blur(14px) saturate(.7)!important;-webkit-backdrop-filter:blur(14px) saturate(.7)!important}
-#staff-ticket-modal .staff-ticket-chat{width:min(900px,calc(100vw - 32px))!important;min-height:min(640px,calc(100vh - 48px))!important;max-height:calc(100vh - 32px)!important;background:#06101a!important;border:1px solid #33465e!important;box-shadow:0 40px 120px rgba(0,0,0,.92),0 0 0 1px rgba(255,255,255,.03)!important}
-#staff-ticket-modal .staff-ticket-messages{min-height:280px!important;background:#03080e!important;padding:22px!important;overflow-y:auto!important}
-#staff-ticket-modal .staff-ticket-bubble{background:#0d1825!important;border-color:#2e4158!important;color:#f8fafc!important;font-size:.9rem!important}
-#staff-ticket-modal .staff-ticket-bubble.mine{background:#151129!important;border-color:rgba(168,85,247,.45)!important}
-#staff-ticket-modal .staff-ticket-bubble .body{color:#f8fafc!important;font-size:.92rem!important;line-height:1.65!important}
-#staff-ticket-modal .staff-ticket-bubble small{color:#93a4bb!important;font-size:.7rem!important}
-</style>
+  <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
+  <link rel="stylesheet" href="/v146-live-ops.css?v=146">
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
@@ -1491,6 +1483,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <button class="btn primary" id="staff-dialog-ok" type="button">Continue</button>
       </div>
     </div>
+    <div id="staff-ticket-modal-messages" class="staff-ticket-messages"></div>
+    <div id="staff-ticket-statusline"></div>
   </div>
 </div>
 
@@ -1947,19 +1941,14 @@ async function applyInstantRestriction(input){
       if(enabled)await rpc('staff_set_mute',{p_username:username,p_minutes:minutes||60,p_reason:reason||null});else await rpc('staff_clear_mute',{p_username:username});
     }else if(action==='site-suspension'){
       if(!['owner','staff'].includes(staffContext.role))throw new Error('Only Owner or Staff can suspend the full site.');
-      await rpc('staff_set_ban',{p_username:username,p_banned:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
+      // v146 is the authoritative site-wide realtime enforcement path. The
+      // legacy ban RPC is kept as a best-effort compatibility mirror only.
+      await rpc('staff_set_account_enforcement_v146',{p_user_id:userId,p_kind:'site-suspension',p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
+      try{await rpc('staff_set_ban',{p_username:username,p_banned:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});}catch(_){}
     }else if(action==='account-ban'){
       if(!['owner','staff'].includes(staffContext.role))throw new Error('Only Owner or Staff can apply account-login bans.');
-      try{
-        await rpc('staff_set_account_login_ban',{p_user_id:userId,p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
-      }catch(accountBanError){
-        const missingRpc=/staff_set_account_login_ban|schema cache|Could not find the function/i.test(String(accountBanError?.message||''));
-        if(!missingRpc)throw accountBanError;
-        // Backward-compatible fallback for older Staff backends: the existing
-        // site-wide ban immediately blocks the account across Flix2Watch and
-        // emits the realtime account event consumed by the account guard.
-        await rpc('staff_set_ban',{p_username:username,p_banned:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||'Account login ban'):null});
-      }
+      await rpc('staff_set_account_enforcement_v146',{p_user_id:userId,p_kind:'account-ban',p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
+      try{await rpc('staff_set_account_login_ban',{p_user_id:userId,p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});}catch(_){}
     }
     staffActionToast(enabled?'Restriction applied':'Restriction removed',`@${username} updated instantly.`,'success');
     document.getElementById('moderation-status').innerHTML=`<strong>${esc(enabled?'Applied':'Removed')}:</strong> ${esc(action.replaceAll('-',' '))} for @${esc(username)}.`;
@@ -2703,9 +2692,9 @@ async function publishAnnouncement(){
   const message=document.getElementById('announcement-message').value.trim();if(!message)return;
   const start=document.getElementById('announcement-start').value;
   const expire=document.getElementById('announcement-expire').value;
-  try{await rpc('staff_publish_announcement',{p_message:message,p_starts_at:start?new Date(start).toISOString():null,p_expires_at:expire?new Date(expire).toISOString():null});toast('Announcement published')}catch(e){toast(e.message)}
+  try{await rpc('staff_publish_announcement',{p_message:message,p_starts_at:start?new Date(start).toISOString():null,p_expires_at:expire?new Date(expire).toISOString():null});toast('Announcement published live');document.getElementById('announcement-message').value='';await Promise.allSettled([loadAnnouncementHistory(),loadStats()])}catch(e){toast(e.message)}
 }
-async function clearAnnouncement(){try{await rpc('staff_clear_announcement');toast('Announcement removed')}catch(e){toast(e.message)}}
+async function clearAnnouncement(){try{await rpc('staff_clear_announcement');toast('Announcement removed live');await Promise.allSettled([loadAnnouncementHistory(),loadStats()])}catch(e){toast(e.message)}}
 
 async function loadCollections(){
   try{
@@ -2747,7 +2736,7 @@ async function setContentBlock(blocked){try{await rpc('staff_set_content_block',
 async function loadSources(){
   const body=document.getElementById('sources-body');
   try{
-    const {data,error}=await db.from('stream_source_status').select('*').order('priority');
+    const {data,error}=await db.rpc('get_public_stream_source_status');
     if(error)throw error;
     body.innerHTML=(data||[]).map(s=>`<tr>
       <td><strong>${esc(s.source_name)}</strong></td>
@@ -2956,7 +2945,7 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
 <div class="staff-ticket-modal" id="staff-ticket-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="staff-ticket-modal-title">
   <div class="staff-ticket-chat">
     <div class="staff-ticket-head"><div class="staff-ticket-head-copy"><strong id="staff-ticket-modal-title">Support ticket</strong><span id="staff-ticket-modal-meta"></span></div><button class="btn staff-ticket-close" type="button" onclick="closeStaffTicketModal()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
-    <div id="staff-ticket-modal-messages" class="staff-ticket-messages"></div>
+    
     <div class="staff-ticket-compose">
       <textarea id="staff-ticket-reply" maxlength="4000" placeholder="Reply to this ticket…"></textarea>
       <div class="staff-ticket-compose-actions">
@@ -2967,7 +2956,7 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
         <button class="btn" type="button" onclick="setActiveTicketStatus('resolved')"><i class="fa-solid fa-check"></i> Resolve</button>
         <button class="btn purple" id="staff-ticket-send" type="button" onclick="sendStaffTicketReply()"><i class="fa-solid fa-paper-plane"></i> Send</button>
       </div>
-      <div id="staff-ticket-statusline" class="staff-ticket-statusline"></div>
+      
     </div>
   </div>
 </div>
@@ -4613,6 +4602,8 @@ body.f2w-auth-v67-open {
 
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
+  <script src="/v145-sitewide-fixes.js?v=145" defer></script>
+  <script src="/v146-live-ops.js?v=146" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->

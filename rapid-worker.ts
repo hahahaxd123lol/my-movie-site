@@ -2581,11 +2581,11 @@ Deno.serve(async (request: Request) => {
         );
       }
 
-      if (!config.chat_uploads_enabled && message.includes("[[image:")) {
+      if (message.includes("[[image:")) {
         return json(
           {
             success: false,
-            error: "Chat image uploads are temporarily disabled.",
+            error: "Image sending is disabled in public chat.",
           },
           403,
         );
@@ -2602,6 +2602,7 @@ Deno.serve(async (request: Request) => {
         message,
         user_token_hash: tokenHash,
         owner_id: payload.owner ? payload.sub : null,
+        sender_user_id: payload.sub ?? null,
       };
 
       const { data, error } = await supabase
@@ -2727,7 +2728,7 @@ Deno.serve(async (request: Request) => {
 
       const { data: message, error: lookupError } = await supabase
         .from("chat_messages")
-        .select("id, user_token_hash, message")
+        .select("id, user_token_hash, sender_user_id, alias, message")
         .eq("id", messageId)
         .maybeSingle();
 
@@ -2745,7 +2746,7 @@ Deno.serve(async (request: Request) => {
         );
       }
 
-      if (message.user_token_hash !== tokenHash) {
+      if (message.sender_user_id !== payload.sub && message.user_token_hash !== tokenHash && normalizeAlias(String(message.alias ?? "")) !== normalizeAlias(String(payload.alias ?? ""))) {
         return json(
           {
             success: false,
