@@ -998,7 +998,23 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 #staff-ticket-modal-messages .staff-ticket-bubble .body{color:#f4f7fb!important}
 </style>
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
-<link rel="stylesheet" href="/v176-sitewide.css?v=176"></head>
+<link rel="stylesheet" href="/v176-sitewide.css?v=176">
+<style id="v178-staff-action-feedback-css">
+.staff-action-feedback-v178{position:fixed!important;inset:0!important;z-index:2147483647!important;display:grid!important;place-items:center!important;padding:20px!important;background:rgba(1,5,10,.52)!important;backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important;animation:v178Fade .14s ease-out}
+.staff-action-feedback-card{position:relative;width:min(470px,calc(100vw - 36px));padding:28px 28px 25px;border-radius:17px;background:#08131f;border:1px solid rgba(34,197,94,.58);box-shadow:0 30px 90px rgba(0,0,0,.65),inset 0 3px 0 rgba(34,197,94,.9);color:#fff}
+.staff-action-feedback-v178.is-error .staff-action-feedback-card{border-color:rgba(255,35,58,.7);box-shadow:0 30px 90px rgba(0,0,0,.65),inset 0 3px 0 rgba(255,35,58,.95)}
+.staff-action-feedback-icon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;margin-bottom:18px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#22c55e;font-size:1.35rem}
+.staff-action-feedback-v178.is-error .staff-action-feedback-icon{background:rgba(255,35,58,.12);border-color:rgba(255,35,58,.38);color:#ff3348}
+.staff-action-feedback-eyebrow{font-size:.67rem;font-weight:950;letter-spacing:.13em;color:#22c55e;margin-bottom:7px}
+.staff-action-feedback-v178.is-error .staff-action-feedback-eyebrow{color:#ff3348}
+.staff-action-feedback-title{display:block;font-size:1.45rem;line-height:1.1;margin-bottom:9px}
+.staff-action-feedback-copy{margin:0;color:#b3c0d0;font-size:.86rem;line-height:1.55;word-break:break-word}
+.staff-action-feedback-close{position:absolute;right:13px;top:13px;width:36px;height:36px;border-radius:9px;border:1px solid #2a3a4f;background:#0d1a29;color:#fff;font-size:1.25rem;cursor:pointer}
+#staff-profile-role-picker .staff-role-toggle:not(.active){background:#0a1624!important;border-color:#26394f!important;color:#dbe5ef!important;box-shadow:none!important;text-shadow:none!important;transform:none!important;filter:none!important}
+#staff-profile-role-picker .staff-role-toggle.active{color:#fff!important;background:linear-gradient(180deg,#ff2439 0%,#ed1029 58%,#c90b21 100%)!important;border-color:rgba(255,91,108,.78)!important;box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 7px 18px rgba(0,0,0,.22),0 0 16px rgba(255,24,53,.2)!important}
+@keyframes v178Fade{from{opacity:0}to{opacity:1}}
+</style>
+</head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
@@ -1515,7 +1531,28 @@ const allPermissions=[
 ];
 
 function esc(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]))}
-function toast(message){let host=document.getElementById('toast-stack');if(!host){host=document.createElement('div');host.id='toast-stack';host.className='toast-stack';document.body.appendChild(host)}const el=document.createElement('div');el.className='toast';el.textContent=message;host.appendChild(el);setTimeout(()=>el.remove(),2600)}
+function toast(message){
+  const text=String(message||'Action completed');
+  const lower=text.toLowerCase();
+  const isError=/(error|failed|denied|cannot|can't|could not|no permission|not found|invalid|must |rate limit|wait \d+s)/i.test(text);
+  let overlay=document.getElementById('staff-action-feedback-v178');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='staff-action-feedback-v178';
+    overlay.className='staff-action-feedback-v178';
+    overlay.innerHTML=`<div class="staff-action-feedback-card" role="status" aria-live="assertive"><button class="staff-action-feedback-close" type="button" aria-label="Close">&times;</button><div class="staff-action-feedback-icon"></div><div class="staff-action-feedback-eyebrow"></div><strong class="staff-action-feedback-title"></strong><p class="staff-action-feedback-copy"></p></div>`;
+    overlay.addEventListener('click',e=>{if(e.target===overlay||e.target.closest('.staff-action-feedback-close'))overlay.remove()});
+    document.body.appendChild(overlay);
+  }
+  overlay.classList.toggle('is-error',isError);
+  overlay.classList.toggle('is-success',!isError);
+  overlay.querySelector('.staff-action-feedback-icon').innerHTML=isError?'<i class="fa-solid fa-triangle-exclamation"></i>':'<i class="fa-solid fa-circle-check"></i>';
+  overlay.querySelector('.staff-action-feedback-eyebrow').textContent=isError?'STAFF ACTION NEEDS ATTENTION':'STAFF ACTION COMPLETE';
+  overlay.querySelector('.staff-action-feedback-title').textContent=isError?'Action not completed':'Done';
+  overlay.querySelector('.staff-action-feedback-copy').textContent=text;
+  clearTimeout(window.__f2wStaffActionFeedbackTimer);
+  window.__f2wStaffActionFeedbackTimer=setTimeout(()=>overlay?.remove(),3600);
+}
 function hasPerm(permission){return staffContext?.role==='owner'||staffContext?.permissions?.includes(permission)}
 function fmt(value){if(!value)return '—';try{return new Date(value).toLocaleString()}catch{return String(value)}}
 function roleBadge(role){return `<span class="status">${esc(role||'member')}</span>`}
@@ -2419,6 +2456,18 @@ function renderManagedRoles(){
       const isStaffRole=role==='staff';
       const on=isStaffRole?managedProfileIsStaff:managedProfileRoles.has(role);
       button.classList.toggle('active',on);
+      // v178: red styling must exactly mirror the actual saved role state.
+      // Older global red-button runtimes add persistent classes when a role was once active;
+      // explicitly remove them again when the role is removed.
+      button.classList.toggle('f2w-red-v160',on);
+      button.classList.toggle('f2w-red-button-v154',on);
+      if(!on){
+        button.classList.remove('f2w-red-icon-button-v154');
+        button.style.removeProperty('background');
+        button.style.removeProperty('border-color');
+        button.style.removeProperty('box-shadow');
+        button.style.removeProperty('color');
+      }
       button.disabled=isStaffRole?(staffContext?.role!=='owner'):!hasPerm('profile_roles_manage');
       if(isStaffRole)button.innerHTML=`<i class="fa-solid fa-shield-halved"></i> ${on?'Remove Staff':'Give Staff'}`;
       button.setAttribute('aria-pressed',on?'true':'false');
@@ -4672,7 +4721,7 @@ function write(){try{sessionStorage.setItem(KEY,JSON.stringify(attempts))}catch{
 function prune(){const now=Date.now();attempts=attempts.filter(t=>now-t<WINDOW);write()}
 function remaining(){prune();if(attempts.length<MAX)return 0;return Math.max(1,Math.ceil((WINDOW-(Date.now()-attempts[0]))/1000))}
 function allow(){prune();if(attempts.length>=MAX)return false;attempts.push(Date.now());write();return true}
-function notice(){const r=remaining();const msg=`Staff action rate limit: wait ${r}s. Maximum ${MAX} actions every 30 seconds.`;try{window.toast?.(msg)}catch{};let host=document.getElementById('staff-rate-limit-toast');if(!host){host=document.createElement('div');host.id='staff-rate-limit-toast';host.style.cssText='position:fixed;right:18px;bottom:18px;z-index:2147483647;padding:12px 14px;border:1px solid #ef334d;border-radius:12px;background:#09131f;color:#fff;font:700 13px/1.35 system-ui;box-shadow:0 18px 50px rgba(0,0,0,.55)';document.body.appendChild(host)}host.textContent=msg;clearTimeout(host._t);host._t=setTimeout(()=>host.remove(),2600)}
+function notice(){const r=remaining();const msg=`Staff action rate limit: wait ${r}s. Maximum ${MAX} actions every 30 seconds.`;try{window.toast?.(msg)}catch{}}
 function actionControl(node){if(!node?.closest)return null;const el=node.closest('button,[role="button"],input[type="checkbox"],select');if(!el)return null;const code=[el.getAttribute('onclick')||'',el.getAttribute('onchange')||'',el.id||'',el.name||''].join(' ');return ACTION_RE.test(code)?el:null}
 read();
 document.addEventListener('click',e=>{const el=actionControl(e.target);if(!el)return;const now=Date.now();if(Number(el.dataset.f2wRateCountAt||0)&&now-Number(el.dataset.f2wRateCountAt)<500)return;if(!allow()){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();notice();return}el.dataset.f2wRateCountAt=String(now)},true);
