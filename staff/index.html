@@ -4729,11 +4729,12 @@ document.addEventListener('change',e=>{const el=actionControl(e.target);if(!el)r
 document.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.repeat)return;const el=actionControl(e.target);if(!el)return;const now=Date.now();if(Number(el.dataset.f2wRateCountAt||0)&&now-Number(el.dataset.f2wRateCountAt)<500)return;if(!allow()){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();notice();return}el.dataset.f2wRateCountAt=String(now)},true);
 window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,max:MAX,windowMs:WINDOW});
 })();
-</script>\n
+</script>
   <script src="/v170-sitewide-fixes.js?v=170" defer></script>
 <script src="/v172-sitewide.js?v=172"></script>
 <link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=175"></script>
-<script src="/v176-sitewide.js?v=176" defer></script></body>
+<script src="/v176-sitewide.js?v=176" defer></script><!-- f2w-force-save:v179-staff-stray-newline-fix -->
+</body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->
 <!-- f2w-update-marker: shared-chat-v7:staff -->
@@ -4850,5 +4851,3 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 <!-- f2w-force-save:v124-cache:1788299294:staff/index.html -->
 <!-- f2w-force-save:v125-cache:1788300576:staff/index.html -->
  
-
-<!-- v177-force-refresh-2026-09-02 -->
