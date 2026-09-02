@@ -1,0 +1,4 @@
+#notification-menu[aria-hidden="false"]{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+#notification-menu .f2w-v168-note{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-bottom:1px solid rgba(143,190,225,.12);color:inherit;text-decoration:none}
+#notification-menu .f2w-v168-note.unread{background:rgba(255,23,49,.055)}
+#notification-menu .f2w-v168-note strong{color:#fff}#notification-menu .f2w-v168-note span,#notification-menu .f2w-v168-note small{color:#8ea6ba}
