@@ -4029,7 +4029,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
 #video-frame{position:relative;z-index:1}
 </style>
   <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
-  <link rel="stylesheet" href="/v146-live-ops.css?v=150">
+  <link rel="stylesheet" href="/v146-live-ops.css?v=158">
   <link rel="stylesheet" href="/v154-global-ui.css?v=157">
   <script src="/v154-global-ui.js?v=154" defer></script>
 </head>
@@ -6887,8 +6887,12 @@ if(currentUser){
       // Signed-in accounts wait for the global account guard before any
       // third-party stream is loaded. A banned account never starts playback.
       if(!window.__flix2watchAccountGuardReady){
-        setTimeout(loadPlayer,120);
-        return;
+        // v158: never leave the movie on a permanent black screen while the
+        // moderation RPC/session check is slow. Realtime enforcement still
+        // terminates playback immediately if an actual restriction arrives.
+        window.__f2wGuardWaitStarted ||= Date.now();
+        if(Date.now()-window.__f2wGuardWaitStarted < 900){setTimeout(loadPlayer,90);return;}
+        window.__flix2watchAccountGuardReady=true;
       }
 
       if(window.__flix2watchAccountState?.banned){
@@ -6932,7 +6936,7 @@ if(currentUser){
           // TMDB exposes it; otherwise use the numeric TMDB id. Keep this source
           // unsandboxed because its player requires normal browser permissions.
           const idParam = currentImdbId ? `imdb=${encodeURIComponent(currentImdbId)}` : `tmdb=${encodeURIComponent(mediaId)}`;
-          const common = `${idParam}&autoplay=1&ds_lang=off&cc=0&subtitles=0`; // v153: force captions/subtitles off by default
+          const common = `${idParam}&autoplay=1`; // v158: keep provider URL valid; captions are disabled via player messaging below
           embedUrl = mediaType === 'tv'
             ? `https://player.flix2watch.com/embed/tv?${common}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&autonext=1`
             : `https://player.flix2watch.com/embed/movie?${common}`;
@@ -7069,7 +7073,7 @@ if(currentUser){
 
     function forceFlix2WatchSubtitlesOff(){
       if(currentServer!=='flix2watchapi')return;
-      const frame=document.getElementById('player-iframe');
+      const frame=document.getElementById('video-frame');
       const w=frame?.contentWindow;
       if(!w)return;
       const target='https://player.flix2watch.com';
@@ -8465,7 +8469,7 @@ if(currentUser){
   <script src="/interaction-v7.js" defer></script>
   <script src="/realtime-v7.js" defer></script>
 
-  <script src="/final-v35.js?v=156-1788313000" defer></script>
+  <script src="/final-v35.js?v=158-20260902" defer></script>
 
 <style id="f2w-watch-tools-v47-css">
   .f2w-watch-toast-v47{
@@ -10707,7 +10711,7 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
-  <script src="/v146-live-ops.js?v=150" defer></script>
+  <script src="/v146-live-ops.js?v=158" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
   <script src="/v149-account-route.js?v=153"></script>
 </body>

@@ -983,7 +983,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </style>
 
   <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
-  <link rel="stylesheet" href="/v146-live-ops.css?v=150">
+  <link rel="stylesheet" href="/v146-live-ops.css?v=158">
   <link rel="stylesheet" href="/v154-global-ui.css?v=157">
   <script src="/v154-global-ui.js?v=154" defer></script>
 </head>
@@ -1946,7 +1946,10 @@ async function applyInstantRestriction(input){
       // v146 is the authoritative site-wide realtime enforcement path. The
       // legacy ban RPC is kept as a best-effort compatibility mirror only.
       await rpc('staff_set_account_enforcement_v146',{p_user_id:userId,p_kind:'site-suspension',p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
-      try{await rpc('staff_set_ban',{p_username:username,p_banned:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});}catch(_){}
+      // v158: site suspension is handled only by the realtime enforcement table.
+      // The old staff_set_ban path marks the account globally banned and breaks
+      // forum/favorites/leaderboard RPCs even after the live popup is cleared.
+      if(!enabled){try{await rpc('staff_set_ban',{p_username:username,p_banned:false,p_minutes:null,p_reason:null});}catch(_){}}
     }else if(action==='account-ban'){
       if(!['owner','staff'].includes(staffContext.role))throw new Error('Only Owner or Staff can apply account-login bans.');
       await rpc('staff_set_account_enforcement_v146',{p_user_id:userId,p_kind:'account-ban',p_enabled:enabled,p_minutes:enabled?(minutes||null):null,p_reason:enabled?(reason||null):null});
@@ -2329,7 +2332,7 @@ async function setStaff(enabled){
   if(!ok)return;
 
   try{
-    await rpc('owner_set_staff',{p_username:u,p_enabled:enabled});
+    try{await rpc('owner_set_staff_v158',{p_username:u,p_enabled:enabled});}catch(_e){await rpc('owner_set_staff',{p_username:u,p_enabled:enabled});}
     toast(enabled?'Staff granted':'Staff removed');
     await Promise.all([inspectUser(),loadStats(),loadLiveModeration()]);
   }catch(e){toast(e.message)}
@@ -2370,7 +2373,7 @@ async function renderPermissions(){
     </label>`;
   }).join('');
 }
-async function setPermission(username,permission,allowed){try{await rpc('owner_set_staff_permission',{p_username:username,p_permission:permission,p_allowed:allowed});toast('Permission updated')}catch(e){toast(e.message)}}
+async function setPermission(username,permission,allowed){try{try{await rpc('owner_set_staff_permission_v158',{p_username:username,p_permission:permission,p_allowed:allowed})}catch(_e){await rpc('owner_set_staff_permission',{p_username:username,p_permission:permission,p_allowed:allowed})}toast('Permission updated')}catch(e){toast(e.message)}}
 
 
 let managedProfileSnapshot=null;
@@ -2938,7 +2941,7 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js?v=156-1788313000" defer>
+  <script src="/final-v35.js?v=158-20260902" defer>
 document.getElementById('staff-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='staff-ticket-modal')closeStaffTicketModal()});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('staff-ticket-modal')?.hidden)closeStaffTicketModal()});
 document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendStaffTicketReply()}});
@@ -4605,7 +4608,7 @@ body.f2w-auth-v67-open {
 <script src="/page-transitions-v135.js?v=135-1788314000" defer></script>
 <script src="/player-warm-v142.js?v=142" defer></script>
   <script src="/v145-sitewide-fixes.js?v=145" defer></script>
-  <script src="/v146-live-ops.js?v=150" defer></script>
+  <script src="/v146-live-ops.js?v=158" defer></script>
   <script src="/v147-account-logout.js?v=147"></script>
   <script src="/v149-account-route.js?v=153"></script>
 </body>

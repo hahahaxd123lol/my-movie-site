@@ -295,7 +295,7 @@
   'use strict';
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/sw-v34.js?v=156-20260902',{scope:'/'})
+    navigator.serviceWorker.register('/sw-v34.js?v=158-20260902',{scope:'/'})
       .catch(error=>console.warn('F2W service worker registration failed:',error));
   },{once:true,passive:true});
 })();

@@ -1517,7 +1517,7 @@ function f2wDebounce(fn,wait=140){
         if(enabled)await rpc('staff_set_mute',{p_username:username,p_minutes:minutes||60,p_reason:reason});
         else await rpc('staff_clear_mute',{p_username:username});
       }
-      else if(input.id==='v35-site-suspension')await rpc('staff_set_ban',{p_username:username,p_banned:enabled,p_minutes:minutes,p_reason:reason});
+      else if(input.id==='v35-site-suspension'){await rpc('staff_set_account_enforcement_v146',{p_user_id:userId,p_kind:'site-suspension',p_enabled:enabled,p_minutes:minutes,p_reason:reason});if(!enabled){try{await rpc('staff_set_ban',{p_username:username,p_banned:false,p_minutes:null,p_reason:null})}catch(_){}}}
       else if(input.id==='v35-account-ban')await rpc('staff_set_account_login_ban',{p_user_id:userId,p_enabled:enabled,p_minutes:minutes,p_reason:reason});
       toast(`${input.closest('.f2w-quick-mod-row')?.querySelector('strong')?.textContent||'Restriction'} ${enabled?'enabled':'cleared'} — live update sent`);
     }catch(error){input.checked=!enabled;toast(error.message||'Update failed');}
@@ -1530,6 +1530,8 @@ function f2wDebounce(fn,wait=140){
       await Promise.all([
         rpc('staff_set_public_chat_ban',{p_user_id:userId,p_enabled:false,p_minutes:null,p_reason:null}),
         rpc('staff_clear_mute',{p_username:username}),
+        rpc('staff_set_account_enforcement_v146',{p_user_id:userId,p_kind:'site-suspension',p_enabled:false,p_minutes:null,p_reason:null}),
+        rpc('staff_set_account_enforcement_v146',{p_user_id:userId,p_kind:'account-ban',p_enabled:false,p_minutes:null,p_reason:null}),
         rpc('staff_set_ban',{p_username:username,p_banned:false,p_minutes:null,p_reason:null}),
         rpc('staff_set_account_login_ban',{p_user_id:userId,p_enabled:false,p_minutes:null,p_reason:null})
       ]);
