@@ -594,7 +594,7 @@ function f2wDebounce(fn,wait=140){
     let last=performance.now();
 
     // Count time only while this Watch page is actually visible.
-    // A quick click-through will not enter Recently Watched.
+    // A title becomes Recently Watched after five visible seconds.
     await new Promise(resolve=>{
       const timer=setInterval(()=>{
         const now=performance.now();
@@ -603,21 +603,21 @@ function f2wDebounce(fn,wait=140){
         }
         last=now;
 
-        if(visibleMs>=30000 || (location.pathname+location.search)!==startPath){
+        if(visibleMs>=5000 || (location.pathname+location.search)!==startPath){
           clearInterval(timer);
           resolve();
         }
       },250);
     });
 
-    if(visibleMs<30000 || !authUser || (location.pathname+location.search)!==startPath)return;
+    if(visibleMs<5000 || !authUser || (location.pathname+location.search)!==startPath)return;
 
     let title=String(document.getElementById('detail-title')?.textContent||'').trim();
     if(!title||/loading title|loading\.\.\./i.test(title)){
       title=`${mediaType==='tv'?'TV':'Movie'} #${mediaId}`;
     }
 
-    const img=document.querySelector('#detail-poster img,.detail-poster img,.poster img,img[alt*="poster" i]');
+    const img=document.querySelector('#detail-poster,#detail-poster img,.detail-poster img,.poster img,img[alt*="poster" i]');
     const poster=String(img?.getAttribute('src')||'');
     let posterPath=null;
     const match=poster.match(/image\.tmdb\.org\/t\/p\/[^/]+(\/[^?]+)/i);
@@ -772,36 +772,49 @@ function f2wDebounce(fn,wait=140){
   function isOwnProfile(profile){return Boolean(profile&&authUser&&String(profile.user_id)===String(authUser.id));}
   async function renderProfileActivity(){
     if(!location.pathname.startsWith('/profile'))return;
-    const profile=viewedProfileObject();if(!profile?.user_id)return;
+    ensureProfileRealtimePanels();
     const host=document.getElementById('v17-profile-recently-watched');if(!host)return;
-
-    if(profile.is_private&&!isOwnProfile(profile)){
-      host.innerHTML='<div class="f2w-profile-empty">Recently watched is private.</div>';
-      return;
+    let profile=viewedProfileObject();
+    let userId=profile?.user_id||'';
+    const uname=(()=>{try{return decodeURIComponent((location.pathname.match(/^\/profile\/@([^/?#]+)/)||[])[1]||new URLSearchParams(location.search).get('user')||'').replace(/^@/,'')}catch{return ''}})();
+    if(!userId&&uname){
+      const key='f2w:v183:recent-user:'+uname.toLowerCase();
+      try{userId=sessionStorage.getItem(key)||''}catch{}
+      if(!userId){
+        try{
+          const client=db();
+          const {data,error}=await client.from('profiles').select('user_id,is_private').ilike('username',uname).maybeSingle();
+          if(error)throw error;userId=data?.user_id||'';
+          if(userId)try{sessionStorage.setItem(key,userId)}catch{}
+          if(!profile&&data)profile={...data,username:uname};
+        }catch(error){console.warn('Recently watched profile lookup unavailable:',error?.message||error)}
+      }
     }
-
+    if(!userId){host.innerHTML='<div class="f2w-profile-empty">No recently viewed titles yet.</div>';return}
+    if(profile?.is_private&&!isOwnProfile(profile)){host.innerHTML='<div class="f2w-profile-empty">Recently watched is private.</div>';return}
+    const cacheKey='f2w:v183:recent:'+userId;
     try{
-      const rows=await rpc('get_profile_recent_views_v59',{
-        p_user_id:profile.user_id,
-        p_limit:10
-      });
-      const data=Array.isArray(rows)?rows:[];
-
-      host.innerHTML=data.length
-        ? `<div class="f2w-recently-watched-grid">${data.map(row=>`
-            <a class="f2w-recent-watch-card" href="/watch/?id=${encodeURIComponent(row.media_id)}&type=${encodeURIComponent(row.media_type)}">
-              <img src="${row.poster_path?`https://image.tmdb.org/t/p/w342${esc(row.poster_path)}`:RED_LOGO}" alt="" loading="lazy" decoding="async" onerror="this.src='${RED_LOGO}'">
-              <div>
-                <strong>${esc(row.title||`${row.media_type==='tv'?'TV':'Movie'} #${row.media_id}`)}</strong>
-                <span>${row.media_type==='tv'?'TV':'Movie'} · ${formatRelative(row.viewed_at)}</span>
-              </div>
-            </a>`).join('')}</div>`
-        : '<div class="f2w-profile-empty">No recently viewed titles yet.</div>';
+      const cached=JSON.parse(sessionStorage.getItem(cacheKey)||'null');
+      if(cached&&Date.now()-Number(cached.at||0)<30000&&Array.isArray(cached.rows)){
+        paintRecent(cached.rows);return;
+      }
+    }catch{}
+    try{
+      const rows=await rpc('get_profile_recent_views_v59',{p_user_id:userId,p_limit:10});
+      const data=Array.isArray(rows)?rows:[];try{sessionStorage.setItem(cacheKey,JSON.stringify({at:Date.now(),rows:data}))}catch{};paintRecent(data);
     }catch(error){
       host.innerHTML='<div class="f2w-profile-empty">Recently watched is unavailable right now.</div>';
       console.warn('Recently watched unavailable:',error?.message||error);
     }
+    function paintRecent(data){
+      host.innerHTML=data.length?`<div class="f2w-recently-watched-grid">${data.map(row=>`
+        <a class="f2w-recent-watch-card" href="/watch/?id=${encodeURIComponent(row.media_id)}&type=${encodeURIComponent(row.media_type)}">
+          <img src="${row.poster_path?`https://image.tmdb.org/t/p/w342${esc(row.poster_path)}`:RED_LOGO}" alt="" loading="lazy" decoding="async" onerror="this.src='${RED_LOGO}'">
+          <div><strong>${esc(row.title||`${row.media_type==='tv'?'TV':'Movie'} #${row.media_id}`)}</strong><span>${row.media_type==='tv'?'TV':'Movie'} · ${formatRelative(row.viewed_at)}</span></div>
+        </a>`).join('')}</div>`:'<div class="f2w-profile-empty">No recently viewed titles yet.</div>';
+    }
   }
+  window.f2wRenderProfileActivityV182=renderProfileActivity;
   function subscribeProfileActivity(userId){
     const client=db();if(!client||activityChannel?.topic?.includes(userId))return;
     try{if(activityChannel)client.removeChannel(activityChannel)}catch{}
@@ -833,23 +846,29 @@ function f2wDebounce(fn,wait=140){
 
   function installProfileEditor(){
     if(!location.pathname.startsWith('/profile'))return;
-    const profile=viewedProfileObject();if(!isOwnProfile(profile))return;
+    const profile=viewedProfileObject();
     let button=document.getElementById('v35-edit-profile');
     const actions=document.querySelector('.profile-actions');
-    if(!button){
+    if(!button&&actions){
       button=document.createElement('button');
       button.id='v35-edit-profile';
       button.className='profile-action-btn f2w-edit-profile-btn';
       button.type='button';
       button.innerHTML='<i class="fa-solid fa-pen-to-square"></i> <span>Edit Profile</span>';
+    }
+    if(button){
       button.onclick=openProfileEditor;
+      const own=isOwnProfile(profile);
+      button.hidden=!own;
+      button.style.display=own?'inline-flex':'none';
+      if(actions){
+        const copy=document.getElementById('copy-profile-link-btn');
+        if(button.parentElement!==actions || (copy && button.nextElementSibling!==copy))actions.insertBefore(button,copy||actions.firstChild);
+      }
     }
-    if(actions){
-      const copy=document.getElementById('copy-profile-link-btn');
-      if(button.parentElement!==actions || (copy && button.nextElementSibling!==copy)) actions.insertBefore(button,copy||actions.firstChild);
-    }
-    renderProfileExtras(profile);
+    if(profile)renderProfileExtras(profile);
   }
+  window.f2wOpenProfileEditorV182=openProfileEditor;
   function renderProfileExtras(profile){
     if(!profile||!location.pathname.startsWith('/profile'))return;
 
@@ -1345,7 +1364,8 @@ function f2wDebounce(fn,wait=140){
     if(profileUiTimer)clearInterval(profileUiTimer);
     profileUiTimer=setInterval(()=>{
       renderProfilePresence();
-    },30000);
+      renderProfileActivity();
+    },60000);
   }
 
   function bootProfileRealtime(){
@@ -1704,7 +1724,14 @@ function f2wDebounce(fn,wait=140){
       const editorRetry=setInterval(()=>{
         editorAttempts++;
         installProfileEditor();
-        if(document.getElementById('v35-edit-profile')||editorAttempts>=40)clearInterval(editorRetry);
+        const profile=viewedProfileObject();
+        if(profile?.user_id){
+          renderProfileActivity();
+          subscribeProfileActivity(profile.user_id);
+          clearInterval(editorRetry);
+        }else if(editorAttempts>=40){
+          clearInterval(editorRetry);
+        }
       },250);
     }
     roleDecorateTimer=null;
@@ -2274,14 +2301,17 @@ function f2wDebounce(fn,wait=140){
     if(String(row.username).toLowerCase()===usernameFromUrl().toLowerCase())paint(snap);
   }
   function ageText(value){
-    const start=new Date(value),now=new Date();if(!Number.isFinite(start.getTime()))return '—';
-    if(start>now)return 'TODAY';
-    let y=now.getUTCFullYear()-start.getUTCFullYear(),m=now.getUTCMonth()-start.getUTCMonth(),d=now.getUTCDate()-start.getUTCDate();
-    if(d<0){m--;d+=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),0)).getUTCDate()}
-    if(m<0){y--;m+=12}
-    if(y>0)return m?`${y}Y ${m}MO`:`${y}Y`;
-    if(m>0)return `${m}MO`;
-    const days=Math.max(0,Math.floor((Date.now()-start.getTime())/86400000));return days<1?'TODAY':`${days}D`;
+    const t=new Date(value).getTime();if(!Number.isFinite(t))return '—';
+    const d=Math.max(0,Date.now()-t),sec=1000,min=60000,h=3600000,day=86400000,w=604800000,mo=2629800000,y=31557600000;
+    let n,unit;
+    if(d<min){n=Math.max(1,Math.floor(d/sec));unit='second'}
+    else if(d<h){n=Math.max(1,Math.floor(d/min));unit='minute'}
+    else if(d<day){n=Math.max(1,Math.floor(d/h));unit='hour'}
+    else if(d<w){n=Math.max(1,Math.floor(d/day));unit='day'}
+    else if(d<mo){n=Math.max(1,Math.floor(d/w));unit='week'}
+    else if(d<y){n=Math.max(1,Math.floor(d/mo));unit='month'}
+    else{n=Math.max(1,Math.floor(d/y));unit='year'}
+    return `${n} ${unit}${n===1?'':'s'}`;
   }
   function rel(ts){
     const t=new Date(ts).getTime();if(!Number.isFinite(t))return 'not recorded yet';
@@ -2294,15 +2324,15 @@ function f2wDebounce(fn,wait=140){
     if(!row)return;
     // Authoritative member age paints immediately and also repairs the older
     // profile object/cache so legacy 30-second renderers cannot overwrite it.
-    if(row.member_since){
-      const authoritative=window.__F2W_MEMBER_SINCE_V139||row.member_since;
+    if(window.__F2W_MEMBER_SINCE_V139){
+      const authoritative=window.__F2W_MEMBER_SINCE_V139;
       const age=document.getElementById('v16-profile-age');if(age)age.textContent=ageText(authoritative);
       const joined=document.getElementById('profile-joined');if(joined)joined.textContent=`Joined ${new Date(authoritative).toLocaleDateString(undefined,{year:'numeric',month:'short'})}`;
       const member=document.getElementById('f2w-profile-member');if(member)member.textContent=new Date(authoritative).toLocaleDateString(undefined,{month:'short',year:'numeric'});
       try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=authoritative}catch{}
       try{
         const uname=String(row.username||'').toLowerCase(),ck=`f2w_profile_cache_v24:${uname}`,raw=localStorage.getItem(ck),parsed=raw?JSON.parse(raw):null;
-        if(parsed?.profile){parsed.profile.created_at=row.member_since;localStorage.setItem(ck,JSON.stringify(parsed))}
+        if(parsed?.profile){parsed.profile.created_at=authoritative;localStorage.setItem(ck,JSON.stringify(parsed))}
       }catch{}
     }
     const badge=document.getElementById('v17-profile-presence');
@@ -2386,3 +2416,7 @@ function f2wDebounce(fn,wait=140){
 // f2w-force-save:v178-profile-editor-leaderboard:20260902
 
 // v180 force-refresh: profile edit button placement + stable member age
+
+// f2w-force-save:v182-profile-editor-recent-member:20260902
+
+// f2w-force-save:v183-profile-recent-age-egress:20260902

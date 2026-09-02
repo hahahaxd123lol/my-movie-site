@@ -1,6 +1,6 @@
 /* Flix2Watch v135 — site-wide page transitions */
 :root{
-  --f2w-page-enter-ms: 850ms;
+  --f2w-page-enter-ms: 1000ms;
   --f2w-page-exit-ms: 150ms;
 }
 
@@ -38,3 +38,6 @@ html.f2w-transition-leaving body{
   ::view-transition-old(root),
   ::view-transition-new(root){animation-duration:1ms!important;transform:none!important}
 }
+
+/* f2w-force-save:v182-one-second-page-enter:20260902 */
+/* f2w-force-save:v183-page-fade-1s:20260902 */

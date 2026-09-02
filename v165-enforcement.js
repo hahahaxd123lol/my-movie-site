@@ -80,14 +80,20 @@ function stopPlayback(){
 }
 function applyEnforcement(uid,state,{realtime=false,cached=false}={}){
   if(String(state?.user_id||uid)!==String(uid)){clearEnforcement(uid);return false}
+  const supportExempt=location.pathname.startsWith('/support')&&!!state?.site_suspended&&!state?.account_banned;
+  if(supportExempt){scrubEnforcementVisuals();window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:true,support_exempt:true};writeCachedEnforcement(uid,state);return false}
   const active=!!(state?.site_suspended||state?.account_banned);
   window.__flix2watchAccountGuardReady=true;window.__flix2watchAccountState={...state,user_id:uid,banned:active};
   if(!active){clearEnforcement(uid);return false}
-  writeCachedEnforcement(uid,state);scrubEnforcementVisuals();stopPlayback();
-  const el=enforcementOverlay();el.hidden=false;el.classList.add('show');try{if(!el.open)el.showModal()}catch{};
+  writeCachedEnforcement(uid,state);
+  const kind=state.account_banned?'account-ban':'site-suspension';
+  const reason=state.reason||(state.account_banned?'This account has been banned. Please contact Support if you believe this is a mistake.':'Your access to Flix2Watch has been suspended. Please contact Support if you need help.');
+  let el=document.getElementById('f2w-v165-enforcement');
+  const same=!!(el&&el.open&&el.dataset.kind===kind&&el.dataset.reason===reason);
+  if(!same){scrubEnforcementVisuals();stopPlayback();el=enforcementOverlay();el.hidden=false;el.classList.add('show');try{if(!el.open)el.showModal()}catch{}}
   el.querySelector('h1').textContent=state.account_banned?'Account banned':'Account suspended';
-  el.querySelector('p').textContent=state.reason||(state.account_banned?'This account has been banned. Please contact Support if you believe this is a mistake.':'Your access to Flix2Watch has been suspended. Please contact Support if you need help.');
-  el.dataset.kind=state.account_banned?'account-ban':'site-suspension';
+  el.querySelector('p').textContent=reason;
+  el.dataset.kind=kind;el.dataset.reason=reason;
   document.documentElement.classList.add('f2w-enforced');document.body?.classList.add('f2w-enforced-body');
   try{document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.activeElement?.blur?.();el.querySelector('.panel')?.focus({preventScroll:true})}catch{}
   if(realtime&&!cached){try{el.querySelector('.panel')?.animate([{transform:'scale(.97)',opacity:.6},{transform:'scale(1)',opacity:1}],{duration:170,easing:'ease-out'})}catch{}}
@@ -113,7 +119,7 @@ async function bindEnforcement(session){
   if(!uid){clearEnforcement();return}
   const cached=readCachedEnforcement(uid);if(cached?.site_suspended||cached?.account_banned)applyEnforcement(uid,cached,{cached:true});else clearEnforcement(uid);
   await refreshEnforcement(session);
-  enforcementTimer=setInterval(()=>{if(document.visibilityState==='visible')c.auth.getSession().then(({data})=>refreshEnforcement(data?.session||null)).catch(()=>{})},30000);
+  enforcementTimer=setInterval(()=>{if(document.visibilityState==='visible')c.auth.getSession().then(({data})=>refreshEnforcement(data?.session||null)).catch(()=>{})},120000);
   try{enforcementChannel=c.channel('f2w-v165-enforce-'+uid).on('postgres_changes',{event:'*',schema:'public',table:'account_enforcement_v146',filter:`user_id=eq.${uid}`},payload=>{
     const evt=String(payload?.eventType||'').toUpperCase();
     const row=payload?.new||payload?.old||null;
@@ -166,4 +172,4 @@ async function boot(){scrubEnforcementVisuals();const c=db();if(!c?.auth)return;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 
-// v177-force-refresh-2026-09-02
+// f2w-force-save:v183-enforcement-no-flash-support-exemption:20260902

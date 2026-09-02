@@ -5,7 +5,7 @@
   const SUPABASE_URL = 'https://viqufxlcxwgboyxbdhjb.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
   const OWNER_UUID = 'f5454804-a2a6-4602-9086-51cf51f11c77';
-  const POLL_MS = 30000;
+  const POLL_MS = 120000;
 
   let client = null;
   let activeUser = null;
@@ -398,6 +398,9 @@
   }
 
   function showBlockOverlay(state) {
+    // v165 is the authoritative suspension/login-ban UI. Keeping this legacy
+    // blocker active as well causes duplicate flashing overlays and duplicate polling.
+    if (window.__f2wV165Enforcement) { removeBlockOverlay(); return; }
     if (!state?.banned) {
       removeBlockOverlay();
       return;
@@ -677,3 +680,5 @@
     initialize();
   }
 })();
+
+// f2w-force-save:v183-account-guard-low-egress-no-duplicate-blocker:20260902

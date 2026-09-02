@@ -9,3 +9,19 @@ body #profile-hero #profile-username-line{font-size:.86rem!important;font-weight
 #account-modal.open .account-card,#account-modal.open input,#account-modal.open textarea,#account-modal.open button,#account-modal.open select{pointer-events:auto!important}
 .f2w-primary-nav a[href="/leaderboard/"]{white-space:nowrap}
 /* f2w-force-save:v178-hardening:20260902 */
+
+/* v183 auth modal interaction + profile/nav repairs */
+#account-modal.f2w-v183-auth-open{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:2147483000!important}
+#account-modal.f2w-v183-auth-open .account-card,
+#account-modal.f2w-v183-auth-open .account-card *,
+#account-modal.f2w-v183-auth-open input,
+#account-modal.f2w-v183-auth-open textarea,
+#account-modal.f2w-v183-auth-open select,
+#account-modal.f2w-v183-auth-open button{pointer-events:auto!important}
+#account-modal .chat-close,#account-modal .account-close,#account-modal .f2w-auth-close-v56,#account-modal [aria-label*="close" i]{cursor:pointer!important;touch-action:manipulation!important;z-index:2147483600!important}
+#account-modal input,#account-modal textarea{user-select:text!important;-webkit-user-select:text!important}
+.f2w-primary-nav>a[href="/leaderboard/"]{white-space:nowrap}
+.profile-actions{display:flex!important;align-items:center!important;gap:10px!important;flex-wrap:wrap!important}
+#v35-edit-profile:not([hidden]){display:inline-flex!important;align-items:center!important}
+#profile-joined{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;vertical-align:middle!important;line-height:1!important;min-height:34px!important}
+/* f2w-force-save:v183-sitewide-css:20260902 */

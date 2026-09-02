@@ -1,113 +1,56 @@
-/* Flix2Watch v34 navigation cache */
-const CACHE='f2w-v178-profile-auth-nav-20260902';
-const CORE=['/v176-viewport-popups.js','/v176-viewport-popups.css','/v176-sitewide.js','/v176-notifications.js','/v176-sitewide-fixes.css','/v176-sitewide-fixes.js','/v176-enforcement.css','/v176-bootstrap.js','/v176-enforcement.js','/v176-core.css','/v176-core.js','/v176-global-ui.css','/v176-global-ui.js',
-  '/home/','/favorites/','/profile/','/profile/index.html','/support/','/chat/','/account/',
-  '/leaderboard/','/users/',
-  '/global-header-v1.css','/global-header-chat-v1.js',
-  '/final-v35.css','/final-v35.js',
+/* Flix2Watch v183 — fresh critical-code service worker */
+const CACHE='f2w-v183-critical-fixes-20260902';
+const CORE=[
+  '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
+  '/v174-viewport-popups.js','/v176-sitewide.js','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',
-  '/leaderboard-v140.css','/leaderboard-v140.js',
-  '/v145-sitewide-fixes.css','/v145-sitewide-fixes.js','/v147-account-logout.js','/v176-account-route.js',
-  '/flix2watch-logo-red-v176.png'
+  '/v177-watch-realtime.js','/v177-profile-playback.js'
 ];
-
 self.addEventListener('install',event=>{
-  event.waitUntil(
-    caches.open(CACHE)
-      .then(cache=>cache.addAll(CORE.map(x=>new Request(x,{cache:'reload'}))).catch(()=>{}))
-      .then(()=>self.skipWaiting())
-  );
+  event.waitUntil((async()=>{
+    const cache=await caches.open(CACHE);
+    await Promise.all(CORE.map(async path=>{try{const r=await fetch(path,{cache:'reload'});if(r.ok)await cache.put(path,r.clone())}catch{}}));
+    await self.skipWaiting();
+  })());
 });
-
 self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(keys.filter(k=>k.startsWith('f2w-v')&&k!==CACHE).map(k=>caches.delete(k))))
-      .then(()=>self.clients.claim())
-  );
+  event.waitUntil((async()=>{
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(k=>k.startsWith('f2w-v')&&k!==CACHE).map(k=>caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
-
-async function staleWhileRevalidate(request){
+async function networkFirst(request){
   const cache=await caches.open(CACHE);
-  const cached=await cache.match(request,{ignoreSearch:false});
-  const network=fetch(request).then(response=>{
-    if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});
-    return response;
-  }).catch(()=>cached);
-  return cached||network;
-}
-
-async function navigationResponse(request){
-  const cache=await caches.open(CACHE);
-  const path=new URL(request.url).pathname;
-
-  // v176: /profile/@username is a virtual route on static hosting.
-  // NEVER request that virtual URL from the origin. Always serve the real
-  // profile document and preserve the friendly address in the browser.
-  if(/^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){
-    const cachedShell=(await cache.match('/profile/index.html')) || (await cache.match('/profile/'));
-    try{
-      const fresh=await fetch('/profile/index.html',{cache:'no-store'});
-      if(fresh&&fresh.ok){
-        cache.put('/profile/index.html',fresh.clone()).catch(()=>{});
-        cache.put('/profile/',fresh.clone()).catch(()=>{});
-        return fresh;
-      }
-    }catch{}
-    if(cachedShell)return cachedShell;
-    // Last-resort: let the browser request the physical file directly rather
-    // than returning the old one-line 503 response.
-    return fetch('/profile/index.html',{cache:'reload'});
-  }
-
-  // NETWORK-FIRST for ordinary HTML navigation.
-  // This prevents an old cached page from surviving a new deployment.
   try{
-    const network=await fetch(request,{cache:'no-cache'});
-    if(network&&network.ok){
-      cache.put(request,network.clone()).catch(()=>{});
-      return network;
-    }
-  }catch{}
-
-  const cached=await cache.match(request,{ignoreSearch:false});
-  if(cached)return cached;
-
-  // Friendly profile URLs (/profile/@name) use the same profile shell.
-  // Without this, the service worker returned the literal word "Offline"
-  // whenever navigation fallback was needed for an offline user/profile route.
-  if(path==='/profile/' || path==='/profile' || /^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){
-    const shell=(await cache.match('/profile/index.html')) || (await cache.match('/profile/'));
-    if(shell)return shell;
+    const fresh=await fetch(request,{cache:'no-cache'});
+    if(fresh&&fresh.ok)cache.put(request,fresh.clone()).catch(()=>{});
+    return fresh;
+  }catch{
+    return (await cache.match(request,{ignoreSearch:false})) || (await cache.match(new URL(request.url).pathname));
   }
-
-  // Prefer the cached home shell over a blank one-word failure page.
-  const home=await cache.match('/home/');
-  if(home)return home;
-  return home || fetch('/home/index.html',{cache:'reload'});
 }
-
+async function imageSWR(request){
+  const cache=await caches.open(CACHE),cached=await cache.match(request,{ignoreSearch:false});
+  const fresh=fetch(request).then(r=>{if(r&&r.ok)cache.put(request,r.clone()).catch(()=>{});return r}).catch(()=>null);
+  return cached||fresh;
+}
+async function navigation(request){
+  const cache=await caches.open(CACHE),u=new URL(request.url),path=u.pathname;
+  if(/^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){
+    try{const r=await fetch('/profile/index.html',{cache:'no-store'});if(r.ok){cache.put('/profile/index.html',r.clone()).catch(()=>{});return r}}catch{}
+    return (await cache.match('/profile/index.html')) || fetch('/profile/index.html',{cache:'reload'});
+  }
+  try{
+    const r=await fetch(request,{cache:'no-cache'});if(r&&r.ok){cache.put(request,r.clone()).catch(()=>{});return r}
+  }catch{}
+  return (await cache.match(request,{ignoreSearch:false})) || (await cache.match('/home/')) || fetch('/home/index.html',{cache:'reload'});
+}
 self.addEventListener('fetch',event=>{
-  const request=event.request;
-  if(request.method!=='GET')return;
-
-  const url=new URL(request.url);
-  if(url.origin!==self.location.origin)return;
-
-  // Never cache Supabase/API/auth-style endpoints.
-  if(url.pathname.startsWith('/auth/')||url.pathname.startsWith('/rest/')||url.pathname.startsWith('/functions/'))return;
-
-  if(request.mode==='navigate'){
-    event.respondWith(navigationResponse(request));
-    return;
-  }
-
-  if(/\.(?:css|js|png|jpe?g|webp|svg|ico|woff2?)(?:$|\?)/i.test(url.pathname)){
-    event.respondWith(staleWhileRevalidate(request));
-  }
+  const request=event.request;if(request.method!=='GET')return;
+  const u=new URL(request.url);if(u.origin!==self.location.origin)return;
+  if(request.mode==='navigate'){event.respondWith(navigation(request));return}
+  if(/\.(?:js|css)$/i.test(u.pathname)){event.respondWith(networkFirst(request));return}
+  if(/\.(?:png|jpe?g|webp|svg|ico|woff2?)$/i.test(u.pathname)){event.respondWith(imageSWR(request));return}
 });
-// f2w-force-save:service-worker-network-first-v58:1788221340
- 
-// f2w-force-save:v128-instant-profile-presence:1788304200
-
-// f2w-force-save:v178-profile-auth-nav:20260902
+// f2w-force-save:v183-network-first-critical-code:20260902
