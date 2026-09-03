@@ -3926,6 +3926,16 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 }
 </style>
 
+
+<style id="f2w-profile-ratings-v218-css">
+#f2w-v34-profile-ratings.f2w-v218-loading{opacity:.55!important;pointer-events:none!important}
+#f2w-v34-profile-ratings{transition:opacity .14s ease!important}
+#f2w-v217-ratings-count{font-variant-numeric:tabular-nums!important}
+@media(max-width:700px){
+  #f2w-v217-ratings-count{display:inline!important;max-width:160px!important;overflow:hidden!important;text-overflow:ellipsis!important}
+}
+</style>
+
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -10262,19 +10272,133 @@ body.f2w-auth-v67-open {
 </style>
 
 
-<script id="f2w-profile-ratings-v215-js">
+<script id="f2w-profile-ratings-v218-js">
 (() => {
   'use strict';
-  if(window.__f2wProfileRatingsV215)return;
-  window.__f2wProfileRatingsV215=true;
-  const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
-  function username(){const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);if(m)return decodeURIComponent(m[1]);return String(new URLSearchParams(location.search).get('user')||document.getElementById('profile-username-line')?.textContent||'').trim().replace(/^@/,'')}
+  if(window.__f2wProfileRatingsV218)return;
+  window.__f2wProfileRatingsV218=true;
+
+  const PAGE_SIZE=20;
+  let offset=0;
+  let total=0;
+  let loading=false;
+  let generation=0;
+
+  const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[ch]));
+  function username(){
+    const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
+    if(m)return decodeURIComponent(m[1]);
+    return String(new URLSearchParams(location.search).get('user')||document.getElementById('profile-username-line')?.textContent||'').trim().replace(/^@/,'');
+  }
   const client=()=>window.chatSupabase?.rpc?window.chatSupabase:(window.f2wSupabase?.rpc?window.f2wSupabase:null);
-  function card(r){const title=esc(r.title||`${r.media_type==='tv'?'TV':'Movie'} #${r.media_id}`),poster=r.poster_path?`https://image.tmdb.org/t/p/w342${esc(r.poster_path)}`:'',n=Math.max(1,Math.min(5,Number(r.rating)||1)),stars='★'.repeat(n)+'☆'.repeat(5-n),type=r.media_type==='tv'?'tv':'movie';return `<a class="profile-rating-card f2w-v215-rating" href="/watch/?id=${encodeURIComponent(r.media_id)}&type=${type}"><div class="profile-rating-poster">${poster?`<img src="${poster}" alt="${title} poster" loading="lazy" decoding="async">`:''}</div><div class="profile-rating-info"><div class="profile-rating-title">${title}</div><div class="profile-rating-stars">${stars}<span class="profile-rating-score">${n}/5</span></div>${r.review?`<div class="profile-rating-review">${esc(r.review)}</div>`:''}</div></a>`}
-  function hosts(){return [document.getElementById('f2w-v34-profile-ratings')].filter(Boolean)}
-  async function load(){const c=client(),u=username(),list=hosts();if(!list.length||!u)return;if(!c){list.forEach(h=>h.innerHTML='<div class="profile-state">No ratings yet.</div>');return}try{const {data,error}=await c.rpc('get_public_profile_ratings_v215',{p_username:u});if(error)throw error;const rows=Array.isArray(data)?data:[],html=rows.length?rows.map(card).join(''):'<div class="profile-state">No ratings yet.</div>';list.forEach(h=>h.innerHTML=html)}catch(error){console.warn('Public ratings unavailable:',error);list.forEach(h=>h.innerHTML='<div class="profile-state">Ratings are temporarily unavailable.</div>')}}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(load,150),{once:true});else setTimeout(load,150);
-  window.addEventListener('pageshow',()=>setTimeout(load,100),{passive:true});
+  const host=()=>document.getElementById('f2w-v34-profile-ratings');
+
+  function card(r){
+    const title=esc(r.title||`${r.media_type==='tv'?'TV':'Movie'} #${r.media_id}`);
+    const poster=r.poster_path?`https://image.tmdb.org/t/p/w342${esc(r.poster_path)}`:'';
+    const n=Math.max(1,Math.min(5,Number(r.rating)||1));
+    const stars='★'.repeat(n)+'☆'.repeat(5-n);
+    const type=r.media_type==='tv'?'tv':'movie';
+    return `<a class="profile-rating-card f2w-v215-rating" href="/watch/?id=${encodeURIComponent(r.media_id)}&type=${type}">
+      <div class="profile-rating-poster">${poster?`<img src="${poster}" alt="${title} poster" loading="lazy" decoding="async">`:''}</div>
+      <div class="profile-rating-info">
+        <div class="profile-rating-title">${title}</div>
+        <div class="profile-rating-stars">${stars}<span class="profile-rating-score">${n}/5</span></div>
+        ${r.review?`<div class="profile-rating-review">${esc(r.review)}</div>`:''}
+      </div>
+    </a>`;
+  }
+
+  function updateHeader(){
+    const label=document.getElementById('f2w-v217-ratings-count');
+    const prev=document.getElementById('f2w-v217-ratings-prev');
+    const next=document.getElementById('f2w-v217-ratings-next');
+    const h=host();
+    const shown=h?.querySelectorAll('.profile-rating-card').length||0;
+    const start=total&&shown?offset+1:0;
+    const end=Math.min(total,offset+shown);
+    if(label){
+      label.textContent=total
+        ? `${start}–${end} of ${total.toLocaleString()} rating${total===1?'':'s'}`
+        : 'Recent movie and TV scores';
+    }
+    if(prev)prev.disabled=loading||offset<=0;
+    if(next)next.disabled=loading||offset+PAGE_SIZE>=total;
+  }
+
+  async function loadPage(nextOffset=0,{silent=false}={}){
+    const c=client(),u=username(),h=host();
+    if(!h||!u||loading)return;
+    if(!c){h.innerHTML='<div class="profile-state">No ratings yet.</div>';return;}
+
+    const request=++generation;
+    loading=true;
+    if(!silent)h.classList.add('f2w-v218-loading');
+    updateHeader();
+
+    try{
+      const {data,error}=await c.rpc('get_public_profile_ratings_v218',{
+        p_username:u,
+        p_limit:PAGE_SIZE,
+        p_offset:Math.max(0,nextOffset)
+      });
+      if(error)throw error;
+      if(request!==generation)return;
+
+      const rows=Array.isArray(data)?data:[];
+      total=Number(rows[0]?.total_count||0);
+      offset=Math.max(0,nextOffset);
+      h.innerHTML=rows.length
+        ? rows.map(card).join('')
+        : '<div class="profile-v16-none">No ratings yet.</div>';
+      h.scrollLeft=0;
+      updateHeader();
+    }catch(error){
+      console.warn('Public ratings unavailable:',error);
+      if(request===generation)h.innerHTML='<div class="profile-state">Ratings are temporarily unavailable.</div>';
+    }finally{
+      if(request===generation){
+        loading=false;
+        h.classList.remove('f2w-v218-loading');
+        updateHeader();
+      }
+    }
+  }
+
+  function page(direction){
+    if(loading)return;
+    const target=Math.max(0,offset+(direction*PAGE_SIZE));
+    if(target===offset)return;
+    if(direction>0&&target>=total)return;
+    loadPage(target);
+  }
+
+  function bind(){
+    const h=host();
+    if(!h)return;
+    document.getElementById('f2w-v217-ratings-prev')?.addEventListener('click',()=>page(-1));
+    document.getElementById('f2w-v217-ratings-next')?.addEventListener('click',()=>page(1));
+
+    // Keep the rail compact. If the user reaches the end/start, advance one
+    // database page instead of accumulating hundreds of DOM cards.
+    let edgeTimer=0;
+    h.addEventListener('scroll',()=>{
+      clearTimeout(edgeTimer);
+      edgeTimer=setTimeout(()=>{
+        if(loading)return;
+        const max=Math.max(0,h.scrollWidth-h.clientWidth);
+        if(max>0 && h.scrollLeft>=max-4 && offset+PAGE_SIZE<total){
+          loadPage(offset+PAGE_SIZE);
+        }
+      },160);
+    },{passive:true});
+
+    window.addEventListener('pageshow',()=>loadPage(offset,{silent:true}),{passive:true});
+    loadPage(0);
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
 })();
 </script>
 
@@ -10838,66 +10962,22 @@ window.togglePrivateProfile=async function(){
 
 <script src="/v205-profile-live.js?v=205-20260902" defer></script>
 
-<script id="f2w-profile-ratings-v217-js">
+<script id="f2w-profile-ratings-v218-rail-js">
 (() => {
   'use strict';
-  if(window.__f2wProfileRatingsV217)return;
-  window.__f2wProfileRatingsV217=true;
-
+  if(window.__f2wProfileRatingsRailV218)return;
+  window.__f2wProfileRatingsRailV218=true;
   const rail=()=>document.getElementById('f2w-v34-profile-ratings');
-
-  function step(){
-    const r=rail();
-    const card=r?.querySelector('.profile-rating-card');
-    return card ? card.getBoundingClientRect().width + 12 : Math.max(180,(r?.clientWidth||600)*.72);
-  }
-
-  function sync(){
-    const r=rail();
-    if(!r)return;
-    const prev=document.getElementById('f2w-v217-ratings-prev');
-    const next=document.getElementById('f2w-v217-ratings-next');
-    const count=document.getElementById('f2w-v217-ratings-count');
-    const cards=r.querySelectorAll('.profile-rating-card');
-
-    if(count){
-      count.textContent=cards.length
-        ? `${cards.length} rating${cards.length===1?'':'s'} · scroll to browse`
-        : 'Recent movie and TV scores';
-    }
-
-    const max=Math.max(0,r.scrollWidth-r.clientWidth-2);
-    if(prev)prev.disabled=r.scrollLeft<=2 || max<=2;
-    if(next)next.disabled=r.scrollLeft>=max || max<=2;
-  }
-
-  function move(direction){
-    const r=rail();
-    if(!r)return;
-    r.scrollBy({left:direction*step()*3,behavior:'smooth'});
-  }
-
   function bind(){
     const r=rail();
     if(!r)return;
-
-    document.getElementById('f2w-v217-ratings-prev')?.addEventListener('click',()=>move(-1));
-    document.getElementById('f2w-v217-ratings-next')?.addEventListener('click',()=>move(1));
-    r.addEventListener('scroll',sync,{passive:true});
-
     r.addEventListener('wheel',event=>{
       if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;
       if(r.scrollWidth<=r.clientWidth+2)return;
       event.preventDefault();
       r.scrollLeft+=event.deltaY;
     },{passive:false});
-
-    new MutationObserver(sync).observe(r,{childList:true});
-    window.addEventListener('resize',sync,{passive:true});
-    setTimeout(sync,100);
-    setTimeout(sync,500);
   }
-
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
   else bind();
 })();
@@ -11060,3 +11140,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v216-remove-duplicate-profile-ratings:20260903 -->
 
 <!-- f2w-force-save:v217-compact-rating-rail:20260903 -->
+
+<!-- f2w-force-save:v218-paged-profile-ratings:20260903 -->
