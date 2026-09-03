@@ -4099,6 +4099,40 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
 #f2w-v215-rating-label strong{color:#ffd43b!important}
 </style>
 
+
+<script id="f2w-letterboxd-link-authority-v222">
+(() => {
+  'use strict';
+  if(window.__f2wLetterboxdLinkAuthorityV222)return;
+  window.__f2wLetterboxdLinkAuthorityV222=true;
+
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  window.__f2wNativeOpenV222=nativeOpen;
+
+  window.addEventListener('click',event=>{
+    const link=event.target?.closest?.('a[data-f2w-letterboxd-v222="1"]');
+    if(!link)return;
+
+    // Preserve browser-native modifier/middle-click behavior.
+    if(event.button!==0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)return;
+
+    const href=link.href;
+    if(!href)return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    try{
+      const opened=nativeOpen?.(href,'_blank','noopener,noreferrer');
+      if(opened)return;
+    }catch{}
+
+    // Last-resort fallback if a browser refuses window.open.
+    location.href=href;
+  },true);
+})();
+</script>
+
 </head>
 <body class="theme-red f2w-main-page f2w-watch-page watch-locked">
 <header>
@@ -10702,11 +10736,11 @@ body.f2w-watch-page #account-modal .account-card {
 /* f2w-force-save:watch-auth-tv-scroll-v184:20260902 */
 </style>
 
-<script id="f2w-letterboxd-watch-v220-js">
+<script id="f2w-letterboxd-watch-v222-js">
 (() => {
   'use strict';
-  if(window.__f2wLetterboxdWatchV220)return;
-  window.__f2wLetterboxdWatchV220=true;
+  if(window.__f2wLetterboxdWatchV222)return;
+  window.__f2wLetterboxdWatchV222=true;
 
   const mark='<span class="f2w-letterboxd-mark" aria-hidden="true"><b></b><b></b><b></b></span>';
 
@@ -10724,46 +10758,50 @@ body.f2w-watch-page #account-modal .account-card {
 
   function letterboxdUrl(){
     const m=media();
+
     if(m.id){
       return `https://letterboxd.com/tmdb/${encodeURIComponent(m.id)}${m.type==='tv'?'/tv':''}`;
     }
+
     const title=titleText();
     return title
       ? `https://letterboxd.com/search/${encodeURIComponent(title)}/`
       : 'https://letterboxd.com/';
   }
 
-  function openLetterboxd(){
-    const win=window.open(letterboxdUrl(),'_blank','noopener,noreferrer');
-    if(!win){
-      try{window.f2wToast?.('Your browser blocked the new Letterboxd tab.','fa-triangle-exclamation')}catch{}
-    }
-  }
-
   function mount(){
     const actions=document.querySelector('#f2w-v34-rating-card .f2w-v34-rating-actions');
-    if(!actions||document.getElementById('f2w-v220-letterboxd-actions'))return;
+    if(!actions||document.getElementById('f2w-v222-letterboxd-actions'))return;
 
     const wrap=document.createElement('div');
-    wrap.id='f2w-v220-letterboxd-actions';
+    wrap.id='f2w-v222-letterboxd-actions';
     wrap.className='f2w-v219-letterboxd-actions';
 
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.className='f2w-v219-letterboxd-btn';
-    btn.innerHTML=`${mark}<span>Rate / review on Letterboxd</span>`;
-    btn.addEventListener('click',openLetterboxd);
+    const link=document.createElement('a');
+    link.id='f2w-v222-letterboxd-link';
+    link.className='f2w-v219-letterboxd-btn';
+    link.href=letterboxdUrl();
+    link.target='_blank';
+    link.rel='noopener noreferrer external';
+    link.dataset.f2wLetterboxdV222='1';
+    link.setAttribute('aria-label','Open this title on Letterboxd in a new tab');
+    link.innerHTML=`${mark}<span>Rate / review on Letterboxd</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>`;
 
     const help=document.createElement('span');
     help.className='f2w-v219-letterboxd-help';
-    help.textContent='Your Flix2Watch review stays here. This opens the matching Letterboxd title so you can rate or review it there too.';
+    help.textContent='Opens the matching Letterboxd title in a new tab so you can rate or review it there too.';
 
-    wrap.append(btn,help);
+    wrap.append(link,help);
     actions.insertAdjacentElement('afterend',wrap);
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});
-  else mount();
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',mount,{once:true});
+  }else{
+    mount();
+  }
+
+  window.addEventListener('pageshow',mount,{passive:true});
 })();
 </script>
 
@@ -10909,3 +10947,5 @@ body.f2w-watch-page #account-modal .account-card {
 <!-- f2w-force-save:v220-direct-letterboxd:20260903 -->
 
 <!-- f2w-force-save:v221-half-star-ratings-watch:20260903 -->
+
+<!-- f2w-force-save:v222-letterboxd-native-link:20260903 -->
