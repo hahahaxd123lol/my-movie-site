@@ -6826,7 +6826,7 @@ setTimeout(loadLibraryFavorites,0);
 
     try{
       const {data:favorites,error:favError}=await chatSupabase
-        .rpc('get_public_profile_favorites_v125',{p_user_id:viewedProfile.user_id});
+        .rpc('get_public_profile_favorites_v228',{p_username:viewedProfile.username});
 
       if(favError)throw favError;
 
@@ -6845,20 +6845,35 @@ setTimeout(loadLibraryFavorites,0);
     }catch(error){
       console.error('Public favorites load failed:',error);
 
-      viewedProfileFavorites=[];
+      // A transient RPC/network error must never erase favorites that were
+      // already loaded from cache or an earlier successful request.
+      if(Array.isArray(viewedProfileFavorites)&&viewedProfileFavorites.length){
+        renderViewedFavorites();
+        updateViewedProfileStats();
+        return;
+      }
+
+      // Try the local profile cache before showing an unavailable state.
+      try{
+        const key=`f2w_profile_cache_v24:${String(viewedProfile?.username||'').toLowerCase()}`;
+        const cached=JSON.parse(localStorage.getItem(key)||'null');
+        if(Array.isArray(cached?.favorites)&&cached.favorites.length){
+          viewedProfileFavorites=cached.favorites;
+          renderViewedFavorites();
+          updateViewedProfileStats();
+          return;
+        }
+      }catch{}
+
       const count=document.getElementById('profile-favorite-count');
       const grid=document.getElementById('profile-favorites-grid');
 
       if(count)count.textContent='Favorites unavailable';
 
-      if(typeof updateViewedProfileStats==='function'){
-        updateViewedProfileStats();
-      }
-
       if(grid){
         grid.innerHTML=`
           <div class="profile-state">
-            This profile loaded correctly, but its favorites could not be loaded right now.
+            Favorites are temporarily unavailable. Please try again shortly.
           </div>`;
       }
     }
@@ -7408,15 +7423,25 @@ renderViewedProfile();
 
     try{
       const {data,error}=await chatSupabase
-        .rpc('get_public_profile_favorites_v125',{p_user_id:viewedProfile.user_id});
+        .rpc('get_public_profile_favorites_v228',{p_username:viewedProfile.username});
 
       if(error)throw error;
 
       viewedProfileFavorites=Array.isArray(data)?data:[];
+      try{
+        if(viewedProfile?.username){
+          localStorage.setItem(`f2w_profile_cache_v24:${viewedProfile.username.toLowerCase()}`,JSON.stringify({
+            profile:viewedProfile,
+            favorites:viewedProfileFavorites,
+            savedAt:Date.now()
+          }));
+        }
+      }catch{}
       renderViewedFavorites();
       updateViewedProfileStats();
-      updateViewedProfileStats();
     }catch(error){
+      // Keep the last successful render. A refresh failure is not proof that
+      // the user has no favorites.
       console.error('Favorite stats refresh failed:',error);
     }
   }
@@ -11337,3 +11362,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v226-edit-profile-open-fix:20260903 -->
 
 <!-- f2w-force-save:v227-edit-profile-authority:20260903 -->
+
+<!-- f2w-force-save:v228-public-favorites-recovery:20260903 -->
