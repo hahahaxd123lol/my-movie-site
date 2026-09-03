@@ -1022,6 +1022,21 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 .staff-profile-social-grid-v212{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.staff-profile-social-grid-v212 label{display:flex;flex-direction:column;gap:6px}.staff-profile-social-grid-v212 label.full{grid-column:1/-1}.staff-profile-social-grid-v212 label>span{font-size:.65rem;color:#93a1b5;font-weight:800;letter-spacing:.04em}.staff-profile-social-grid-v212 label>span i{width:17px;text-align:center;color:var(--accent,#e50914)}
 @media(max-width:700px){.staff-profile-social-grid-v212{grid-template-columns:1fr}.staff-profile-social-grid-v212 label.full{grid-column:auto}}
 </style>
+
+<style id="f2w-staff-dialog-close-v223-css">
+#staff-dialog .staff-dialog-card{position:relative!important}
+#staff-dialog-x-v223{
+  position:absolute!important;top:10px!important;right:10px!important;z-index:3!important;
+  width:32px!important;height:32px!important;display:grid!important;place-items:center!important;
+  border:1px solid rgba(255,255,255,.12)!important;border-radius:9px!important;
+  background:rgba(255,255,255,.035)!important;color:#aebed0!important;cursor:pointer!important
+}
+#staff-dialog-x-v223:hover{
+  color:#fff!important;border-color:rgba(255,255,255,.24)!important;background:rgba(255,255,255,.08)!important
+}
+#staff-dialog[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+</style>
+
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
@@ -1531,6 +1546,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 <div class="staff-dialog" id="staff-dialog" hidden>
   <div class="staff-dialog-card" role="dialog" aria-modal="true" aria-labelledby="staff-dialog-title">
     
+    <button class="staff-dialog-x-v223" id="staff-dialog-x-v223" type="button" aria-label="Close dialog"><i class="fa-solid fa-xmark"></i></button>
     <div class="staff-dialog-body">
       <div class="staff-dialog-title" id="staff-dialog-title">Staff action</div><div id="staff-dialog-copy" class="staff-dialog-copy"></div><div id="staff-dialog-input-host"></div>
       
@@ -1593,7 +1609,14 @@ async function rpc(name,args={}){
 let staffDialogResolver=null;
 
 function closeStaffDialog(value){
-  document.getElementById('staff-dialog').hidden=true;
+  const modal=document.getElementById('staff-dialog');
+  if(modal){
+    modal.hidden=true;
+    modal.setAttribute('aria-hidden','true');
+    modal.style.setProperty('display','none','important');
+    modal.style.setProperty('visibility','hidden','important');
+    modal.style.setProperty('pointer-events','none','important');
+  }
   const resolve=staffDialogResolver;
   staffDialogResolver=null;
   if(resolve)resolve(value);
@@ -1616,6 +1639,10 @@ function staffPrompt({title='Staff action',copy='',value='',placeholder='',multi
   input.enterKeyHint='done';
   host.appendChild(input);
   modal.hidden=false;
+  modal.setAttribute('aria-hidden','false');
+  modal.style.removeProperty('display');
+  modal.style.removeProperty('visibility');
+  modal.style.removeProperty('pointer-events');
 
   return new Promise(resolve=>{
     staffDialogResolver=resolve;
@@ -1642,6 +1669,10 @@ function staffConfirm({title='Confirm action',copy='Are you sure?',confirmText='
   const cancel=document.getElementById('staff-dialog-cancel');
   ok.textContent=confirmText;
   modal.hidden=false;
+  modal.setAttribute('aria-hidden','false');
+  modal.style.removeProperty('display');
+  modal.style.removeProperty('visibility');
+  modal.style.removeProperty('pointer-events');
 
   return new Promise(resolve=>{
     staffDialogResolver=resolve;
@@ -4384,6 +4415,100 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 <script src="/v172-sitewide.js?v=172"></script>
 <link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=190-20260902-auth-authority"></script>
 <script src="/v176-sitewide.js?v=190-20260902-auth-authority" defer></script><!-- f2w-force-save:v179-staff-stray-newline-fix -->
+
+<script id="f2w-staff-dialog-authority-v223-js">
+(() => {
+  'use strict';
+  if(window.__f2wStaffDialogAuthorityV223)return;
+  window.__f2wStaffDialogAuthorityV223=true;
+
+  const generic=()=>document.getElementById('staff-dialog');
+
+  function hardHideGeneric(resolveValue=false){
+    try{
+      if(typeof closeStaffDialog==='function'){
+        closeStaffDialog(resolveValue);
+        return;
+      }
+    }catch{}
+
+    const modal=generic();
+    if(!modal)return;
+    modal.hidden=true;
+    modal.setAttribute('aria-hidden','true');
+    modal.style.setProperty('display','none','important');
+    modal.style.setProperty('visibility','hidden','important');
+    modal.style.setProperty('pointer-events','none','important');
+  }
+
+  function closeTicket(){
+    try{
+      if(typeof closeStaffTicketModal==='function'){
+        closeStaffTicketModal();
+        return;
+      }
+    }catch{}
+    const modal=document.getElementById('staff-ticket-modal');
+    if(!modal)return;
+    modal.hidden=true;
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+
+  // X and backdrop clicks cancel the currently open prompt/confirm.
+  document.addEventListener('click',event=>{
+    const modal=generic();
+
+    if(modal && !modal.hidden){
+      if(event.target===modal || event.target.closest('#staff-dialog-x-v223')){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        hardHideGeneric(false);
+        return;
+      }
+    }
+
+    const ticket=document.getElementById('staff-ticket-modal');
+    if(ticket && !ticket.hidden && event.target===ticket){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      closeTicket();
+    }
+  },true);
+
+  // Escape closes whichever Staff popup is currently on top.
+  document.addEventListener('keydown',event=>{
+    if(event.key!=='Escape')return;
+
+    const modal=generic();
+    if(modal && !modal.hidden){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      hardHideGeneric(false);
+      return;
+    }
+
+    const ticket=document.getElementById('staff-ticket-modal');
+    if(ticket && !ticket.hidden){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      closeTicket();
+    }
+  },true);
+
+  // Keep any hidden Staff dialog truly hidden across bfcache/page restores.
+  window.addEventListener('pageshow',()=>{
+    const modal=generic();
+    if(modal?.hidden){
+      modal.setAttribute('aria-hidden','true');
+      modal.style.setProperty('display','none','important');
+      modal.style.setProperty('visibility','hidden','important');
+      modal.style.setProperty('pointer-events','none','important');
+    }
+  },{passive:true});
+})();
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->
@@ -4513,3 +4638,5 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 <!-- f2w-force-save:v212-staff-profile-editor:20260902 -->
 
 <!-- f2w-force-save:v219-letterboxd-staff:20260903 -->
+
+<!-- f2w-force-save:v223-staff-popup-close-authority:20260903 -->
