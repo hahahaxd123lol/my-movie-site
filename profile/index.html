@@ -10787,12 +10787,20 @@ async function ensureEditorDataV225(){
 
 function fillEditor(){const p=profileObj()||{};const user=currentEditorUsername();const userInput=document.getElementById('v199-username');if(userInput)userInput.value=user;document.getElementById('v199-display-name').value=String(p.display_name||'').replace(/@/g,'');document.getElementById('v199-bio').value=p.bio||'';for(const [id,key] of [['v199-instagram','instagram_username'],['v199-snapchat','snapchat_username'],['v199-tiktok','tiktok_username'],['v219-letterboxd','letterboxd_username'],['v199-discord','discord_username'],['v199-website','website_url'],['v199-steam','steam_profile']]){const el=document.getElementById(id);if(el)el.value=p[key]||''}document.getElementById('v200-private').checked=Boolean(p.is_private);const selected=new Set(Array.isArray(p.favorite_genres)?p.favorite_genres:[]);document.querySelectorAll('#v199-genre-grid input').forEach(x=>x.checked=selected.has(x.value))}
 async function openEditor(){
-  if(!isOwner())return;
+  let allowed=false;
+  try{allowed=Boolean(isOwner())}catch{}
+  if(!allowed)return;
+
   const m=document.getElementById('v199-profile-editor');
+  if(!m)return;
+
   const save=document.getElementById('v199-editor-save');
   const status=document.getElementById('v199-editor-status');
 
   selectTab('profile');
+
+  // Open synchronously from the trusted user click. Network loading happens
+  // only after the modal is already visible.
   m.hidden=false;
   m.setAttribute('aria-hidden','false');
   document.documentElement.style.overflow='hidden';
@@ -10809,7 +10817,9 @@ async function openEditor(){
     fillEditor();
     if(status)status.textContent='';
     if(save)save.disabled=false;
-    requestAnimationFrame(()=>{try{document.getElementById('v199-username')?.focus({preventScroll:true})}catch{}});
+    requestAnimationFrame(()=>{
+      try{document.getElementById('v199-username')?.focus({preventScroll:true})}catch{}
+    });
   }catch(e){
     if(status){
       status.className='v200-editor-status error';
@@ -11034,12 +11044,41 @@ function hardenEditor(){
   m.classList.remove('f2w-viewport-popup');
   const btn=document.getElementById('v199-edit-profile-btn');
   if(btn&&!btn.dataset.v202Bound){btn.dataset.v202Bound='1';btn.addEventListener('click',e=>{
-    e.preventDefault();e.stopImmediatePropagation();
-    if(!owner())return;
+    const canOpen=(()=>{
+      try{
+        if(typeof isOwner==='function'&&isOwner())return true;
+      }catch{}
+      try{
+        if(owner())return true;
+      }catch{}
+      return false;
+    })();
+
+    if(!canOpen)return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
     const y=window.scrollY;
-    Promise.resolve(openEditor?.()).finally(()=>{
-      requestAnimationFrame(()=>{window.scrollTo({top:y,left:window.scrollX,behavior:'instant'})});
-    });
+    try{
+      const result=typeof openEditor==='function'?openEditor():null;
+      Promise.resolve(result).finally(()=>{
+        requestAnimationFrame(()=>{
+          window.scrollTo({top:y,left:window.scrollX,behavior:'instant'});
+        });
+      });
+    }catch(err){
+      console.error('Edit Profile open failed:',err);
+      try{
+        const m=document.getElementById('v199-profile-editor');
+        if(m){
+          m.hidden=false;
+          m.setAttribute('aria-hidden','false');
+          document.documentElement.style.overflow='hidden';
+          document.body.style.overflow='hidden';
+        }
+      }catch{}
+    }
   },true)}
 }
 
@@ -11275,3 +11314,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v221-half-star-ratings-profile:20260903 -->
 
 <!-- f2w-force-save:v225-profile-editor-preserve-existing:20260903 -->
+
+<!-- f2w-force-save:v226-edit-profile-open-fix:20260903 -->
