@@ -10335,101 +10335,63 @@ body.f2w-watch-page #account-modal .account-card {
 /* f2w-force-save:watch-auth-tv-scroll-v184:20260902 */
 </style>
 
-<script id="f2w-letterboxd-watch-v219-js">
+<script id="f2w-letterboxd-watch-v220-js">
 (() => {
   'use strict';
-  if(window.__f2wLetterboxdWatchV219)return;
-  window.__f2wLetterboxdWatchV219=true;
+  if(window.__f2wLetterboxdWatchV220)return;
+  window.__f2wLetterboxdWatchV220=true;
 
   const mark='<span class="f2w-letterboxd-mark" aria-hidden="true"><b></b><b></b><b></b></span>';
 
   function media(){
     const q=new URLSearchParams(location.search);
-    return {id:Number(q.get('id')||0),type:q.get('type')==='tv'?'tv':'movie'};
+    return {
+      id:Number(q.get('id')||0),
+      type:q.get('type')==='tv'?'tv':'movie'
+    };
+  }
+
+  function titleText(){
+    return (document.getElementById('detail-title')?.textContent||'').trim();
   }
 
   function letterboxdUrl(){
     const m=media();
-    if(!m.id)return 'https://letterboxd.com/';
-    return `https://letterboxd.com/tmdb/${encodeURIComponent(m.id)}${m.type==='tv'?'/tv':''}`;
+    if(m.id){
+      return `https://letterboxd.com/tmdb/${encodeURIComponent(m.id)}${m.type==='tv'?'/tv':''}`;
+    }
+    const title=titleText();
+    return title
+      ? `https://letterboxd.com/search/${encodeURIComponent(title)}/`
+      : 'https://letterboxd.com/';
   }
 
   function openLetterboxd(){
-    window.open(letterboxdUrl(),'_blank','noopener,noreferrer');
-  }
-
-  function csvEscape(value){
-    const s=String(value??'');
-    return `"${s.replace(/\\/g,'\\\\').replace(/"/g,'\\"')}"`;
-  }
-
-  function currentRating(){
-    const scoreText=document.getElementById('f2w-v34-your-rating')?.textContent||'';
-    const score=Number((scoreText.match(/[0-5](?:\.5)?/)||[])[0]||0);
-    const title=(document.getElementById('detail-title')?.textContent||document.title||'').trim();
-    const review=(document.getElementById('f2w-v34-rating-review')?.value||'').trim();
-    return {score,title,review};
-  }
-
-  function exportToLetterboxd(){
-    const m=media();
-    if(m.type!=='movie'){
-      try{window.f2wToast?.('Letterboxd imports are safest for films. Open the title on Letterboxd instead.','fa-film')}catch{}
-      openLetterboxd();
-      return;
+    const win=window.open(letterboxdUrl(),'_blank','noopener,noreferrer');
+    if(!win){
+      try{window.f2wToast?.('Your browser blocked the new Letterboxd tab.','fa-triangle-exclamation')}catch{}
     }
-
-    const r=currentRating();
-    if(!r.score){
-      try{window.f2wToast?.('Save a Flix2Watch rating first, then export it to Letterboxd.','fa-star')}catch{}
-      return;
-    }
-
-    const csv=[
-      'tmdbID,Title,Rating,Review',
-      `${m.id},${csvEscape(r.title)},${r.score},${csvEscape(r.review)}`
-    ].join('\n');
-
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-    const href=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=href;
-    a.download=`flix2watch-letterboxd-${m.id}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(href),3000);
-
-    // Open Letterboxd's official importer in a direct user-triggered tab.
-    window.open('https://letterboxd.com/import/','_blank','noopener,noreferrer');
-    try{window.f2wToast?.('Letterboxd CSV created. Upload it on the import page that just opened.','fa-file-arrow-up')}catch{}
   }
 
   function mount(){
     const actions=document.querySelector('#f2w-v34-rating-card .f2w-v34-rating-actions');
-    if(!actions||document.getElementById('f2w-v219-letterboxd-actions'))return;
+    if(!actions||document.getElementById('f2w-v220-letterboxd-actions'))return;
 
     const wrap=document.createElement('div');
-    wrap.id='f2w-v219-letterboxd-actions';
+    wrap.id='f2w-v220-letterboxd-actions';
     wrap.className='f2w-v219-letterboxd-actions';
 
-    const view=document.createElement('button');
-    view.type='button';
-    view.className='f2w-v219-letterboxd-btn';
-    view.innerHTML=`${mark}<span>View on Letterboxd</span>`;
-    view.addEventListener('click',openLetterboxd);
-
-    const exp=document.createElement('button');
-    exp.type='button';
-    exp.className='f2w-v219-letterboxd-btn';
-    exp.innerHTML='<i class="fa-solid fa-file-arrow-up"></i><span>Export rating + review</span>';
-    exp.addEventListener('click',exportToLetterboxd);
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='f2w-v219-letterboxd-btn';
+    btn.innerHTML=`${mark}<span>Rate / review on Letterboxd</span>`;
+    btn.addEventListener('click',openLetterboxd);
 
     const help=document.createElement('span');
     help.className='f2w-v219-letterboxd-help';
-    help.textContent='Letterboxd does not provide Flix2Watch direct account-write access, so export uses Letterboxd’s official CSV importer.';
+    help.textContent='Your Flix2Watch review stays here. This opens the matching Letterboxd title so you can rate or review it there too.';
 
-    wrap.append(view,exp,help);
+    wrap.append(btn,help);
     actions.insertAdjacentElement('afterend',wrap);
   }
 
@@ -10576,3 +10538,5 @@ body.f2w-watch-page #account-modal .account-card {
 <!-- f2w-force-save:v215-ratings-watch:20260903 -->
 
 <!-- f2w-force-save:v219-letterboxd-watch:20260903 -->
+
+<!-- f2w-force-save:v220-direct-letterboxd:20260903 -->

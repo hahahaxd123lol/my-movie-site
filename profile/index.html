@@ -10286,17 +10286,19 @@ body.f2w-auth-v67-open {
 </style>
 
 
-<script id="f2w-profile-ratings-v218-js">
+<script id="f2w-profile-ratings-v220-js">
 (() => {
   'use strict';
-  if(window.__f2wProfileRatingsV218)return;
-  window.__f2wProfileRatingsV218=true;
+  if(window.__f2wProfileRatingsV220)return;
+  window.__f2wProfileRatingsV220=true;
 
   const PAGE_SIZE=20;
   let offset=0;
   let total=0;
   let loading=false;
   let generation=0;
+  let lastRows=[];
+  let reasserting=false;
 
   const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[ch]));
   function username(){
@@ -10351,7 +10353,7 @@ body.f2w-auth-v67-open {
     updateHeader();
 
     try{
-      const {data,error}=await c.rpc('get_public_profile_ratings_v218',{
+      const {data,error}=await c.rpc('get_public_profile_ratings_v220',{
         p_username:u,
         p_limit:PAGE_SIZE,
         p_offset:Math.max(0,nextOffset)
@@ -10360,6 +10362,7 @@ body.f2w-auth-v67-open {
       if(request!==generation)return;
 
       const rows=Array.isArray(data)?data:[];
+      lastRows=rows;
       total=Number(rows[0]?.total_count||0);
       offset=Math.max(0,nextOffset);
       h.innerHTML=rows.length
@@ -10406,6 +10409,16 @@ body.f2w-auth-v67-open {
         }
       },160);
     },{passive:true});
+
+    new MutationObserver(()=>{
+      if(reasserting||!lastRows.length)return;
+      if(h.querySelector('.profile-rating-card'))return;
+      reasserting=true;
+      h.innerHTML=lastRows.map(card).join('');
+      h.scrollLeft=0;
+      updateHeader();
+      queueMicrotask(()=>{reasserting=false;});
+    }).observe(h,{childList:true});
 
     window.addEventListener('pageshow',()=>loadPage(offset,{silent:true}),{passive:true});
     loadPage(0);
@@ -11160,3 +11173,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v218-paged-profile-ratings:20260903 -->
 
 <!-- f2w-force-save:v219-letterboxd-profile:20260903 -->
+
+<!-- f2w-force-save:v220-restore-legacy-ratings:20260903 -->
