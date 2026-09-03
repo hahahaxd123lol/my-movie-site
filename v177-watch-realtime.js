@@ -207,7 +207,12 @@ function requestPlayerTelemetry(){
 }
 function start(){
   bindAuthRepair();lastCreditSampleAt=Date.now();heartbeat();clearInterval(heartbeatTimer);heartbeatTimer=setInterval(()=>heartbeat(),10000);
-  window.__f2wV205WatchPresenceAuthority=true;touchWatchPresence();clearInterval(presenceTimer);presenceTimer=setInterval(touchWatchPresence,10000);
+  window.__f2wV205WatchPresenceAuthority=true;
+  if(!(window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210)){
+    touchWatchPresence();clearInterval(presenceTimer);presenceTimer=setInterval(touchWatchPresence,10000);
+  }else{
+    clearInterval(presenceTimer);presenceTimer=0;
+  }
   const f=frame();f?.addEventListener('load',()=>{resetTelemetry();bindAuthRepair();bindNativeVideos()});
   bindNativeVideos();clearInterval(telemetryWatchdog);telemetryWatchdog=setInterval(watchdogTelemetry,2000);
   clearInterval(statePollTimer);statePollTimer=setInterval(requestPlayerTelemetry,2000);setTimeout(requestPlayerTelemetry,900);
@@ -218,9 +223,9 @@ function start(){
   const mo=new MutationObserver(()=>{bindAuthRepair();bindNativeVideos()});mo.observe(document.body,{subtree:true,childList:true});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-window.addEventListener('pageshow',()=>{bindAuthRepair();lastCreditSampleAt=Date.now();touchWatchPresence();heartbeat()});
+window.addEventListener('pageshow',()=>{bindAuthRepair();lastCreditSampleAt=Date.now();if(!(window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210))touchWatchPresence();heartbeat()});
 document.addEventListener('visibilitychange',()=>{accrue();lastCreditSampleAt=Date.now();if(document.visibilityState==='visible')heartbeat()});
-window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog);clearInterval(statePollTimer);clearInterval(presenceTimer);void heartbeat(true);void leaveWatchPresence()});
+window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog);clearInterval(statePollTimer);clearInterval(presenceTimer);void heartbeat(true);if(!(window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210))void leaveWatchPresence()});
 })();
 // f2w-force-save:v182-watch-telemetry-pause-poster:20260902
 
@@ -229,3 +234,5 @@ window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog
 // f2w-force-save:v201-playback-profile-clock:20260902
 
 // f2w-force-save:v205-watch-presence-playback-10s:20260902
+
+// f2w-force-save:v224-watch-presence-dedup-only:20260903

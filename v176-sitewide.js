@@ -778,7 +778,7 @@ if(document.readyState==='loading'){
 
 /* v200 site-wide presence heartbeat: low-cost, visible-tab only. */
 (()=>{
-  if(window.__f2wPresenceV200)return;window.__f2wPresenceV200=true;
+  if(window.__f2wPresenceV200||window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210)return;window.__f2wPresenceV200=true;
   const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge',URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
   let c=null,busy=false,timer=null;
   const db=()=>c||(c=window.chatSupabase||window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
@@ -795,3 +795,5 @@ if(document.readyState==='loading'){
 /* f2w-force-save:v200-presence-and-dm:20260902 */
 
 // f2w-force-save:v208-post-login-close-shield:20260902
+
+// f2w-force-save:v224-disable-duplicate-presence:20260903

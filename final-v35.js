@@ -1322,7 +1322,6 @@ function f2wDebounce(fn,wait=140){
     try{if(profileRealtimeChannel)client.removeChannel(profileRealtimeChannel);}catch{}
     try{
       profileRealtimeChannel=client.channel(`v17-profile-live-${profile.user_id}`)
-        .on('postgres_changes',{event:'*',schema:'public',table:'user_presence',filter:`user_id=eq.${profile.user_id}`},()=>renderProfilePresence())
         .on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity',filter:`user_id=eq.${profile.user_id}`},()=>renderProfileActivity())
         .on('postgres_changes',{event:'*',schema:'public',table:'profile_comments',filter:`profile_user_id=eq.${profile.user_id}`},()=>renderProfileComments())
         .on('postgres_changes',{event:'*',schema:'public',table:'profiles',filter:`user_id=eq.${profile.user_id}`},()=>{
@@ -1339,9 +1338,10 @@ function f2wDebounce(fn,wait=140){
 
     if(profileUiTimer)clearInterval(profileUiTimer);
     profileUiTimer=setInterval(()=>{
+      if(document.visibilityState!=='visible')return;
       renderProfilePresence();
       renderProfileActivity();
-    },10000);
+    },60000);
   }
 
   function bootProfileRealtime(){
@@ -1402,21 +1402,10 @@ function f2wDebounce(fn,wait=140){
     });
     loadLeaderboard(1,'overall');
 
-    const refresh=()=>loadLeaderboard(leaderboardPage,leaderboardSort);
-    const client=db();
-    if(client){
-      try{
-        client.channel('v17-leader-live')
-          .on('postgres_changes',{event:'*',schema:'public',table:'user_presence'},refresh)
-          .on('postgres_changes',{event:'*',schema:'public',table:'profile_title_activity'},refresh)
-          .on('postgres_changes',{event:'*',schema:'public',table:'profile_watch_time'},refresh)
-          .on('postgres_changes',{event:'*',schema:'public',table:'user_ratings'},refresh)
-          .on('postgres_changes',{event:'*',schema:'public',table:'profile_role_assignments'},refresh)
-          .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},refresh)
-          .subscribe();
-      }catch{}
-    }
+    const refresh=()=>{if(document.visibilityState==='visible')loadLeaderboard(leaderboardPage,leaderboardSort)};
     setInterval(refresh,30000);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()},{passive:true});
+    window.addEventListener('focus',refresh,{passive:true});
   }
 
   /* ---------- staff instant quick moderation ---------- */
@@ -2353,6 +2342,7 @@ function f2wDebounce(fn,wait=140){
       .subscribe()}catch{}
   }
   async function bootProfile(){
+    if(window.__f2wV205ProfileLiveAuthority)return;
     const username=usernameFromUrl();if(!username)return;
     const cached=read(username);if(cached)paint(cached);
     const row=await fetchOne(username,{paintNow:true});if(row)subscribe(row);
@@ -2363,6 +2353,7 @@ function f2wDebounce(fn,wait=140){
   document.addEventListener('touchstart',e=>{const a=e.target.closest?.('a[href*="/profile"]');if(a)warmAnchor(a)},{passive:true});
   bc?.addEventListener?.('message',e=>{const row=e.data;if(row?.username&&String(row.username).toLowerCase()===usernameFromUrl().toLowerCase())paint(row)});
   const start=()=>{
+    if(window.__f2wV205ProfileLiveAuthority)return;
     bootProfile();
     // v156: while a profile is open, refresh its live snapshot once every
     // 30 seconds. Realtime still handles instant updates; this is the bounded
@@ -2372,7 +2363,7 @@ function f2wDebounce(fn,wait=140){
       window.__F2W_PROFILE_LIVE_10S_V203=setInterval(()=>{
         if(document.visibilityState!=='visible')return;
         const u=usernameFromUrl(); if(u)fetchOne(u,{paintNow:true});
-      },10000);
+      },30000);
     }
     // Warm a small number of visible profile destinations in idle time. Capped
     // deliberately so "instant" does not turn into excessive Supabase load.
@@ -2531,3 +2522,5 @@ function f2wDebounce(fn,wait=140){
   }
 })();
 // f2w-force-save:v213-owner-chat-auto-auth:20260902
+
+// f2w-force-save:v224-low-egress-realtime-dedup:20260903
