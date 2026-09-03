@@ -3894,6 +3894,38 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 .profile-rating-card.f2w-v215-rating .profile-rating-review{display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important;min-height:0!important}
 </style>
 
+
+<style id="f2w-profile-ratings-v217-css">
+#f2w-v217-ratings-panel{overflow:hidden!important}
+#f2w-v217-ratings-panel .f2w-v217-ratings-head{align-items:center!important}
+.f2w-v217-ratings-tools{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:7px!important;min-width:0!important}
+.f2w-v217-ratings-tools>span{color:var(--text-muted,#8295aa)!important;font-size:.62rem!important;white-space:nowrap!important}
+.f2w-v217-ratings-tools button{width:32px!important;height:32px!important;min-width:32px!important;display:grid!important;place-items:center!important;padding:0!important;border:1px solid #294159!important;border-radius:9px!important;background:#081521!important;color:#dce8f5!important;cursor:pointer!important;transition:border-color .15s ease,background .15s ease,transform .15s ease!important}
+.f2w-v217-ratings-tools button:hover:not(:disabled){border-color:var(--accent,#e50914)!important;background:#102236!important;transform:translateY(-1px)!important}
+.f2w-v217-ratings-tools button:disabled{opacity:.28!important;cursor:default!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail{display:flex!important;grid-template-columns:none!important;gap:12px!important;width:100%!important;max-width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;padding:3px 2px 10px!important;scroll-snap-type:x proximity!important;scroll-behavior:smooth!important;overscroll-behavior-inline:contain!important;scrollbar-width:thin!important;scrollbar-color:#31475d transparent!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail::-webkit-scrollbar{height:7px!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail::-webkit-scrollbar-track{background:transparent!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail::-webkit-scrollbar-thumb{background:#31475d!important;border-radius:999px!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-rating-card{flex:0 0 172px!important;width:172px!important;min-width:172px!important;max-width:172px!important;scroll-snap-align:start!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-rating-poster{aspect-ratio:2/2.85!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-rating-info{padding:9px 10px 11px!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-rating-title{font-size:.78rem!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-rating-stars{margin-top:6px!important;font-size:.72rem!important;letter-spacing:1.4px!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-rating-review{margin-top:7px!important;font-size:.66rem!important;line-height:1.38!important;display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-v16-none,
+#f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-state{flex:1 0 100%!important;min-width:100%!important}
+@media(max-width:700px){
+  .f2w-v217-ratings-tools>span{display:none!important}
+  #f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-rating-card{flex-basis:156px!important;width:156px!important;min-width:156px!important;max-width:156px!important}
+}
+@media(max-width:480px){
+  .f2w-v217-ratings-tools button{width:29px!important;height:29px!important;min-width:29px!important}
+  #f2w-v34-profile-ratings.f2w-v217-ratings-rail{gap:9px!important}
+  #f2w-v34-profile-ratings.f2w-v217-ratings-rail .profile-rating-card{flex-basis:145px!important;width:145px!important;min-width:145px!important;max-width:145px!important}
+}
+</style>
+
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -4406,10 +4438,18 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
   
 
 
-  <section class="profile-v16-panel f2w-v34-profile-social">
-    <div class="profile-v16-panel-head"><h2><i class="fa-solid fa-star" style="color:var(--accent)"></i> Ratings & Reviews</h2><span>Recent movie and TV scores</span></div>
-    
-    <div class="f2w-v34-profile-ratings" id="f2w-v34-profile-ratings"><div class="profile-v16-none">No ratings yet.</div></div>
+  <section class="profile-v16-panel f2w-v34-profile-social f2w-v217-ratings-panel" id="f2w-v217-ratings-panel">
+    <div class="profile-v16-panel-head f2w-v217-ratings-head">
+      <h2><i class="fa-solid fa-star" style="color:var(--accent)"></i> Ratings & Reviews</h2>
+      <div class="f2w-v217-ratings-tools">
+        <span id="f2w-v217-ratings-count">Recent movie and TV scores</span>
+        <button type="button" id="f2w-v217-ratings-prev" aria-label="Previous reviews"><i class="fa-solid fa-chevron-left"></i></button>
+        <button type="button" id="f2w-v217-ratings-next" aria-label="Next reviews"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </div>
+    <div class="f2w-v34-profile-ratings f2w-v217-ratings-rail" id="f2w-v34-profile-ratings" tabindex="0" aria-label="Ratings and reviews">
+      <div class="profile-v16-none">No ratings yet.</div>
+    </div>
   </section>
 
   
@@ -10797,6 +10837,72 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v202-profile-socials-genres-editor-private:20260902 -->
 
 <script src="/v205-profile-live.js?v=205-20260902" defer></script>
+
+<script id="f2w-profile-ratings-v217-js">
+(() => {
+  'use strict';
+  if(window.__f2wProfileRatingsV217)return;
+  window.__f2wProfileRatingsV217=true;
+
+  const rail=()=>document.getElementById('f2w-v34-profile-ratings');
+
+  function step(){
+    const r=rail();
+    const card=r?.querySelector('.profile-rating-card');
+    return card ? card.getBoundingClientRect().width + 12 : Math.max(180,(r?.clientWidth||600)*.72);
+  }
+
+  function sync(){
+    const r=rail();
+    if(!r)return;
+    const prev=document.getElementById('f2w-v217-ratings-prev');
+    const next=document.getElementById('f2w-v217-ratings-next');
+    const count=document.getElementById('f2w-v217-ratings-count');
+    const cards=r.querySelectorAll('.profile-rating-card');
+
+    if(count){
+      count.textContent=cards.length
+        ? `${cards.length} rating${cards.length===1?'':'s'} · scroll to browse`
+        : 'Recent movie and TV scores';
+    }
+
+    const max=Math.max(0,r.scrollWidth-r.clientWidth-2);
+    if(prev)prev.disabled=r.scrollLeft<=2 || max<=2;
+    if(next)next.disabled=r.scrollLeft>=max || max<=2;
+  }
+
+  function move(direction){
+    const r=rail();
+    if(!r)return;
+    r.scrollBy({left:direction*step()*3,behavior:'smooth'});
+  }
+
+  function bind(){
+    const r=rail();
+    if(!r)return;
+
+    document.getElementById('f2w-v217-ratings-prev')?.addEventListener('click',()=>move(-1));
+    document.getElementById('f2w-v217-ratings-next')?.addEventListener('click',()=>move(1));
+    r.addEventListener('scroll',sync,{passive:true});
+
+    r.addEventListener('wheel',event=>{
+      if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;
+      if(r.scrollWidth<=r.clientWidth+2)return;
+      event.preventDefault();
+      r.scrollLeft+=event.deltaY;
+    },{passive:false});
+
+    new MutationObserver(sync).observe(r,{childList:true});
+    window.addEventListener('resize',sync,{passive:true});
+    setTimeout(sync,100);
+    setTimeout(sync,500);
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
+})();
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
@@ -10952,3 +11058,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v215-ratings-profile:20260903 -->
 
 <!-- f2w-force-save:v216-remove-duplicate-profile-ratings:20260903 -->
+
+<!-- f2w-force-save:v217-compact-rating-rail:20260903 -->
