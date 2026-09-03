@@ -25,6 +25,48 @@ function titleInfo(){
   return {title:title.slice(0,250),poster:m?.[1]||null};
 }
 function sourceKey(){return String(window.currentServer||document.querySelector('.server-btn.active')?.dataset?.server||'unknown').slice(0,80)}
+function premidNode(){
+  let el=document.getElementById('f2w-premid-state');
+  if(!el){
+    el=document.createElement('div');
+    el.id='f2w-premid-state';
+    el.hidden=true;
+    el.setAttribute('aria-hidden','true');
+    document.documentElement.appendChild(el);
+  }
+  return el;
+}
+
+function publishPreMiDState(){
+  try{
+    const el=premidNode();
+    const {id,type}=identity();
+    const info=titleInfo();
+    const position=telemetry.positionKnown?estimatedPosition():null;
+    const duration=telemetry.duration>0?Number(telemetry.duration):null;
+    const season=type==='tv'?Number(document.getElementById('season-select')?.value||0):0;
+    const episode=type==='tv'?Number(document.getElementById('episode-select')?.value||0):0;
+    const status=telemetry.statusKnown
+      ? telemetry.status
+      : (visiblePlayback()?'watching':'browsing');
+    const poster=info.poster
+      ? `https://image.tmdb.org/t/p/w500${info.poster}`
+      : '';
+
+    el.dataset.mediaId=String(id||'');
+    el.dataset.mediaType=type;
+    el.dataset.title=info.title||'';
+    el.dataset.poster=poster;
+    el.dataset.status=status;
+    el.dataset.position=Number.isFinite(position)?String(Math.max(0,position)):'';
+    el.dataset.duration=Number.isFinite(duration)?String(Math.max(0,duration)):'';
+    el.dataset.season=season?String(season):'';
+    el.dataset.episode=episode?String(episode):'';
+    el.dataset.source=sourceKey();
+    el.dataset.url=location.href;
+    el.dataset.updatedAt=String(Date.now());
+  }catch{}
+}
 function visiblePlayback(){
   const f=frame();if(!f||document.visibilityState!=='visible'||f.hidden)return false;
   try{if(getComputedStyle(f).display==='none')return false}catch{}
@@ -88,6 +130,7 @@ function accrue(at=Date.now()){
   lastCreditSampleAt=at;
 }
 function broadcast(extra={}){
+  publishPreMiDState();
   const {id,type}=identity();const info=titleInfo();
   const payload={type:'f2w-playback-v182',media_id:id,media_type:type,title:info.title,poster_path:info.poster,source_key:sourceKey(),
     position_seconds:estimatedPosition(),duration_seconds:telemetry.positionKnown||telemetry.duration>0?telemetry.duration:null,
@@ -206,7 +249,9 @@ function requestPlayerTelemetry(){
   for(const probe of probes){try{w.postMessage(probe,target)}catch{}}
 }
 function start(){
-  bindAuthRepair();lastCreditSampleAt=Date.now();heartbeat();clearInterval(heartbeatTimer);heartbeatTimer=setInterval(()=>heartbeat(),10000);
+  bindAuthRepair();lastCreditSampleAt=Date.now();heartbeat();
+  publishPreMiDState();
+  setInterval(publishPreMiDState,1000);clearInterval(heartbeatTimer);heartbeatTimer=setInterval(()=>heartbeat(),10000);
   window.__f2wV205WatchPresenceAuthority=true;
   if(!(window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210)){
     touchWatchPresence();clearInterval(presenceTimer);presenceTimer=setInterval(touchWatchPresence,10000);
@@ -236,3 +281,5 @@ window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog
 // f2w-force-save:v205-watch-presence-playback-10s:20260902
 
 // f2w-force-save:v224-watch-presence-dedup-only:20260903
+
+// f2w-force-save:v229-premid-playback-bridge:20260903
