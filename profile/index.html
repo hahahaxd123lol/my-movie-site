@@ -10286,11 +10286,11 @@ body.f2w-auth-v67-open {
 </style>
 
 
-<script id="f2w-profile-ratings-v220-js">
+<script id="f2w-profile-ratings-v221-js">
 (() => {
   'use strict';
-  if(window.__f2wProfileRatingsV220)return;
-  window.__f2wProfileRatingsV220=true;
+  if(window.__f2wProfileRatingsV221)return;
+  window.__f2wProfileRatingsV221=true;
 
   const PAGE_SIZE=20;
   let offset=0;
@@ -10312,14 +10312,17 @@ body.f2w-auth-v67-open {
   function card(r){
     const title=esc(r.title||`${r.media_type==='tv'?'TV':'Movie'} #${r.media_id}`);
     const poster=r.poster_path?`https://image.tmdb.org/t/p/w342${esc(r.poster_path)}`:'';
-    const n=Math.max(1,Math.min(5,Number(r.rating)||1));
-    const stars='★'.repeat(n)+'☆'.repeat(5-n);
+    const n=Math.max(.5,Math.min(5,Math.round((Number(r.rating)||.5)*2)/2));
+    const full=Math.floor(n);
+    const half=n%1===.5;
+    const stars='★'.repeat(full)+(half?'◐':'')+'☆'.repeat(Math.max(0,5-full-(half?1:0)));
+    const score=Number.isInteger(n)?String(n):n.toFixed(1);
     const type=r.media_type==='tv'?'tv':'movie';
     return `<a class="profile-rating-card f2w-v215-rating" href="/watch/?id=${encodeURIComponent(r.media_id)}&type=${type}">
       <div class="profile-rating-poster">${poster?`<img src="${poster}" alt="${title} poster" loading="lazy" decoding="async">`:''}</div>
       <div class="profile-rating-info">
         <div class="profile-rating-title">${title}</div>
-        <div class="profile-rating-stars">${stars}<span class="profile-rating-score">${n}/5</span></div>
+        <div class="profile-rating-stars">${stars}<span class="profile-rating-score">${score}/5</span></div>
         ${r.review?`<div class="profile-rating-review">${esc(r.review)}</div>`:''}
       </div>
     </a>`;
@@ -10353,7 +10356,7 @@ body.f2w-auth-v67-open {
     updateHeader();
 
     try{
-      const {data,error}=await c.rpc('get_public_profile_ratings_v220',{
+      const {data,error}=await c.rpc('get_public_profile_ratings_v221',{
         p_username:u,
         p_limit:PAGE_SIZE,
         p_offset:Math.max(0,nextOffset)
@@ -11175,3 +11178,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v219-letterboxd-profile:20260903 -->
 
 <!-- f2w-force-save:v220-restore-legacy-ratings:20260903 -->
+
+<!-- f2w-force-save:v221-half-star-ratings-profile:20260903 -->

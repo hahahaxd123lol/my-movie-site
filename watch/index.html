@@ -4079,6 +4079,26 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
 @media(max-width:600px){.f2w-v219-letterboxd-actions{width:100%!important}.f2w-v219-letterboxd-btn{flex:1 1 auto!important}}
 </style>
 
+
+<style id="f2w-half-stars-v221-css">
+#f2w-v117-rating-stars button{overflow:hidden!important}
+#f2w-v117-rating-stars button::before{
+  content:"½"!important;
+  position:absolute!important;
+  left:7px!important;
+  bottom:4px!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  color:#65778b!important;
+  opacity:.72!important;
+}
+#f2w-v117-rating-stars button.selected::before,
+#f2w-v117-rating-stars button.preview::before{color:#fbbf24!important}
+#f2w-v117-rating-stars button.half-selected i,
+#f2w-v117-rating-stars button.half-preview i{color:#ffd43b!important}
+#f2w-v215-rating-label strong{color:#ffd43b!important}
+</style>
+
 </head>
 <body class="theme-red f2w-main-page f2w-watch-page watch-locked">
 <header>
@@ -4574,7 +4594,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
       <div class="f2w-v34-rating-copy">
         <div class="f2w-ultra-kicker">YOUR RATING</div>
         <h2>Rate this title</h2>
-        <p>Pick 1–5 stars and optionally leave a short review. Saved ratings appear on your public profile.</p>
+        <p>Rate from ½ to 5 stars in half-star steps and optionally leave a short review. Saved ratings appear on your public profile.</p>
       </div>
 
       <div class="f2w-v215-rating-picker">
@@ -10119,29 +10139,376 @@ body.watch-authenticated .flix-fullscreen-overlay-btn {
 </script>
 
 
-<script id="f2w-rating-v215-js">
+<script id="f2w-rating-v221-js">
 (() => {
   'use strict';
-  if(window.__f2wRatingV215)return;
-  window.__f2wRatingV215=true;
-  const LABELS={0:'Choose your score',1:'Poor',2:'Fair',3:'Good',4:'Great',5:'Amazing'};
+  if(window.__f2wRatingV221)return;
+  window.__f2wRatingV221=true;
+
   let selected=0,savedRating=0,busy=false;
-  const client=()=>window.chatSupabase?.rpc?window.chatSupabase:(window.f2wSupabase?.rpc?window.f2wSupabase:null);
-  const identity=()=>{const q=new URLSearchParams(location.search);const id=Number(q.get('id')||0);return {id:Number.isFinite(id)?id:0,type:q.get('type')==='tv'?'tv':'movie'}};
-  async function session(){const c=client();if(!c?.auth)return null;try{return (await c.auth.getSession())?.data?.session||null}catch{return null}}
-  function state(text='',kind=''){const el=document.getElementById('f2w-v215-rating-state');if(!el)return;el.textContent=text;el.className=`f2w-v215-save-state ${kind}`.trim()}
-  function setBusy(next){busy=!!next;const save=document.getElementById('f2w-v34-save-rating'),clear=document.getElementById('f2w-v34-clear-rating');document.querySelectorAll('#f2w-v117-rating-stars button').forEach(b=>b.disabled=busy);if(save){save.disabled=busy;save.classList.toggle('saving',busy)}if(clear)clear.disabled=busy}
-  function paint(value,preview=false){const safe=Math.max(0,Math.min(5,Number(value)||0));document.querySelectorAll('#f2w-v117-rating-stars button').forEach(btn=>{const n=Number(btn.dataset.rating),on=n<=safe;btn.classList.toggle('selected',!preview&&on);btn.classList.toggle('preview',preview&&on);btn.setAttribute('aria-checked',String(!preview&&n===safe));const icon=btn.querySelector('i');if(icon)icon.className=on?'fa-solid fa-star':'fa-regular fa-star'});const label=document.getElementById('f2w-v215-rating-label');if(label)label.textContent=safe?`${safe}/5 · ${LABELS[safe]}`:LABELS[0]}
-  function updateReviewCount(){const area=document.getElementById('f2w-v34-rating-review'),count=document.getElementById('f2w-v215-review-count');if(count)count.textContent=`${area?.value?.length||0} / 600`}
-  function titleData(){const title=(document.getElementById('detail-title')?.textContent||'').trim(),poster=document.getElementById('detail-poster')?.getAttribute('src')||'';let posterPath='';try{if(poster.includes('image.tmdb.org'))posterPath=new URL(poster,location.href).pathname.replace(/^\/t\/p\/[^/]+/,'')}catch{}return {title,posterPath}}
-  async function refreshSummary(){const c=client(),{id,type}=identity();if(!c||!id)return;try{const res=await c.rpc('get_title_rating_summary_v215',{p_media_type:type,p_media_id:id});if(res.error)throw res.error;const sum=Array.isArray(res.data)?res.data[0]:res.data,count=Number(sum?.rating_count||0),avg=Number(sum?.average_rating||0);const avgEl=document.getElementById('f2w-v34-community-rating'),countEl=document.getElementById('f2w-v215-rating-count');if(avgEl)avgEl.textContent=count?`${avg.toFixed(1)} / 5`:'—';if(countEl)countEl.textContent=String(count)}catch(error){console.warn('Rating summary unavailable:',error)}}
-  async function loadMine(){const c=client(),{id,type}=identity();if(!c||!id)return;const s=await session();if(!s?.user){selected=savedRating=0;paint(0);const mine=document.getElementById('f2w-v34-your-rating');if(mine)mine.textContent='—';return}try{const res=await c.rpc('get_my_rating_v215',{p_media_type:type,p_media_id:id});if(res.error)throw res.error;const row=Array.isArray(res.data)?res.data[0]:res.data;selected=savedRating=Number(row?.rating||0);paint(selected);const mine=document.getElementById('f2w-v34-your-rating');if(mine)mine.textContent=selected?`${selected} / 5`:'—';const review=document.getElementById('f2w-v34-rating-review');if(review)review.value=String(row?.review||'');updateReviewCount();state(selected?'Saved to your profile.':'')}catch(error){console.warn('Your rating unavailable:',error)}}
-  async function load(){await Promise.all([loadMine(),refreshSummary()])}
-  function requireAuth(){try{window.openHeaderAuth?.('login')}catch{try{window.f2wOpenAuth?.('login')}catch{}}}
-  async function save(){if(busy)return;const s=await session();if(!s?.user){state('Log in to save a rating.','error');try{window.f2wToast?.('Log in or create an account to rate this title.','fa-user-lock')}catch{}requireAuth();return}if(!selected){state('Choose 1 to 5 stars first.','error');try{window.f2wToast?.('Choose 1 to 5 stars first.','fa-star')}catch{}return}const c=client(),{id,type}=identity();if(!c||!id)return;const review=(document.getElementById('f2w-v34-rating-review')?.value||'').trim().slice(0,600),{title,posterPath}=titleData();setBusy(true);state('Saving…');try{const res=await c.rpc('save_user_rating_v215',{p_media_type:type,p_media_id:id,p_rating:selected,p_review:review||null,p_title:title||null,p_poster_path:posterPath||null});if(res.error)throw res.error;savedRating=selected;const mine=document.getElementById('f2w-v34-your-rating');if(mine)mine.textContent=`${selected} / 5`;const saveBtn=document.getElementById('f2w-v34-save-rating');if(saveBtn){saveBtn.classList.add('saved');const span=saveBtn.querySelector('span');if(span)span.textContent='Saved';setTimeout(()=>{saveBtn.classList.remove('saved');if(span)span.textContent='Save rating'},1400)}state('Saved to your profile.','ok');await refreshSummary();try{window.f2wToast?.('Rating saved to your profile.','fa-star')}catch{}}catch(error){console.error('Rating save failed:',error);state(error?.message||'Could not save rating.','error');try{window.f2wToast?.('Could not save rating.','fa-triangle-exclamation')}catch{}}finally{setBusy(false)}}
-  async function clear(){if(busy)return;const s=await session();if(!s?.user){requireAuth();return}const c=client(),{id,type}=identity();if(!c||!id)return;setBusy(true);state('Removing…');try{const res=await c.rpc('clear_user_rating_v215',{p_media_type:type,p_media_id:id});if(res.error)throw res.error;selected=savedRating=0;paint(0);const mine=document.getElementById('f2w-v34-your-rating'),review=document.getElementById('f2w-v34-rating-review');if(mine)mine.textContent='—';if(review)review.value='';updateReviewCount();state('Rating removed.','ok');await refreshSummary()}catch(error){console.error('Rating clear failed:',error);state('Could not clear rating.','error')}finally{setBusy(false)}}
-  function bind(){const stars=[...document.querySelectorAll('#f2w-v117-rating-stars button')];stars.forEach(btn=>{const value=Number(btn.dataset.rating);btn.addEventListener('mouseenter',()=>paint(value,true));btn.addEventListener('focus',()=>paint(value,true));btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();selected=value;paint(selected);const mine=document.getElementById('f2w-v34-your-rating');if(mine)mine.textContent=`${selected} / 5`;state(selected===savedRating&&selected?'Already saved.':'Ready to save.')},true);btn.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();const delta=(e.key==='ArrowRight'||e.key==='ArrowUp')?1:-1;selected=Math.max(1,Math.min(5,(selected||value)+delta));paint(selected);stars[selected-1]?.focus()})});document.getElementById('f2w-v117-rating-stars')?.addEventListener('mouseleave',()=>paint(selected));document.getElementById('f2w-v117-rating-stars')?.addEventListener('focusout',e=>{if(!e.currentTarget.contains(e.relatedTarget))paint(selected)});document.getElementById('f2w-v34-rating-review')?.addEventListener('input',()=>{updateReviewCount();state(selected?'Ready to save.':'')});document.getElementById('f2w-v34-save-rating')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();save()},true);document.getElementById('f2w-v34-clear-rating')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();clear()},true);window.addEventListener('pageshow',load,{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});try{client()?.auth?.onAuthStateChange?.(()=>setTimeout(load,0))}catch{}updateReviewCount()}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{bind();load()},{once:true});else{bind();load()}
+
+  const client=()=>window.chatSupabase?.rpc
+    ? window.chatSupabase
+    : (window.f2wSupabase?.rpc?window.f2wSupabase:null);
+
+  const identity=()=>{
+    const q=new URLSearchParams(location.search);
+    const id=Number(q.get('id')||0);
+    return {id:Number.isFinite(id)?id:0,type:q.get('type')==='tv'?'tv':'movie'};
+  };
+
+  const fmt=value=>{
+    const n=Number(value)||0;
+    return Number.isInteger(n)?String(n):n.toFixed(1);
+  };
+
+  function mood(value){
+    const n=Number(value)||0;
+    if(n<=0)return 'Choose your score';
+    if(n<=1)return 'Very poor';
+    if(n<=2)return 'Fair';
+    if(n<=3)return 'Good';
+    if(n<=4)return 'Great';
+    if(n<5)return 'Excellent';
+    return 'Amazing';
+  }
+
+  async function session(){
+    const c=client();
+    if(!c?.auth)return null;
+    try{return (await c.auth.getSession())?.data?.session||null}catch{return null}
+  }
+
+  function state(text='',kind=''){
+    const el=document.getElementById('f2w-v215-rating-state');
+    if(!el)return;
+    el.textContent=text;
+    el.className=`f2w-v215-save-state ${kind}`.trim();
+  }
+
+  function setBusy(next){
+    busy=!!next;
+    const save=document.getElementById('f2w-v34-save-rating');
+    const clear=document.getElementById('f2w-v34-clear-rating');
+    document.querySelectorAll('#f2w-v117-rating-stars button').forEach(b=>b.disabled=busy);
+    if(save){save.disabled=busy;save.classList.toggle('saving',busy)}
+    if(clear)clear.disabled=busy;
+  }
+
+  function paint(value,preview=false){
+    const safe=Math.max(0,Math.min(5,Math.round((Number(value)||0)*2)/2));
+
+    document.querySelectorAll('#f2w-v117-rating-stars button').forEach(btn=>{
+      const star=Number(btn.dataset.rating);
+      const full=safe>=star;
+      const half=!full && safe>=star-.5;
+
+      btn.classList.toggle('selected',!preview&&(full||half));
+      btn.classList.toggle('preview',preview&&(full||half));
+      btn.classList.toggle('half-selected',!preview&&half);
+      btn.classList.toggle('half-preview',preview&&half);
+
+      const icon=btn.querySelector('i');
+      if(icon){
+        icon.className=full
+          ? 'fa-solid fa-star'
+          : half
+            ? 'fa-solid fa-star-half-stroke'
+            : 'fa-regular fa-star';
+      }
+
+      btn.setAttribute(
+        'aria-label',
+        `${fmt(star-.5)} or ${fmt(star)} stars`
+      );
+    });
+
+    const label=document.getElementById('f2w-v215-rating-label');
+    if(label){
+      label.innerHTML=safe
+        ? `<strong>${fmt(safe)}/5</strong> · ${mood(safe)}`
+        : 'Choose your score · click the left half of a star for ½';
+    }
+  }
+
+  function pointerValue(btn,event){
+    const star=Number(btn.dataset.rating);
+    const rect=btn.getBoundingClientRect();
+    if(!event || !Number.isFinite(event.clientX) || !rect.width)return star;
+    const leftHalf=(event.clientX-rect.left)<rect.width/2;
+    return leftHalf?star-.5:star;
+  }
+
+  function updateReviewCount(){
+    const area=document.getElementById('f2w-v34-rating-review');
+    const count=document.getElementById('f2w-v215-review-count');
+    if(count)count.textContent=`${area?.value?.length||0} / 600`;
+  }
+
+  function titleData(){
+    const title=(document.getElementById('detail-title')?.textContent||'').trim();
+    const poster=document.getElementById('detail-poster')?.getAttribute('src')||'';
+    let posterPath='';
+    try{
+      if(poster.includes('image.tmdb.org')){
+        posterPath=new URL(poster,location.href).pathname.replace(/^\/t\/p\/[^/]+/,'');
+      }
+    }catch{}
+    return {title,posterPath};
+  }
+
+  async function refreshSummary(){
+    const c=client(),{id,type}=identity();
+    if(!c||!id)return;
+    try{
+      const res=await c.rpc('get_title_rating_summary_v221',{
+        p_media_type:type,p_media_id:id
+      });
+      if(res.error)throw res.error;
+      const sum=Array.isArray(res.data)?res.data[0]:res.data;
+      const count=Number(sum?.rating_count||0);
+      const avg=Number(sum?.average_rating||0);
+      const avgEl=document.getElementById('f2w-v34-community-rating');
+      const countEl=document.getElementById('f2w-v215-rating-count');
+      if(avgEl)avgEl.textContent=count?`${avg.toFixed(1)} / 5`:'—';
+      if(countEl)countEl.textContent=String(count);
+    }catch(error){
+      console.warn('Rating summary unavailable:',error);
+    }
+  }
+
+  async function loadMine(){
+    const c=client(),{id,type}=identity();
+    if(!c||!id)return;
+    const s=await session();
+
+    if(!s?.user){
+      selected=savedRating=0;
+      paint(0);
+      const mine=document.getElementById('f2w-v34-your-rating');
+      if(mine)mine.textContent='—';
+      return;
+    }
+
+    try{
+      const res=await c.rpc('get_my_rating_v221',{
+        p_media_type:type,p_media_id:id
+      });
+      if(res.error)throw res.error;
+      const row=Array.isArray(res.data)?res.data[0]:res.data;
+
+      selected=savedRating=Number(row?.rating||0);
+      paint(selected);
+
+      const mine=document.getElementById('f2w-v34-your-rating');
+      if(mine)mine.textContent=selected?`${fmt(selected)} / 5`:'—';
+
+      const review=document.getElementById('f2w-v34-rating-review');
+      if(review)review.value=String(row?.review||'');
+
+      updateReviewCount();
+      state(selected?'Saved to your profile.':'');
+    }catch(error){
+      console.warn('Your rating unavailable:',error);
+    }
+  }
+
+  async function load(){
+    await Promise.all([loadMine(),refreshSummary()]);
+  }
+
+  function requireAuth(){
+    try{window.openHeaderAuth?.('login')}
+    catch{try{window.f2wOpenAuth?.('login')}catch{}}
+  }
+
+  async function save(){
+    if(busy)return;
+    const s=await session();
+
+    if(!s?.user){
+      state('Log in to save a rating.','error');
+      try{window.f2wToast?.('Log in or create an account to rate this title.','fa-user-lock')}catch{}
+      requireAuth();
+      return;
+    }
+
+    if(selected<.5){
+      state('Choose ½ to 5 stars first.','error');
+      try{window.f2wToast?.('Choose a rating from ½ to 5 stars.','fa-star')}catch{}
+      return;
+    }
+
+    const c=client(),{id,type}=identity();
+    if(!c||!id)return;
+
+    const review=(document.getElementById('f2w-v34-rating-review')?.value||'').trim().slice(0,600);
+    const {title,posterPath}=titleData();
+
+    setBusy(true);
+    state('Saving…');
+
+    try{
+      const res=await c.rpc('save_user_rating_v221',{
+        p_media_type:type,
+        p_media_id:id,
+        p_rating:selected,
+        p_review:review||null,
+        p_title:title||null,
+        p_poster_path:posterPath||null
+      });
+      if(res.error)throw res.error;
+
+      savedRating=selected;
+      const mine=document.getElementById('f2w-v34-your-rating');
+      if(mine)mine.textContent=`${fmt(selected)} / 5`;
+
+      const saveBtn=document.getElementById('f2w-v34-save-rating');
+      if(saveBtn){
+        saveBtn.classList.add('saved');
+        const span=saveBtn.querySelector('span');
+        if(span)span.textContent='Saved';
+        setTimeout(()=>{
+          saveBtn.classList.remove('saved');
+          if(span)span.textContent='Save rating';
+        },1400);
+      }
+
+      state('Saved to your profile.','ok');
+      await refreshSummary();
+      try{window.f2wToast?.(`${fmt(selected)}/5 rating saved to your profile.`,'fa-star')}catch{}
+    }catch(error){
+      console.error('Rating save failed:',error);
+      state(error?.message||'Could not save rating.','error');
+      try{window.f2wToast?.('Could not save rating.','fa-triangle-exclamation')}catch{}
+    }finally{
+      setBusy(false);
+    }
+  }
+
+  async function clear(){
+    if(busy)return;
+    const s=await session();
+    if(!s?.user){requireAuth();return}
+
+    const c=client(),{id,type}=identity();
+    if(!c||!id)return;
+
+    setBusy(true);
+    state('Removing…');
+
+    try{
+      const res=await c.rpc('clear_user_rating_v215',{
+        p_media_type:type,p_media_id:id
+      });
+      if(res.error)throw res.error;
+
+      selected=savedRating=0;
+      paint(0);
+
+      const mine=document.getElementById('f2w-v34-your-rating');
+      const review=document.getElementById('f2w-v34-rating-review');
+      if(mine)mine.textContent='—';
+      if(review)review.value='';
+      updateReviewCount();
+      state('Rating removed.','ok');
+      await refreshSummary();
+    }catch(error){
+      console.error('Rating clear failed:',error);
+      state('Could not clear rating.','error');
+    }finally{
+      setBusy(false);
+    }
+  }
+
+  function bind(){
+    const stars=[...document.querySelectorAll('#f2w-v117-rating-stars button')];
+
+    stars.forEach(btn=>{
+      btn.addEventListener('mousemove',event=>{
+        paint(pointerValue(btn,event),true);
+      });
+
+      btn.addEventListener('mouseenter',event=>{
+        paint(pointerValue(btn,event),true);
+      });
+
+      btn.addEventListener('focus',()=>{
+        const star=Number(btn.dataset.rating);
+        paint(selected||star,true);
+      });
+
+      btn.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        selected=pointerValue(btn,event);
+        paint(selected);
+
+        const mine=document.getElementById('f2w-v34-your-rating');
+        if(mine)mine.textContent=`${fmt(selected)} / 5`;
+
+        state(
+          selected===savedRating&&selected
+            ? 'Already saved.'
+            : 'Ready to save.'
+        );
+      },true);
+
+      btn.addEventListener('keydown',event=>{
+        if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;
+        event.preventDefault();
+
+        const delta=(event.key==='ArrowRight'||event.key==='ArrowUp')?.5:-.5;
+        selected=Math.max(.5,Math.min(5,(selected||Number(btn.dataset.rating)) + delta));
+        paint(selected);
+
+        const target=Math.max(1,Math.min(5,Math.ceil(selected)));
+        stars[target-1]?.focus();
+
+        const mine=document.getElementById('f2w-v34-your-rating');
+        if(mine)mine.textContent=`${fmt(selected)} / 5`;
+        state('Ready to save.');
+      });
+    });
+
+    const group=document.getElementById('f2w-v117-rating-stars');
+    group?.addEventListener('mouseleave',()=>paint(selected));
+    group?.addEventListener('focusout',event=>{
+      if(!event.currentTarget.contains(event.relatedTarget))paint(selected);
+    });
+
+    document.getElementById('f2w-v34-rating-review')?.addEventListener('input',()=>{
+      updateReviewCount();
+      state(selected?'Ready to save.':'');
+    });
+
+    document.getElementById('f2w-v34-save-rating')?.addEventListener('click',event=>{
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      save();
+    },true);
+
+    document.getElementById('f2w-v34-clear-rating')?.addEventListener('click',event=>{
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      clear();
+    },true);
+
+    window.addEventListener('pageshow',load,{passive:true});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+
+    try{client()?.auth?.onAuthStateChange?.(()=>setTimeout(load,0))}catch{}
+
+    updateReviewCount();
+    paint(0);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{bind();load()},{once:true});
+  }else{
+    bind();
+    load();
+  }
 })();
 </script>
 
@@ -10540,3 +10907,5 @@ body.f2w-watch-page #account-modal .account-card {
 <!-- f2w-force-save:v219-letterboxd-watch:20260903 -->
 
 <!-- f2w-force-save:v220-direct-letterboxd:20260903 -->
+
+<!-- f2w-force-save:v221-half-star-ratings-watch:20260903 -->
