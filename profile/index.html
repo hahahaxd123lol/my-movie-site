@@ -3954,6 +3954,49 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 #v199-editor-save:disabled{opacity:.55!important;cursor:not-allowed!important}
 </style>
 
+
+<script id="f2w-profile-edit-click-authority-v227">
+(() => {
+  'use strict';
+  if(window.__f2wProfileEditClickAuthorityV227)return;
+  window.__f2wProfileEditClickAuthorityV227=true;
+
+  document.addEventListener('click',event=>{
+    const btn=event.target?.closest?.('#v199-edit-profile-btn');
+    if(!btn || btn.hidden)return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    // Defer only the function invocation; the click itself is already claimed
+    // before any older capture/target handlers can swallow it.
+    queueMicrotask(()=>{
+      try{
+        if(typeof window.__f2wOpenProfileEditorV227==='function'){
+          window.__f2wOpenProfileEditorV227();
+          return;
+        }
+      }catch(e){
+        console.error('Edit Profile authority failed:',e);
+      }
+
+      // Last-resort visual open; Save remains disabled until the real loader binds.
+      const modal=document.getElementById('v199-profile-editor');
+      if(modal){
+        modal.hidden=false;
+        modal.setAttribute('aria-hidden','false');
+        document.documentElement.style.overflow='hidden';
+        document.body.style.overflow='hidden';
+        const save=document.getElementById('v199-editor-save');
+        if(save)save.disabled=true;
+        const status=document.getElementById('v199-editor-status');
+        if(status)status.textContent='Loading your saved profile…';
+      }
+    });
+  },true);
+})();
+</script>
+
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -10787,10 +10830,6 @@ async function ensureEditorDataV225(){
 
 function fillEditor(){const p=profileObj()||{};const user=currentEditorUsername();const userInput=document.getElementById('v199-username');if(userInput)userInput.value=user;document.getElementById('v199-display-name').value=String(p.display_name||'').replace(/@/g,'');document.getElementById('v199-bio').value=p.bio||'';for(const [id,key] of [['v199-instagram','instagram_username'],['v199-snapchat','snapchat_username'],['v199-tiktok','tiktok_username'],['v219-letterboxd','letterboxd_username'],['v199-discord','discord_username'],['v199-website','website_url'],['v199-steam','steam_profile']]){const el=document.getElementById(id);if(el)el.value=p[key]||''}document.getElementById('v200-private').checked=Boolean(p.is_private);const selected=new Set(Array.isArray(p.favorite_genres)?p.favorite_genres:[]);document.querySelectorAll('#v199-genre-grid input').forEach(x=>x.checked=selected.has(x.value))}
 async function openEditor(){
-  let allowed=false;
-  try{allowed=Boolean(isOwner())}catch{}
-  if(!allowed)return;
-
   const m=document.getElementById('v199-profile-editor');
   if(!m)return;
 
@@ -10799,8 +10838,6 @@ async function openEditor(){
 
   selectTab('profile');
 
-  // Open synchronously from the trusted user click. Network loading happens
-  // only after the modal is already visible.
   m.hidden=false;
   m.setAttribute('aria-hidden','false');
   document.documentElement.style.overflow='hidden';
@@ -10828,10 +10865,24 @@ async function openEditor(){
     if(save)save.disabled=true;
   }
 }
+
+window.__f2wOpenProfileEditorV227=openEditor;
+
 function closeEditor(){const m=document.getElementById('v199-profile-editor');m.hidden=true;m.setAttribute('aria-hidden','true');document.documentElement.style.removeProperty('overflow');document.body.style.removeProperty('overflow')}
 function validWebsiteValue(raw){raw=String(raw||'').trim();if(!raw)return '';const u=normalizeUrl(raw);try{const parsed=new URL(u);const h=parsed.hostname;return (parsed.protocol==='http:'||parsed.protocol==='https:')&&Boolean(h)&&(h==='localhost'||h.includes('.')||/^\d{1,3}(?:\.\d{1,3}){3}$/.test(h))?u:''}catch{return ''}}
 async function saveEditor(){
-  if(!isOwner())return;
+  let canSave=false;
+  try{canSave=Boolean(isOwner())}catch{}
+  if(!canSave){
+    try{
+      const c=db();
+      const session=(await c?.auth?.getSession?.())?.data?.session;
+      const p=profileObj();
+      canSave=Boolean(session?.user?.id&&p?.user_id&&String(session.user.id)===String(p.user_id));
+    }catch{}
+  }
+  if(!canSave)return;
+
   const save=document.getElementById('v199-editor-save'),status=document.getElementById('v199-editor-status');
   status.className='v200-editor-status';
   save.disabled=true;
@@ -11043,43 +11094,11 @@ function hardenEditor(){
   if(m.parentElement!==document.body)document.body.appendChild(m);
   m.classList.remove('f2w-viewport-popup');
   const btn=document.getElementById('v199-edit-profile-btn');
-  if(btn&&!btn.dataset.v202Bound){btn.dataset.v202Bound='1';btn.addEventListener('click',e=>{
-    const canOpen=(()=>{
-      try{
-        if(typeof isOwner==='function'&&isOwner())return true;
-      }catch{}
-      try{
-        if(owner())return true;
-      }catch{}
-      return false;
-    })();
-
-    if(!canOpen)return;
-
-    e.preventDefault();
-    e.stopImmediatePropagation();
-
-    const y=window.scrollY;
-    try{
-      const result=typeof openEditor==='function'?openEditor():null;
-      Promise.resolve(result).finally(()=>{
-        requestAnimationFrame(()=>{
-          window.scrollTo({top:y,left:window.scrollX,behavior:'instant'});
-        });
-      });
-    }catch(err){
-      console.error('Edit Profile open failed:',err);
-      try{
-        const m=document.getElementById('v199-profile-editor');
-        if(m){
-          m.hidden=false;
-          m.setAttribute('aria-hidden','false');
-          document.documentElement.style.overflow='hidden';
-          document.body.style.overflow='hidden';
-        }
-      }catch{}
-    }
-  },true)}
+  if(btn&&!btn.dataset.v202Bound){
+    btn.dataset.v202Bound='1';
+    // V227 owns the click globally; keep this marker only so older code
+    // does not install another competing opener.
+  }
 }
 
 // Ensure saving updates the visible genres/socials/privacy immediately, then re-read authoritative extras.
@@ -11316,3 +11335,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v225-profile-editor-preserve-existing:20260903 -->
 
 <!-- f2w-force-save:v226-edit-profile-open-fix:20260903 -->
+
+<!-- f2w-force-save:v227-edit-profile-authority:20260903 -->
