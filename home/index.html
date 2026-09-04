@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script id="f2w-discord-link-authority-v249">
+<script id="f2w-discord-link-authority-v250">
 (()=>{
   'use strict';
-  if(window.__f2wDiscordLinkAuthorityV249)return;
-  window.__f2wDiscordLinkAuthorityV249=true;
+  if(window.__f2wDiscordLinkAuthorityV250)return;
+  window.__f2wDiscordLinkAuthorityV250=true;
   const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
-  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v249[href]')||null}catch{return null}}
+  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v250[href]')||null}catch{return null}}
   function openExternal(event){
     const a=anchorFrom(event.target); if(!a)return;
     const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
@@ -24,9 +24,9 @@
   window.addEventListener('click',openExternal,true);
 })();
 </script>
-<style id="f2w-discord-link-pointer-v249">
-#f2w-discord-join-v249{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
-#f2w-discord-join-v249 *{pointer-events:none!important}
+<style id="f2w-discord-link-pointer-v250">
+#f2w-discord-join-v250{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+#f2w-discord-join-v250 *{pointer-events:none!important}
 </style>
 <link href="https://player.flix2watch.com" rel="preconnect" crossorigin>
 <link href="https://player.flix2watch.com" rel="dns-prefetch">
@@ -189,7 +189,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/v160-bootstrap.js?v=249-20260904"></script>
+<script src="/v160-bootstrap.js?v=250-20260904"></script>
   <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js?v=183-20260902" defer></script>
 
@@ -2668,8 +2668,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   <script src="/v154-global-ui.js?v=159" defer></script>
 <link rel="stylesheet" href="/v165-enforcement.css?v=165">
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
-<link rel="stylesheet" href="/v176-sitewide.css?v=200-20260902">
-</head>
+<link rel="stylesheet" href="/v176-sitewide.css?v=200-20260902"></head>
 
 <body class="theme-red f2w-main-page f2w-home-page">
 <header>
@@ -2683,7 +2682,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
     <div class="header-tools">
       <nav class="f2w-primary-nav" aria-label="Main navigation">
-<a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
+        <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
         <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
         <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
         
@@ -2778,7 +2777,6 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
 
       <div class="f2w-action-cluster">
-        
         <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
           <i class="fa-regular fa-message"></i> Chat 
         </button>
@@ -8528,5 +8526,4 @@ body.f2w-auth-v67-open {
 
 <!-- f2w-force-save:seo-social-v214:/home/ -->
 
-
-<!-- f2w-force-save:v249-discord-after-leaderboard:20260904 -->
+<!-- f2w-force-save:v250-discord-every-site-page:20260904 -->

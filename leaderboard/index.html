@@ -1,4 +1,31 @@
 <!doctype html><html lang="en"><head>
+<script id="f2w-discord-link-authority-v250">
+(()=>{
+  'use strict';
+  if(window.__f2wDiscordLinkAuthorityV250)return;
+  window.__f2wDiscordLinkAuthorityV250=true;
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v250[href]')||null}catch{return null}}
+  function openExternal(event){
+    const a=anchorFrom(event.target); if(!a)return;
+    const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
+    event.preventDefault(); event.stopImmediatePropagation(); event.stopPropagation();
+    try{
+      const tab=nativeOpen?.('about:blank','_blank');
+      if(tab){
+        try{tab.opener=null}catch{}
+        try{tab.location.replace(href)}catch{try{tab.location.href=href}catch{}}
+        return;
+      }
+    }catch{}
+  }
+  window.addEventListener('click',openExternal,true);
+})();
+</script>
+<style id="f2w-discord-link-pointer-v250">
+#f2w-discord-join-v250{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+#f2w-discord-join-v250 *{pointer-events:none!important}
+</style>
   <link rel="manifest" href="/site.webmanifest">
 <link href="https://player.flix2watch.com" rel="preconnect" crossorigin>
 <link href="https://player.flix2watch.com" rel="dns-prefetch">
@@ -150,7 +177,7 @@ html{overflow-y:scroll}
   <link rel="stylesheet" href="/final-v33.css">
   <link rel="stylesheet" href="/final-v34.css">
   <link rel="stylesheet" href="/final-v35.css?v=125-1788300576"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/v160-bootstrap.js?v=160"></script>
+<script src="/v160-bootstrap.js?v=250-20260904"></script>
 <style>
 :root{--lb-accent:#ff1727;--lb-bg:#020914;--lb-panel:rgba(7,18,31,.82);--lb-line:#18334d;--lb-muted:#8ca0b8;--lb-text:#f6f8fb}.theme-blue{--lb-accent:#19a7ff}.theme-green{--lb-accent:#35e88d}.theme-purple{--lb-accent:#a855f7}.theme-gold{--lb-accent:#f6c84c}.theme-cyan{--lb-accent:#20e0e8}.theme-pink{--lb-accent:#ff4ca3}.theme-orange{--lb-accent:#ff8a2b}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,color-mix(in srgb,var(--lb-accent) 13%,transparent),transparent 34%),#020914;color:var(--lb-text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
@@ -2023,3 +2050,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v200:leaderboard/index.html:20260902 -->
 
 <!-- f2w-force-save:seo-social-v214:/leaderboard/ -->
+
+<!-- f2w-force-save:v250-discord-every-site-page:20260904 -->

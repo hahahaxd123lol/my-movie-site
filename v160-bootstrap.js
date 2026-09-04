@@ -242,79 +242,42 @@ if(!install()){
 // f2w-force-save:v224-low-egress-presence-leader:20260903
 
 
-
-/* V249 — site-wide Discord nav button beside Leaderboard.
-   Always lives in primary nav. Never moves based on login state. */
+/* V250 — Discord beside Leaderboard on every standard Flix2Watch header. */
 (()=>{
   'use strict';
-  if(window.__f2wDiscordNavV249)return;
-  window.__f2wDiscordNavV249=true;
+  if(window.__f2wDiscordEveryPageV250)return;
+  window.__f2wDiscordEveryPageV250=true;
 
-  const ID='f2w-discord-join-v249';
+  const ID='f2w-discord-join-v250';
   const INVITE='https://discord.gg/q5k46TpxUk';
 
-  function css(){
-    if(document.getElementById('f2w-discord-nav-v249-css'))return;
+  function ensureStyle(){
+    if(document.getElementById('f2w-discord-nav-v250-css'))return;
     const s=document.createElement('style');
-    s.id='f2w-discord-nav-v249-css';
+    s.id='f2w-discord-nav-v250-css';
     s.textContent=`
       #${ID}{
-        display:inline-flex!important;
-        align-items:center!important;
-        justify-content:center!important;
-        gap:6px!important;
-        height:34px!important;
-        min-height:34px!important;
-        max-height:34px!important;
-        padding:0 10px!important;
-        margin:0 0 0 7px!important;
-        border:1px solid rgba(88,101,242,.7)!important;
-        border-radius:8px!important;
-        background:rgba(88,101,242,.12)!important;
-        color:#fff!important;
-        text-decoration:none!important;
-        white-space:nowrap!important;
-        font-size:9px!important;
-        font-weight:800!important;
-        line-height:1!important;
-        cursor:pointer!important;
-        pointer-events:auto!important;
-        position:relative!important;
-        z-index:2147483000!important;
-        flex:0 0 auto!important;
-        width:auto!important;
-        min-width:104px!important;
-        max-width:none!important;
-        grid-column:auto!important;
-        grid-row:auto!important;
-        transform:none!important;
-        translate:none!important;
-        box-sizing:border-box!important;
+        display:inline-flex!important;align-items:center!important;justify-content:center!important;
+        gap:6px!important;height:34px!important;min-height:34px!important;max-height:34px!important;
+        width:auto!important;min-width:104px!important;max-width:none!important;
+        padding:0 10px!important;margin:0 0 0 7px!important;box-sizing:border-box!important;
+        border:1px solid rgba(88,101,242,.72)!important;border-radius:8px!important;
+        background:rgba(88,101,242,.12)!important;color:#fff!important;text-decoration:none!important;
+        white-space:nowrap!important;font-size:9px!important;font-weight:800!important;line-height:1!important;
+        cursor:pointer!important;pointer-events:auto!important;position:relative!important;z-index:2147483000!important;
+        flex:0 0 auto!important;grid-column:auto!important;grid-row:auto!important;
+        transform:none!important;translate:none!important;touch-action:manipulation!important
       }
       #${ID}:hover{
-        background:rgba(88,101,242,.26)!important;
-        border-color:#5865f2!important;
-        color:#fff!important;
-        text-decoration:none!important;
+        background:rgba(88,101,242,.27)!important;border-color:#5865f2!important;
+        color:#fff!important;text-decoration:none!important
       }
-      #${ID} svg{
-        width:15px!important;
-        height:15px!important;
-        flex:0 0 15px!important;
-        fill:currentColor!important;
-        pointer-events:none!important;
-      }
+      #${ID} svg{width:15px!important;height:15px!important;flex:0 0 15px!important;fill:currentColor!important;pointer-events:none!important}
       #${ID} span{pointer-events:none!important}
-      body.f2w-main-page>header .f2w-primary-nav{
-        overflow:visible!important;
-      }
+      body.f2w-main-page>header .f2w-primary-nav,
+      header .f2w-primary-nav{overflow:visible!important}
       @media(max-width:1400px){
-        #${ID}{
-          min-width:92px!important;
-          padding:0 7px!important;
-          font-size:8px!important;
-          margin-left:4px!important;
-        }
+        #${ID}{min-width:92px!important;padding:0 7px!important;margin-left:4px!important;font-size:8px!important}
       }
     `;
     (document.head||document.documentElement).appendChild(s);
@@ -334,9 +297,9 @@ if(!install()){
   }
 
   function install(){
-    css();
+    ensureStyle();
 
-    // Kill every older Discord header button so only this one exists.
+    // Delete every cached/older Discord experiment.
     document.querySelectorAll('[id^="f2w-discord-join-v"]').forEach(el=>{
       if(el.id!==ID)el.remove();
     });
@@ -344,8 +307,7 @@ if(!install()){
     const nav=document.querySelector('header .f2w-primary-nav');
     if(!nav)return false;
 
-    // Leaderboard can be injected by older header code after page load.
-    const leaderboard=
+    const leaderboard =
       nav.querySelector('#f2w-nav-leaderboard') ||
       [...nav.querySelectorAll('a,button')].find(el=>/leaderboard/i.test(el.textContent||''));
 
@@ -356,7 +318,8 @@ if(!install()){
       if(a.parentElement!==nav || a.previousElementSibling!==leaderboard)
         leaderboard.insertAdjacentElement('afterend',a);
     }else{
-      // Until Leaderboard appears, keep it in primary nav instead of action buttons.
+      // The site injects Leaderboard later on several routes. Keep Discord in
+      // the primary nav until then; the observer immediately moves it after.
       if(a.parentElement!==nav)nav.appendChild(a);
     }
 
@@ -365,19 +328,22 @@ if(!install()){
 
   function start(){
     install();
+
     let queued=false;
     const repair=()=>{
       if(queued)return;
       queued=true;
       requestAnimationFrame(()=>{queued=false;install()});
     };
+
     new MutationObserver(repair).observe(document.documentElement,{childList:true,subtree:true});
-    // Header scripts can inject Leaderboard slightly later.
+
+    // Covers delayed header construction on search/account/route transitions.
     let tries=0;
-    const timer=setInterval(()=>{
+    const fast=setInterval(()=>{
       install();
-      if(++tries>=40)clearInterval(timer);
-    },250);
+      if(++tries>=80)clearInterval(fast);
+    },125);
   }
 
   if(document.readyState==='loading')
@@ -385,4 +351,4 @@ if(!install()){
   else
     start();
 })();
-// f2w-force-save:v249-discord-after-leaderboard:20260904
+// f2w-force-save:v250-discord-every-page:20260904

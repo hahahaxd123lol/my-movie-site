@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script id="f2w-discord-link-authority-v249">
+<script id="f2w-discord-link-authority-v250">
 (()=>{
   'use strict';
-  if(window.__f2wDiscordLinkAuthorityV249)return;
-  window.__f2wDiscordLinkAuthorityV249=true;
+  if(window.__f2wDiscordLinkAuthorityV250)return;
+  window.__f2wDiscordLinkAuthorityV250=true;
   const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
-  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v249[href]')||null}catch{return null}}
+  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v250[href]')||null}catch{return null}}
   function openExternal(event){
     const a=anchorFrom(event.target); if(!a)return;
     const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
@@ -24,9 +24,9 @@
   window.addEventListener('click',openExternal,true);
 })();
 </script>
-<style id="f2w-discord-link-pointer-v249">
-#f2w-discord-join-v249{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
-#f2w-discord-join-v249 *{pointer-events:none!important}
+<style id="f2w-discord-link-pointer-v250">
+#f2w-discord-join-v250{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+#f2w-discord-join-v250 *{pointer-events:none!important}
 </style>
 <link href="https://player.flix2watch.com" rel="preconnect" crossorigin>
 <link href="https://player.flix2watch.com" rel="dns-prefetch">
@@ -163,7 +163,7 @@ html{overflow-y:scroll}
   <meta name="apple-mobile-web-app-title" content="Flix2Watch">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/v160-bootstrap.js?v=249-20260904"></script>
+<script src="/v160-bootstrap.js?v=250-20260904"></script>
   <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js?v=183-20260902" defer></script>
   <meta name="theme-color" content="#09090f">
@@ -1063,6 +1063,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 }
 #staff-dialog[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
 </style>
+
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
@@ -1076,7 +1077,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
     <div class="header-tools">
       <nav class="f2w-primary-nav" aria-label="Main navigation">
-<a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
+        <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
         <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
         <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
         
@@ -1171,7 +1172,6 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
 
       <div class="f2w-action-cluster">
-        
         <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
           <i class="fa-regular fa-message"></i> Chat 
         </button>
@@ -4603,6 +4603,7 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
   },{passive:true});
 })();
 </script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->
@@ -4737,10 +4738,4 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 
 <!-- f2w-force-save:v234-v160-cache-bust:20260904 -->
 
-
-<!-- f2w-force-save:v242-clean-native-discord:20260904 -->
-
-
-
-
-<!-- f2w-force-save:v249-discord-after-leaderboard:20260904 -->
+<!-- f2w-force-save:v250-discord-every-site-page:20260904 -->

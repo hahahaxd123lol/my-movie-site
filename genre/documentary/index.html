@@ -1,6 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script id="f2w-discord-link-authority-v250">
+(()=>{
+  'use strict';
+  if(window.__f2wDiscordLinkAuthorityV250)return;
+  window.__f2wDiscordLinkAuthorityV250=true;
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v250[href]')||null}catch{return null}}
+  function openExternal(event){
+    const a=anchorFrom(event.target); if(!a)return;
+    const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
+    event.preventDefault(); event.stopImmediatePropagation(); event.stopPropagation();
+    try{
+      const tab=nativeOpen?.('about:blank','_blank');
+      if(tab){
+        try{tab.opener=null}catch{}
+        try{tab.location.replace(href)}catch{try{tab.location.href=href}catch{}}
+        return;
+      }
+    }catch{}
+  }
+  window.addEventListener('click',openExternal,true);
+})();
+</script>
+<style id="f2w-discord-link-pointer-v250">
+#f2w-discord-join-v250{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+#f2w-discord-join-v250 *{pointer-events:none!important}
+</style>
 <link href="https://player.flix2watch.com" rel="preconnect" crossorigin>
 <link href="https://player.flix2watch.com" rel="dns-prefetch">
 
@@ -162,7 +189,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/v160-bootstrap.js?v=160"></script>
+<script src="/v160-bootstrap.js?v=250-20260904"></script>
   <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js?v=183-20260902" defer></script>
 
@@ -8059,3 +8086,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v190-auth-controller-cleanup:20260902 -->
 
 <!-- f2w-force-save:seo-social-v214:/genre/documentary/ -->
+
+<!-- f2w-force-save:v250-discord-every-site-page:20260904 -->
