@@ -1,43 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script id="f2w-discord-force-new-tab-v243">
+<script id="f2w-discord-newtab-v244">
 (()=>{
   'use strict';
-  if(window.__f2wDiscordForceNewTabV243)return;
-  window.__f2wDiscordForceNewTabV243=true;
-
   const INVITE='https://discord.gg/q5k46TpxUk';
-  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
-
-  window.addEventListener('click',event=>{
+  const nativeOpen=window.open.bind(window);
+  window.addEventListener('click',e=>{
     let a=null;
-    try{a=event.target?.closest?.('#f2w-discord-join-v242')}catch{}
+    try{a=e.target?.closest?.('#f2w-discord-join-v244')}catch{}
     if(!a)return;
-
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-
-    try{
-      const win=nativeOpen?.(INVITE,'_blank','noopener,noreferrer');
-      if(win){
-        try{win.opener=null}catch{}
-        return;
-      }
-    }catch{}
-
-    // Second new-tab attempt using a temporary native anchor.
-    try{
-      const temp=document.createElement('a');
-      temp.href=INVITE;
-      temp.target='_blank';
-      temp.rel='noopener noreferrer external';
-      temp.style.display='none';
-      document.documentElement.appendChild(temp);
-      temp.click();
-      temp.remove();
-    }catch{}
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    const tab=nativeOpen('about:blank','_blank');
+    if(!tab)return;
+    try{tab.opener=null}catch{}
+    try{tab.location.href=INVITE}catch{}
   },true);
 })();
 </script>
@@ -242,7 +221,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   <link rel="stylesheet" href="/v154-global-ui.css?v=159">
   <script src="/v154-global-ui.js?v=159" defer></script>
 <link rel="stylesheet" href="/v165-enforcement.css?v=165">
-<script src="/v160-bootstrap.js?v=243-20260904"></script>
+<script src="/v160-bootstrap.js?v=244-20260904"></script>
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
 <link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"></head>
 <body>
@@ -1590,4 +1569,4 @@ body.f2w-auth-v67-open {
 
 <!-- f2w-force-save:v242-clean-native-discord:20260904 -->
 
-<!-- f2w-force-save:v243-force-discord-new-tab:20260904 -->
+<!-- f2w-force-save:v244-discord-rebuild:20260904 -->

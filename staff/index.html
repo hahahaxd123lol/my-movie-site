@@ -1,43 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script id="f2w-discord-force-new-tab-v243">
+<script id="f2w-discord-newtab-v244">
 (()=>{
   'use strict';
-  if(window.__f2wDiscordForceNewTabV243)return;
-  window.__f2wDiscordForceNewTabV243=true;
-
   const INVITE='https://discord.gg/q5k46TpxUk';
-  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
-
-  window.addEventListener('click',event=>{
+  const nativeOpen=window.open.bind(window);
+  window.addEventListener('click',e=>{
     let a=null;
-    try{a=event.target?.closest?.('#f2w-discord-join-v242')}catch{}
+    try{a=e.target?.closest?.('#f2w-discord-join-v244')}catch{}
     if(!a)return;
-
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-
-    try{
-      const win=nativeOpen?.(INVITE,'_blank','noopener,noreferrer');
-      if(win){
-        try{win.opener=null}catch{}
-        return;
-      }
-    }catch{}
-
-    // Second new-tab attempt using a temporary native anchor.
-    try{
-      const temp=document.createElement('a');
-      temp.href=INVITE;
-      temp.target='_blank';
-      temp.rel='noopener noreferrer external';
-      temp.style.display='none';
-      document.documentElement.appendChild(temp);
-      temp.click();
-      temp.remove();
-    }catch{}
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    const tab=nativeOpen('about:blank','_blank');
+    if(!tab)return;
+    try{tab.opener=null}catch{}
+    try{tab.location.href=INVITE}catch{}
   },true);
 })();
 </script>
@@ -176,7 +155,7 @@ html{overflow-y:scroll}
   <meta name="apple-mobile-web-app-title" content="Flix2Watch">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/v160-bootstrap.js?v=243-20260904"></script>
+<script src="/v160-bootstrap.js?v=244-20260904"></script>
   <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js?v=183-20260902" defer></script>
   <meta name="theme-color" content="#09090f">
@@ -4754,4 +4733,4 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 
 <!-- f2w-force-save:v242-clean-native-discord:20260904 -->
 
-<!-- f2w-force-save:v243-force-discord-new-tab:20260904 -->
+<!-- f2w-force-save:v244-discord-rebuild:20260904 -->
