@@ -412,8 +412,8 @@ if(!install()){
       }
     }catch{}
 
-    // If the browser itself blocks popups, fall back to normal same-tab navigation.
-    try{location.href=href}catch{}
+    // New-tab only: never navigate the current Flix2Watch tab.
+    // If the browser blocks the popup, leave the current page untouched.
   }
 
   window.addEventListener('click',openExternal,true);
@@ -437,3 +437,5 @@ if(!install()){
   (document.head||document.documentElement).appendChild(style);
 })();
 // f2w-force-save:v237-discord-profile-social-open-pattern:20260904
+
+// f2w-force-save:v238-discord-new-tab-only:20260904
