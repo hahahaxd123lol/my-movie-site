@@ -1,5 +1,5 @@
 /* Flix2Watch v185 — fresh critical-code service worker */
-const CACHE='f2w-v241-discord-exact-social-20260904';
+const CACHE='f2w-v243-force-discord-new-tab-20260904';
 const CORE=[
   '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
   '/v159-core.js','/v160-bootstrap.js','/v174-viewport-popups.js','/v176-sitewide.js','/v176-sitewide.css','/final-v35.js',
@@ -79,20 +79,6 @@ self.addEventListener('fetch',event=>{
 
 // f2w-force-save:v224-low-egress-cache:20260903
 
-// f2w-force-save:v232-discord-join-cache:20260904
+// f2w-force-save:v242-clean-native-discord-cache:20260904
 
-// f2w-force-save:v233-join-discord-cache:20260904
-
-// f2w-force-save:v234-join-discord-html-cache-bust:20260904
-
-// f2w-force-save:v236-discord-link-cache:20260904
-
-// f2w-force-save:v237-discord-link-cache:20260904
-
-// f2w-force-save:v238-discord-new-tab-only-cache:20260904
-
-// f2w-force-save:v239-discord-head-authority-cache:20260904
-
-// f2w-force-save:v240-discord-native-link-cache:20260904
-
-// f2w-force-save:v241-discord-exact-social-cache:20260904
+// f2w-force-save:v243-force-discord-new-tab-cache:20260904
