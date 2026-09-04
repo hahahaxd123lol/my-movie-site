@@ -368,44 +368,72 @@ if(!install()){
 
 // f2w-force-save:v234-join-discord-full-label:20260904
 
-/* V236 — Discord invite click authority.
-   Runs on window capture before older document click routers, preserving all
-   unrelated site click handling. */
+
+
+
+
+/* V237 — Discord link authority using the same native-open pattern as profile socials. */
 (()=>{
   'use strict';
-  if(window.__f2wDiscordClickAuthorityV236)return;
-  window.__f2wDiscordClickAuthorityV236=true;
+  if(window.__f2wDiscordLinkAuthorityV237)return;
+  window.__f2wDiscordLinkAuthorityV237=true;
 
-  const INVITE='https://discord.gg/q5k46TpxUk';
+  // Capture the browser's native opener before any older site code can wrap it.
   const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
 
-  function isDiscordTarget(event){
-    return Boolean(event?.target?.closest?.('#f2w-discord-join-v233'));
+  function anchorFrom(target){
+    try{return target?.closest?.('#f2w-discord-join-v233[href]')||null}
+    catch{return null}
   }
 
-  function openInvite(event){
-    if(!isDiscordTarget(event))return;
+  function openExternal(event){
+    const a=anchorFrom(event.target);
+    if(!a)return;
 
-    // Claim only this one header link before legacy document-level routers.
+    const href=String(a.href||'').trim();
+    if(!/^https:\/\/discord\.gg\//i.test(href))return;
+
+    // Same authority pattern as the working Profile social buttons:
+    // open a blank tab synchronously from the trusted click, then navigate it.
     event.preventDefault();
     event.stopImmediatePropagation();
+    event.stopPropagation();
 
     try{
-      const opened=nativeOpen?.(INVITE,'_blank','noopener,noreferrer');
-      if(opened){
-        try{opened.opener=null}catch{}
+      const tab=nativeOpen?.('about:blank','_blank');
+      if(tab){
+        try{tab.opener=null}catch{}
+        try{
+          tab.location.replace(href);
+        }catch{
+          try{tab.location.href=href}catch{}
+        }
         return;
       }
     }catch{}
 
-    // Popup-blocker fallback: still take the visitor to the invite.
-    location.href=INVITE;
+    // If the browser itself blocks popups, fall back to normal same-tab navigation.
+    try{location.href=href}catch{}
   }
 
-  window.addEventListener('click',openInvite,true);
-  window.addEventListener('auxclick',event=>{
-    if(event.button===1)openInvite(event);
-  },true);
+  window.addEventListener('click',openExternal,true);
 })();
-// f2w-force-save:v236-discord-click-authority:20260904
 
+(()=>{
+  const id='f2w-discord-v237-pointer-css';
+  if(document.getElementById(id))return;
+  const style=document.createElement('style');
+  style.id=id;
+  style.textContent=`
+    #f2w-discord-join-v233{
+      position:relative!important;
+      z-index:30!important;
+      pointer-events:auto!important;
+      cursor:pointer!important;
+      touch-action:manipulation!important;
+    }
+    #f2w-discord-join-v233 *{pointer-events:none!important}
+  `;
+  (document.head||document.documentElement).appendChild(style);
+})();
+// f2w-force-save:v237-discord-profile-social-open-pattern:20260904
