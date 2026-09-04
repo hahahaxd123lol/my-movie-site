@@ -2,35 +2,27 @@
 <html lang="en">
 <head>
 
-<script id="f2w-discord-link-authority-v240">
+<script id="f2w-discord-link-authority-v241">
 (()=>{
   'use strict';
-  if(window.__f2wDiscordLinkAuthorityV240)return;
-  window.__f2wDiscordLinkAuthorityV240=true;
-
-  function anchorFrom(target){
-    try{return target?.closest?.('#f2w-discord-join-v233[href]')||null}
-    catch{return null}
+  if(window.__f2wDiscordLinkAuthorityV241)return;
+  window.__f2wDiscordLinkAuthorityV241=true;
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v233[href]')||null}catch{return null}}
+  function openExternal(event){
+    const a=anchorFrom(event.target); if(!a)return;
+    const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
+    event.preventDefault(); event.stopImmediatePropagation(); event.stopPropagation();
+    try{
+      const tab=nativeOpen?.('about:blank','_blank');
+      if(tab){
+        try{tab.opener=null}catch{}
+        try{tab.location.replace(href)}catch{try{tab.location.href=href}catch{}}
+        return;
+      }
+    }catch{}
   }
-
-  function protectNativeLink(event){
-    const a=anchorFrom(event.target);
-    if(!a)return;
-
-    const href=String(a.href||'').trim();
-    if(!/^https:\/\/discord\.gg\//i.test(href))return;
-
-    // Keep this as a REAL browser hyperlink.
-    // We intentionally DO NOT call preventDefault().
-    // Stopping propagation prevents legacy site routers from hijacking it,
-    // then the browser honors href + target="_blank" natively.
-    a.target='_blank';
-    a.rel='noopener noreferrer external';
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-  }
-
-  window.addEventListener('click',protectNativeLink,true);
+  window.addEventListener('click',openExternal,true);
 })();
 </script>
 <style id="f2w-discord-link-pointer-v239">
@@ -245,7 +237,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   <link rel="stylesheet" href="/v154-global-ui.css?v=159">
   <script src="/v154-global-ui.js?v=159" defer></script>
 <link rel="stylesheet" href="/v165-enforcement.css?v=165">
-<script src="/v160-bootstrap.js?v=240-20260904"></script>
+<script src="/v160-bootstrap.js?v=241-20260904"></script>
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
 <link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"></head>
 <body>
@@ -1594,3 +1586,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v239-discord-head-authority:20260904 -->
 
 <!-- f2w-force-save:v240-discord-native-blank-link:20260904 -->
+
+<!-- f2w-force-save:v241-discord-profile-social-exact:20260904 -->

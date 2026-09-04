@@ -347,11 +347,26 @@ if(!install()){
   function install(){
     installStyle();
     document.getElementById('f2w-discord-join-v232')?.remove();
-    if(document.getElementById('f2w-discord-join-v233'))return true;
+
+    let current=document.getElementById('f2w-discord-join-v233');
     const chat=document.querySelector('body.f2w-main-page > header .chat-button, header .chat-button');
-    if(!chat?.parentElement)return false;
-    chat.parentElement.insertBefore(makeButton(),chat);
-    return true;
+    const cluster=document.querySelector('body.f2w-main-page > header .f2w-action-cluster, header .f2w-action-cluster');
+
+    if(chat?.parentElement){
+      if(!current)current=makeButton();
+      if(current.parentElement!==chat.parentElement || current.nextElementSibling!==chat)
+        chat.parentElement.insertBefore(current,chat);
+      return true;
+    }
+
+    // Logged-out header states may not render Chat yet. Discord must still show.
+    if(cluster){
+      if(!current)current=makeButton();
+      if(current.parentElement!==cluster)cluster.prepend(current);
+      return true;
+    }
+
+    return false;
   }
 
   if(document.readyState==='loading')
@@ -363,6 +378,25 @@ if(!install()){
   const timer=setInterval(()=>{
     if(install()||++tries>80)clearInterval(timer);
   },125);
+
+  let discordRepairQueued=false;
+  const discordRepair=()=>{
+    if(discordRepairQueued)return;
+    discordRepairQueued=true;
+    requestAnimationFrame(()=>{
+      discordRepairQueued=false;
+      install();
+    });
+  };
+  const startDiscordObserver=()=>{
+    if(window.__f2wDiscordObserverV241||!document.body)return;
+    window.__f2wDiscordObserverV241=true;
+    new MutationObserver(discordRepair).observe(document.body,{childList:true,subtree:true});
+  };
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded',startDiscordObserver,{once:true});
+  else
+    startDiscordObserver();
 })();
 // f2w-force-save:v233-compact-join-discord:20260904
 
@@ -379,3 +413,5 @@ if(!install()){
 // f2w-force-save:v239-discord-head-authority:20260904
 
 // f2w-force-save:v240-discord-native-anchor:20260904
+
+// f2w-force-save:v241-discord-profile-social-exact:20260904
