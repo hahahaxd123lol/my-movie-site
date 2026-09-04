@@ -225,6 +225,9 @@ html{overflow-y:scroll}
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script id="f2w-profile-discord-order-v251-boot">
+window.__f2wDiscordEveryPageV250=true;
+</script>
 <script src="/v160-bootstrap.js?v=250-20260904"></script>
 <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js" defer></script>
@@ -4024,6 +4027,44 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 })();
 </script>
 
+
+<style id="f2w-profile-discord-order-v251">
+#f2w-discord-join-v250{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:6px!important;height:34px!important;min-height:34px!important;max-height:34px!important;
+  min-width:104px!important;width:auto!important;max-width:none!important;
+  padding:0 10px!important;margin:0 0 0 7px!important;box-sizing:border-box!important;
+  border:1px solid rgba(88,101,242,.72)!important;border-radius:8px!important;
+  background:rgba(88,101,242,.12)!important;color:#fff!important;text-decoration:none!important;
+  white-space:nowrap!important;font-size:9px!important;font-weight:800!important;line-height:1!important;
+  cursor:pointer!important;pointer-events:auto!important;position:relative!important;z-index:2147483000!important;
+  flex:0 0 auto!important;grid-column:auto!important;grid-row:auto!important;transform:none!important;translate:none!important
+}
+#f2w-discord-join-v250:hover{background:rgba(88,101,242,.27)!important;border-color:#5865f2!important;color:#fff!important;text-decoration:none!important}
+#f2w-discord-join-v250 svg{width:15px!important;height:15px!important;flex:0 0 15px!important;fill:currentColor!important;pointer-events:none!important}
+#f2w-discord-join-v250 span{pointer-events:none!important}
+</style>
+<script id="f2w-profile-discord-order-v251-js">
+(()=>{
+  'use strict';
+  function fix(){
+    const nav=document.querySelector('header .f2w-primary-nav');
+    const genres=nav?.querySelector('.f2w-genre-wrap');
+    const discord=document.getElementById('f2w-discord-join-v250');
+    if(!nav||!genres||!discord)return;
+    if(discord.parentElement!==nav || discord.previousElementSibling!==genres)
+      genres.insertAdjacentElement('afterend',discord);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true}); else fix();
+  let queued=false;
+  new MutationObserver(()=>{
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(()=>{queued=false;fix()});
+  }).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -4068,6 +4109,10 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
               <a href="/genre/western/">Western</a>
             </div>
           </div>
+        <a id="f2w-discord-join-v250" class="f2w-nav-link f2w-discord-nav-link" href="https://discord.gg/q5k46TpxUk" target="_blank" rel="noopener noreferrer external" title="Join the Flix2Watch Discord" aria-label="Join the Flix2Watch Discord">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.54 5.34A16.8 16.8 0 0 0 15.44 4l-.2.4a15.6 15.6 0 0 1 3.62 1.14 12.5 12.5 0 0 0-13.7 0A15.8 15.8 0 0 1 8.8 4.4L8.6 4a16.9 16.9 0 0 0-4.12 1.35C1.88 9.17 1.18 12.9 1.53 16.58a16.4 16.4 0 0 0 5.03 2.55l1.22-1.67a10.6 10.6 0 0 1-1.93-.92l.47-.36a11.9 11.9 0 0 0 11.36 0l.47.36c-.62.36-1.27.67-1.94.92l1.23 1.67a16.4 16.4 0 0 0 5.03-2.55c.42-4.26-.72-7.96-2.91-11.24ZM8.88 14.83c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.96 2.45-2.18 2.45Zm6.24 0c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.95 2.45-2.18 2.45Z"/></svg>
+  <span>Join Discord</span>
+</a>
 
       </nav>
 
@@ -11393,3 +11438,5 @@ window.togglePrivateProfile=async function(){
 <!-- f2w-force-save:v228-public-favorites-recovery:20260903 -->
 
 <!-- f2w-force-save:v250-discord-every-site-page:20260904 -->
+
+<!-- f2w-force-save:v251-profile-genres-before-discord:20260904 -->
