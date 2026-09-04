@@ -1,5 +1,5 @@
 /* Flix2Watch v185 — fresh critical-code service worker */
-const CACHE='f2w-v248-discord-nav-position-20260904';
+const CACHE='f2w-v249-discord-after-leaderboard-20260904';
 const CORE=[
   '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
   '/v159-core.js','/v160-bootstrap.js','/v174-viewport-popups.js','/v176-sitewide.js','/v176-sitewide.css','/final-v35.js',
@@ -84,3 +84,5 @@ self.addEventListener('fetch',event=>{
 // f2w-force-save:v247-discord-final-cache:20260904
 
 // f2w-force-save:v248-discord-nav-position-cache:20260904
+
+// f2w-force-save:v249-discord-after-leaderboard-cache:20260904

@@ -241,50 +241,148 @@ if(!install()){
 
 // f2w-force-save:v224-low-egress-presence-leader:20260903
 
-/* V247 — Discord header: exact Profile V211 opener + header-safe installer. */
+
+
+/* V249 — site-wide Discord nav button beside Leaderboard.
+   Always lives in primary nav. Never moves based on login state. */
 (()=>{
   'use strict';
-  if(window.__f2wDiscordV247)return;
-  window.__f2wDiscordV247=true;
+  if(window.__f2wDiscordNavV249)return;
+  window.__f2wDiscordNavV249=true;
+
+  const ID='f2w-discord-join-v249';
   const INVITE='https://discord.gg/q5k46TpxUk';
-  const ID='f2w-discord-join-v247';
-  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
-  function anchorFrom(target){try{return target?.closest?.(`#${ID}[href]`)||null}catch{return null}}
-  function openExternal(event){
-    const a=anchorFrom(event.target); if(!a)return;
-    const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
-    event.preventDefault(); event.stopImmediatePropagation(); event.stopPropagation();
-    try{
-      const tab=nativeOpen?.('about:blank','_blank');
-      if(tab){
-        try{tab.opener=null}catch{}
-        try{tab.location.replace(href)}catch{try{tab.location.href=href}catch{}}
-        return;
-      }
-    }catch{}
-  }
-  window.addEventListener('click',openExternal,true);
-  const icon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.54 5.34A16.8 16.8 0 0 0 15.44 4l-.2.4a15.6 15.6 0 0 1 3.62 1.14 12.5 12.5 0 0 0-13.7 0A15.8 15.8 0 0 1 8.8 4.4L8.6 4a16.9 16.9 0 0 0-4.12 1.35C1.88 9.17 1.18 12.9 1.53 16.58a16.4 16.4 0 0 0 5.03 2.55l1.22-1.67a10.6 10.6 0 0 1-1.93-.92l.47-.36a11.9 11.9 0 0 0 11.36 0l.47.36c-.62.36-1.27.67-1.94.92l1.23 1.67a16.4 16.4 0 0 0 5.03-2.55c.42-4.26-.72-7.96-2.91-11.24ZM8.88 14.83c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.96 2.45-2.18 2.45Zm6.24 0c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.95 2.45-2.18 2.45Z"/></svg>';
-  function make(){
-    const a=document.createElement('a'); a.id=ID; a.className='tool-btn'; a.href=INVITE; a.target='_blank'; a.rel='noopener noreferrer external';
-    a.title='Join the Flix2Watch Discord'; a.setAttribute('aria-label','Join the Flix2Watch Discord'); a.innerHTML=icon+'<span>Join Discord</span>'; return a;
-  }
+
   function css(){
-    if(document.getElementById('f2w-discord-css-v247'))return;
-    const s=document.createElement('style'); s.id='f2w-discord-css-v247'; s.textContent=`
-#${ID}{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;width:110px!important;min-width:110px!important;max-width:110px!important;height:40px!important;min-height:40px!important;padding:0 9px!important;margin:0!important;box-sizing:border-box!important;border:1px solid rgba(88,101,242,.72)!important;border-radius:9px!important;background:rgba(88,101,242,.13)!important;color:#fff!important;text-decoration:none!important;white-space:nowrap!important;font-size:9.5px!important;font-weight:850!important;line-height:1!important}
-#${ID}:hover{background:rgba(88,101,242,.28)!important;border-color:#5865f2!important;color:#fff!important} #${ID} *{pointer-events:none!important} #${ID} svg{width:17px!important;height:17px!important;flex:0 0 17px!important;fill:currentColor!important}
-@media(min-width:1181px){body.f2w-main-page>header .f2w-action-cluster{display:flex!important;flex-flow:row nowrap!important;align-items:center!important;justify-content:flex-end!important;gap:6px!important;width:auto!important;min-width:0!important;max-width:none!important;flex:0 0 auto!important;height:40px!important;margin-left:auto!important;overflow:visible!important}body.f2w-main-page>header .f2w-action-cluster>*{grid-column:auto!important;grid-row:auto!important;position:relative!important}body.f2w-main-page>header .chat-button{width:92px!important;min-width:92px!important;max-width:92px!important;flex:0 0 92px!important}}
-`; (document.head||document.documentElement).appendChild(s);
+    if(document.getElementById('f2w-discord-nav-v249-css'))return;
+    const s=document.createElement('style');
+    s.id='f2w-discord-nav-v249-css';
+    s.textContent=`
+      #${ID}{
+        display:inline-flex!important;
+        align-items:center!important;
+        justify-content:center!important;
+        gap:6px!important;
+        height:34px!important;
+        min-height:34px!important;
+        max-height:34px!important;
+        padding:0 10px!important;
+        margin:0 0 0 7px!important;
+        border:1px solid rgba(88,101,242,.7)!important;
+        border-radius:8px!important;
+        background:rgba(88,101,242,.12)!important;
+        color:#fff!important;
+        text-decoration:none!important;
+        white-space:nowrap!important;
+        font-size:9px!important;
+        font-weight:800!important;
+        line-height:1!important;
+        cursor:pointer!important;
+        pointer-events:auto!important;
+        position:relative!important;
+        z-index:2147483000!important;
+        flex:0 0 auto!important;
+        width:auto!important;
+        min-width:104px!important;
+        max-width:none!important;
+        grid-column:auto!important;
+        grid-row:auto!important;
+        transform:none!important;
+        translate:none!important;
+        box-sizing:border-box!important;
+      }
+      #${ID}:hover{
+        background:rgba(88,101,242,.26)!important;
+        border-color:#5865f2!important;
+        color:#fff!important;
+        text-decoration:none!important;
+      }
+      #${ID} svg{
+        width:15px!important;
+        height:15px!important;
+        flex:0 0 15px!important;
+        fill:currentColor!important;
+        pointer-events:none!important;
+      }
+      #${ID} span{pointer-events:none!important}
+      body.f2w-main-page>header .f2w-primary-nav{
+        overflow:visible!important;
+      }
+      @media(max-width:1400px){
+        #${ID}{
+          min-width:92px!important;
+          padding:0 7px!important;
+          font-size:8px!important;
+          margin-left:4px!important;
+        }
+      }
+    `;
+    (document.head||document.documentElement).appendChild(s);
   }
+
+  function make(){
+    const a=document.createElement('a');
+    a.id=ID;
+    a.className='f2w-nav-link f2w-discord-nav-link';
+    a.href=INVITE;
+    a.target='_blank';
+    a.rel='noopener noreferrer external';
+    a.title='Join the Flix2Watch Discord';
+    a.setAttribute('aria-label','Join the Flix2Watch Discord');
+    a.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.54 5.34A16.8 16.8 0 0 0 15.44 4l-.2.4a15.6 15.6 0 0 1 3.62 1.14 12.5 12.5 0 0 0-13.7 0A15.8 15.8 0 0 1 8.8 4.4L8.6 4a16.9 16.9 0 0 0-4.12 1.35C1.88 9.17 1.18 12.9 1.53 16.58a16.4 16.4 0 0 0 5.03 2.55l1.22-1.67a10.6 10.6 0 0 1-1.93-.92l.47-.36a11.9 11.9 0 0 0 11.36 0l.47.36c-.62.36-1.27.67-1.94.92l1.23 1.67a16.4 16.4 0 0 0 5.03-2.55c.42-4.26-.72-7.96-2.91-11.24ZM8.88 14.83c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.96 2.45-2.18 2.45Zm6.24 0c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.95 2.45-2.18 2.45Z"/></svg><span>Join Discord</span>';
+    return a;
+  }
+
   function install(){
-    css(); document.querySelectorAll('[id^="f2w-discord-join-v"]').forEach(el=>{if(el.id!==ID)el.remove()});
-    const chat=document.querySelector('header .chat-button'); if(!chat?.parentElement)return false;
-    let a=document.getElementById(ID); if(!a)a=make();
-    if(a.parentElement!==chat.parentElement||a.nextElementSibling!==chat)chat.parentElement.insertBefore(a,chat);
+    css();
+
+    // Kill every older Discord header button so only this one exists.
+    document.querySelectorAll('[id^="f2w-discord-join-v"]').forEach(el=>{
+      if(el.id!==ID)el.remove();
+    });
+
+    const nav=document.querySelector('header .f2w-primary-nav');
+    if(!nav)return false;
+
+    // Leaderboard can be injected by older header code after page load.
+    const leaderboard=
+      nav.querySelector('#f2w-nav-leaderboard') ||
+      [...nav.querySelectorAll('a,button')].find(el=>/leaderboard/i.test(el.textContent||''));
+
+    let a=document.getElementById(ID);
+    if(!a)a=make();
+
+    if(leaderboard){
+      if(a.parentElement!==nav || a.previousElementSibling!==leaderboard)
+        leaderboard.insertAdjacentElement('afterend',a);
+    }else{
+      // Until Leaderboard appears, keep it in primary nav instead of action buttons.
+      if(a.parentElement!==nav)nav.appendChild(a);
+    }
+
     return true;
   }
-  function start(){install(); let q=false; new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;install()})}).observe(document.documentElement,{childList:true,subtree:true}); let n=0;const t=setInterval(()=>{install();if(++n>40)clearInterval(t)},250)}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+
+  function start(){
+    install();
+    let queued=false;
+    const repair=()=>{
+      if(queued)return;
+      queued=true;
+      requestAnimationFrame(()=>{queued=false;install()});
+    };
+    new MutationObserver(repair).observe(document.documentElement,{childList:true,subtree:true});
+    // Header scripts can inject Leaderboard slightly later.
+    let tries=0;
+    const timer=setInterval(()=>{
+      install();
+      if(++tries>=40)clearInterval(timer);
+    },250);
+  }
+
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded',start,{once:true});
+  else
+    start();
 })();
-// f2w-force-save:v247-discord-final:20260904
+// f2w-force-save:v249-discord-after-leaderboard:20260904

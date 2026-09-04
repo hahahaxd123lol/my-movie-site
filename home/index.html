@@ -1,6 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script id="f2w-discord-link-authority-v249">
+(()=>{
+  'use strict';
+  if(window.__f2wDiscordLinkAuthorityV249)return;
+  window.__f2wDiscordLinkAuthorityV249=true;
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v249[href]')||null}catch{return null}}
+  function openExternal(event){
+    const a=anchorFrom(event.target); if(!a)return;
+    const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
+    event.preventDefault(); event.stopImmediatePropagation(); event.stopPropagation();
+    try{
+      const tab=nativeOpen?.('about:blank','_blank');
+      if(tab){
+        try{tab.opener=null}catch{}
+        try{tab.location.replace(href)}catch{try{tab.location.href=href}catch{}}
+        return;
+      }
+    }catch{}
+  }
+  window.addEventListener('click',openExternal,true);
+})();
+</script>
+<style id="f2w-discord-link-pointer-v249">
+#f2w-discord-join-v249{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+#f2w-discord-join-v249 *{pointer-events:none!important}
+</style>
 <link href="https://player.flix2watch.com" rel="preconnect" crossorigin>
 <link href="https://player.flix2watch.com" rel="dns-prefetch">
 
@@ -162,7 +189,7 @@ document.documentElement.dataset.flix2watchTheme='theme-red';
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/v160-bootstrap.js?v=247-20260904"></script>
+<script src="/v160-bootstrap.js?v=249-20260904"></script>
   <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js?v=183-20260902" defer></script>
 
@@ -2642,46 +2669,6 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 <link rel="stylesheet" href="/v165-enforcement.css?v=165">
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
 <link rel="stylesheet" href="/v176-sitewide.css?v=200-20260902">
-<style id="f2w-discord-position-v248">
-#f2w-discord-join-v247{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  gap:6px!important;height:40px!important;min-height:40px!important;padding:0 10px!important;
-  border:1px solid rgba(88,101,242,.72)!important;border-radius:9px!important;
-  background:rgba(88,101,242,.12)!important;color:#fff!important;text-decoration:none!important;
-  white-space:nowrap!important;cursor:pointer!important;pointer-events:auto!important;position:relative!important;z-index:50!important
-}
-#f2w-discord-join-v247 *{pointer-events:none!important}
-body.f2w-main-page>header .f2w-primary-nav #f2w-discord-join-v247{margin-left:8px!important}
-@media(max-width:1180px){
-  body.f2w-main-page>header .f2w-primary-nav #f2w-discord-join-v247{margin-left:4px!important}
-}
-</style>
-<script id="f2w-discord-position-v248-js">
-(()=>{
-  'use strict';
-  if(window.__f2wDiscordPositionV248)return;
-  window.__f2wDiscordPositionV248=true;
-
-  function move(){
-    const a=document.getElementById('f2w-discord-join-v247');
-    if(!a)return;
-    const loggedIn=!!document.querySelector('#account-btn:not([style*="display:none"]):not([style*="display: none"]), #profile-nav-btn:not([style*="display:none"]):not([style*="display: none"])');
-    const chat=document.querySelector('header .chat-button');
-    const primary=document.querySelector('header .f2w-primary-nav');
-
-    if(loggedIn && chat?.parentElement){
-      if(a.parentElement!==chat.parentElement || a.nextElementSibling!==chat)
-        chat.parentElement.insertBefore(a,chat);
-    }else if(primary && a.parentElement!==primary){
-      primary.appendChild(a);
-    }
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',move,{once:true}); else move();
-  new MutationObserver(move).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class','hidden']});
-})();
-</script>
-
 </head>
 
 <body class="theme-red f2w-main-page f2w-home-page">
@@ -2696,8 +2683,7 @@ body.f2w-main-page>header .f2w-primary-nav #f2w-discord-join-v247{margin-left:8p
 
     <div class="header-tools">
       <nav class="f2w-primary-nav" aria-label="Main navigation">
-          <a id="f2w-discord-join-v247" class="tool-btn" href="https://discord.gg/q5k46TpxUk" target="_blank" rel="noopener noreferrer external" title="Join the Flix2Watch Discord" aria-label="Join the Flix2Watch Discord"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.54 5.34A16.8 16.8 0 0 0 15.44 4l-.2.4a15.6 15.6 0 0 1 3.62 1.14 12.5 12.5 0 0 0-13.7 0A15.8 15.8 0 0 1 8.8 4.4L8.6 4a16.9 16.9 0 0 0-4.12 1.35C1.88 9.17 1.18 12.9 1.53 16.58a16.4 16.4 0 0 0 5.03 2.55l1.22-1.67a10.6 10.6 0 0 1-1.93-.92l.47-.36a11.9 11.9 0 0 0 11.36 0l.47.36c-.62.36-1.27.67-1.94.92l1.23 1.67a16.4 16.4 0 0 0 5.03-2.55c.42-4.26-.72-7.96-2.91-11.24ZM8.88 14.83c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.96 2.45-2.18 2.45Zm6.24 0c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.95 2.45-2.18 2.45Z"/></svg><span>Join Discord</span></a>
-        <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
+<a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
         <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
         <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
         
@@ -8542,6 +8528,5 @@ body.f2w-auth-v67-open {
 
 <!-- f2w-force-save:seo-social-v214:/home/ -->
 
-<!-- f2w-force-save:v247-discord-final:20260904 -->
 
-<!-- f2w-force-save:v248-discord-loggedout-after-leaderboard:20260904 -->
+<!-- f2w-force-save:v249-discord-after-leaderboard:20260904 -->
