@@ -263,9 +263,9 @@ if(!install()){
         gap:6px!important;
         height:40px!important;
         min-height:40px!important;
-        width:104px!important;
-        min-width:104px!important;
-        max-width:104px!important;
+        width:116px!important;
+        min-width:116px!important;
+        max-width:116px!important;
         padding:0 8px!important;
         box-sizing:border-box!important;
         border:1px solid rgba(88,101,242,.62)!important;
@@ -274,7 +274,7 @@ if(!install()){
         color:#fff!important;
         text-decoration:none!important;
         white-space:nowrap!important;
-        font-size:10px!important;
+        font-size:9.5px!important;
         font-weight:850!important;
         line-height:1!important;
         cursor:pointer!important;
@@ -299,11 +299,11 @@ if(!install()){
       }
       @media (min-width:1181px){
         body.f2w-main-page>header .f2w-action-cluster{
-          grid-template-columns:104px 58px 82px 72px 76px 78px 112px 116px!important;
-          flex-basis:740px!important;
-          width:740px!important;
-          min-width:740px!important;
-          max-width:740px!important;
+          grid-template-columns:116px 58px 82px 72px 76px 78px 112px 116px!important;
+          flex-basis:752px!important;
+          width:752px!important;
+          min-width:752px!important;
+          max-width:752px!important;
         }
         body.f2w-main-page>header #f2w-discord-join-v233{grid-column:1!important;grid-row:1!important}
         body.f2w-main-page>header .chat-button{grid-column:2!important;grid-row:1!important}
@@ -319,8 +319,8 @@ if(!install()){
       @media (max-width:1180px){
         #f2w-discord-join-v233{
           order:-50!important;
-          width:104px!important;
-          min-width:104px!important;
+          width:116px!important;
+          min-width:116px!important;
         }
       }
     `;
@@ -365,3 +365,5 @@ if(!install()){
   },125);
 })();
 // f2w-force-save:v233-compact-join-discord:20260904
+
+// f2w-force-save:v234-join-discord-full-label:20260904
