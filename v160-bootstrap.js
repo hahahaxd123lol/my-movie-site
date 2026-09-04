@@ -367,3 +367,45 @@ if(!install()){
 // f2w-force-save:v233-compact-join-discord:20260904
 
 // f2w-force-save:v234-join-discord-full-label:20260904
+
+/* V236 — Discord invite click authority.
+   Runs on window capture before older document click routers, preserving all
+   unrelated site click handling. */
+(()=>{
+  'use strict';
+  if(window.__f2wDiscordClickAuthorityV236)return;
+  window.__f2wDiscordClickAuthorityV236=true;
+
+  const INVITE='https://discord.gg/q5k46TpxUk';
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+
+  function isDiscordTarget(event){
+    return Boolean(event?.target?.closest?.('#f2w-discord-join-v233'));
+  }
+
+  function openInvite(event){
+    if(!isDiscordTarget(event))return;
+
+    // Claim only this one header link before legacy document-level routers.
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    try{
+      const opened=nativeOpen?.(INVITE,'_blank','noopener,noreferrer');
+      if(opened){
+        try{opened.opener=null}catch{}
+        return;
+      }
+    }catch{}
+
+    // Popup-blocker fallback: still take the visitor to the invite.
+    location.href=INVITE;
+  }
+
+  window.addEventListener('click',openInvite,true);
+  window.addEventListener('auxclick',event=>{
+    if(event.button===1)openInvite(event);
+  },true);
+})();
+// f2w-force-save:v236-discord-click-authority:20260904
+
