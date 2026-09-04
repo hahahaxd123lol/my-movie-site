@@ -204,7 +204,48 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 <link rel="stylesheet" href="/v165-enforcement.css?v=165">
 <script src="/v160-bootstrap.js?v=247-20260904"></script>
   <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
-<link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"></head>
+<link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix">
+<style id="f2w-discord-position-v248">
+#f2w-discord-join-v247{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:6px!important;height:40px!important;min-height:40px!important;padding:0 10px!important;
+  border:1px solid rgba(88,101,242,.72)!important;border-radius:9px!important;
+  background:rgba(88,101,242,.12)!important;color:#fff!important;text-decoration:none!important;
+  white-space:nowrap!important;cursor:pointer!important;pointer-events:auto!important;position:relative!important;z-index:50!important
+}
+#f2w-discord-join-v247 *{pointer-events:none!important}
+body.f2w-main-page>header .f2w-primary-nav #f2w-discord-join-v247{margin-left:8px!important}
+@media(max-width:1180px){
+  body.f2w-main-page>header .f2w-primary-nav #f2w-discord-join-v247{margin-left:4px!important}
+}
+</style>
+<script id="f2w-discord-position-v248-js">
+(()=>{
+  'use strict';
+  if(window.__f2wDiscordPositionV248)return;
+  window.__f2wDiscordPositionV248=true;
+
+  function move(){
+    const a=document.getElementById('f2w-discord-join-v247');
+    if(!a)return;
+    const loggedIn=!!document.querySelector('#account-btn:not([style*="display:none"]):not([style*="display: none"]), #profile-nav-btn:not([style*="display:none"]):not([style*="display: none"])');
+    const chat=document.querySelector('header .chat-button');
+    const primary=document.querySelector('header .f2w-primary-nav');
+
+    if(loggedIn && chat?.parentElement){
+      if(a.parentElement!==chat.parentElement || a.nextElementSibling!==chat)
+        chat.parentElement.insertBefore(a,chat);
+    }else if(primary && a.parentElement!==primary){
+      primary.appendChild(a);
+    }
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',move,{once:true}); else move();
+  new MutationObserver(move).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class','hidden']});
+})();
+</script>
+
+</head>
 <body>
   <noscript><a href="/home/">Continue to Flix2Watch Home</a></noscript>
   <!-- f2w-force-save:root-home-redirect-v13:1788211530 -->
@@ -1556,3 +1597,5 @@ body.f2w-auth-v67-open {
 <!-- f2w-force-save:v245-discord-exact-profile-social-code:20260904 -->
 
 <!-- f2w-force-save:v247-discord-final:20260904 -->
+
+<!-- f2w-force-save:v248-discord-loggedout-after-leaderboard:20260904 -->
