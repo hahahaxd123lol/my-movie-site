@@ -372,70 +372,8 @@ if(!install()){
 
 
 
-/* V237 — Discord link authority using the same native-open pattern as profile socials. */
-(()=>{
-  'use strict';
-  if(window.__f2wDiscordLinkAuthorityV237)return;
-  window.__f2wDiscordLinkAuthorityV237=true;
 
-  // Capture the browser's native opener before any older site code can wrap it.
-  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
-
-  function anchorFrom(target){
-    try{return target?.closest?.('#f2w-discord-join-v233[href]')||null}
-    catch{return null}
-  }
-
-  function openExternal(event){
-    const a=anchorFrom(event.target);
-    if(!a)return;
-
-    const href=String(a.href||'').trim();
-    if(!/^https:\/\/discord\.gg\//i.test(href))return;
-
-    // Same authority pattern as the working Profile social buttons:
-    // open a blank tab synchronously from the trusted click, then navigate it.
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-
-    try{
-      const tab=nativeOpen?.('about:blank','_blank');
-      if(tab){
-        try{tab.opener=null}catch{}
-        try{
-          tab.location.replace(href);
-        }catch{
-          try{tab.location.href=href}catch{}
-        }
-        return;
-      }
-    }catch{}
-
-    // New-tab only: never navigate the current Flix2Watch tab.
-    // If the browser blocks the popup, leave the current page untouched.
-  }
-
-  window.addEventListener('click',openExternal,true);
-})();
-
-(()=>{
-  const id='f2w-discord-v237-pointer-css';
-  if(document.getElementById(id))return;
-  const style=document.createElement('style');
-  style.id=id;
-  style.textContent=`
-    #f2w-discord-join-v233{
-      position:relative!important;
-      z-index:30!important;
-      pointer-events:auto!important;
-      cursor:pointer!important;
-      touch-action:manipulation!important;
-    }
-    #f2w-discord-join-v233 *{pointer-events:none!important}
-  `;
-  (document.head||document.documentElement).appendChild(style);
-})();
-// f2w-force-save:v237-discord-profile-social-open-pattern:20260904
 
 // f2w-force-save:v238-discord-new-tab-only:20260904
+
+// f2w-force-save:v239-discord-head-authority:20260904
