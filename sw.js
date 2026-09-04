@@ -1,10 +1,10 @@
 /* Flix2Watch v185 — fresh critical-code service worker */
-const CACHE='f2w-v230-premid-20260903';
+const CACHE='f2w-v232-discord-join-20260904';
 const CORE=[
   '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
   '/v159-core.js','/v160-bootstrap.js','/v174-viewport-popups.js','/v176-sitewide.js','/v176-sitewide.css','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',
-  '/v177-watch-realtime.js','/v177-profile-playback.js'
+  '/v177-watch-realtime.js','/v177-profile-playback.js','/flix2watch-discord-v232.png'
 ];
 self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
@@ -79,4 +79,4 @@ self.addEventListener('fetch',event=>{
 
 // f2w-force-save:v224-low-egress-cache:20260903
 
-// f2w-force-save:v230-premid-service-worker-cache-bust:20260903
+// f2w-force-save:v232-discord-join-cache:20260904
