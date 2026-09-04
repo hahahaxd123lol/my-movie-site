@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script id="f2w-discord-newtab-v244">
+<script id="f2w-discord-link-authority-v245">
 (()=>{
   'use strict';
-  const INVITE='https://discord.gg/q5k46TpxUk';
-  const nativeOpen=window.open.bind(window);
-  window.addEventListener('click',e=>{
-    let a=null;
-    try{a=e.target?.closest?.('#f2w-discord-join-v244')}catch{}
-    if(!a)return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    const tab=nativeOpen('about:blank','_blank');
-    if(!tab)return;
-    try{tab.opener=null}catch{}
-    try{tab.location.href=INVITE}catch{}
-  },true);
+  if(window.__f2wDiscordLinkAuthorityV245)return;
+  window.__f2wDiscordLinkAuthorityV245=true;
+  // Exact same opener pattern as the working Profile social links.
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v245[href]')||null}catch{return null}}
+  function openExternal(event){
+    const a=anchorFrom(event.target); if(!a)return;
+    const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
+    event.preventDefault(); event.stopImmediatePropagation(); event.stopPropagation();
+    try{
+      const tab=nativeOpen?.('about:blank','_blank');
+      if(tab){
+        try{tab.opener=null}catch{}
+        try{tab.location.replace(href)}catch{try{tab.location.href=href}catch{}}
+        return;
+      }
+    }catch{}
+  }
+  window.addEventListener('click',openExternal,true);
 })();
 </script>
+<style id="f2w-discord-link-pointer-v245">
+#f2w-discord-join-v245{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+#f2w-discord-join-v245 *{pointer-events:none!important}
+</style>
 <link href="https://player.flix2watch.com" rel="preconnect" crossorigin>
 <link href="https://player.flix2watch.com" rel="dns-prefetch">
 
@@ -175,7 +184,7 @@ html{overflow-y:scroll}
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/v160-bootstrap.js?v=244-20260904"></script>
+<script src="/v160-bootstrap.js?v=245-20260904"></script>
   <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js" defer></script>
   
@@ -10824,6 +10833,119 @@ body.f2w-watch-page #account-modal .account-card {
 })();
 </script>
 
+<style id="f2w-discord-layout-v245">
+#f2w-discord-join-v245{
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+  width:116px!important;min-width:116px!important;max-width:116px!important;height:40px!important;min-height:40px!important;
+  padding:0 10px!important;margin:0!important;box-sizing:border-box!important;
+  border:1px solid rgba(88,101,242,.72)!important;border-radius:9px!important;
+  background:rgba(88,101,242,.12)!important;color:#fff!important;text-decoration:none!important;
+  white-space:nowrap!important;font-size:10px!important;font-weight:850!important;line-height:1!important;
+}
+#f2w-discord-join-v245:hover{background:rgba(88,101,242,.26)!important;border-color:#5865f2!important;color:#fff!important;text-decoration:none!important}
+#f2w-discord-join-v245 svg{width:17px!important;height:17px!important;flex:0 0 17px!important;fill:currentColor!important}
+#f2w-discord-join-v245 span{display:block!important}
+
+/* Desktop: one real extra column before Chat. */
+@media (min-width:1181px) and (max-width:1600px){
+  body.f2w-main-page>header>.header-tools{
+    grid-template-columns:max-content minmax(220px,300px) 734px!important;
+  }
+  body.f2w-main-page>header .f2w-action-cluster{
+    display:grid!important;
+    grid-template-columns:116px 90px 72px 66px 68px 72px 92px 116px!important;
+    width:734px!important;min-width:734px!important;max-width:734px!important;
+    gap:6px!important;
+  }
+  body.f2w-main-page>header #f2w-discord-join-v245{grid-column:1!important;grid-row:1!important}
+  body.f2w-main-page>header .chat-button{grid-column:2!important;grid-row:1!important}
+  body.f2w-main-page>header #favorites-nav-btn{grid-column:3!important;grid-row:1!important}
+  body.f2w-main-page>header #profile-nav-btn{grid-column:4!important;grid-row:1!important}
+  body.f2w-main-page>header #support-nav-btn{grid-column:5!important;grid-row:1!important}
+  body.f2w-main-page>header #account-btn,
+  body.f2w-main-page>header #header-login-btn{grid-column:6!important;grid-row:1!important}
+  body.f2w-main-page>header #notification-wrap,
+  body.f2w-main-page>header #header-signup-btn{grid-column:7!important;grid-row:1!important}
+  body.f2w-main-page>header #staff-control-nav{grid-column:8!important;grid-row:1!important}
+}
+@media (min-width:1601px){
+  body.f2w-main-page>header>.header-tools{
+    grid-template-columns:max-content minmax(340px,460px) 918px!important;
+  }
+  body.f2w-main-page>header .f2w-action-cluster{
+    display:grid!important;
+    grid-template-columns:116px 112px 92px 82px 88px 90px 126px 156px!important;
+    width:918px!important;min-width:918px!important;max-width:918px!important;
+    gap:8px!important;
+  }
+  body.f2w-main-page>header #f2w-discord-join-v245{grid-column:1!important;grid-row:1!important}
+  body.f2w-main-page>header .chat-button{grid-column:2!important;grid-row:1!important}
+  body.f2w-main-page>header #favorites-nav-btn{grid-column:3!important;grid-row:1!important}
+  body.f2w-main-page>header #profile-nav-btn{grid-column:4!important;grid-row:1!important}
+  body.f2w-main-page>header #support-nav-btn{grid-column:5!important;grid-row:1!important}
+  body.f2w-main-page>header #account-btn,
+  body.f2w-main-page>header #header-login-btn{grid-column:6!important;grid-row:1!important}
+  body.f2w-main-page>header #notification-wrap,
+  body.f2w-main-page>header #header-signup-btn{grid-column:7!important;grid-row:1!important}
+  body.f2w-main-page>header #staff-control-nav{grid-column:8!important;grid-row:1!important}
+}
+@media (max-width:1180px){
+  #f2w-discord-join-v245{flex:0 0 116px!important;order:-100!important}
+}
+</style>
+<script id="f2w-discord-installer-v245">
+(()=>{
+  'use strict';
+  if(window.__f2wDiscordInstallerV245)return;
+  window.__f2wDiscordInstallerV245=true;
+
+  const ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.54 5.34A16.8 16.8 0 0 0 15.44 4l-.2.4a15.6 15.6 0 0 1 3.62 1.14 12.5 12.5 0 0 0-13.7 0A15.8 15.8 0 0 1 8.8 4.4L8.6 4a16.9 16.9 0 0 0-4.12 1.35C1.88 9.17 1.18 12.9 1.53 16.58a16.4 16.4 0 0 0 5.03 2.55l1.22-1.67a10.6 10.6 0 0 1-1.93-.92l.47-.36a11.9 11.9 0 0 0 11.36 0l.47.36c-.62.36-1.27.67-1.94.92l1.23 1.67a16.4 16.4 0 0 0 5.03-2.55c.42-4.26-.72-7.96-2.91-11.24ZM8.88 14.83c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.96 2.45-2.18 2.45Zm6.24 0c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.95 2.45-2.18 2.45Z"/></svg>';
+
+  function make(){
+    const a=document.createElement('a');
+    a.id='f2w-discord-join-v245';
+    a.className='tool-btn';
+    a.href='https://discord.gg/q5k46TpxUk';
+    a.target='_blank';
+    a.rel='noopener noreferrer external';
+    a.title='Join the Flix2Watch Discord';
+    a.setAttribute('aria-label','Join the Flix2Watch Discord');
+    a.innerHTML=ICON+'<span>Join Discord</span>';
+    return a;
+  }
+
+  function install(){
+    document.querySelectorAll('[id^="f2w-discord-join-v"]').forEach(el=>{
+      if(el.id!=='f2w-discord-join-v245')el.remove();
+    });
+
+    const chat=document.querySelector('body.f2w-main-page>header .chat-button, header .chat-button');
+    if(!chat || !chat.parentElement)return false;
+
+    let a=document.getElementById('f2w-discord-join-v245');
+    if(!a)a=make();
+
+    if(a.parentElement!==chat.parentElement || a.nextElementSibling!==chat)
+      chat.parentElement.insertBefore(a,chat);
+
+    return true;
+  }
+
+  function start(){
+    install();
+    let queued=false;
+    const observer=new MutationObserver(()=>{
+      if(queued)return;
+      queued=true;
+      requestAnimationFrame(()=>{queued=false;install()});
+    });
+    observer.observe(document.documentElement,{childList:true,subtree:true});
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
@@ -10978,3 +11100,5 @@ body.f2w-watch-page #account-modal .account-card {
 <!-- f2w-force-save:v242-clean-native-discord:20260904 -->
 
 <!-- f2w-force-save:v244-discord-rebuild:20260904 -->
+
+<!-- f2w-force-save:v245-discord-exact-profile-social-code:20260904 -->
