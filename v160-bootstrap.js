@@ -242,46 +242,70 @@ if(!install()){
 // f2w-force-save:v224-low-egress-presence-leader:20260903
 
 
-/* V232 — site-wide Join Discord header button.
-   Isolated UI injection only: no auth, chat, presence, playback, ratings,
-   moderation, notifications or Supabase behavior is changed. */
+/* V233 — compact site-wide Join Discord button.
+   UI-only change. Keeps all existing site features untouched. */
 (()=>{
   'use strict';
-  if(window.__f2wDiscordJoinV232)return;
-  window.__f2wDiscordJoinV232=true;
+  if(window.__f2wDiscordJoinV233)return;
+  window.__f2wDiscordJoinV233=true;
 
   const INVITE='https://discord.gg/q5k46TpxUk';
-  const ICON='/flix2watch-discord-v232.png';
-  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
 
   function installStyle(){
-    if(document.getElementById('f2w-discord-join-v232-css'))return;
+    if(document.getElementById('f2w-discord-join-v233-css'))return;
     const style=document.createElement('style');
-    style.id='f2w-discord-join-v232-css';
+    style.id='f2w-discord-join-v233-css';
     style.textContent=`
-      #f2w-discord-join-v232{
-        display:inline-flex!important;align-items:center!important;justify-content:center!important;
-        gap:6px!important;height:40px!important;min-height:40px!important;
-        padding:0 8px!important;border:1px solid rgba(88,101,242,.55)!important;
-        border-radius:9px!important;background:rgba(88,101,242,.10)!important;
-        color:#fff!important;text-decoration:none!important;white-space:nowrap!important;
-        font-size:9.5px!important;font-weight:850!important;line-height:1!important;
-        box-sizing:border-box!important;cursor:pointer!important;overflow:hidden!important;
+      #f2w-discord-join-v233{
+        display:inline-flex!important;
+        align-items:center!important;
+        justify-content:center!important;
+        gap:6px!important;
+        height:40px!important;
+        min-height:40px!important;
+        width:104px!important;
+        min-width:104px!important;
+        max-width:104px!important;
+        padding:0 8px!important;
+        box-sizing:border-box!important;
+        border:1px solid rgba(88,101,242,.62)!important;
+        border-radius:9px!important;
+        background:rgba(88,101,242,.12)!important;
+        color:#fff!important;
+        text-decoration:none!important;
+        white-space:nowrap!important;
+        font-size:10px!important;
+        font-weight:850!important;
+        line-height:1!important;
+        cursor:pointer!important;
       }
-      #f2w-discord-join-v232:hover{
-        background:rgba(88,101,242,.22)!important;border-color:#5865f2!important
+      #f2w-discord-join-v233:hover{
+        background:rgba(88,101,242,.25)!important;
+        border-color:#5865f2!important;
+        color:#fff!important;
+        text-decoration:none!important;
       }
-      #f2w-discord-join-v232 img{
-        width:22px!important;height:22px!important;object-fit:cover!important;
-        border-radius:6px!important;flex:0 0 22px!important
+      #f2w-discord-join-v233 svg{
+        width:17px!important;
+        height:17px!important;
+        flex:0 0 17px!important;
+        fill:currentColor!important;
+        display:block!important;
       }
-      #f2w-discord-join-v232 span{overflow:hidden!important;text-overflow:clip!important}
+      #f2w-discord-join-v233 span{
+        display:block!important;
+        overflow:hidden!important;
+        text-overflow:clip!important;
+      }
       @media (min-width:1181px){
         body.f2w-main-page>header .f2w-action-cluster{
-          grid-template-columns:78px 58px 82px 72px 76px 78px 112px 116px!important;
-          flex-basis:714px!important;width:714px!important;min-width:714px!important;max-width:714px!important;
+          grid-template-columns:104px 58px 82px 72px 76px 78px 112px 116px!important;
+          flex-basis:740px!important;
+          width:740px!important;
+          min-width:740px!important;
+          max-width:740px!important;
         }
-        body.f2w-main-page>header #f2w-discord-join-v232{grid-column:1!important;grid-row:1!important;width:78px!important}
+        body.f2w-main-page>header #f2w-discord-join-v233{grid-column:1!important;grid-row:1!important}
         body.f2w-main-page>header .chat-button{grid-column:2!important;grid-row:1!important}
         body.f2w-main-page>header #header-login-btn,
         body.f2w-main-page>header #favorites-nav-btn{grid-column:3!important;grid-row:1!important}
@@ -293,7 +317,11 @@ if(!install()){
         body.f2w-main-page>header #staff-control-nav{grid-column:8!important;grid-row:1!important}
       }
       @media (max-width:1180px){
-        #f2w-discord-join-v232{order:-50!important;min-width:106px!important}
+        #f2w-discord-join-v233{
+          order:-50!important;
+          width:104px!important;
+          min-width:104px!important;
+        }
       }
     `;
     (document.head||document.documentElement).appendChild(style);
@@ -301,37 +329,30 @@ if(!install()){
 
   function makeButton(){
     const a=document.createElement('a');
-    a.id='f2w-discord-join-v232';
+    a.id='f2w-discord-join-v233';
     a.href=INVITE;
     a.target='_blank';
     a.rel='noopener noreferrer external';
-    a.title='Join the Flix2Watch Discord server';
-    a.setAttribute('aria-label','Join the Flix2Watch Discord server');
-    a.innerHTML=`<img src="${ICON}" alt="" aria-hidden="true"><span>Discord</span>`;
+    a.title='Join the Flix2Watch Discord';
+    a.setAttribute('aria-label','Join the Flix2Watch Discord');
+    a.innerHTML=`
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19.54 5.34A16.8 16.8 0 0 0 15.44 4l-.2.4a15.6 15.6 0 0 1 3.62 1.14 12.5 12.5 0 0 0-13.7 0A15.8 15.8 0 0 1 8.8 4.4L8.6 4a16.9 16.9 0 0 0-4.12 1.35C1.88 9.17 1.18 12.9 1.53 16.58a16.4 16.4 0 0 0 5.03 2.55l1.22-1.67a10.6 10.6 0 0 1-1.93-.92l.47-.36a11.9 11.9 0 0 0 11.36 0l.47.36c-.62.36-1.27.67-1.94.92l1.23 1.67a16.4 16.4 0 0 0 5.03-2.55c.42-4.26-.72-7.96-2.91-11.24ZM8.88 14.83c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.96 2.45-2.18 2.45Zm6.24 0c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.95 2.45-2.18 2.45Z"/>
+      </svg>
+      <span>Join Discord</span>
+    `;
     return a;
   }
 
   function install(){
     installStyle();
-    if(document.getElementById('f2w-discord-join-v232'))return true;
+    document.getElementById('f2w-discord-join-v232')?.remove();
+    if(document.getElementById('f2w-discord-join-v233'))return true;
     const chat=document.querySelector('body.f2w-main-page > header .chat-button, header .chat-button');
     if(!chat?.parentElement)return false;
     chat.parentElement.insertBefore(makeButton(),chat);
     return true;
   }
-
-  document.addEventListener('click',event=>{
-    const a=event.target?.closest?.('#f2w-discord-join-v232');
-    if(!a)return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    try{
-      const opened=nativeOpen?.(INVITE,'_blank');
-      if(!opened)location.href=INVITE;
-    }catch{
-      location.href=INVITE;
-    }
-  },true);
 
   if(document.readyState==='loading')
     document.addEventListener('DOMContentLoaded',install,{once:true});
@@ -343,4 +364,4 @@ if(!install()){
     if(install()||++tries>80)clearInterval(timer);
   },125);
 })();
-// f2w-force-save:v232-sitewide-discord-join:20260904
+// f2w-force-save:v233-compact-join-discord:20260904
