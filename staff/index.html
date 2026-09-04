@@ -3138,11 +3138,7 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js?v=183-20260902" defer>
-document.getElementById('staff-ticket-modal')?.addEventListener('click',event=>{if(event.target?.id==='staff-ticket-modal')closeStaffTicketModal()});
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('staff-ticket-modal')?.hidden)closeStaffTicketModal()});
-document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){event.preventDefault();sendStaffTicketReply()}});
-</script>
+  <script src="/final-v35.js?v=183-20260902" defer></script>
 
 <div class="staff-ticket-modal" id="staff-ticket-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="staff-ticket-modal-title">
   <div class="staff-ticket-chat">
@@ -3164,6 +3160,78 @@ document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=
   </div>
 </div>
 
+<script id="f2w-staff-ticket-close-v235">
+(()=>{
+  'use strict';
+  if(window.__f2wStaffTicketCloseV235)return;
+  window.__f2wStaffTicketCloseV235=true;
+
+  function forceCloseTicket(){
+    const modal=document.getElementById('staff-ticket-modal');
+    if(!modal)return;
+
+    // Use the existing Staff close function first so its ticket state is
+    // cleared exactly as before, then enforce the visual closed state.
+    try{
+      if(typeof window.closeStaffTicketModal==='function')
+        window.closeStaffTicketModal();
+    }catch{}
+
+    modal.hidden=true;
+    modal.setAttribute('aria-hidden','true');
+    modal.style.setProperty('display','none','important');
+    modal.style.setProperty('visibility','hidden','important');
+    modal.style.setProperty('pointer-events','none','important');
+    document.body.style.overflow='';
+  }
+
+  function restoreOpenStyles(){
+    const modal=document.getElementById('staff-ticket-modal');
+    if(!modal||modal.hidden)return;
+    modal.style.removeProperty('display');
+    modal.style.removeProperty('visibility');
+    modal.style.removeProperty('pointer-events');
+  }
+
+  document.addEventListener('click',event=>{
+    const modal=document.getElementById('staff-ticket-modal');
+    if(!modal||modal.hidden)return;
+
+    const close=event.target?.closest?.('.staff-ticket-close');
+    const backdrop=event.target===modal;
+    if(!close&&!backdrop)return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    forceCloseTicket();
+  },true);
+
+  document.addEventListener('keydown',event=>{
+    const modal=document.getElementById('staff-ticket-modal');
+    if(event.key!=='Escape'||!modal||modal.hidden)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    forceCloseTicket();
+  },true);
+
+  // Restore the modal's normal display styles whenever the existing opener
+  // makes it visible again after a previous forced close.
+  const modal=document.getElementById('staff-ticket-modal');
+  if(modal){
+    new MutationObserver(restoreOpenStyles).observe(modal,{attributes:true,attributeFilter:['hidden','aria-hidden']});
+  }
+
+  // Ctrl/Cmd+Enter send shortcut that was previously trapped in the ignored
+  // external-script block.
+  document.getElementById('staff-ticket-reply')?.addEventListener('keydown',event=>{
+    if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)&&!event.isComposing){
+      event.preventDefault();
+      try{window.sendStaffTicketReply?.()}catch{}
+    }
+  });
+})();
+</script>
+<!-- f2w-force-save:v235-staff-ticket-close-authority:20260904 -->
 
 <div class="account-modal" id="account-modal">
     <div class="account-card">
