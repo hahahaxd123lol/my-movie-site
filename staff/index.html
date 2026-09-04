@@ -2,43 +2,35 @@
 <html lang="en">
 <head>
 
-<script id="f2w-discord-link-authority-v239">
+<script id="f2w-discord-link-authority-v240">
 (()=>{
   'use strict';
-  if(window.__f2wDiscordLinkAuthorityV239)return;
-  window.__f2wDiscordLinkAuthorityV239=true;
-
-  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  if(window.__f2wDiscordLinkAuthorityV240)return;
+  window.__f2wDiscordLinkAuthorityV240=true;
 
   function anchorFrom(target){
     try{return target?.closest?.('#f2w-discord-join-v233[href]')||null}
     catch{return null}
   }
 
-  function openExternal(event){
+  function protectNativeLink(event){
     const a=anchorFrom(event.target);
     if(!a)return;
 
     const href=String(a.href||'').trim();
     if(!/^https:\/\/discord\.gg\//i.test(href))return;
 
-    event.preventDefault();
+    // Keep this as a REAL browser hyperlink.
+    // We intentionally DO NOT call preventDefault().
+    // Stopping propagation prevents legacy site routers from hijacking it,
+    // then the browser honors href + target="_blank" natively.
+    a.target='_blank';
+    a.rel='noopener noreferrer external';
     event.stopImmediatePropagation();
     event.stopPropagation();
-
-    try{
-      const tab=nativeOpen?.('about:blank','_blank');
-      if(tab){
-        try{tab.opener=null}catch{}
-        try{tab.location.replace(href)}
-        catch{try{tab.location.href=href}catch{}}
-        return;
-      }
-    }catch{}
-    // New-tab only. Never replace the current Flix2Watch page.
   }
 
-  window.addEventListener('click',openExternal,true);
+  window.addEventListener('click',protectNativeLink,true);
 })();
 </script>
 <style id="f2w-discord-link-pointer-v239">
@@ -187,7 +179,7 @@ html{overflow-y:scroll}
   <meta name="apple-mobile-web-app-title" content="Flix2Watch">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/v160-bootstrap.js?v=239-20260904"></script>
+<script src="/v160-bootstrap.js?v=240-20260904"></script>
   <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js?v=183-20260902" defer></script>
   <meta name="theme-color" content="#09090f">
@@ -4763,3 +4755,5 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 <!-- f2w-force-save:v234-v160-cache-bust:20260904 -->
 
 <!-- f2w-force-save:v239-discord-head-authority:20260904 -->
+
+<!-- f2w-force-save:v240-discord-native-blank-link:20260904 -->

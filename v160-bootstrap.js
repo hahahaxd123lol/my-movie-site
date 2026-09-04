@@ -377,3 +377,5 @@ if(!install()){
 // f2w-force-save:v238-discord-new-tab-only:20260904
 
 // f2w-force-save:v239-discord-head-authority:20260904
+
+// f2w-force-save:v240-discord-native-anchor:20260904
