@@ -1,5 +1,5 @@
 /* Flix2Watch v185 — fresh critical-code service worker */
-const CACHE='f2w-v245-discord-profile-social-exact-20260904';
+const CACHE='f2w-v246-discord-sitewide-20260904';
 const CORE=[
   '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
   '/v159-core.js','/v160-bootstrap.js','/v174-viewport-popups.js','/v176-sitewide.js','/v176-sitewide.css','/final-v35.js',
@@ -79,8 +79,6 @@ self.addEventListener('fetch',event=>{
 
 // f2w-force-save:v224-low-egress-cache:20260903
 
-// f2w-force-save:v242-clean-native-discord-cache:20260904
+// f2w-force-save:v230-premid-service-worker-cache-bust:20260903
 
-// f2w-force-save:v244-discord-rebuild-cache:20260904
-
-// f2w-force-save:v245-discord-profile-social-exact-cache:20260904
+// f2w-force-save:v246-discord-sitewide-cache:20260904
