@@ -257,8 +257,13 @@ function ensureLeaderboard(){
     let a=nav.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"],[data-f2w-v183-leaderboard]');
     if(!a){a=document.createElement('a');a.className='f2w-nav-link';a.href='/leaderboard/';a.dataset.f2wV183Leaderboard='1';a.innerHTML='<i class="fa-solid fa-trophy"></i> Leaderboard'}
     const genreWrap=nav.querySelector('.f2w-genre-wrap');
+    const live=nav.querySelector('a[href="/live/"],a[href="/live"],[data-f2w-live-sports]');
     const search=nav.querySelector('.f2w-search-wrap,.header-search,.search-wrap,input[type="search"]')?.closest?.('.f2w-search-wrap,.header-search,.search-wrap')||null;
-    if(genreWrap){if(a.parentElement!==nav||a.previousElementSibling!==genreWrap)genreWrap.insertAdjacentElement('afterend',a)}
+    // Keep ordering stable: Genres -> Live Sports -> Leaderboard.  The old
+    // leaderboard repair moved itself in front of Live Sports while the live
+    // repair moved itself back again, causing the nav to visibly flash.
+    if(live){if(a.parentElement!==nav||a.previousElementSibling!==live)live.insertAdjacentElement('afterend',a)}
+    else if(genreWrap){if(a.parentElement!==nav||a.previousElementSibling!==genreWrap)genreWrap.insertAdjacentElement('afterend',a)}
     else if(search){if(a.parentElement!==nav||a.nextElementSibling!==search)search.insertAdjacentElement('beforebegin',a)}
     else if(a.parentElement!==nav)nav.appendChild(a);
   });
@@ -266,7 +271,9 @@ function ensureLeaderboard(){
   document.querySelectorAll('header.topbar').forEach(bar=>{
     if(bar.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"],[data-f2w-v183-leaderboard]'))return;
     const a=document.createElement('a');a.href='/leaderboard/';a.dataset.f2wV183Leaderboard='1';a.className=bar.querySelector('.toplink')?'toplink':'top-link';a.innerHTML='<i class="fa-solid fa-trophy"></i> Leaderboard';
-    const account=bar.querySelector('a[href="/account/"],a[href="/account"]');if(account)account.insertAdjacentElement('beforebegin',a);else bar.appendChild(a);
+    const live=bar.querySelector('a[href="/live/"],a[href="/live"],[data-f2w-live-sports]');
+    const account=bar.querySelector('a[href="/account/"],a[href="/account"]');
+    if(live)live.insertAdjacentElement('afterend',a);else if(account)account.insertAdjacentElement('beforebegin',a);else bar.appendChild(a);
   });
 }
 function viewedUsername(){try{return decodeURIComponent((location.pathname.match(/^\/profile\/@([^/?#]+)/)||[])[1]||new URLSearchParams(location.search).get('user')||'').replace(/^@/,'')}catch{return ''}}

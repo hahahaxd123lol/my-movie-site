@@ -1,110 +1,29 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Live Sports • Flix2Watch</title>
-  <meta name="description" content="Live sports on Flix2Watch, organised by sport and category.">
+  <meta name="description" content="Choose a live sports category on Flix2Watch.">
   <link rel="icon" href="/flix2watch-logo-red-v34.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
-  <link rel="stylesheet" href="/v154-global-ui.css?v=159">
-  <link rel="stylesheet" href="/v165-enforcement.css?v=165">
-  <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
-  <link rel="stylesheet" href="/v176-sitewide.css?v=200-20260902">
+  <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145"><link rel="stylesheet" href="/v154-global-ui.css?v=159"><link rel="stylesheet" href="/v165-enforcement.css?v=165"><link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170"><link rel="stylesheet" href="/v176-sitewide.css?v=200-20260902">
   <style>
-    :root{color-scheme:dark;--red:#e50914;--bg:#020914;--panel:#07111f;--line:#1d2a3b;--text:#f5f7fb;--muted:#92a0b4}
-    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 70% -10%,rgba(229,9,20,.10),transparent 34%),var(--bg);color:var(--text);font-family:Poppins,system-ui,sans-serif}
-    body.f2w-main-page>header{position:sticky;top:0;z-index:100;background:rgba(2,9,20,.96);border-bottom:1px solid rgba(229,9,20,.28);backdrop-filter:blur(14px)}
-    .live-shell{max-width:1380px;margin:0 auto;padding:38px 28px 70px}.live-kicker{display:flex;align-items:center;gap:8px;color:#ff3340;font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.pulse{width:9px;height:9px;border-radius:50%;background:#ff2434;animation:pulse 1.2s ease-out infinite}@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(255,36,52,0)}0%{box-shadow:0 0 0 0 rgba(255,36,52,.6)}}
-    h1{margin:9px 0 7px;font-size:clamp(2rem,4vw,3.35rem);line-height:1.02}.lead{margin:0;color:var(--muted);max-width:700px}.sport-tabs{display:flex;gap:9px;flex-wrap:wrap;margin:30px 0 22px}.sport-tab{border:1px solid var(--line);background:#081322;color:#cbd4e1;border-radius:999px;padding:10px 16px;font:700 .78rem Poppins;cursor:pointer}.sport-tab.active{border-color:#e50914;background:rgba(229,9,20,.13);color:#fff}
-    .events{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}.event-card{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#0a1524,#06101c);padding:18px;cursor:pointer;transition:.18s ease}.event-card:hover{transform:translateY(-2px);border-color:#3a4d67}.event-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}.event-category{font-size:.72rem;font-weight:800;color:#9eabc0;text-transform:uppercase;letter-spacing:.08em}.event-live{display:inline-flex;align-items:center;gap:5px;color:#ff3b46;font-size:.7rem;font-weight:900}.event-live:before{content:"";width:6px;height:6px;border-radius:50%;background:#ff2937}.event-card h2{font-size:1.05rem;margin:0 0 7px}.event-card p{font-size:.82rem;color:var(--muted);margin:0}.watch-panel{margin-top:28px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#030a13;box-shadow:0 24px 70px rgba(0,0,0,.3)}.watch-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 17px;background:#091422;border-bottom:1px solid var(--line)}.watch-head strong{font-size:.9rem}.watch-head span{font-size:.72rem;color:var(--muted)}
-    .player-wrap{position:relative;aspect-ratio:16/9;max-height:72vh;background:#000;display:grid;place-items:center}.live-embed{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}.player-placeholder{text-align:center;padding:30px;color:#a8b3c3}.player-placeholder i{display:block;color:#e50914;font-size:2rem;margin-bottom:12px}.player-placeholder strong{display:block;color:#fff;margin-bottom:6px}
-    .watch-login-overlay{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at center,rgba(14,27,43,.9),rgba(0,0,0,.98))}.watch-login-card{width:min(430px,94%);text-align:center;padding:30px 24px;border:1px solid #27384d;border-radius:16px;background:#07111d;box-shadow:0 24px 70px rgba(0,0,0,.65)}.lock-icon{width:52px;height:52px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;background:rgba(229,9,20,.12);color:#ff3440;font-size:1.25rem}.watch-login-card h2{margin:0 0 7px;font-size:1.35rem}.watch-login-card p{margin:0;color:#98a6b9;font-size:.82rem}.watch-login-actions{display:flex;justify-content:center;gap:10px;margin-top:20px;flex-wrap:wrap}.watch-login-actions button{border:0;border-radius:9px;padding:11px 17px;font:800 .78rem Poppins;cursor:pointer}.login-btn{background:#e50914;color:#fff}.signup-btn{background:#182435;color:#fff;border:1px solid #2a3b52!important}.live-authenticated .watch-login-overlay{display:none}.hidden{display:none!important}
-    @media(max-width:700px){.live-shell{padding:25px 15px 55px}.events{grid-template-columns:1fr}.watch-head{align-items:flex-start;flex-direction:column}.watch-login-actions{flex-direction:column}.watch-login-actions button{width:100%}}
+    :root{color-scheme:dark;--red:#e50914;--bg:#020914;--panel:#081321;--line:#1e2d40;--text:#f6f8fc;--muted:#91a0b5}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 70% -10%,rgba(229,9,20,.11),transparent 35%),var(--bg);color:var(--text);font-family:Poppins,system-ui,sans-serif}body.f2w-main-page>header{position:sticky;top:0;z-index:100;background:rgba(2,9,20,.96);border-bottom:1px solid rgba(229,9,20,.25);backdrop-filter:blur(14px)}.live-shell{max-width:1380px;margin:auto;padding:42px 28px 72px}.kicker{display:flex;align-items:center;gap:8px;color:#ff3441;font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.dot{width:8px;height:8px;border-radius:50%;background:#ff2638;animation:pulse 1.25s ease-out infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,38,56,.6)}70%{box-shadow:0 0 0 9px rgba(255,38,56,0)}100%{box-shadow:0 0 0 0 rgba(255,38,56,0)}}h1{font-size:clamp(2.1rem,4vw,3.4rem);margin:10px 0 7px}.lead{margin:0;color:var(--muted)}.sports-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px;margin-top:30px}.sport-card{display:flex;align-items:center;gap:15px;min-height:112px;padding:19px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(180deg,#0b1727,#07111d);color:#fff;text-decoration:none;transition:.18s ease}.sport-card:hover{transform:translateY(-2px);border-color:#465c79;background:#0d1b2e}.sport-icon{width:49px;height:49px;flex:0 0 49px;border-radius:14px;display:grid;place-items:center;background:rgba(229,9,20,.11);border:1px solid rgba(229,9,20,.22);color:#ff3342;font-size:1.2rem}.sport-copy strong{display:block;font-size:.96rem}.sport-copy span{display:block;color:var(--muted);font-size:.73rem;margin-top:3px}.sport-card.disabled{opacity:.48;cursor:default;pointer-events:none}@media(max-width:700px){.live-shell{padding:27px 15px 55px}.sports-grid{grid-template-columns:1fr 1fr;gap:10px}.sport-card{min-height:94px;padding:14px}.sport-icon{width:42px;height:42px;flex-basis:42px}}@media(max-width:460px){.sports-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body class="theme-red f2w-main-page f2w-live-page">
-<header>
-  <a href="/home/" class="logo" aria-label="Flix2Watch home"><img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image"></a>
-  <button class="f2w-mobile-nav-toggle" type="button" aria-label="Open navigation" onclick="toggleF2WMobileMenu?.()"><i class="fa-solid fa-bars"></i></button>
-  <div class="header-tools">
-    <nav class="f2w-primary-nav" aria-label="Main navigation">
-      <a class="f2w-nav-link" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
-      <a class="f2w-nav-link" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
-      <a class="f2w-nav-link" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
-      <div class="f2w-genre-wrap"><button class="f2w-nav-button" type="button"><i class="fa-solid fa-location-dot"></i> Genres <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i></button></div>
-    </nav>
-  </div>
-</header>
-
-<main class="live-shell">
-  <div class="live-kicker"><span class="pulse" aria-hidden="true"></span> Live now</div>
-  <h1>Live Sports</h1>
-  <p class="lead">Choose a sport below, then select a live event to open the player.</p>
-
-  <div class="sport-tabs" role="tablist" aria-label="Sports categories">
-    <button class="sport-tab active" type="button" data-filter="all">All Sports</button>
-    <button class="sport-tab" type="button" data-filter="boxing"><i class="fa-solid fa-hand-fist"></i>&nbsp; Boxing</button>
-  </div>
-
-  <section class="events" aria-label="Live sports streams">
-    <article class="event-card" data-category="boxing" tabindex="0" role="button" aria-label="Open Jordan McCann vs Big Stacks">
-      <div class="event-meta"><span class="event-category">Boxing</span><span class="event-live">LIVE</span></div>
-      <h2>Jordan McCann vs Big Stacks</h2>
-      <p>Misfits Boxing • Live event</p>
-    </article>
-  </section>
-
-  <section class="watch-panel" id="sports-player" aria-label="Live sports player">
-    <div class="watch-head"><strong>Jordan McCann vs Big Stacks</strong><span>Boxing • Live</span></div>
-    <div class="player-wrap">
-      <iframe class="live-embed" id="live-sports-embed" src="https://xyzstreams.st/embed?misfits" title="Jordan McCann vs Big Stacks live stream" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer" loading="eager"></iframe>
-      <div class="watch-login-overlay" id="watch-login-overlay">
-        <div class="watch-login-card">
-          <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
-          <h2>Log in to watch</h2>
-          <p>You need a Flix2Watch account to access live sports playback.</p>
-          <div class="watch-login-actions">
-            <button class="login-btn" type="button" data-auth-mode="login">Log In</button>
-            <button class="signup-btn" type="button" data-auth-mode="signup">Create Account</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-
-<script>
-(()=>{
-  const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
-  const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
-  const client=window.f2wSupabase||(window.f2wSupabase=window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
-  function setAuth(session){document.body.classList.toggle('live-authenticated',!!session?.user)}
-  async function bootAuth(){try{const r=await client?.auth?.getSession?.();setAuth(r?.data?.session);client?.auth?.onAuthStateChange?.((_e,s)=>setAuth(s))}catch{setAuth(null)}}
-  function openAccount(mode){
-    if(typeof window.openAccountModal==='function'){window.openAccountModal(mode);return}
-    if(typeof window.showAccountMode==='function'){window.showAccountMode(mode);document.getElementById('account-modal')?.classList.add('show','open');return}
-    location.href='/account/?mode='+encodeURIComponent(mode);
-  }
-  document.querySelectorAll('[data-auth-mode]').forEach(b=>b.addEventListener('click',()=>openAccount(b.dataset.authMode)));
-  document.querySelectorAll('.sport-tab').forEach(btn=>btn.addEventListener('click',()=>{
-    document.querySelectorAll('.sport-tab').forEach(x=>x.classList.toggle('active',x===btn));
-    const f=btn.dataset.filter;document.querySelectorAll('.event-card').forEach(card=>card.classList.toggle('hidden',f!=='all'&&card.dataset.category!==f));
-  }));
-  document.querySelectorAll('.event-card').forEach(card=>{const go=()=>document.getElementById('sports-player')?.scrollIntoView({behavior:'smooth',block:'start'});card.addEventListener('click',go);card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}})});
-  bootAuth();
-})();
-</script>
-<script src="/v154-global-ui.js?v=159" defer></script>
-<script src="/v145-sitewide-fixes.js?v=145" defer></script>
-<script src="/v147-account-logout.js?v=147"></script>
-<script src="/v149-account-route.js?v=153"></script>
-<script src="/v159-core.js?v=190-20260902-auth-authority" defer></script>
-<script src="/v176-sitewide.js?v=201-20260912-live-sports" defer></script>
-</body>
-</html>
+<header><a href="/home/" class="logo" aria-label="Flix2Watch home"><img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image"></a><button class="f2w-mobile-nav-toggle" type="button" aria-label="Open navigation" onclick="toggleF2WMobileMenu?.()"><i class="fa-solid fa-bars"></i></button><div class="header-tools"><nav class="f2w-primary-nav" aria-label="Main navigation"><a class="f2w-nav-link" href="/home/"><i class="fa-solid fa-house"></i> Home</a><a class="f2w-nav-link" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a><a class="f2w-nav-link" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a><div class="f2w-genre-wrap"><button class="f2w-nav-button" type="button"><i class="fa-solid fa-location-dot"></i> Genres <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i></button></div></nav></div></header>
+<main class="live-shell"><div class="kicker"><span class="dot"></span> Live now</div><h1>Live Sports</h1><p class="lead">Choose a sport to see its live events.</p><section class="sports-grid" aria-label="Sports categories">
+<a class="sport-card" href="/live/boxing/"><span class="sport-icon"><i class="fa-solid fa-hand-fist"></i></span><span class="sport-copy"><strong>Boxing</strong><span>1 live event</span></span></a>
+<div class="sport-card disabled"><span class="sport-icon"><i class="fa-solid fa-futbol"></i></span><span class="sport-copy"><strong>Football</strong><span>No live events</span></span></div>
+<div class="sport-card disabled"><span class="sport-icon"><i class="fa-solid fa-user-ninja"></i></span><span class="sport-copy"><strong>MMA</strong><span>No live events</span></span></div>
+<div class="sport-card disabled"><span class="sport-icon"><i class="fa-solid fa-basketball"></i></span><span class="sport-copy"><strong>Basketball</strong><span>No live events</span></span></div>
+<div class="sport-card disabled"><span class="sport-icon"><i class="fa-solid fa-baseball"></i></span><span class="sport-copy"><strong>Baseball</strong><span>No live events</span></span></div>
+<div class="sport-card disabled"><span class="sport-icon"><i class="fa-solid fa-football"></i></span><span class="sport-copy"><strong>American Football</strong><span>No live events</span></span></div>
+<div class="sport-card disabled"><span class="sport-icon"><i class="fa-solid fa-hockey-puck"></i></span><span class="sport-copy"><strong>Ice Hockey</strong><span>No live events</span></span></div>
+<div class="sport-card disabled"><span class="sport-icon"><i class="fa-solid fa-flag-checkered"></i></span><span class="sport-copy"><strong>Motorsport</strong><span>No live events</span></span></div>
+</section></main>
+<script src="/v176-sitewide.js?v=203"></script>
+</body></html>
