@@ -16,4 +16,66 @@
 @keyframes f2wLiveHeaderPulse{0%{box-shadow:0 0 0 0 rgba(255,38,56,.65)}70%{box-shadow:0 0 0 7px rgba(255,38,56,0)}100%{box-shadow:0 0 0 0 rgba(255,38,56,0)}}
 .f2w-live-page .f2w-mobile-nav-toggle{display:none!important}
 @media(max-width:900px){.f2w-live-page>header{height:auto!important;min-height:68px!important;padding:8px 12px!important;align-items:flex-start!important}.f2w-live-page>header>.logo{flex-basis:100px!important;width:100px!important}.f2w-live-page>header>.logo .logo-image{width:100px!important}.f2w-live-page .header-tools{height:auto!important;overflow-x:auto!important;padding-bottom:4px!important}.f2w-live-page .f2w-primary-nav{height:auto!important}.f2w-live-page .f2w-nav-link,.f2w-live-page .f2w-nav-button{padding:0 8px!important;font-size:11px!important}}
-</style></head><body class="theme-red f2w-main-page f2w-live-page"><header><a href="/home/" class="logo" aria-label="Flix2Watch home"><img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image"></a><div class="header-tools"><nav class="f2w-primary-nav" aria-label="Main navigation"><a class="f2w-nav-link" href="/home/"><i class="fa-solid fa-house"></i> Home</a><a class="f2w-nav-link" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a><a class="f2w-nav-link" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a><a class="f2w-nav-link" href="/genres/"><i class="fa-solid fa-location-dot"></i> Genres</a><a class="f2w-nav-link f2w-live-sports-link" href="/live/" data-f2w-live-sports="1"><span class="f2w-live-badge"><span class="f2w-live-dot"></span>LIVE</span><span>Live Sports</span></a><a class="f2w-nav-link" href="/leaderboard/" data-f2w-v183-leaderboard="1"><i class="fa-solid fa-trophy"></i> Leaderboard</a><a class="f2w-nav-link" href="https://discord.gg/q5k46TpxUk" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-discord"></i> Join Discord</a></nav></div></header><main><a class="crumb" href="/live/"><i class="fa-solid fa-arrow-left"></i> All Sports</a><h1><i class="fa-solid fa-hand-fist" style="color:#ff3342"></i> Boxing</h1><p class="lead">Live boxing events available now.</p><section class="event-grid"><a class="event-card" href="/live/boxing/jordan-mccann-vs-big-stacks/"><div class="event-meta"><span class="cat">Misfits Boxing</span><span class="live">LIVE</span></div><h2>Jordan McCann vs Big Stacks</h2><p>Press to open the live watch page.</p></a></section></main><script src="/v176-sitewide.js?v=205-live-sports-sitewide"></script><script src="/v160-bootstrap.js?v=205-live-sports-sitewide" defer></script></body></html>
+
+/* v212: Live pages use the same header structure/controls as Home. */
+.f2w-live-page .header-tools{display:flex!important;align-items:center!important;gap:12px!important;flex:1 1 auto!important;min-width:0!important}
+.f2w-live-page .f2w-search-pair{display:flex!important;align-items:center!important;gap:8px!important;flex:1 1 360px!important;min-width:180px!important}
+.f2w-live-page .search-container,.f2w-live-page .user-search-container{position:relative!important;display:flex!important;align-items:center!important;min-width:0!important}
+.f2w-live-page .search-container{flex:1 1 220px!important}.f2w-live-page .user-search-container{flex:0 1 190px!important}
+.f2w-live-page .search-bar,.f2w-live-page .user-search-bar{height:38px!important;width:100%!important;border:1px solid #26364a!important;border-radius:8px!important;background:#07111d!important;color:#fff!important;padding:0 34px!important;font:500 12px Poppins,system-ui,sans-serif!important;outline:none!important}
+.f2w-live-page .search-container>i,.f2w-live-page .user-search-container>i{position:absolute!important;left:11px!important;z-index:2!important;color:#8090a5!important;font-size:12px!important}
+.f2w-live-page .user-search-submit{height:30px!important;width:30px!important;position:absolute!important;right:4px!important;border:0!important;border-radius:6px!important;background:#162338!important;color:#fff!important;cursor:pointer!important}
+.f2w-live-page .f2w-action-cluster{display:flex!important;align-items:center!important;gap:6px!important;flex:0 0 auto!important}
+.f2w-live-page .tool-btn,.f2w-live-page .f2w-auth-top-btn{height:38px!important;display:inline-flex!important;align-items:center!important;gap:6px!important;padding:0 10px!important;border:1px solid #26364a!important;border-radius:7px!important;background:#101a2a!important;color:#fff!important;font:700 11px/1 Poppins,system-ui,sans-serif!important;cursor:pointer!important;white-space:nowrap!important}
+.f2w-live-page .f2w-genre-wrap{position:relative!important}.f2w-live-page .f2w-genre-menu{display:none!important;position:absolute!important;top:44px!important;left:0!important;z-index:2000!important;min-width:190px!important;padding:8px!important;border:1px solid #26364a!important;border-radius:10px!important;background:#07111d!important;box-shadow:0 16px 45px rgba(0,0,0,.45)!important}.f2w-live-page .f2w-genre-menu.open{display:grid!important;grid-template-columns:1fr 1fr!important}.f2w-live-page .f2w-genre-menu a{padding:7px 9px!important;color:#cbd5e1!important;text-decoration:none!important;font-size:11px!important;border-radius:6px!important}.f2w-live-page .f2w-genre-menu a:hover{background:#101a2a!important;color:#fff!important}
+@media(max-width:1180px){.f2w-live-page .user-search-container{display:none!important}.f2w-live-page .f2w-action-cluster .chat-button{display:none!important}}
+@media(max-width:900px){.f2w-live-page .f2w-search-pair,.f2w-live-page .f2w-action-cluster{display:none!important}.f2w-live-page .f2w-mobile-nav-toggle{display:inline-flex!important}.f2w-live-page.f2w-mobile-nav-open .header-tools{display:flex!important;position:absolute!important;left:0!important;right:0!important;top:68px!important;background:#020914!important;padding:10px!important;border-bottom:1px solid #26364a!important}.f2w-live-page.f2w-mobile-nav-open .f2w-primary-nav{display:flex!important;overflow-x:auto!important}}
+</style></head><body class="theme-red f2w-main-page f2w-live-page"><header>
+    <a href="/home/" class="logo" aria-label="Flix2Watch home">
+      <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
+    </a>
+    <button class="f2w-mobile-nav-toggle" type="button" aria-label="Open navigation" onclick="toggleF2WMobileMenu()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="header-tools">
+      <nav class="f2w-primary-nav" aria-label="Main navigation">
+        <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
+        <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
+        <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
+        <div class="f2w-genre-wrap">
+          <button class="f2w-nav-button" id="f2w-nav-genres" type="button" onclick="toggleF2WGenreMenu(event)">
+            <i class="fa-solid fa-location-dot"></i> Genres <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i>
+          </button>
+          <div class="f2w-genre-menu" id="f2w-genre-menu">
+            <a href="/genre/action/">Action</a><a href="/genre/comedy/">Comedy</a><a href="/genre/horror/">Horror</a><a href="/genre/sci-fi/">Sci-Fi</a><a href="/genre/thriller/">Thriller</a><a href="/genre/crime/">Crime</a><a href="/genre/romance/">Romance</a><a href="/genre/animation/">Animation</a><a href="/genre/documentary/">Documentary</a><a href="/genre/fantasy/">Fantasy</a><a href="/genre/adventure/">Adventure</a><a href="/genre/drama/">Drama</a><a href="/genre/family/">Family</a><a href="/genre/mystery/">Mystery</a><a href="/genre/history/">History</a><a href="/genre/music/">Music</a><a href="/genre/war/">War</a><a href="/genre/western/">Western</a>
+          </div>
+        </div>
+      </nav>
+      <div class="f2w-search-pair">
+        <div class="search-container" role="search">
+          <i class="fa-solid fa-search"></i>
+          <input id="movie-search" class="search-bar" type="search" placeholder="Search movies..." autocomplete="off" aria-label="Search movies and TV shows" onkeydown="if(event.key==='Enter')f2wLiveMovieSearch(this.value)">
+        </div>
+        <div class="user-search-container" role="search">
+          <i class="fa-solid fa-user"></i>
+          <input type="search" id="user-search" class="user-search-bar" placeholder="Search users..." autocomplete="off" aria-label="Search Flix2Watch users" onkeydown="if(event.key==='Enter')f2wLiveUserSearch(this.value)">
+          <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="f2wLiveUserSearch(document.getElementById('user-search')?.value)"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+      <div class="f2w-action-cluster">
+        <button class="tool-btn chat-button" type="button" onclick="location.href='/chat/'"><i class="fa-regular fa-message"></i> Chat</button>
+        <button class="f2w-auth-top-btn login" id="header-login-btn" type="button" style="display:none" onclick="location.href='/account/?mode=login'"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+        <button class="f2w-auth-top-btn signup" id="header-signup-btn" type="button" style="display:none" onclick="location.href='/account/?mode=signup'"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+        <button class="tool-btn" id="favorites-nav-btn" type="button" onclick="location.href='/favorites/'" style="display:none"><i class="fa-regular fa-heart"></i> Favorites</button>
+        <button class="tool-btn" id="profile-nav-btn" type="button" onclick="location.href='/profile/'" style="display:none"><i class="fa-regular fa-id-card"></i> Profile</button>
+        <button class="tool-btn f2w-hide-tablet" id="support-nav-btn" type="button" onclick="location.href='/support/'" style="display:none"><i class="fa-regular fa-life-ring"></i> Support</button>
+        <button class="tool-btn" id="account-btn" type="button" onclick="location.href='/account/'" style="display:none"><i class="fa-regular fa-user"></i> Account</button>
+      </div>
+    </div>
+  </header><main><a class="crumb" href="/live/"><i class="fa-solid fa-arrow-left"></i> All Sports</a><h1><i class="fa-solid fa-hand-fist" style="color:#ff3342"></i> Boxing</h1><p class="lead">Live boxing events available now.</p><section class="event-grid"><a class="event-card" href="/live/boxing/jordan-mccann-vs-big-stacks/"><div class="event-meta"><span class="cat">Misfits Boxing</span><span class="live">LIVE</span></div><h2>Jordan McCann vs Big Stacks</h2><p>Press to open the live watch page.</p></a></section></main><script id="f2w-live-header-helpers-v212">
+function toggleF2WGenreMenu(e){e?.preventDefault?.();e?.stopPropagation?.();document.getElementById('f2w-genre-menu')?.classList.toggle('open')}
+function toggleF2WMobileMenu(){document.body.classList.toggle('f2w-mobile-nav-open')}
+function f2wLiveMovieSearch(q){q=String(q||'').trim();if(q)location.href='/movies/search/?q='+encodeURIComponent(q)}
+function f2wLiveUserSearch(q){q=String(q||'').trim();if(q)location.href='/users/search/?q='+encodeURIComponent(q)}
+document.addEventListener('click',e=>{const m=document.getElementById('f2w-genre-menu');if(m&&!e.target.closest('.f2w-genre-wrap'))m.classList.remove('open')});
+</script><script src="/v176-sitewide.js?v=20260912-1915-live-v212"></script><script src="/v160-bootstrap.js?v=20260912-1915-live-v212" defer></script></body></html>
