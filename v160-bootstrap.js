@@ -274,6 +274,13 @@ if(!install()){
       }
       #${ID} svg{width:15px!important;height:15px!important;flex:0 0 15px!important;fill:currentColor!important;pointer-events:none!important}
       #${ID} span{pointer-events:none!important}
+      #f2w-live-sports-nav-v205{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;height:34px!important;min-height:34px!important;max-height:34px!important;width:auto!important;min-width:100px!important;padding:0 9px!important;margin:0 0 0 7px!important;box-sizing:border-box!important;border:1px solid rgba(255,49,65,.72)!important;border-radius:8px!important;background:rgba(229,9,20,.10)!important;color:#fff!important;text-decoration:none!important;white-space:nowrap!important;font-size:9px!important;font-weight:800!important;line-height:1!important;cursor:pointer!important;pointer-events:auto!important;position:relative!important;z-index:2147482999!important;flex:0 0 auto!important;transform:none!important;translate:none!important;touch-action:manipulation!important}
+      #f2w-live-sports-nav-v205:hover{background:rgba(229,9,20,.22)!important;border-color:#ff3141!important;color:#fff!important;text-decoration:none!important}
+      #f2w-live-sports-nav-v205 *{pointer-events:none!important}
+      #f2w-live-sports-nav-v205 .f2w-live-pill-v205{display:inline-flex!important;align-items:center!important;gap:4px!important;padding:2px 6px!important;border:1px solid #ff3141!important;border-radius:999px!important;color:#ff3141!important;font-size:7px!important;font-weight:900!important;letter-spacing:.05em!important;line-height:1!important}
+      #f2w-live-sports-nav-v205 .f2w-live-dot-v205{width:5px!important;height:5px!important;border-radius:50%!important;background:#ff2638!important;animation:f2wLivePulseV205 1.25s ease-out infinite!important}
+      @keyframes f2wLivePulseV205{0%{box-shadow:0 0 0 0 rgba(255,38,56,.65);opacity:1}70%{box-shadow:0 0 0 6px rgba(255,38,56,0);opacity:.82}100%{box-shadow:0 0 0 0 rgba(255,38,56,0);opacity:1}}
+      @media(prefers-reduced-motion:reduce){#f2w-live-sports-nav-v205 .f2w-live-dot-v205{animation:none!important}}
       body.f2w-main-page>header .f2w-primary-nav,
       header .f2w-primary-nav{overflow:visible!important}
       @media(max-width:1400px){
@@ -296,6 +303,18 @@ if(!install()){
     return a;
   }
 
+  function makeLive(){
+    const a=document.createElement('a');
+    a.id='f2w-live-sports-nav-v205';
+    a.className='f2w-nav-link f2w-live-sports-link';
+    a.href='/live/';
+    a.setAttribute('data-f2w-live-sports','1');
+    a.title='Live Sports';
+    a.setAttribute('aria-label','Live Sports');
+    a.innerHTML='<span class="f2w-live-pill-v205"><span class="f2w-live-dot-v205" aria-hidden="true"></span>LIVE</span><span>Live Sports</span>';
+    return a;
+  }
+
   function install(){
     ensureStyle();
 
@@ -311,16 +330,24 @@ if(!install()){
       nav.querySelector('#f2w-nav-leaderboard') ||
       [...nav.querySelectorAll('a,button')].find(el=>/leaderboard/i.test(el.textContent||''));
 
+    let live=document.getElementById('f2w-live-sports-nav-v205') || nav.querySelector('[data-f2w-live-sports],a[href="/live/"],a[href="/live"]');
+    if(!live)live=makeLive();
+    if(live.id!=='f2w-live-sports-nav-v205')live.id='f2w-live-sports-nav-v205';
+    live.dataset.f2wLiveSports='1';
+
     let a=document.getElementById(ID);
     if(!a)a=make();
 
     if(leaderboard){
-      if(a.parentElement!==nav || a.previousElementSibling!==leaderboard)
-        leaderboard.insertAdjacentElement('afterend',a);
+      // Canonical order: Leaderboard -> Live Sports -> Join Discord.
+      if(live.parentElement!==nav || live.previousElementSibling!==leaderboard)
+        leaderboard.insertAdjacentElement('afterend',live);
+      if(a.parentElement!==nav || a.previousElementSibling!==live)
+        live.insertAdjacentElement('afterend',a);
     }else{
-      // The site injects Leaderboard later on several routes. Keep Discord in
-      // the primary nav until then; the observer immediately moves it after.
-      if(a.parentElement!==nav)nav.appendChild(a);
+      // Until Leaderboard appears, keep Live Sports immediately before Discord.
+      if(live.parentElement!==nav)nav.appendChild(live);
+      if(a.parentElement!==nav || a.previousElementSibling!==live)live.insertAdjacentElement('afterend',a);
     }
 
     return true;
