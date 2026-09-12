@@ -220,36 +220,36 @@ function dmClick(){
   hideChatForAuth();
   requestAnimationFrame(()=>openAuth('login'));
 }
-function ensureLiveSports(){
-  if(!document.getElementById('f2w-live-sports-nav-style-v201')){
+function ensureLiveSportsOnce(){
+  if(!document.getElementById('f2w-live-sports-nav-style-v204')){
     const st=document.createElement('style');
-    st.id='f2w-live-sports-nav-style-v201';
+    st.id='f2w-live-sports-nav-style-v204';
     st.textContent=`
-      .f2w-live-sports-link{display:inline-flex!important;align-items:center!important;gap:7px!important;white-space:nowrap!important}
-      .f2w-live-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 7px;border:1px solid #ff3141;border-radius:999px;color:#ff3040;font-size:.62rem;font-weight:900;line-height:1;letter-spacing:.06em;background:rgba(229,9,20,.08);box-shadow:0 0 0 rgba(229,9,20,0)}
-      .f2w-live-dot{width:6px;height:6px;border-radius:50%;background:#ff2638;box-shadow:0 0 0 0 rgba(255,38,56,.65);animation:f2wLivePulseV201 1.25s ease-out infinite}
-      @keyframes f2wLivePulseV201{0%{box-shadow:0 0 0 0 rgba(255,38,56,.65);opacity:1}70%{box-shadow:0 0 0 7px rgba(255,38,56,0);opacity:.82}100%{box-shadow:0 0 0 0 rgba(255,38,56,0);opacity:1}}
+      .f2w-live-sports-link{display:inline-flex!important;align-items:center!important;gap:7px!important;white-space:nowrap!important;position:relative!important;z-index:2!important;pointer-events:auto!important}
+      .f2w-live-sports-link *{pointer-events:none!important}
+      .f2w-live-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 7px;border:1px solid #ff3141;border-radius:999px;color:#ff3040;font-size:.62rem;font-weight:900;line-height:1;letter-spacing:.06em;background:rgba(229,9,20,.08)}
+      .f2w-live-dot{width:6px;height:6px;border-radius:50%;background:#ff2638;box-shadow:0 0 0 0 rgba(255,38,56,.65);animation:f2wLivePulseV204 1.25s ease-out infinite}
+      @keyframes f2wLivePulseV204{0%{box-shadow:0 0 0 0 rgba(255,38,56,.65);opacity:1}70%{box-shadow:0 0 0 7px rgba(255,38,56,0);opacity:.82}100%{box-shadow:0 0 0 0 rgba(255,38,56,0);opacity:1}}
       @media (prefers-reduced-motion:reduce){.f2w-live-dot{animation:none}}
     `;
     document.head.appendChild(st);
   }
   document.querySelectorAll('.f2w-primary-nav').forEach(nav=>{
-    let a=nav.querySelector('a[href="/live/"],a[href="/live"],[data-f2w-live-sports]');
-    if(!a){
-      a=document.createElement('a');
-      a.className='f2w-nav-link f2w-live-sports-link';
-      a.href='/live/';
-      a.dataset.f2wLiveSports='1';
-      a.innerHTML='<span class="f2w-live-badge"><span class="f2w-live-dot" aria-hidden="true"></span>LIVE</span><span>Live Sports</span>';
-    }
-    const leaderboard=nav.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"],[data-f2w-v183-leaderboard]');
-    if(leaderboard){if(a.parentElement!==nav||a.nextElementSibling!==leaderboard)leaderboard.insertAdjacentElement('beforebegin',a)}
-    else{const genre=nav.querySelector('.f2w-genre-wrap');if(genre){if(a.parentElement!==nav||a.previousElementSibling!==genre)genre.insertAdjacentElement('afterend',a)}else if(a.parentElement!==nav)nav.appendChild(a)}
+    if(nav.querySelector('[data-f2w-live-sports],a[href="/live/"],a[href="/live"]'))return;
+    const a=document.createElement('a');
+    a.className='f2w-nav-link f2w-live-sports-link';
+    a.href='/live/'; a.dataset.f2wLiveSports='1';
+    a.innerHTML='<span class="f2w-live-badge"><span class="f2w-live-dot" aria-hidden="true"></span>LIVE</span><span>Live Sports</span>';
+    const genre=nav.querySelector('.f2w-genre-wrap');
+    if(genre) genre.insertAdjacentElement('afterend',a); else nav.appendChild(a);
   });
   document.querySelectorAll('header.topbar').forEach(bar=>{
-    if(bar.querySelector('a[href="/live/"],a[href="/live"],[data-f2w-live-sports]'))return;
-    const a=document.createElement('a');a.href='/live/';a.dataset.f2wLiveSports='1';a.className=bar.querySelector('.toplink')?'toplink f2w-live-sports-link':'top-link f2w-live-sports-link';a.innerHTML='<span class="f2w-live-badge"><span class="f2w-live-dot" aria-hidden="true"></span>LIVE</span><span>Live Sports</span>';
-    const lb=bar.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"]');if(lb)lb.insertAdjacentElement('beforebegin',a);else bar.appendChild(a);
+    if(bar.querySelector('[data-f2w-live-sports],a[href="/live/"],a[href="/live"]'))return;
+    const a=document.createElement('a'); a.href='/live/'; a.dataset.f2wLiveSports='1';
+    a.className=bar.querySelector('.toplink')?'toplink f2w-live-sports-link':'top-link f2w-live-sports-link';
+    a.innerHTML='<span class="f2w-live-badge"><span class="f2w-live-dot" aria-hidden="true"></span>LIVE</span><span>Live Sports</span>';
+    const lb=bar.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"]');
+    if(lb) lb.insertAdjacentElement('beforebegin',a); else bar.appendChild(a);
   });
 }
 function ensureLeaderboard(){
@@ -257,11 +257,8 @@ function ensureLeaderboard(){
     let a=nav.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"],[data-f2w-v183-leaderboard]');
     if(!a){a=document.createElement('a');a.className='f2w-nav-link';a.href='/leaderboard/';a.dataset.f2wV183Leaderboard='1';a.innerHTML='<i class="fa-solid fa-trophy"></i> Leaderboard'}
     const genreWrap=nav.querySelector('.f2w-genre-wrap');
-    const live=nav.querySelector('a[href="/live/"],a[href="/live"],[data-f2w-live-sports]');
+    const live=nav.querySelector('[data-f2w-live-sports],a[href="/live/"],a[href="/live"]');
     const search=nav.querySelector('.f2w-search-wrap,.header-search,.search-wrap,input[type="search"]')?.closest?.('.f2w-search-wrap,.header-search,.search-wrap')||null;
-    // Keep ordering stable: Genres -> Live Sports -> Leaderboard.  The old
-    // leaderboard repair moved itself in front of Live Sports while the live
-    // repair moved itself back again, causing the nav to visibly flash.
     if(live){if(a.parentElement!==nav||a.previousElementSibling!==live)live.insertAdjacentElement('afterend',a)}
     else if(genreWrap){if(a.parentElement!==nav||a.previousElementSibling!==genreWrap)genreWrap.insertAdjacentElement('afterend',a)}
     else if(search){if(a.parentElement!==nav||a.nextElementSibling!==search)search.insertAdjacentElement('beforebegin',a)}
@@ -271,9 +268,7 @@ function ensureLeaderboard(){
   document.querySelectorAll('header.topbar').forEach(bar=>{
     if(bar.querySelector('a[href="/leaderboard/"],a[href="/leaderboard"],[data-f2w-v183-leaderboard]'))return;
     const a=document.createElement('a');a.href='/leaderboard/';a.dataset.f2wV183Leaderboard='1';a.className=bar.querySelector('.toplink')?'toplink':'top-link';a.innerHTML='<i class="fa-solid fa-trophy"></i> Leaderboard';
-    const live=bar.querySelector('a[href="/live/"],a[href="/live"],[data-f2w-live-sports]');
-    const account=bar.querySelector('a[href="/account/"],a[href="/account"]');
-    if(live)live.insertAdjacentElement('afterend',a);else if(account)account.insertAdjacentElement('beforebegin',a);else bar.appendChild(a);
+    const account=bar.querySelector('a[href="/account/"],a[href="/account"]');if(account)account.insertAdjacentElement('beforebegin',a);else bar.appendChild(a);
   });
 }
 function viewedUsername(){try{return decodeURIComponent((location.pathname.match(/^\/profile\/@([^/?#]+)/)||[])[1]||new URLSearchParams(location.search).get('user')||'').replace(/^@/,'')}catch{return ''}}
@@ -300,7 +295,7 @@ async function syncEditProfile(){
     if(uid&&uid===String(user.id)){b.hidden=false;b.style.display='inline-flex';b.onclick=e=>{e.preventDefault();if(typeof window.f2wOpenProfileEditorV182==='function')window.f2wOpenProfileEditorV182();else setTimeout(()=>window.f2wOpenProfileEditorV182?.(),120)}}
   }catch{}
 }
-function repair(){ensureLiveSports();ensureLeaderboard();detachFromPortal();if(accountModal()&&!authOpen()&&accountModal().dataset.f2wV183==='closed')closeAuth();}
+function repair(){ensureLiveSportsOnce();ensureLeaderboard();detachFromPortal();if(accountModal()&&!authOpen()&&accountModal().dataset.f2wV183==='closed')closeAuth();}
 function queueRepair(){if(repairQueued)return;repairQueued=true;setTimeout(()=>{repairQueued=false;repair()},80)}
 function capture(e){
   const t=e.target;if(!t?.closest)return;
