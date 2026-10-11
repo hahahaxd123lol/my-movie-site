@@ -165,6 +165,22 @@ html{overflow-y:scroll}
 
   <script id="f2w-root-route-v153">
     (() => {
+      // Some static hosts serve the root shell for a direct staff-file request.
+      // Load the real staff document in place instead of redirecting to /home/.
+      if (location.pathname === '/staff/index.html') {
+        fetch('/staff/index.html', {cache:'no-cache'}).then(r => {
+          if (!r.ok) throw new Error('Staff page request failed');
+          return r.text();
+        }).then(html => {
+          if (!html.includes('id="auth-management-card"')) throw new Error('Staff page content was not returned');
+          document.open();
+          document.write(html);
+          document.close();
+        }).catch(() => {
+          document.body.innerHTML = '<main style="max-width:720px;margin:12vh auto;padding:24px;font:16px system-ui;color:#eee;background:#171717;border-radius:12px"><h1>Staff Control Panel failed to load</h1><p>The site returned the wrong page for /staff/index.html. Refresh once the site update is live.</p><a href="/staff/index.html" style="color:#8ab4ff">Retry Staff Control Panel</a></main>';
+        });
+        return;
+      }
       const profileMatch=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
       if(profileMatch){
         // Some static hosts send unknown pretty URLs to /index.html. Load the
