@@ -815,6 +815,14 @@ if(document.readyState==='loading'){
   const status=()=>document.getElementById('staff-auth-management-status');
   const val=id=>String(document.getElementById(id)?.value||'').trim();
   const say=msg=>{const el=status();if(el)el.textContent=msg;};
+  const syncPasswordButton=()=>{
+    const password=String(document.getElementById('f2w-auth-new-password')?.value||'');
+    const confirm=String(document.getElementById('f2w-auth-confirm-password')?.value||'');
+    const button=document.getElementById('f2w-auth-set-password');
+    if(button)button.disabled=!targetAuth?.user_id||password.length<12||password.length>128||!confirm||password!==confirm;
+    if(confirm&&password!==confirm)say('The password fields do not match yet.');
+    else if(confirm&&password===confirm&&password.length>=12&&password.length<=128)say('Passwords match. Ready to set the permanent password.');
+  };
   const call=async(operation,identifier,extra={})=>{
     const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_account_admin',operation,identifier,...extra}});
     if(error)throw new Error(error.message||'Account request failed.');
@@ -858,6 +866,7 @@ if(document.readyState==='loading'){
       '<div class="f2w-auth-meta"><strong>Account information</strong><div class="f2w-auth-meta-grid" id="f2w-auth-meta-grid"></div></div>'
     ].join('');
     ['f2w-auth-change-email','f2w-auth-set-password','f2w-auth-send-reset'].forEach(id=>document.getElementById(id).addEventListener('click',()=>action(id)));
+    ['f2w-auth-new-password','f2w-auth-confirm-password'].forEach(id=>document.getElementById(id).addEventListener('input',syncPasswordButton));
   }
   const txt=value=>String(value??'').trim()||'Not available';
   const date=value=>{if(!value)return 'Not available';const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleString();};
@@ -875,7 +884,8 @@ if(document.readyState==='loading'){
     ];
     const meta=document.getElementById('f2w-auth-meta-grid');
     if(meta)meta.innerHTML=fields.map(([label,value])=>'<div class="f2w-auth-meta-item"><strong>'+esc(label)+'</strong>'+esc(txt(value))+'</div>').join('');
-    ['f2w-auth-change-email','f2w-auth-set-password','f2w-auth-send-reset'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=false;});
+    ['f2w-auth-change-email','f2w-auth-send-reset'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=false;});
+    syncPasswordButton();
     const ident=document.getElementById('f2w-auth-identity');
     if(ident)ident.textContent='Username: '+(account.username?'@'+account.username:txt(account.auth_username))+' · UID: '+account.user_id+' · Current email: '+(account.email||'No email address');
   }
@@ -905,7 +915,7 @@ if(document.readyState==='loading'){
       const confirm=String(document.getElementById('f2w-auth-confirm-password')?.value||'');
       if(password.length<12||password.length>128){say('Use a password between 12 and 128 characters.');return;}
       if(password!==confirm){say('The password fields do not match.');return;}
-      operation='set_password';extra={password};title='Set permanent password?';copy='This immediately replaces the selected account password in Supabase Auth.';
+      operation='set_password';extra={password,confirm_password:confirm};title='Set permanent password?';copy='This immediately replaces the selected account password in Supabase Auth.';
     }else if(id==='f2w-auth-send-reset'){
       if(!targetAuth.email){say('This account has no current email address.');return;}
       operation='send_reset';title='Send password reset email?';copy='Supabase will send the reset link to the account current email: '+targetAuth.email+'. If you changed the email first, this uses the updated address.';
