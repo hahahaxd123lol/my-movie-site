@@ -1069,6 +1069,12 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 #staff-dialog[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
 </style>
 
+
+<style id="f2w-auth-card-visibility-guard-v1">
+/* Keep the Auth management card visible in its existing Account Moderation position. */
+#panel-users #auth-management-card{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;overflow:visible!important;content-visibility:visible!important}
+#panel-users #auth-management-card[hidden]{display:block!important;visibility:visible!important}
+</style>
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
@@ -4756,6 +4762,23 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 })();
 </script>
 
+
+<script id="f2w-auth-card-visibility-guard-script-v1">
+(()=>{
+  const revealAuthCard=()=>{
+    const card=document.getElementById('auth-management-card');
+    if(!card)return;
+    card.hidden=false;
+    card.removeAttribute('hidden');
+    for(const property of ['display','visibility','opacity','height','max-height','overflow','content-visibility']){
+      const values={display:'block',visibility:'visible',opacity:'1',height:'auto','max-height':'none',overflow:'visible','content-visibility':'visible'};
+      card.style.setProperty(property,values[property],'important');
+    }
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',revealAuthCard,{once:true});
+  else revealAuthCard();
+})();
+</script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->
