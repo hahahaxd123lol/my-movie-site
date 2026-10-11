@@ -1364,6 +1364,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div><label>AUTH USERNAME</label><input id="staff-auth-username" readonly></div>
           <div><label>CHAT ALIAS</label><input id="staff-auth-chat-alias" readonly></div>
         </div>
+        <div class="field" style="margin-top:10px"><label for="staff-auth-user-metadata">AUTH USER METADATA</label><textarea id="staff-auth-user-metadata" rows="3" readonly placeholder="No user metadata loaded"></textarea></div>
+        <div class="field" style="margin-top:8px"><label for="staff-auth-app-metadata">AUTH APP METADATA</label><textarea id="staff-auth-app-metadata" rows="3" readonly placeholder="No app metadata loaded"></textarea></div>
         <div class="row" style="margin-top:8px"><button class="btn" type="button" onclick="loadStaffAuthDetails()">Refresh Supabase Auth details</button><button class="btn" type="button" onclick="openModerationProfileEditor()">Open username / profile editor</button></div>
         <div class="field"><label for="staff-target-new-email">NEW EMAIL ADDRESS</label><input id="staff-target-new-email" type="email" autocomplete="off" placeholder="new-address@example.com"></div>
         <div class="row" style="margin-top:8px">
@@ -2454,6 +2456,8 @@ async function loadStaffAuthDetails(){
     put('staff-auth-provider',data.provider||'—');
     put('staff-auth-username',data.auth_username||'—');
     put('staff-auth-chat-alias',data.chat_alias||'—');
+    put('staff-auth-user-metadata',JSON.stringify(data.user_metadata??{},null,2));
+    put('staff-auth-app-metadata',JSON.stringify(data.app_metadata??{},null,2));
     if(status)status.textContent='Current Auth email and account details loaded.';
   }catch(e){if(status)status.textContent='Could not load Auth details: '+(e?.message||'Unknown error')}
 }
