@@ -6714,6 +6714,8 @@ if(currentUser){
     const urlParams = new URLSearchParams(window.location.search);
     const mediaId = urlParams.get('id');
     const mediaType = urlParams.get('type') || 'movie';
+    // Playback providers prefer IMDb IDs; TMDB season/episode catalog endpoints require a TMDB numeric ID.
+    let tmdbMediaId = /^\\d+$/.test(String(mediaId||'')) ? String(mediaId) : '';
     let currentServer = 'flix2watchapi';
     let currentImdbId = '';
     let tvSeasonsData = [];
@@ -6983,59 +6985,73 @@ if(currentUser){
     // Metadata is public and must start independently of authentication.
     startWatchMetadata();
 
-    function fetchMediaMetadata() {
-      const endpoint = `https://api.themoviedb.org/3/${mediaType}/${mediaId}?api_key=${API_KEY}&append_to_response=external_ids`;
-      logTerminal(`Querying TMDB for metadata payload ID: ${mediaId}...`);
+    async function fetchMediaMetadata() {
+      logTerminal(`Resolving ${mediaType.toUpperCase()} metadata for ID: ${mediaId}...`);
+      try {
+        let data=null;
+        if (/^tt\\d+$/i.test(String(mediaId||''))) {
+          // IMDb IDs cannot be passed directly to /tv/{id}; resolve them through TMDB /find first.
+          currentImdbId=String(mediaId).trim();
+          const findUrl=`https://api.themoviedb.org/3/find/${encodeURIComponent(currentImdbId)}?api_key=${API_KEY}&external_source=imdb_id`;
+          const findResponse=await fetch(findUrl,{cache:'no-store'});
+          if(!findResponse.ok)throw new Error(`TMDB IMDb lookup returned ${findResponse.status}`);
+          const found=await findResponse.json();
+          const matches=mediaType==='tv'?(found.tv_results||[]):(found.movie_results||[]);
+          const match=matches[0];
+          if(!match?.id)throw new Error(`No TMDB ${mediaType} record matched IMDb ID ${currentImdbId}`);
+          tmdbMediaId=String(match.id);
+          const detailResponse=await fetch(`https://api.themoviedb.org/3/${mediaType}/${encodeURIComponent(tmdbMediaId)}?api_key=${API_KEY}&append_to_response=external_ids`,{cache:'no-store'});
+          if(!detailResponse.ok)throw new Error(`TMDB details returned ${detailResponse.status}`);
+          data=await detailResponse.json();
+          currentImdbId=String(data?.external_ids?.imdb_id||data?.imdb_id||currentImdbId).trim();
+        } else {
+          const endpoint=`https://api.themoviedb.org/3/${mediaType}/${encodeURIComponent(tmdbMediaId||mediaId)}?api_key=${API_KEY}&append_to_response=external_ids`;
+          const response=await fetch(endpoint,{cache:'no-store'});
+          if(!response.ok)throw new Error(`TMDB metadata returned ${response.status}`);
+          data=await response.json();
+          tmdbMediaId=String(data.id||tmdbMediaId||mediaId);
+          currentImdbId=String(data?.external_ids?.imdb_id||data?.imdb_id||(/^tt\\d+$/i.test(String(mediaId||''))?mediaId:'')).trim();
+        }
 
-      fetch(endpoint)
-        .then(res => res.json())
-        .then(data => {
-          const title = data.title || data.name;
-          const releaseDate = data.release_date || data.first_air_date;
-          currentImdbId = String(data?.external_ids?.imdb_id || data?.imdb_id || '').trim();
+        const title=data.title||data.name;
+        const releaseDate=data.release_date||data.first_air_date;
+        if(!title)throw new Error('TMDB returned no title for this ID');
+        currentFavoriteTitle=title||'';
+        currentFavoritePosterPath=data.poster_path||'';
+        updateFavoriteButton();
+        saveCurrentToRecentlyViewed();
+        document.getElementById('detail-title').textContent=title;
+        document.getElementById('detail-date').innerHTML=`<i class="fa-regular fa-calendar"></i> ${releaseDate?releaseDate.split('-')[0]:'N/A'}`;
+        document.getElementById('detail-rating').innerHTML=`<i class="fa-solid fa-star"></i> ${data.vote_average?data.vote_average.toFixed(1):'NR'}`;
+        document.getElementById('detail-type').textContent=mediaType==='tv'?'TV Series Matrix':'Feature Film';
+        document.getElementById('detail-overview').textContent=data.overview||'No synopsis available.';
+        if(data.poster_path)document.getElementById('detail-poster').src=`https://image.tmdb.org/t/p/w500${data.poster_path}`;
+        window.dispatchEvent(new CustomEvent('flix2watch:media-ready',{detail:{id:mediaId,tmdbId:tmdbMediaId,type:mediaType,title:title||''}}));
 
-          currentFavoriteTitle = title || '';
-          currentFavoritePosterPath = data.poster_path || '';
-          updateFavoriteButton();
-          saveCurrentToRecentlyViewed();
-
-          document.getElementById('detail-title').textContent = title;
-          document.getElementById('detail-date').innerHTML = `<i class="fa-regular fa-calendar"></i> ${releaseDate ? releaseDate.split('-')[0] : 'N/A'}`;
-          document.getElementById('detail-rating').innerHTML = `<i class="fa-solid fa-star"></i> ${data.vote_average ? data.vote_average.toFixed(1) : 'NR'}`;
-          document.getElementById('detail-type').textContent = mediaType === 'tv' ? 'TV Series Matrix' : 'Feature Film';
-          document.getElementById('detail-overview').textContent = data.overview || 'No synopsis available.';
-
-          if (data.poster_path) {
-            document.getElementById('detail-poster').src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
-          }
-          window.dispatchEvent(new CustomEvent('flix2watch:media-ready',{detail:{id:mediaId,type:mediaType,title:title||''}}));
-
-          if (mediaType === 'tv' && data.seasons) {
-            tvSeasonsData = data.seasons.filter(s => s.season_number >= 1 && s.episode_count > 0);
-            const tvControls=document.getElementById('tv-controls');
-            tvControls.removeAttribute('hidden');
-            tvControls.setAttribute('aria-hidden','false');
-            tvControls.classList.add('active');
-            tvControls.style.setProperty('display','flex','important');
-            tvControls.style.setProperty('visibility','visible','important');
-            populateSeasons();
-          } else {
-            const tvControls=document.getElementById('tv-controls');
-            tvControls.setAttribute('hidden','');
-            tvControls.setAttribute('aria-hidden','true');
-            tvControls.classList.remove('active');
-            tvControls.style.removeProperty('display');
-            tvControls.style.removeProperty('visibility');
-            loadPlayer();
-          }
-
-          logTerminal(`Successfully parsed metadata for "${title}".`, 'success');
-        })
-        .catch(err => {
-          console.error('Metadata error:', err);
-          logTerminal('Failed to retrieve metadata properties from TMDB API.', 'info');
+        if(mediaType==='tv'&&Array.isArray(data.seasons)){
+          tvSeasonsData=data.seasons.filter(season=>Number(season.season_number)>=1&&Number(season.episode_count)>0);
+          const tvControls=document.getElementById('tv-controls');
+          tvControls?.removeAttribute('hidden');
+          tvControls?.setAttribute('aria-hidden','false');
+          tvControls?.classList.add('active');
+          tvControls?.style.setProperty('display','flex','important');
+          tvControls?.style.setProperty('visibility','visible','important');
+          populateSeasons();
+        }else{
+          const tvControls=document.getElementById('tv-controls');
+          tvControls?.setAttribute('hidden','');
+          tvControls?.setAttribute('aria-hidden','true');
+          tvControls?.classList.remove('active');
+          tvControls?.style.removeProperty('display');
+          tvControls?.style.removeProperty('visibility');
           loadPlayer();
-        });
+        }
+        logTerminal(`Successfully parsed metadata for "${title}" (TMDB ID ${tmdbMediaId}).`,'success');
+      }catch(err){
+        console.error('Metadata error:',err);
+        logTerminal(`Failed to resolve title/episode metadata: ${err?.message||err}`,'info');
+        loadPlayer();
+      }
     }
 
     function populateSeasons() {
@@ -7077,7 +7093,7 @@ if(currentUser){
       // Retry transient TMDB/network failures once; never leave the selector stuck on “Loading”.
       for(let attempt=0;attempt<2;attempt++){
         try{
-          const res=await fetch(`https://api.themoviedb.org/3/tv/${mediaId}/season/${requestedSeason}?api_key=${API_KEY}`,{cache:'no-store'});
+          const res=await fetch(`https://api.themoviedb.org/3/tv/${encodeURIComponent(tmdbMediaId||mediaId)}/season/${requestedSeason}?api_key=${API_KEY}`,{cache:'no-store'});
           if(!res.ok)throw new Error(`TMDB returned ${res.status}`);
           data=await res.json();
           if(!Array.isArray(data.episodes))throw new Error('TMDB response did not contain an episodes list');
