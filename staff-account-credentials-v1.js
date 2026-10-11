@@ -87,7 +87,23 @@ async function invokeAuth(operation,identifier,extras={}){
  const {data,error}=await db.functions.invoke('rapid-worker',{body});
  if(error){
   let detail=error.message||'Supabase Auth request failed.';
-  try{const response=error.context;if(response&&typeof response.clone==='function'){const payload=await response.clone().json();if(payload?.error||payload?.message)detail=payload.error||payload.message}}catch{}
+  try{
+   const response=error.context;
+   if(response&&typeof response.clone==='function'){
+    const statusCode=response.status;
+    let bodyText='';
+    try{
+     const payload=await response.clone().json();
+     if(payload?.error||payload?.message)bodyText=String(payload.error||payload.message);
+     else bodyText=JSON.stringify(payload);
+    }catch{
+     try{bodyText=(await response.clone().text()).slice(0,1200)}catch{}
+    }
+    detail=(bodyText||detail)+(statusCode?' (HTTP '+statusCode+')':'');
+   }else if(response&&typeof response==='object'){
+    detail=String(response.message||response.error||detail);
+   }
+  }catch{}
   throw new Error(detail);
  }
  if(!data?.success)throw new Error(data?.error||'Supabase Auth request failed.');
