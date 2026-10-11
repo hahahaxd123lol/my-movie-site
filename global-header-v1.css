@@ -2634,3 +2634,101 @@ body.f2w-main-page>header #notification-menu,
 .f2w-v125-notification small{display:block!important;margin-top:7px!important;color:#60778f!important;font-size:.62rem!important}
 /* f2w-force-save:notifications-css-v125:1788300576 */
  
+
+/* F2W mobile navigation repair: readable two-column action buttons below search. */
+@media (max-width:1180px) {
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster {
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    grid-auto-flow:row !important;
+    grid-auto-rows:minmax(46px,auto) !important;
+    align-items:stretch !important;
+    justify-content:stretch !important;
+    gap:10px !important;
+    column-gap:10px !important;
+    row-gap:10px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    flex:0 0 auto !important;
+    overflow:visible !important;
+    margin:0 !important;
+  }
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > .chat-button,
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #header-login-btn,
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #header-signup-btn,
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #favorites-nav-btn,
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #profile-nav-btn,
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #support-nav-btn,
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #account-btn,
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #notification-wrap,
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #staff-control-nav {
+    grid-column:auto !important;
+    grid-row:auto !important;
+    justify-self:stretch !important;
+    align-self:stretch !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    min-height:48px !important;
+    height:auto !important;
+    box-sizing:border-box !important;
+    margin:0 !important;
+    padding:10px 8px !important;
+    font-size:14px !important;
+    line-height:1.25 !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+    text-align:center !important;
+    justify-content:center !important;
+    align-items:center !important;
+    transform:none !important;
+    translate:none !important;
+  }
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #notification-wrap {
+    display:block !important;
+  }
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #notification-wrap > #notification-btn {
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    min-height:48px !important;
+    height:100% !important;
+    padding:8px 6px !important;
+    gap:6px !important;
+    justify-content:center !important;
+    white-space:normal !important;
+    font-size:14px !important;
+  }
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #notification-wrap .v17-notification-menu {
+    position:fixed !important;
+    left:12px !important;
+    right:12px !important;
+    top:72px !important;
+    width:auto !important;
+    max-width:none !important;
+  }
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-action-cluster > #staff-control-nav {
+    grid-column:1 / -1 !important;
+  }
+}
+@media (max-width:620px) {
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-search-pair {
+    grid-template-columns:minmax(0,1fr) !important;
+    gap:8px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    flex:0 0 auto !important;
+  }
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-search-pair .search-container,
+  body.f2w-main-page > header > .header-tools.mobile-open .f2w-search-pair .user-search-container {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+}
