@@ -1368,7 +1368,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <button class="btn" type="button" onclick="runStaffAuthAction('send_password_reset')"><i class="fa-solid fa-envelope"></i> Email password reset link</button>
           <button class="btn primary" type="button" onclick="runStaffAuthAction('change_email')"><i class="fa-solid fa-at"></i> Change email</button>
         </div>
-        <div class="field" style="margin-top:12px"><label for="staff-target-new-password">NEW PASSWORD (12+ CHARACTERS)</label><input id="staff-target-new-password" type="password" autocomplete="new-password" minlength="12" placeholder="Enter a temporary password"></div>
+        <div class="field" style="margin-top:12px"><label for="staff-target-new-password">NEW PASSWORD (12–128 CHARACTERS)</label><input id="staff-target-new-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="Enter a new password"></div>
+        <div class="field" style="margin-top:8px"><label for="staff-target-confirm-password">CONFIRM NEW PASSWORD</label><input id="staff-target-confirm-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="Re-enter the new password"></div>
         <div class="row" style="margin-top:8px"><button class="btn danger" type="button" onclick="runStaffAuthAction('change_password')"><i class="fa-solid fa-lock"></i> Set new password</button></div>
         <div class="moderation-status" id="staff-auth-management-status" role="status" aria-live="polite">Load an account to manage its login details.</div>
       </div>
@@ -2480,7 +2481,9 @@ async function runStaffAuthAction(operation){
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){if(status)status.textContent='Enter a valid new email address.';return;}
   }else if(operation==='change_password'){
     newPassword=String(document.getElementById('staff-target-new-password')?.value||'');
-    if(newPassword.length<12){if(status)status.textContent='Use a password with at least 12 characters.';return;}
+    const confirmPassword=String(document.getElementById('staff-target-confirm-password')?.value||'');
+    if(newPassword.length<12||newPassword.length>128){if(status)status.textContent='Use a password with 12–128 characters.';return;}
+    if(newPassword!==confirmPassword){if(status)status.textContent='The new password and confirmation do not match.';return;}
   }
   const labels={send_password_reset:'Send password reset link',change_email:'Change email address',change_password:'Set new password'};
   const confirmed=await staffConfirm({title:labels[operation]||'Confirm account action',copy:'Apply this login change to @'+targetName+'? This action affects the target account.',confirmText:'Confirm'});
@@ -2490,8 +2493,8 @@ async function runStaffAuthAction(operation){
     const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_auth_manage',operation,target_user_id:targetId,new_email:newEmail,new_password:newPassword}});
     if(error)throw error;
     if(!data?.success)throw new Error(data?.error||'The server could not complete the action.');
-    if(operation==='change_password'){const input=document.getElementById('staff-target-new-password');if(input)input.value='';}
-    if(operation==='change_email'){const input=document.getElementById('staff-target-new-email');if(input)input.value='';}
+    if(operation==='change_password'){const input=document.getElementById('staff-target-new-password');if(input)input.value='';const confirm=document.getElementById('staff-target-confirm-password');if(confirm)confirm.value='';}
+    if(operation==='change_email'){const input=document.getElementById('staff-target-new-email');if(input)input.value='';await loadStaffAuthDetails();}
     if(status)status.textContent=data.message||'Account action completed.';
     toast(data.message||'Account action completed.');
   }catch(e){
