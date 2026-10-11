@@ -820,6 +820,9 @@ html{overflow-y:scroll}
     let f2wLastCloudResumeSave=0;
     function f2wResumeSuffix(type=mediaType,s=1,e=1){return type==='tv'?`_s${Number(s||1)}e${Number(e||1)}`:'';}
     function f2wResumeKey(type=mediaType,s=1,e=1){return `f2w_resume_${type}_${mediaId}${f2wResumeSuffix(type,s,e)}`;}
+    function f2wLastEpisodeKey(){return `f2w_resume_tv_${mediaId}_last_episode`;}
+    function f2wRememberTvEpisode(s,e){if(mediaType!=='tv')return;try{localStorage.setItem(f2wLastEpisodeKey(),JSON.stringify({season:Number(s||1),episode:Number(e||1),updatedAt:Date.now()}));}catch{}}
+    function f2wReadLastTvEpisode(){if(mediaType!=='tv')return null;try{const v=JSON.parse(localStorage.getItem(f2wLastEpisodeKey())||'null');return v&&Number(v.season)>0&&Number(v.episode)>0?v:null;}catch{return null;}}
     function f2wFmtResume(sec){sec=Math.max(0,Number(sec||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60);return h?`${h}h ${m}m`:`${m}m`;}
     function f2wShowResumePrompt(seconds){
       if(window.__f2wResumePromptShown||seconds<30)return;
@@ -840,15 +843,22 @@ html{overflow-y:scroll}
     }
     async function f2wLoadCloudResume(){
       if(f2wCloudResumeLoaded||!mediaId)return;
-      f2wCloudResumeLoaded=true;
       const routeResume=Number(new URLSearchParams(window.location.search).get('resume')||0);
-      if(Number.isFinite(routeResume)&&routeResume>10){window.__f2wCloudResumeSeconds=routeResume;return;}
+      if(Number.isFinite(routeResume)&&routeResume>10){f2wCloudResumeLoaded=true;window.__f2wCloudResumeSeconds=routeResume;return;}
+      const seasonEl=document.getElementById('season-select'),episodeEl=document.getElementById('episode-select');
+      // TV selectors are populated asynchronously from TMDB. Wait until the
+      // saved episode has been restored before asking the cloud for that episode.
+      if(mediaType==='tv'&&(!seasonEl?.options?.length||!episodeEl?.options?.length))return;
+      f2wCloudResumeLoaded=true;
+      const s=Number(seasonEl?.value||1),e=Number(episodeEl?.value||1);
+      let localSec=0;
+      try{localSec=Number(localStorage.getItem(f2wResumeKey(mediaType,s,e))||0);}catch{}
+      if(localSec>10){window.__f2wCloudResumeSeconds=localSec;f2wShowResumePrompt(localSec);}
       try{
         const {data:{session}}=await chatSupabase.auth.getSession();if(!session?.user)return;
-        const s=Number(document.getElementById('season-select')?.value||1),e=Number(document.getElementById('episode-select')?.value||1);
         const {data,error}=await chatSupabase.rpc('get_my_playback_progress_v132',{p_media_type:mediaType,p_media_id:Number(mediaId),p_season:s,p_episode:e});
         if(error)throw error;const row=Array.isArray(data)?data[0]:data;const sec=Number(row?.position_seconds||0);
-        if(sec>10){window.__f2wCloudResumeSeconds=sec;try{localStorage.setItem(f2wResumeKey(mediaType,s,e),String(sec));}catch{} f2wShowResumePrompt(sec);}
+        if(sec>10){window.__f2wCloudResumeSeconds=Math.max(sec,localSec);try{localStorage.setItem(f2wResumeKey(mediaType,s,e),String(Math.max(sec,localSec)));}catch{} if(localSec<=10)f2wShowResumePrompt(sec);}
       }catch(err){console.warn('Cloud resume unavailable:',err?.message||err);}
     }
     function f2wQueueCloudResumeSave(seconds,duration,status,s=1,e=1){
@@ -900,6 +910,7 @@ html{overflow-y:scroll}
         const key = f2wResumeKey(eventType, s, e);
         if (status === 'playing' || status === 'paused' || status === 'seeked') {
           try { localStorage.setItem(key, String(Math.floor(progress))); } catch (_) {}
+          f2wRememberTvEpisode(s,e);
           window.__f2wCloudResumeSeconds = progress;
         } else if (status === 'completed') {
           try { localStorage.removeItem(key); } catch (_) {}
@@ -6988,7 +6999,9 @@ if(currentUser){
 
       if (tvSeasonsData.length > 0) {
         const requestedSeason = Number(urlParams.get('season') || 0);
-        const initialSeason = tvSeasonsData.find(season => Number(season.season_number) === requestedSeason) || tvSeasonsData[0];
+        const lastEpisode = f2wReadLastTvEpisode();
+        const preferredSeason = requestedSeason || (!urlParams.get('episode') && lastEpisode ? Number(lastEpisode.season) : 0);
+        const initialSeason = tvSeasonsData.find(season => Number(season.season_number) === preferredSeason) || tvSeasonsData[0];
         seasonSelect.value = String(initialSeason.season_number);
         fetchEpisodes(initialSeason.season_number);
       }
@@ -7024,12 +7037,16 @@ if(currentUser){
           if (!window.__f2wContinueWatchingEpisodeApplied) {
             const requestedSeason = Number(urlParams.get('season') || 0);
             const requestedEpisode = Number(urlParams.get('episode') || 0);
-            if (requestedSeason > 0 && requestedEpisode > 0 && Number(seasonNumber) === requestedSeason &&
-                [...episodeSelect.options].some(opt => Number(opt.value) === requestedEpisode)) {
-              episodeSelect.value = String(requestedEpisode);
+            const lastEpisode = f2wReadLastTvEpisode();
+            const preferredEpisode = requestedSeason > 0 && requestedEpisode > 0
+              ? requestedEpisode
+              : (!requestedSeason && !requestedEpisode && lastEpisode && Number(lastEpisode.season) === Number(seasonNumber) ? Number(lastEpisode.episode) : 0);
+            if (preferredEpisode > 0 && [...episodeSelect.options].some(opt => Number(opt.value) === preferredEpisode)) {
+              episodeSelect.value = String(preferredEpisode);
               window.__f2wContinueWatchingEpisodeApplied = true;
             }
           }
+          f2wLoadCloudResume();
           loadPlayer();
         })
         .catch(err => {
@@ -7314,6 +7331,7 @@ if(currentUser){
       try {
         if (status === 'playing' || status === 'paused' || status === 'seeked') {
           localStorage.setItem(key, String(progress));
+          f2wRememberTvEpisode(s,e);
           window.__f2wCloudResumeSeconds = progress;
         } else if (status === 'completed') {
           localStorage.removeItem(key);
