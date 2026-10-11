@@ -963,3 +963,18 @@ if(document.readyState==='loading'){
   window.f2wReloadStaffAuthAccount=()=>load(currentSnapshot?.profile?.user_id||val('user-target'));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderShell,{once:true});else renderShell();
 })();
+
+
+/* Staff Control Panel route: use the explicit static file path. */
+(()=>{
+  'use strict';
+  if(window.__f2wStaffControlPanelRouteV1)return;
+  window.__f2wStaffControlPanelRouteV1=true;
+  document.addEventListener('click',event=>{
+    const button=event.target?.closest?.('#staff-control-nav');
+    if(!button)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    window.location.assign('/staff/index.html');
+  },true);
+})();
