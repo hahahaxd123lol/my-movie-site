@@ -7218,11 +7218,6 @@ if(currentUser){
       if(starting) starting.style.display=(currentServer==='flix2watchapi')?'flex':'none';
       iframe.src = embedUrl;
       if(currentServer==='flix2watchapi'){
-        iframe.addEventListener('load',()=>{
-          forceFlix2WatchSubtitlesOff();
-          setTimeout(forceFlix2WatchSubtitlesOff,250);
-          setTimeout(forceFlix2WatchSubtitlesOff,900);
-        },{once:true});
         // Keep the animated startup cover visible until the player reports
         // actual playback, instead of exposing the provider's black boot frame.
         // A fallback removes it if that provider event is unavailable.
@@ -7231,25 +7226,6 @@ if(currentUser){
       }
       const targetLabel = mediaType === 'tv' ? `S${seasonNum}E${episodeNum}` : 'Movie';
       logTerminal(`Stream routed via ${currentServer.toUpperCase()} [${targetLabel}].`, 'success');
-    }
-
-    function forceFlix2WatchSubtitlesOff(){
-      if(currentServer!=='flix2watchapi')return;
-      const frame=document.getElementById('video-frame');
-      const w=frame?.contentWindow;
-      if(!w)return;
-      const target='https://player.flix2watch.com';
-      // The provider does not document a dedicated subtitle-off query flag.
-      // Send the common disable command shapes as a best-effort fallback; unknown
-      // messages are ignored by the iframe. The URL also uses ds_lang=off.
-      const commands=[
-        {type:'PLAYER_COMMAND',action:'subtitles',value:'off'},
-        {type:'PLAYER_COMMAND',command:'subtitles',value:false},
-        {type:'PLAYER_COMMAND',command:'subtitle',value:'off'},
-        {type:'PLAYER_COMMAND',action:'captions',value:false},
-        {type:'PLAYER_COMMAND',command:'cc',value:false}
-      ];
-      for(const msg of commands){try{w.postMessage(msg,target)}catch{}}
     }
 
     function switchServer(serverName, btnElement) {
