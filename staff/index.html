@@ -2490,7 +2490,7 @@ async function runStaffAuthAction(operation){
   if(!confirmed)return;
   if(status)status.textContent='Applying action…';
   try{
-    const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_auth_manage',operation,target_user_id:targetId,new_email:newEmail,new_password:newPassword}});
+    const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_auth_manage',operation,target_user_id:targetId,new_email:newEmail,new_password:newPassword,confirm_password:document.getElementById('staff-target-confirm-password')?.value||''}});
     if(error)throw error;
     if(!data?.success)throw new Error(data?.error||'The server could not complete the action.');
     if(operation==='change_password'){const input=document.getElementById('staff-target-new-password');if(input)input.value='';const confirm=document.getElementById('staff-target-confirm-password');if(confirm)confirm.value='';}
