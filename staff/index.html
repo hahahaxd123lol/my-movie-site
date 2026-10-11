@@ -1325,32 +1325,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     </section>
 
     <section class="panel" id="panel-users">
-      <div class="card" id="auth-management-card" style="display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2!important;">
-        <div class="card-head"><strong><i class="fa-solid fa-key"></i> Account email & password</strong><span>Staff permission required</span></div>
-        <div class="notice">These actions use the authenticated server-side admin API. Password reset sends a link to the account's current email.</div>
-        <div class="staff-profile-edit-grid" style="margin-top:10px">
-          <div><label>ACCOUNT UUID</label><input id="staff-auth-user-id" readonly></div>
-          <div><label>CURRENT SUPABASE EMAIL</label><input id="staff-auth-current-email" readonly placeholder="Load an account first"></div>
-          <div><label>EMAIL CONFIRMED</label><input id="staff-auth-email-confirmed" readonly></div>
-          <div><label>ACCOUNT CREATED</label><input id="staff-auth-created-at" readonly></div>
-          <div><label>LAST SIGN-IN</label><input id="staff-auth-last-sign-in" readonly></div>
-          <div><label>AUTH PROVIDER</label><input id="staff-auth-provider" readonly></div>
-          <div><label>AUTH USERNAME</label><input id="staff-auth-username" readonly></div>
-          <div><label>CHAT ALIAS</label><input id="staff-auth-chat-alias" readonly></div>
-        </div>
-        <div class="field" style="margin-top:10px"><label for="staff-auth-user-metadata">AUTH USER METADATA</label><textarea id="staff-auth-user-metadata" rows="3" readonly placeholder="No user metadata loaded"></textarea></div>
-        <div class="field" style="margin-top:8px"><label for="staff-auth-app-metadata">AUTH APP METADATA</label><textarea id="staff-auth-app-metadata" rows="3" readonly placeholder="No app metadata loaded"></textarea></div>
-        <div class="row" style="margin-top:8px"><button class="btn" type="button" onclick="loadStaffAuthDetails()">Refresh Supabase Auth details</button><button class="btn" type="button" onclick="openModerationProfileEditor()">Open username / profile editor</button></div>
-        <div class="field"><label for="staff-target-new-email">NEW EMAIL ADDRESS</label><input id="staff-target-new-email" type="email" autocomplete="off" placeholder="new-address@example.com"></div>
-        <div class="row" style="margin-top:8px">
-          <button class="btn" type="button" onclick="runStaffAuthAction('send_password_reset')"><i class="fa-solid fa-envelope"></i> Email password reset link</button>
-          <button class="btn primary" type="button" onclick="runStaffAuthAction('change_email')"><i class="fa-solid fa-at"></i> Change email</button>
-        </div>
-        <div class="field" style="margin-top:12px"><label for="staff-target-new-password">NEW PASSWORD (12–128 CHARACTERS)</label><input id="staff-target-new-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="Enter a new password"></div>
-        <div class="field" style="margin-top:8px"><label for="staff-target-confirm-password">CONFIRM NEW PASSWORD</label><input id="staff-target-confirm-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required aria-describedby="staff-password-confirm-help" placeholder="Re-enter the new password"><small id="staff-password-confirm-help" class="muted">Both password entries must match before the change can be applied.</small></div>
-        <div class="row" style="margin-top:8px"><button class="btn danger" type="button" onclick="runStaffAuthAction('change_password')"><i class="fa-solid fa-lock"></i> Set new password</button></div>
-        <div class="moderation-status" id="staff-auth-management-status" role="status" aria-live="polite">Load an account to manage its login details.</div>
-      </div>
+
 
       <div class="permission-banner" id="role-backend-note"><strong>Role access note:</strong> this page can scope the interface for Moderator / Support / Developer accounts, but your current Supabase Staff RPC layer still decides whether an action is authorized.</div>
       
@@ -1379,6 +1354,32 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         </div>
       </div>
 
+      <div class="card" id="auth-management-card" style="display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2!important;">
+        <div class="card-head"><strong><i class="fa-solid fa-key"></i> Account email & password</strong><span>Staff permission required</span></div>
+        <div class="notice">These actions use the authenticated server-side admin API. Password reset sends a link to the account's current email.</div>
+        <div class="staff-profile-edit-grid" style="margin-top:10px">
+          <div><label>ACCOUNT UUID</label><input id="staff-auth-user-id" readonly></div>
+          <div><label>CURRENT SUPABASE EMAIL</label><input id="staff-auth-current-email" readonly placeholder="Load an account first"></div>
+          <div><label>EMAIL CONFIRMED</label><input id="staff-auth-email-confirmed" readonly></div>
+          <div><label>ACCOUNT CREATED</label><input id="staff-auth-created-at" readonly></div>
+          <div><label>LAST SIGN-IN</label><input id="staff-auth-last-sign-in" readonly></div>
+          <div><label>AUTH PROVIDER</label><input id="staff-auth-provider" readonly></div>
+          <div><label>AUTH USERNAME</label><input id="staff-auth-username" readonly></div>
+          <div><label>CHAT ALIAS</label><input id="staff-auth-chat-alias" readonly></div>
+        </div>
+        <div class="field" style="margin-top:10px"><label for="staff-auth-user-metadata">AUTH USER METADATA</label><textarea id="staff-auth-user-metadata" rows="3" readonly placeholder="No user metadata loaded"></textarea></div>
+        <div class="field" style="margin-top:8px"><label for="staff-auth-app-metadata">AUTH APP METADATA</label><textarea id="staff-auth-app-metadata" rows="3" readonly placeholder="No app metadata loaded"></textarea></div>
+        <div class="row" style="margin-top:8px"><button class="btn" type="button" onclick="loadStaffAuthDetails()">Refresh Supabase Auth details</button><button class="btn" type="button" onclick="openModerationProfileEditor()">Open username / profile editor</button></div>
+        <div class="field"><label for="staff-target-new-email">NEW EMAIL ADDRESS</label><input id="staff-target-new-email" type="email" autocomplete="off" placeholder="new-address@example.com"></div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" type="button" onclick="runStaffAuthAction('send_password_reset')"><i class="fa-solid fa-envelope"></i> Email password reset link</button>
+          <button class="btn primary" type="button" onclick="runStaffAuthAction('change_email')"><i class="fa-solid fa-at"></i> Change email</button>
+        </div>
+        <div class="field" style="margin-top:12px"><label for="staff-target-new-password">NEW PASSWORD (12–128 CHARACTERS)</label><input id="staff-target-new-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="Enter a new password"></div>
+        <div class="field" style="margin-top:8px"><label for="staff-target-confirm-password">CONFIRM NEW PASSWORD</label><input id="staff-target-confirm-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required aria-describedby="staff-password-confirm-help" placeholder="Re-enter the new password"><small id="staff-password-confirm-help" class="muted">Both password entries must match before the change can be applied.</small></div>
+        <div class="row" style="margin-top:8px"><button class="btn danger" type="button" onclick="runStaffAuthAction('change_password')"><i class="fa-solid fa-lock"></i> Set new password</button></div>
+        <div class="moderation-status" id="staff-auth-management-status" role="status" aria-live="polite">Load an account to manage its login details.</div>
+      </div>
       
       <div class="card" id="user-snapshot" hidden></div>
       
