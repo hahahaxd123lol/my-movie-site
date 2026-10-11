@@ -2288,6 +2288,10 @@ Deno.serve(async (request: Request) => {
           auth_username: typeof authMetadata.username === "string" ? authMetadata.username : "",
           chat_alias: typeof authMetadata.chat_alias === "string" ? authMetadata.chat_alias : "",
           provider: typeof authUser.app_metadata?.provider === "string" ? authUser.app_metadata.provider : "",
+          // Include the complete metadata objects for owner-only account inspection,
+          // while keeping the commonly used fields above convenient for the UI.
+          user_metadata: authMetadata,
+          app_metadata: authUser.app_metadata ?? {},
         });
       }
       if (operation === "send_password_reset") {
