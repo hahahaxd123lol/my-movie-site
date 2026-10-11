@@ -261,6 +261,31 @@
       system:'fa-bell'
     }[type]||'fa-bell';
   }
+  function normalizeNotificationLink(value){
+    const raw=String(value||'').trim();if(!raw||raw==='#')return '';
+    try{
+      const u=new URL(raw,location.origin);if(u.origin!==location.origin)return raw;
+      if(u.pathname==='/profile/'||u.pathname==='/profile'){
+        const name=String(u.searchParams.get('user')||'').trim().replace(/^@+/,'');
+        if(/^[A-Za-z0-9]+$/.test(name))return '/profile/@'+encodeURIComponent(name);
+      }
+      const m=u.pathname.match(new RegExp('^/profile/@?([A-Za-z0-9]+)/?$','i'));
+      if(m)return '/profile/@'+encodeURIComponent(m[1])+u.hash;
+      return u.pathname+u.search+u.hash;
+    }catch{return raw}
+  }
+  function uniqueNotificationRows(input){
+    const ordered=[...(Array.isArray(input)?input:[])].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+    const output=[],ids=new Set(),recent=new Map();
+    for(const row of ordered){
+      const id=String(row?.id||'');if(id&&ids.has(id))continue;if(id)ids.add(id);
+      const key=[row?.notification_type||'system',row?.actor_user_id||row?.actor_username||'',row?.title||'',row?.body||'',normalizeNotificationLink(row?.link||'')].join('|').toLowerCase();
+      const stamp=new Date(row?.created_at||0).getTime()||0,previous=recent.get(key)||[];
+      if(previous.some(t=>Math.abs(t-stamp)<=6000))continue;
+      previous.push(stamp);recent.set(key,previous);output.push({...row,link:normalizeNotificationLink(row?.link)});
+    }
+    return output;
+  }
 
   async function loadNotifications(){
     const client=getClient();
@@ -279,7 +304,7 @@
       const {data,error}=await client.rpc('get_my_notifications',{p_limit:50});
       if(error)throw error;
 
-      const rows=Array.isArray(data)?data:[];
+      const rows=uniqueNotificationRows(Array.isArray(data)?data:[]);
       const unread=rows.filter(row=>!row.read_at).length;
 
       if(count){
@@ -299,7 +324,7 @@
           class="v17-notification-item ${row.read_at?'':'unread'}"
           type="button"
           data-id="${escapeHTML(row.id)}"
-          data-link="${escapeHTML(row.link||'')}"
+          data-link="${escapeHTML(normalizeNotificationLink(row.link)||(row.notification_type==='follow'&&row.actor_username?'/profile/@'+encodeURIComponent(String(row.actor_username).replace(/^@+/,'')):'')||'')}"
           data-type="${escapeHTML(row.notification_type||'system')}"
           data-actor="${escapeHTML(row.actor_username||'')}"
         >
@@ -335,28 +360,31 @@
   }
 
   async function markNotificationRead(id){
-    const client=getClient();
-    if(!client||!id)return;
+    const client=getClient();if(!client||!id)return;
+    let saved=false;
     try{
-      await client.rpc('mark_notification_read',{p_notification_id:id});
+      const result=await client.from('user_notifications').update({read_at:new Date().toISOString()})
+        .eq('id',id).eq('user_id',v17SessionUser?.id||'').is('read_at',null);
+      if(!result?.error)saved=true;
     }catch{}
+    if(!saved){try{await client.rpc('mark_notification_read',{p_notification_id:id})}catch{}}
     loadNotifications();
   }
 
   window.toggleNotifications=function(event){
-    event?.stopPropagation?.();
-    const menu=document.getElementById('notification-menu');
+    event?.preventDefault?.();event?.stopPropagation?.();
+    const menu=document.getElementById('notification-menu'),button=document.getElementById('notification-btn');
     if(!menu)return;
-    menu.hidden=!menu.hidden;
+    menu.hidden=!menu.hidden;menu.setAttribute('aria-hidden',String(menu.hidden));
+    button?.setAttribute('aria-expanded',String(!menu.hidden));
     if(!menu.hidden)loadNotifications();
   };
 
   window.markAllNotificationsRead=async function(){
-    const client=getClient();
-    if(!client)return;
-    try{
-      await client.rpc('mark_all_notifications_read');
-    }catch{}
+    const client=getClient();if(!client||!v17SessionUser?.id)return;
+    let saved=false;
+    try{const result=await client.from('user_notifications').update({read_at:new Date().toISOString()}).eq('user_id',v17SessionUser.id).is('read_at',null);if(!result?.error)saved=true}catch{}
+    if(!saved){for(const fn of ['mark_my_notifications_read_v181','mark_all_notifications_read']){try{const result=await client.rpc(fn);if(!result?.error){saved=true;break}}catch{}}}
     loadNotifications();
   };
 
@@ -752,6 +780,10 @@
   }
 
   function boot(){
+    const button=document.getElementById('notification-btn');
+    if(button){button.onclick=window.toggleNotifications;button.setAttribute('aria-haspopup','true');button.setAttribute('aria-expanded','false')}
+    const head=document.querySelector('#notification-menu .v17-notification-head');
+    if(head&&!head.querySelector('.f2w-notification-view-all-v182')){const link=document.createElement('a');link.className='f2w-notification-view-all-v182';link.href='/notifications/';link.textContent='View all';head.appendChild(link)}
     applyExactThemeLogo(currentTheme());
     wrapPublicChatOpen();
     installDmEnter();
@@ -783,10 +815,16 @@
 
   document.addEventListener('click',event=>{
     if(!event.target.closest('.v17-notification-wrap')){
-      const menu=document.getElementById('notification-menu');
-      if(menu)menu.hidden=true;
+      const menu=document.getElementById('notification-menu'),button=document.getElementById('notification-btn');
+      if(menu){menu.hidden=true;menu.setAttribute('aria-hidden','true')}
+      button?.setAttribute('aria-expanded','false');
     }
   });
+  document.addEventListener('keydown',event=>{
+    if(event.key!=='Escape')return;
+    const menu=document.getElementById('notification-menu'),button=document.getElementById('notification-btn');
+    if(menu&&!menu.hidden){menu.hidden=true;menu.setAttribute('aria-hidden','true');button?.setAttribute('aria-expanded','false');button?.focus?.()}
+  },true);
 
   window.addEventListener('storage',event=>{
     if(event.key==='flix2watch_theme'||event.key==='josh_site_theme'){

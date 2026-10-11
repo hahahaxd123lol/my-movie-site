@@ -54,7 +54,17 @@
   <!-- /Flix2Watch SEO / social authority v214 -->
 <link rel="icon" href="/favicon-v16.ico"><link rel="preconnect" href="https://viqufxlcxwgboyxbdhjb.supabase.co" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link rel="stylesheet" href="/v154-global-ui.css?v=171"><link rel="stylesheet" href="/v165-enforcement.css?v=171"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/v160-bootstrap.js?v=205-live-sports-sitewide"></script><style>
 :root{--bg:#030814;--panel:#071525;--line:#263c54;--muted:#8da0b6;--red:#ff1738;--red2:#b80722}*{box-sizing:border-box}html{background:var(--bg);color-scheme:dark}body{margin:0;min-height:100vh;background:radial-gradient(circle at 85% 0,rgba(255,23,56,.12),transparent 31%),var(--bg);color:#fff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.topbar{height:74px;display:flex;align-items:center;gap:14px;padding:0 clamp(16px,4vw,56px);border-bottom:1px solid #1b2d41;background:rgba(3,8,20,.94);position:sticky;top:0;z-index:20}.logo img{width:146px;display:block}.spacer{flex:1}.toplink{height:40px;padding:0 14px;display:inline-flex;align-items:center;gap:8px;border:1px solid #30445b;border-radius:10px;background:#081727;color:#fff;text-decoration:none;font:900 .78rem/1 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(900px,calc(100% - 28px));margin:38px auto 80px}.eyebrow{color:var(--red);font-size:.7rem;font-weight:950;letter-spacing:.15em;text-transform:uppercase}.title{margin:7px 0 8px;font-size:clamp(2.2rem,6vw,4rem);line-height:1;font-weight:950;letter-spacing:-.04em}.sub{color:var(--muted);line-height:1.55}.card{margin-top:24px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#09192b,#06111f);box-shadow:0 28px 80px rgba(0,0,0,.26);overflow:hidden}.head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #20344a}.head strong{font-size:1rem}.head .spacer{flex:1}.mark{border:1px solid #ff3b52;border-radius:10px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;padding:9px 12px;font:900 .82rem/1 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}.mark:disabled{opacity:.65;cursor:wait}.list{min-height:180px}.note{display:block;padding:15px 18px;border-bottom:1px solid #17283a;color:#eef5fc;text-decoration:none;background:#071320}.note.unread{background:linear-gradient(90deg,rgba(239,18,42,.13),#071320 55%)}.note:hover{background:#0b1b2d}.note strong,.note span,.note small{display:block}.note span{margin-top:4px;color:#bac8d8;line-height:1.45}.note small{margin-top:7px;color:#72869b}.empty,.loading,.error{padding:36px 18px;text-align:center;color:var(--muted)}.error{color:#ff9aaa}.badge{min-width:24px;height:24px;padding:0 7px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:#e50920;color:#fff;font-size:.72rem;font-weight:950}.badge[hidden]{display:none}.retry{margin-top:12px}.spinner{display:inline-block;width:22px;height:22px;border:2px solid #29425c;border-top-color:var(--red);border-radius:50%;animation:s .7s linear infinite}.pager{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;border-top:1px solid #20344a}.pager[hidden]{display:none}.page-btn{min-width:38px;height:36px;border:1px solid #30445b;border-radius:9px;background:#081727;color:#fff;font:800 .78rem/1 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}.page-btn.active{background:#e50920;border-color:#ff3851}.page-btn:disabled{opacity:.42;cursor:default}.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);padding:11px 16px;border:1px solid #2d5e45;border-radius:10px;background:#0a2418;color:#caffdf;font:800 .82rem/1.2 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;opacity:0;pointer-events:none;transition:.2s;z-index:1000}.toast.show{opacity:1;transform:translate(-50%,0)}@keyframes s{to{transform:rotate(360deg)}}@media(max-width:650px){.logo img{width:126px}.topbar{height:66px;padding:0 14px}.shell{margin-top:24px}.head{align-items:flex-start;flex-wrap:wrap}.mark{width:100%}}
-</style><link rel="stylesheet" href="/page-transitions-v135.css?v=183-20260902"><link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"></head><body><header class="topbar"><a class="logo" href="/home/"><img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch"></a><div class="spacer"></div><a class="toplink" href="/home/"><i class="fa-solid fa-house"></i> Home</a><a class="toplink" href="/account/"><i class="fa-solid fa-user"></i> Account</a></header><main class="shell"><div class="eyebrow">Flix2Watch</div><h1 class="title">Notifications</h1><div class="sub">Your account notifications in one place. New notifications appear here automatically.</div><section class="card"><div class="head"><strong>Notifications</strong><span class="badge" id="unread-badge" hidden>0</span><div class="spacer"></div><button class="mark" id="mark-read" type="button">Mark all read</button></div><div class="list" id="notification-page-list"><div class="loading"><span class="spinner"></span><br><br>Loading notifications…</div></div><nav class="pager" id="notification-pager" aria-label="Notification pages" hidden></nav></section></main><div class="toast" id="notification-toast" role="status" aria-live="polite"></div><script>
+</style><link rel="stylesheet" href="/page-transitions-v135.css?v=183-20260902"><link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"><style id="f2w-notifications-polish-v182">
+.head{background:linear-gradient(110deg,rgba(229,9,20,.10),transparent 55%)!important}.head-copy{display:flex;flex-direction:column;gap:4px}.head-hint{font-size:.75rem;color:#8da0b6}
+.filterbar{display:flex;gap:8px;flex-wrap:wrap;padding:13px 16px;border-bottom:1px solid #20344a;background:rgba(3,9,19,.55)}
+.filter-btn{border:1px solid #2b4057;border-radius:999px;background:#091626;color:#b8c7d8;padding:8px 12px;font:800 .73rem/1 Inter,system-ui,sans-serif;cursor:pointer}.filter-btn.active{background:rgba(229,9,20,.17);border-color:#ff3147;color:#fff}
+.note{display:grid!important;grid-template-columns:42px minmax(0,1fr) 8px;gap:13px;padding:17px 18px!important}.note-icon{width:42px;height:42px;display:grid;place-items:center;border:1px solid #30455b;border-radius:13px;background:#0b1a2a;color:#ff5869}
+.note-copy{display:flex;min-width:0;flex-direction:column;gap:5px}.note-copy strong{font-size:.88rem}.note-copy>span{font-size:.8rem;color:#b9c7d7;line-height:1.5;overflow-wrap:anywhere}.note-copy small{font-size:.7rem;color:#7f93a9}
+.note-dot{width:7px;height:7px;border-radius:50%;background:#ff3147;margin-top:6px;opacity:0}.note.unread .note-dot{opacity:1}
+.note:focus-visible,.filter-btn:focus-visible,.mark:focus-visible{outline:2px solid #ff5264;outline-offset:2px}
+@media(max-width:650px){.filter-btn{flex:1;padding:9px 6px;font-size:.68rem}.note{grid-template-columns:36px minmax(0,1fr) 7px;gap:10px;padding:14px 12px!important}.note-icon{width:36px;height:36px}}
+</style>
+</head><body><header class="topbar"><a class="logo" href="/home/"><img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch"></a><div class="spacer"></div><a class="toplink" href="/home/"><i class="fa-solid fa-house"></i> Home</a><a class="toplink" href="/account/"><i class="fa-solid fa-user"></i> Account</a></header><main class="shell"><div class="eyebrow">Flix2Watch</div><h1 class="title">Notifications</h1><div class="sub">Your account notifications in one place. New notifications appear here automatically.</div><section class="card"><div class="head"><div class="head-copy"><strong>Notifications</strong><span class="head-hint">Your latest account and community activity</span></div><span class="badge" id="unread-badge" hidden>0</span><div class="spacer"></div><button class="mark" id="mark-read" type="button"><i class="fa-solid fa-check-double" aria-hidden="true"></i> Mark all read</button></div><div class="filterbar" id="notification-filters" role="group" aria-label="Filter notifications"><button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">All activity</button><button type="button" class="filter-btn" data-filter="unread" aria-pressed="false">Unread</button><button type="button" class="filter-btn" data-filter="follow" aria-pressed="false">Followers</button><button type="button" class="filter-btn" data-filter="system" aria-pressed="false">Account updates</button></div><div class="list" id="notification-page-list"><div class="loading"><span class="spinner"></span><br><br>Loading notifications…</div></div><nav class="pager" id="notification-pager" aria-label="Notification pages" hidden></nav></section></main><div class="toast" id="notification-toast" role="status" aria-live="polite"></div><script>
 (()=>{'use strict';
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
@@ -75,14 +85,25 @@ function asRows(raw){
   if(raw&&Array.isArray(raw.rows))return raw.rows;
   return [];
 }
+function normalizeNotificationLink(value){
+  const raw=String(value||'').trim();if(!raw||raw==='#')return '#';
+  try{
+    const u=new URL(raw,location.origin);if(u.origin!==location.origin)return '#';
+    if(u.pathname==='/profile/'||u.pathname==='/profile'){
+      const name=String(u.searchParams.get('user')||'').trim().replace(/^@+/,'');
+      if(/^[A-Za-z0-9]+$/.test(name))return '/profile/@'+encodeURIComponent(name);
+    }
+    const m=u.pathname.match(new RegExp('^/profile/@?([A-Za-z0-9]+)/?$','i'));
+    if(m)return '/profile/@'+encodeURIComponent(m[1])+u.hash;
+    return u.pathname+u.search+u.hash;
+  }catch{return '#'}
+}
 function normalizeRow(x,source){
   return {
-    id:String(x?.id??''),
-    source,
+    id:String(x?.id??''),source,
     notification_type:x?.notification_type||x?.type||x?.kind||'system',
-    title:x?.title||'Notification',
-    message:x?.message??x?.body??x?.text??'',
-    link:x?.link||x?.url||x?.href||'#',
+    title:x?.title||'Notification',message:x?.message??x?.body??x?.text??'',
+    link:normalizeNotificationLink(x?.link||x?.url||x?.href||'#'),
     read_at:x?.read_at||((x?.is_read===true)?new Date().toISOString():null),
     created_at:x?.created_at||x?.inserted_at||x?.updated_at||new Date().toISOString()
   };
@@ -94,7 +115,7 @@ function dedupe(input){
     const content=[String(n.title).trim().toLowerCase(),String(n.message).trim().toLowerCase(),String(n.link||'').trim().toLowerCase()].join('|');
     const prior=seen.get(content)||[];
     const time=new Date(n.created_at).getTime()||0;
-    if(prior.some(p=>p.source!==n.source&&Math.abs(p.time-time)<=6000))continue;
+    if(prior.some(p=>Math.abs(p.time-time)<=6000))continue;
     out.push(n);prior.push({source:n.source,time});seen.set(content,prior);
   }
   return out;
@@ -114,8 +135,11 @@ function paintPager(){
   buttons.push(`<button class="page-btn" data-page="${Math.min(pageCount,page+1)}" ${page>=pageCount?'disabled':''} aria-label="Next page">›</button>`);
   pager.innerHTML=buttons.join('');
 }
+let activeFilter='all';
 function paint(){
-  list.innerHTML=rows.length?rows.map(x=>`<a class="note ${x.read_at?'':'unread'}" href="${esc(x.link||'#')}"><strong>${esc(x.title||'Notification')}</strong><span>${esc(x.message||'')}</span><small>${esc(rel(x.created_at))}</small></a>`).join(''):'<div class="empty">No notifications yet.</div>';
+  const shown=rows.filter(n=>activeFilter==='all'||(activeFilter==='unread'&&!n.read_at)||(activeFilter==='follow'&&String(n.notification_type).toLowerCase()==='follow')||(activeFilter==='system'&&!['follow','dm'].includes(String(n.notification_type).toLowerCase())));
+  list.innerHTML=shown.length?shown.map(x=>`<a class="note ${x.read_at?'read':'unread'}" data-id="${esc(x.id)}" data-source="${esc(x.source)}" href="${esc(x.link||'#')}"><span class="note-icon"><i class="fa-solid ${({'follow':'fa-user-plus','dm':'fa-paper-plane','warning':'fa-triangle-exclamation','ban':'fa-ban','unban':'fa-unlock','mute':'fa-volume-xmark','unmute':'fa-volume-high','staff_granted':'fa-shield-halved','staff_revoked':'fa-shield'})[x.notification_type]||'fa-bell'}" aria-hidden="true"></i></span><span class="note-copy"><strong>${esc(x.title||'Notification')}</strong><span>${esc(x.message||'')}</span><small>${esc(rel(x.created_at))}</small></span><span class="note-dot" aria-hidden="true"></span></a>`).join(''):'<div class="empty">'+(rows.length?'No notifications match this filter.':'No notifications yet.')+'</div>';
+  document.querySelectorAll('#notification-filters [data-filter]').forEach(b=>{const active=b.dataset.filter===activeFilter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
   paintPager();
 }
 async function fetchF2wLegacy(){
@@ -165,7 +189,7 @@ async function fetchRows(targetPage=page){
     }
     if(canonical){
       setPayload({
-        rows:canonical.rows.map(x=>normalizeRow(x,'user')),
+        rows:dedupe(canonical.rows.map(x=>normalizeRow(x,'user'))),
         unread_count:Number(canonical.unread_count||0),
         total_count:Number(canonical.total_count||0),
         page:Math.max(1,Number(canonical.page||wanted)),
@@ -212,7 +236,17 @@ async function boot(){
   timer=setInterval(()=>{if(document.visibilityState==='visible')fetchRows(page)},60000);
   c.auth.onAuthStateChange?.((_event,next)=>{const nextUid=next?.user?.id||'';if(!nextUid){location.replace('/home/');return}if(nextUid!==uid){uid=nextUid;fetchRows(1);subscribe()}});
 }
-list.addEventListener('click',e=>{if(e.target.closest('#notif-retry')){e.preventDefault();fetchRows(page)}});
+list.addEventListener('click',async e=>{
+  if(e.target.closest('#notif-retry')){e.preventDefault();fetchRows(page);return}
+  const a=e.target.closest('a.note[data-id]');if(!a)return;e.preventDefault();
+  const id=a.dataset.id,source=a.dataset.source,href=a.getAttribute('href')||'#';
+  const row=rows.find(n=>String(n.id)===String(id)&&n.source===source);
+  if(row&&!row.read_at&&id&&uid){
+    try{const table=source==='f2w'?'f2w_notifications_v125':'user_notifications';const result=await c.from(table).update({read_at:new Date().toISOString()}).eq('id',id).eq('user_id',uid).is('read_at',null);if(!result?.error){row.read_at=new Date().toISOString();badge.textContent=String(Math.max(0,Number(badge.textContent||0)-1));badge.hidden=!Number(badge.textContent||0);paint()}}catch(err){console.warn('Notification read update failed',err)}
+  }
+  if(href&&href!=='#')location.assign(href);
+});
+document.getElementById('notification-filters')?.addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){activeFilter=b.dataset.filter||'all';paint()}});
 pager.addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(!b||b.disabled)return;fetchRows(Number(b.dataset.page)||1).then(()=>window.scrollTo({top:0,behavior:'smooth'}))});
 mark.addEventListener('click',async()=>{
   if(mark.disabled||!uid)return;
