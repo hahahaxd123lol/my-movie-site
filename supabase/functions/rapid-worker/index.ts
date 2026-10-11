@@ -2339,8 +2339,11 @@ Deno.serve(async (request: Request) => {
         return json({ success: true, email: newEmail, message: "Email address changed immediately and marked confirmed by the site owner." });
       }
       if (operation === "change_password") {
-        const newPassword = String(body.new_password ?? "");
-        const confirmPassword = String(body.confirm_password ?? "");
+        if (typeof body.new_password !== "string" || typeof body.confirm_password !== "string") {
+          return json({ success: false, error: "Enter the new password and its confirmation." }, 400);
+        }
+        const newPassword = body.new_password;
+        const confirmPassword = body.confirm_password;
         if (newPassword.length < 12 || newPassword.length > 128) {
           return json({ success: false, error: "Use a password with 12–128 characters." }, 400);
         }
