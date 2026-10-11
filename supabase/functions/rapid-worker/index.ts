@@ -2170,9 +2170,18 @@ Deno.serve(async (request: Request) => {
                   ?? (typeof target.user_metadata?.username === "string" ? target.user_metadata.username : null)
                   ?? (typeof target.user_metadata?.chat_alias === "string" ? target.user_metadata.chat_alias : null),
                 username_history: Array.isArray(targetProfile?.username_history) ? targetProfile.username_history : [],
+                auth_username: typeof target.user_metadata?.username === "string" ? target.user_metadata.username : "",
+                chat_alias: typeof target.user_metadata?.chat_alias === "string" ? target.user_metadata.chat_alias : "",
                 email: target.email ?? "",
                 email_confirmed: Boolean(target.email_confirmed_at),
+                email_confirmed_at: target.email_confirmed_at ?? null,
+                confirmed_at: target.confirmed_at ?? null,
                 created_at: target.created_at ?? targetProfile?.created_at ?? null,
+                updated_at: target.updated_at ?? null,
+                last_sign_in_at: target.last_sign_in_at ?? null,
+                phone: target.phone ?? "",
+                is_anonymous: Boolean(target.is_anonymous),
+                provider: typeof target.app_metadata?.provider === "string" ? target.app_metadata.provider : "",
               },
             });
           }

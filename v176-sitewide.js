@@ -805,3 +805,151 @@ if(document.readyState==='loading'){
 // f2w-force-save:v208-post-login-close-shield:20260902
 
 // f2w-force-save:v224-disable-duplicate-presence:20260903
+
+/* f2w Staff Auth controls: load Supabase Auth identity, history, and credential actions. */
+(()=> {
+  if(!/^\/staff(?:\/|$)/i.test(location.pathname) || window.__f2wStaffAuthControlsV1)return;
+  window.__f2wStaffAuthControlsV1=true;
+  let targetAuth=null, loading=false;
+  const card=()=>document.getElementById('auth-management-card');
+  const status=()=>document.getElementById('staff-auth-management-status');
+  const val=id=>String(document.getElementById(id)?.value||'').trim();
+  const say=msg=>{const el=status();if(el)el.textContent=msg;};
+  const call=async(operation,identifier,extra={})=>{
+    const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_account_admin',operation,identifier,...extra}});
+    if(error)throw new Error(error.message||'Account request failed.');
+    if(!data?.success)throw new Error(data?.error||'Account request failed.');
+    return data;
+  };
+  const css=document.createElement('style');
+  css.textContent=[
+    '#auth-management-card.f2w-auth-panel{min-width:0;overflow:hidden}',
+    '#auth-management-card .f2w-auth-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}',
+    '#auth-management-card .f2w-auth-field{min-width:0;display:flex;flex-direction:column;gap:5px}',
+    '#auth-management-card .f2w-auth-field input{width:100%;min-width:0}',
+    '#auth-management-card .f2w-auth-current{margin-top:10px}',
+    '#auth-management-card .f2w-auth-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}',
+    '#auth-management-card .f2w-auth-actions .btn{flex:0 1 auto}',
+    '#auth-management-card .f2w-auth-history,#auth-management-card .f2w-auth-meta{margin-top:12px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.12);min-width:0}',
+    '#auth-management-card .f2w-auth-history-items{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}',
+    '#auth-management-card .f2w-auth-history-items .status{max-width:100%;overflow-wrap:anywhere;text-transform:none}',
+    '#auth-management-card .f2w-auth-meta-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:9px}',
+    '#auth-management-card .f2w-auth-meta-item{min-width:0;font-size:.72rem;line-height:1.45;overflow-wrap:anywhere;color:var(--muted)}',
+    '#auth-management-card .f2w-auth-meta-item strong{display:block;color:var(--text-main);font-size:.6rem;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px}',
+    '@media(max-width:760px){#auth-management-card .f2w-auth-grid,#auth-management-card .f2w-auth-meta-grid{grid-template-columns:minmax(0,1fr)}#auth-management-card .f2w-auth-actions .btn{flex:1 1 180px}}'
+  ].join('\n');
+  document.head.appendChild(css);
+  function renderShell(){
+    const c=card();if(!c)return;
+    c.classList.add('f2w-auth-panel');
+    c.innerHTML=[
+      '<div class="card-head"><div><strong><i class="fa-solid fa-key"></i> Account email &amp; password</strong><span style="display:block;text-align:left;margin-top:4px">Changes apply directly to the selected Supabase Auth UID</span></div><span>Owner-only</span></div>',
+      '<div class="notice" id="f2w-auth-identity">Select a username above to load its Auth record.</div>',
+      '<div class="field f2w-auth-current"><label for="f2w-auth-current-email">CURRENT EMAIL ADDRESS</label><input id="f2w-auth-current-email" type="email" readonly autocomplete="off" placeholder="Load an account first"></div>',
+      '<div class="f2w-auth-grid">',
+      '<div class="f2w-auth-field"><label for="f2w-auth-new-email">NEW EMAIL ADDRESS</label><input id="f2w-auth-new-email" type="email" autocomplete="off" maxlength="254" placeholder="new-address@example.com"></div>',
+      '<div class="f2w-auth-field"><label>EMAIL ACTION</label><button class="btn primary" type="button" id="f2w-auth-change-email" disabled><i class="fa-solid fa-at"></i> Change email</button></div>',
+      '<div class="f2w-auth-field"><label for="f2w-auth-new-password">NEW PASSWORD (12–128 CHARACTERS)</label><input id="f2w-auth-new-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="Permanent new password"></div>',
+      '<div class="f2w-auth-field"><label for="f2w-auth-confirm-password">CONFIRM NEW PASSWORD</label><input id="f2w-auth-confirm-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="Type the password again"></div>',
+      '</div>',
+      '<div class="f2w-auth-actions"><button class="btn danger" type="button" id="f2w-auth-set-password" disabled><i class="fa-solid fa-lock"></i> Set permanent password</button><button class="btn" type="button" id="f2w-auth-send-reset" disabled><i class="fa-solid fa-envelope"></i> Send email password reset link</button></div>',
+      '<div class="moderation-status" id="staff-auth-management-status" role="status" aria-live="polite">Select an account to manage email or password.</div>',
+      '<div class="f2w-auth-history"><strong>Username history</strong><div class="f2w-auth-history-items" id="f2w-auth-history-items"><span>Load an account to see its recorded names.</span></div></div>',
+      '<div class="f2w-auth-meta"><strong>Account information</strong><div class="f2w-auth-meta-grid" id="f2w-auth-meta-grid"></div></div>'
+    ].join('');
+    ['f2w-auth-change-email','f2w-auth-set-password','f2w-auth-send-reset'].forEach(id=>document.getElementById(id).addEventListener('click',()=>action(id)));
+  }
+  const txt=value=>String(value??'').trim()||'Not available';
+  const date=value=>{if(!value)return 'Not available';const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleString();};
+  function showAccount(account){
+    targetAuth=account;
+    const email=document.getElementById('f2w-auth-current-email');if(email)email.value=String(account.email||'');
+    const names=[account.username,account.auth_username,account.chat_alias,...(Array.isArray(account.username_history)?account.username_history:[])].map(x=>String(x||'').trim().replace(/^@/,'')).filter(Boolean);
+    const seen=new Set();const unique=names.filter(name=>{const k=name.toLowerCase();if(seen.has(k))return false;seen.add(k);return true;});
+    const hist=document.getElementById('f2w-auth-history-items');
+    if(hist)hist.innerHTML=unique.length?unique.map((name,i)=>'<span class="status">'+(i===0?'Current · ':'')+'@'+esc(name)+'</span>').join(''):'<span>No username history is recorded for this account.</span>';
+    const fields=[
+      ['User UUID',account.user_id],['Username',account.username||account.auth_username],['Chat alias',account.chat_alias],
+      ['Email status',account.email_confirmed?'Confirmed':'Not confirmed'],['Created',date(account.created_at)],['Last sign-in',date(account.last_sign_in_at)],
+      ['Last account update',date(account.updated_at)],['Phone',account.phone],['Provider',account.provider],['Anonymous account',account.is_anonymous?'Yes':'No']
+    ];
+    const meta=document.getElementById('f2w-auth-meta-grid');
+    if(meta)meta.innerHTML=fields.map(([label,value])=>'<div class="f2w-auth-meta-item"><strong>'+esc(label)+'</strong>'+esc(txt(value))+'</div>').join('');
+    ['f2w-auth-change-email','f2w-auth-set-password','f2w-auth-send-reset'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=false;});
+    const ident=document.getElementById('f2w-auth-identity');
+    if(ident)ident.textContent='Username: '+(account.username?'@'+account.username:txt(account.auth_username))+' · UID: '+account.user_id+' · Current email: '+(account.email||'No email address');
+  }
+  async function load(identifier){
+    if(loading)return null;loading=true;
+    try{
+      const result=await call('lookup',identifier);
+      showAccount(result.account||{});
+      say('Account details loaded from Supabase Auth.');
+      return result.account;
+    }catch(error){
+      targetAuth=null;
+      ['f2w-auth-change-email','f2w-auth-set-password','f2w-auth-send-reset'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=true;});
+      say(error.message||'Could not load this Auth record.');return null;
+    }finally{loading=false;}
+  }
+  async function action(id){
+    if(!targetAuth?.user_id){say('Load an account first.');return;}
+    let operation='',extra={},title='',copy='';
+    if(id==='f2w-auth-change-email'){
+      const email=val('f2w-auth-new-email').toLowerCase();
+      if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)||email.length>254){say('Enter a valid new email address.');return;}
+      if(email===String(targetAuth.email||'').toLowerCase()){say('That is already the current email.');return;}
+      operation='update_email';extra={email};title='Change account email?';copy='This updates the Supabase Auth email immediately and confirms the new address.';
+    }else if(id==='f2w-auth-set-password'){
+      const password=String(document.getElementById('f2w-auth-new-password')?.value||'');
+      const confirm=String(document.getElementById('f2w-auth-confirm-password')?.value||'');
+      if(password.length<12||password.length>128){say('Use a password between 12 and 128 characters.');return;}
+      if(password!==confirm){say('The password fields do not match.');return;}
+      operation='set_password';extra={password};title='Set permanent password?';copy='This immediately replaces the selected account password in Supabase Auth.';
+    }else if(id==='f2w-auth-send-reset'){
+      if(!targetAuth.email){say('This account has no current email address.');return;}
+      operation='send_reset';title='Send password reset email?';copy='Supabase will send the reset link to the account current email: '+targetAuth.email+'. If you changed the email first, this uses the updated address.';
+    }else return;
+    if(typeof staffConfirm==='function'&&!await staffConfirm({title,copy,confirmText:operation==='send_reset'?'Send reset email':'Confirm'}))return;
+    say('Applying action…');
+    try{
+      const targetId=targetAuth.user_id;
+      await call(operation,targetId,extra);
+      if(operation==='update_email'){
+        const f=document.getElementById('f2w-auth-new-email');if(f)f.value='';
+        const updated=await load(targetId);say('Email updated successfully in Supabase Auth.');
+      }else if(operation==='set_password'){
+        ['f2w-auth-new-password','f2w-auth-confirm-password'].forEach(k=>{const f=document.getElementById(k);if(f)f.value='';});
+        say('Permanent password updated successfully in Supabase Auth.');
+      }else say('Password reset request accepted for '+targetAuth.email+'.');
+      if(typeof toast==='function')toast(operation==='update_email'?'Account email updated':operation==='set_password'?'Permanent password updated':'Password-reset email requested');
+    }catch(error){say(error.message||'Account action failed.');if(typeof toast==='function')toast(error.message||'Account action failed.');}
+  }
+  const previousInspect=window.inspectUser;
+  if(typeof previousInspect==='function'){
+    window.inspectUser=async function(...args){
+      const typed=val('user-target');
+      if(!typed)return previousInspect.apply(this,args);
+      if(staffContext?.role!=='owner')return previousInspect.apply(this,args);
+      const account=await load(typed);
+      let result;
+      try{result=await previousInspect.apply(this,args);}catch(error){say(error.message||'Could not load profile snapshot.');}
+      if(!account){
+        if(currentSnapshot?.profile?.user_id)showAuthManagementCard(true);
+        return result;
+      }
+      if(!currentSnapshot?.profile?.user_id||String(currentSnapshot.profile.user_id)!==String(account.user_id)){
+        currentSnapshot={profile:{user_id:String(account.user_id),username:String(account.username||account.auth_username||typed),username_history:Array.isArray(account.username_history)?account.username_history:[],created_at:account.created_at||null},role:'member',warnings:[],notes:[]};
+        const snap=document.getElementById('user-snapshot');
+        if(snap){snap.hidden=false;snap.innerHTML='<div class="notice">Found this account in Supabase Auth by username metadata. UUID: '+esc(account.user_id)+'. Profile-based restriction state could not be matched, so the switches are disabled.</div>';}
+        ['quick-public-chat-ban','quick-chat-mute','quick-site-suspension','quick-account-ban'].forEach(key=>{const el=document.getElementById(key);if(el){el.checked=false;el.disabled=true;}});
+        const perm=document.getElementById('permission-card');if(perm)perm.hidden=true;
+      }
+      showAuthManagementCard(true);showAccount(account);
+      say('Account details loaded from Supabase Auth. Changes apply to UID '+account.user_id+'.');
+      return result;
+    };
+  }
+  window.f2wReloadStaffAuthAccount=()=>load(currentSnapshot?.profile?.user_id||val('user-target'));
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderShell,{once:true});else renderShell();
+})();
