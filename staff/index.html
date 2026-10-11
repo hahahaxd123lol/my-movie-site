@@ -1358,7 +1358,9 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
           <div><label>ACCOUNT UUID</label><input id="staff-auth-user-id" readonly></div>
           <div><label>CURRENT SUPABASE EMAIL</label><input id="staff-auth-current-email" readonly placeholder="Loading Auth record…"></div>
           <div><label>EMAIL CONFIRMED</label><input id="staff-auth-email-confirmed" readonly></div>
+          <div><label>ACCOUNT CREATED</label><input id="staff-auth-created-at" readonly></div>
           <div><label>LAST SIGN-IN</label><input id="staff-auth-last-sign-in" readonly></div>
+          <div><label>AUTH PROVIDER</label><input id="staff-auth-provider" readonly></div>
           <div><label>AUTH USERNAME</label><input id="staff-auth-username" readonly></div>
           <div><label>CHAT ALIAS</label><input id="staff-auth-chat-alias" readonly></div>
         </div>
@@ -2447,7 +2449,9 @@ async function loadStaffAuthDetails(){
     put('staff-auth-user-id',data.target_user_id||targetId);
     put('staff-auth-current-email',data.email||'(no email address)');
     put('staff-auth-email-confirmed',data.email_confirmed_at?'Yes':'No');
+    put('staff-auth-created-at',data.created_at?fmt(data.created_at):'—');
     put('staff-auth-last-sign-in',data.last_sign_in_at?fmt(data.last_sign_in_at):'—');
+    put('staff-auth-provider',data.provider||'—');
     put('staff-auth-username',data.auth_username||'—');
     put('staff-auth-chat-alias',data.chat_alias||'—');
     if(status)status.textContent='Current Auth email and account details loaded.';
