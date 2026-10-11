@@ -438,6 +438,8 @@ async function isBanned(alias: string) {
   if (!normalized) return false;
 
   const profile = await profileForAlias(normalized);
+  // The site owner is exempt from staff-issued chat bans, including legacy rows.
+  if (profile?.user_id === OWNER_UUID) return false;
 
   let query = supabase
     .from("chat_bans")
@@ -477,7 +479,7 @@ async function isPublicChatBanned(alias: string) {
   const normalized = normalizeAlias(alias);
   if (!normalized) return false;
   const profile = await profileForAlias(normalized);
-  if (!profile?.user_id) return false;
+  if (!profile?.user_id || profile.user_id === OWNER_UUID) return false;
 
   const { data, error } = await supabase
     .from("public_chat_bans")
@@ -1920,6 +1922,8 @@ async function getBearerUser(request: Request) {
 }
 
 async function activeAccountLoginBan(userId: string) {
+  // Never lock the owner out, even if an old moderation row still exists.
+  if (!userId || userId === OWNER_UUID) return null;
   // v160: account_enforcement_v146 is the ONLY login-ban authority.
   // A historical account_login_bans row left behind by an old Site Suspension
   // must never block a user after Staff has removed the restriction.
