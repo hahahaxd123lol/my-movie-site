@@ -1356,7 +1356,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <div class="notice">These actions use the authenticated server-side admin API. Password reset sends a link to the account's current email.</div>
         <div class="staff-profile-edit-grid" style="margin-top:10px">
           <div><label>ACCOUNT UUID</label><input id="staff-auth-user-id" readonly></div>
-          <div><label>CURRENT SUPABASE EMAIL</label><input id="staff-auth-current-email" readonly placeholder="Loading Auth record…"></div>
+          <div><label>CURRENT SUPABASE EMAIL</label><input id="staff-auth-current-email" readonly placeholder="Load an account first"></div>
           <div><label>EMAIL CONFIRMED</label><input id="staff-auth-email-confirmed" readonly></div>
           <div><label>ACCOUNT CREATED</label><input id="staff-auth-created-at" readonly></div>
           <div><label>LAST SIGN-IN</label><input id="staff-auth-last-sign-in" readonly></div>
@@ -2462,7 +2462,20 @@ async function loadStaffAuthDetails(){
     put('staff-auth-user-metadata',JSON.stringify(data.user_metadata??{},null,2));
     put('staff-auth-app-metadata',JSON.stringify(data.app_metadata??{},null,2));
     if(status)status.textContent='Current Auth email and account details loaded.';
-  }catch(e){if(status)status.textContent='Could not load Auth details: '+(e?.message||'Unknown error')}
+  }catch(e){
+    let detail=e?.message||'Unknown error';
+    // Supabase FunctionsHttpError often hides the JSON body behind context;
+    // surface the server's actual permission/deployment error for staff.
+    try{
+      const response=e?.context;
+      if(response&&typeof response.clone==='function'){
+        const payload=await response.clone().json();
+        if(payload?.error||payload?.message)detail=payload.error||payload.message;
+      }
+    }catch{}
+    if(status)status.textContent='Could not load Auth details: '+detail;
+    console.error('Staff Auth details lookup failed:',e);
+  }
 }
 function openModerationProfileEditor(){
   const username=String(currentSnapshot?.profile?.username||'');
