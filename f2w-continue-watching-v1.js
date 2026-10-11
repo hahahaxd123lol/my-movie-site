@@ -294,8 +294,8 @@
       if (providerId) id = String(providerId).replace(/\D/g, '') || id;
       id = String(id).replace(/\D/g, '') || id;
       if (!id) return;
-      const season = Number(info.season || params.get('season') || document.getElementById('season-select')?.value || 1);
-      const episode = Number(info.episode || params.get('episode') || document.getElementById('episode-select')?.value || 1);
+      const season = Number(info.season || document.getElementById('season-select')?.value || params.get('season') || 1);
+      const episode = Number(info.episode || document.getElementById('episode-select')?.value || params.get('episode') || 1);
       let title = document.querySelector('h1, .watch-title, #media-title')?.textContent?.trim() || '';
       if (!title || /watch|flix2/i.test(title)) title = document.title.split('|')[0].trim();
       let poster_path = '';
@@ -312,8 +312,8 @@
     const id = String(params.get('id') || '').replace(/\D/g, '') || params.get('id');
     const type = params.get('type') === 'tv' ? 'tv' : 'movie';
     if (!id) return;
-    const season = Number(params.get('season') || document.getElementById('season-select')?.value || 1);
-    const episode = Number(params.get('episode') || document.getElementById('episode-select')?.value || 1);
+    const season = Number(document.getElementById('season-select')?.value || params.get('season') || 1);
+    const episode = Number(document.getElementById('episode-select')?.value || params.get('episode') || 1);
     const key = type === 'tv' ? ('f2w_resume_tv_' + id + '_s' + season + 'e' + episode) : ('f2w_resume_movie_' + id);
     let seconds = Math.floor(Number(localStorage.getItem(key) || 0));
     if (seconds < MIN_SECONDS) {
@@ -331,8 +331,8 @@
     upsertItem({ id, type, season, episode, seconds, title, poster_path });
   }
 
-  // Continue Watching is saved from authenticated player progress events.
-  // Do not promote shared, device-wide resume keys into a user's account.
+  // Continue Watching is updated from player events and a 30-second snapshot
+  // heartbeat, preserving the last known timestamp while paused.
   function fmtTime(sec) {
     sec = Math.max(0, Math.floor(Number(sec || 0)));
     const h = Math.floor(sec / 3600);
@@ -586,6 +586,13 @@
 
   setTimeout(boot, 500);
   setTimeout(boot, 1500);
+
+  // Keep the account-linked Continue Watching row fresh every 30 seconds,
+  // including when a paused player has stopped sending progress events.
+  setInterval(() => {
+    if (!isWatchPage()) return;
+    snapshotWatchPage();
+  }, 30000);
 
   // Some pages mount their main content after the initial boot. Retry only
   // while the section is absent, so late-rendered home/genre content gets it

@@ -843,7 +843,7 @@ html{overflow-y:scroll}
       f2wCloudResumeLoaded=true;
       try{
         const {data:{session}}=await chatSupabase.auth.getSession();if(!session?.user)return;
-        const s=Number(document.getElementById('season-select')?.value||1),e=Number(document.getElementById('episode-select')?.value||1);
+        const s=Number(urlParams.get('season')||document.getElementById('season-select')?.value||1),e=Number(urlParams.get('episode')||document.getElementById('episode-select')?.value||1);
         const {data,error}=await chatSupabase.rpc('get_my_playback_progress_v132',{p_media_type:mediaType,p_media_id:Number(mediaId),p_season:s,p_episode:e});
         if(error)throw error;const row=Array.isArray(data)?data[0]:data;const sec=Number(row?.position_seconds||0);
         if(sec>10){window.__f2wCloudResumeSeconds=sec;try{localStorage.setItem(f2wResumeKey(mediaType,s,e),String(sec));}catch{} f2wShowResumePrompt(sec);}
@@ -877,10 +877,18 @@ html{overflow-y:scroll}
       const id = info.imdb || info.tmdb || currentImdbId || mediaId;
       if (!id) return;
 
-      const s = Number(info.season || 1);
-      const e = Number(info.episode || 1);
+      const s = Number(info.season || document.getElementById('season-select')?.value || urlParams.get('season') || 1);
+      const e = Number(info.episode || document.getElementById('episode-select')?.value || urlParams.get('episode') || 1);
       const key = f2wResumeKey(eventType,s,e);
       const duration = Number(payload.data.player_duration || payload.data.duration || info.duration || 0);
+
+      // Retain the last reported timestamp for the 30-second paused heartbeat.
+      if (Number.isFinite(progress) && progress >= 0 && ['playing','paused','seeked'].includes(status)) {
+        window.__f2wLastResumeSample = {
+          id: String(mediaId), type: eventType, season: s, episode: e,
+          seconds: progress, duration, status, updatedAt: Date.now()
+        };
+      }
 
       try {
         if ((status === 'playing' || status === 'paused' || status === 'seeked') && Number.isFinite(progress) && progress >= 0) {
@@ -6644,6 +6652,17 @@ if(currentUser){
     const urlParams = new URLSearchParams(window.location.search);
     const mediaId = urlParams.get('id');
     const mediaType = urlParams.get('type') || 'movie';
+    const requestedSeason = Math.max(1, Number(urlParams.get('season') || 1));
+    const requestedEpisode = Math.max(1, Number(urlParams.get('episode') || 1));
+    const requestedResumeSeconds = Math.max(0, Math.floor(Number(urlParams.get('resume') || 0)));
+    let f2wApplyInitialEpisode = mediaType === 'tv' && (urlParams.has('season') || urlParams.has('episode'));
+    // Continue Watching's URL is authoritative for the requested episode and timestamp.
+    if (mediaId && requestedResumeSeconds > 10) {
+      try {
+        const resumeKey = `f2w_resume_${mediaType}_${mediaId}${mediaType === 'tv' ? `_s${requestedSeason}e${requestedEpisode}` : ''}`;
+        localStorage.setItem(resumeKey, String(requestedResumeSeconds));
+      } catch (_) {}
+    }
     let currentServer = 'flix2watchapi';
     let currentImdbId = '';
     let tvSeasonsData = [];
@@ -6969,7 +6988,11 @@ if(currentUser){
       });
 
       if (tvSeasonsData.length > 0) {
-        fetchEpisodes(tvSeasonsData[0].season_number);
+        const wantedSeason = tvSeasonsData.some(s => Number(s.season_number) === requestedSeason)
+          ? requestedSeason
+          : Number(tvSeasonsData[0].season_number);
+        seasonSelect.value = String(wantedSeason);
+        fetchEpisodes(wantedSeason);
       }
     }
 
@@ -6993,6 +7016,12 @@ if(currentUser){
               opt.textContent = `Ep ${ep.episode_number}: ${ep.name}`;
               episodeSelect.appendChild(opt);
             });
+            const desiredEpisode = f2wApplyInitialEpisode && Number(seasonNumber) === requestedSeason
+              ? requestedEpisode
+              : 1;
+            if ([...episodeSelect.options].some(opt => Number(opt.value) === desiredEpisode)) {
+              episodeSelect.value = String(desiredEpisode);
+            }
             logTerminal(`Loaded ${data.episodes.length} episodes for Season ${seasonNumber}.`, 'success');
           } else {
             const opt = document.createElement('option');
@@ -7000,6 +7029,7 @@ if(currentUser){
             opt.textContent = 'Episode 1';
             episodeSelect.appendChild(opt);
           }
+          f2wApplyInitialEpisode = false;
           loadPlayer();
         })
         .catch(err => {
@@ -7279,10 +7309,18 @@ if(currentUser){
       const id = info.imdb || info.tmdb || currentImdbId || mediaId;
       if (!id) return;
 
-      const s = Number(info.season || 1);
-      const e = Number(info.episode || 1);
+      const s = Number(info.season || document.getElementById('season-select')?.value || urlParams.get('season') || 1);
+      const e = Number(info.episode || document.getElementById('episode-select')?.value || urlParams.get('episode') || 1);
       const key = f2wResumeKey(eventType,s,e);
       const duration = Number(payload.data.player_duration || payload.data.duration || info.duration || 0);
+
+      // Retain the last reported timestamp for the 30-second paused heartbeat.
+      if (Number.isFinite(progress) && progress >= 0 && ['playing','paused','seeked'].includes(status)) {
+        window.__f2wLastResumeSample = {
+          id: String(mediaId), type: eventType, season: s, episode: e,
+          seconds: progress, duration, status, updatedAt: Date.now()
+        };
+      }
 
       try {
         if ((status === 'playing' || status === 'paused' || status === 'seeked') && Number.isFinite(progress) && progress >= 0) {
@@ -7304,6 +7342,18 @@ if(currentUser){
         }
       }
     });
+
+    // Persist the last known player timestamp every 30 seconds, even when paused.
+    setInterval(() => {
+      const sample = window.__f2wLastResumeSample;
+      if (!sample || String(sample.id) !== String(mediaId)) return;
+      const seconds = Math.max(0, Math.floor(Number(sample.seconds) || 0));
+      if (!Number.isFinite(seconds) || seconds < 0) return;
+      try {
+        localStorage.setItem(f2wResumeKey(sample.type, sample.season, sample.episode), String(seconds));
+      } catch (_) {}
+      f2wQueueCloudResumeSave(seconds, sample.duration, sample.status, sample.season, sample.episode);
+    }, 30000);
 
     /* ================= EXTENDED WATCH PAGE ================= */
 
