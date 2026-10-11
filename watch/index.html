@@ -863,46 +863,62 @@ html{overflow-y:scroll}
     // Fetch cloud state in parallel; never block initial playback on Supabase.
     setTimeout(f2wLoadCloudResume,0);
 
-    // VidSrcMe player integration: save progress from its documented
-    // postMessage PLAYER_EVENT payload. This does not change sources or react
-    // to popup/new-tab activity; closing an external tab leaves playback intact.
+    // Source-agnostic player progress integration. Only accept messages from
+    // the currently loaded iframe, then normalize common provider progress
+    // payloads. This supports sources that expose postMessage progress without
+    // assuming they share Flix2Watch's origin or exact event field names.
     window.addEventListener('message', (event) => {
-      if (event.origin !== 'https://player.flix2watch.com') return;
-      const payload = event.data;
-      if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
-
-      const info = payload.data.player_info || {};
-      const status = String(payload.data.player_status || '');
-      if(status==='playing'){ const starting=document.getElementById('f2w-player-starting'); if(starting) starting.style.display='none'; }
-      const progress = Number(payload.data.player_progress || 0);
-      const eventType = info.mediaType === 'tv' ? 'tv' : 'movie';
-      const id = info.imdb || info.tmdb || currentImdbId || mediaId;
-      if (!id) return;
-
-      const s = Number(info.season || 1);
-      const e = Number(info.episode || 1);
-      const key = f2wResumeKey(eventType,s,e);
-      const duration = Number(payload.data.player_duration || payload.data.duration || info.duration || 0);
-
       try {
-        if ((status === 'playing' || status === 'paused' || status === 'seeked') && Number.isFinite(progress) && progress >= 0) {
-          localStorage.setItem(key, String(progress));
-          window.__f2wCloudResumeSeconds=progress;
+        const frame = document.getElementById('video-frame');
+        if (!frame || event.source !== frame.contentWindow) return;
+        let payload = event.data;
+        if (typeof payload === 'string') {
+          try { payload = JSON.parse(payload); } catch { return; }
+        }
+        if (!payload || typeof payload !== 'object') return;
+        const data = payload.data && typeof payload.data === 'object' ? payload.data
+          : payload.detail && typeof payload.detail === 'object' ? payload.detail : payload;
+        const info = data.player_info || data.playerInfo || data.info || {};
+        const rawStatus = data.player_status ?? data.status ?? data.event ?? data.action ?? payload.type ?? '';
+        let status = String(rawStatus).toLowerCase();
+        const progressValue = data.player_progress ?? data.currentTime ?? data.current_time ??
+          data.position_seconds ?? data.position ?? data.time ?? info.currentTime ?? info.current_time;
+        const durationValue = data.player_duration ?? data.duration ?? data.duration_seconds ??
+          info.duration ?? info.duration_seconds;
+        const progress = Number(progressValue);
+        const duration = Number(durationValue || 0);
+        if (!Number.isFinite(progress) || progress < 0) return;
+        if (!status || /timeupdate|time_update|progress|playing|playback|player_event/i.test(status)) status = 'playing';
+        if (/pause/.test(status)) status = 'paused';
+        else if (/seek/.test(status)) status = 'seeked';
+        else if (/ended|complete|finished/.test(status)) status = 'completed';
+        else if (!/^(playing|paused|seeked|completed)$/.test(status)) return;
+
+        const eventType = (info.mediaType === 'tv' || info.media_type === 'tv') ? 'tv' : mediaType;
+        const s = Number(info.season || document.getElementById('season-select')?.value || 1);
+        const e = Number(info.episode || document.getElementById('episode-select')?.value || 1);
+        const key = f2wResumeKey(eventType, s, e);
+        if (status === 'playing' || status === 'paused' || status === 'seeked') {
+          try { localStorage.setItem(key, String(Math.floor(progress))); } catch (_) {}
+          window.__f2wCloudResumeSeconds = progress;
         } else if (status === 'completed') {
-          localStorage.removeItem(key);window.__f2wCloudResumeSeconds=0;
+          try { localStorage.removeItem(key); } catch (_) {}
+          window.__f2wCloudResumeSeconds = 0;
+        }
+        f2wQueueCloudResumeSave(progress, duration, status, s, e);
+
+        if (status === 'playing') {
+          const starting = document.getElementById('f2w-player-starting');
+          if (starting) starting.style.display = 'none';
+        }
+        if (status === 'completed' && eventType === 'tv' && currentServer === 'flix2watchapi') {
+          const episodeSelect = document.getElementById('episode-select');
+          const nextEpisode = e + 1;
+          if (episodeSelect && [...episodeSelect.options].some(opt => Number(opt.value) === nextEpisode)) {
+            episodeSelect.value = String(nextEpisode);
+          }
         }
       } catch (_) {}
-      f2wQueueCloudResumeSave(progress,duration,status,s,e);
-
-      // Keep Flix2Watch's own episode selectors in sync after VidSrcMe finishes
-      // and auto-advances. We do not force any source switch.
-      if (status === 'completed' && eventType === 'tv' && currentServer === 'flix2watchapi') {
-        const episodeSelect = document.getElementById('episode-select');
-        const nextEpisode = e + 1;
-        if (episodeSelect && [...episodeSelect.options].some(opt => Number(opt.value) === nextEpisode)) {
-          episodeSelect.value = String(nextEpisode);
-        }
-      }
     });
 
     /* ================= EXTENDED WATCH PAGE ================= */
