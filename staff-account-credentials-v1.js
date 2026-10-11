@@ -83,15 +83,39 @@ function showAccount(account){
  setActions(!!targetId);
 }
 async function invokeAuth(operation,identifier,extras={}){
- const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_account_admin',operation,identifier,...extras}});
- if(error)throw new Error(error.message||'Supabase Auth request failed.');
+ const operationMap={lookup:'get_account_details',update_email:'change_email_manual',set_password:'change_password',send_reset:'send_password_reset'};
+ const backendOperation=operationMap[operation]||operation;
+ const body={action:'staff_auth_manage',operation:backendOperation,target_user_id:String(identifier||'')};
+ if(Object.prototype.hasOwnProperty.call(extras,'email'))body.new_email=extras.email;
+ if(Object.prototype.hasOwnProperty.call(extras,'password'))body.new_password=extras.password;
+ if(Object.prototype.hasOwnProperty.call(extras,'confirm_password'))body.confirm_password=extras.confirm_password;
+ const {data,error}=await db.functions.invoke('rapid-worker',{body});
+ if(error){
+  let detail=error.message||'Supabase Auth request failed.';
+  try{const response=error.context;if(response&&typeof response.clone==='function'){const payload=await response.clone().json();if(payload?.error||payload?.message)detail=payload.error||payload.message}}catch{}
+  throw new Error(detail);
+ }
  if(!data?.success)throw new Error(data?.error||'Supabase Auth request failed.');
  return data;
 }
 async function getAccount(identifier){
- const result=await invokeAuth('lookup',identifier);
- if(!result.account?.user_id)throw new Error('Supabase Auth did not return a matching account.');
- return result.account;
+ const snapshot=await rpc('get_staff_user_snapshot',{p_username:String(identifier||'').trim()});
+ const profile=snapshot?.profile;
+ if(!profile?.user_id)throw new Error('No profile matched that username.');
+ const result=await invokeAuth('lookup',profile.user_id);
+ if(!result?.target_user_id)throw new Error('Supabase Auth did not return a matching account.');
+ return {
+  user_id:String(result.target_user_id),
+  username:String(profile.username||identifier||''),
+  email:String(result.email||''),
+  email_confirmed:!!result.email_confirmed_at,
+  created_at:result.created_at||null,
+  last_sign_in_at:result.last_sign_in_at||null,
+  provider:result.provider||'',
+  user_metadata:result.user_metadata||{},
+  app_metadata:result.app_metadata||{},
+  username_history:Array.isArray(profile.username_history)?profile.username_history:[]
+ };
 }
 function renderAuthOnlyNotice(account){
  const snap=$('user-snapshot');
