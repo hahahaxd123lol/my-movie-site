@@ -83,12 +83,7 @@ function showAccount(account){
  setActions(!!targetId);
 }
 async function invokeAuth(operation,identifier,extras={}){
- const operationMap={lookup:'get_account_details',update_email:'change_email_manual',set_password:'change_password',send_reset:'send_password_reset'};
- const backendOperation=operationMap[operation]||operation;
- const body={action:'staff_auth_manage',operation:backendOperation,target_user_id:String(identifier||'')};
- if(Object.prototype.hasOwnProperty.call(extras,'email'))body.new_email=extras.email;
- if(Object.prototype.hasOwnProperty.call(extras,'password'))body.new_password=extras.password;
- if(Object.prototype.hasOwnProperty.call(extras,'confirm_password'))body.confirm_password=extras.confirm_password;
+ const body={action:'staff_account_admin',operation,identifier:String(identifier||''),...extras};
  const {data,error}=await db.functions.invoke('rapid-worker',{body});
  if(error){
   let detail=error.message||'Supabase Auth request failed.';
@@ -99,22 +94,16 @@ async function invokeAuth(operation,identifier,extras={}){
  return data;
 }
 async function getAccount(identifier){
- const snapshot=await rpc('get_staff_user_snapshot',{p_username:String(identifier||'').trim()});
- const profile=snapshot?.profile;
- if(!profile?.user_id)throw new Error('No profile matched that username.');
- const result=await invokeAuth('lookup',profile.user_id);
- if(!result?.target_user_id)throw new Error('Supabase Auth did not return a matching account.');
+ const result=await invokeAuth('lookup',identifier);
+ const account=result?.account;
+ if(!account?.user_id)throw new Error('Supabase Auth did not return a matching account.');
  return {
-  user_id:String(result.target_user_id),
-  username:String(profile.username||identifier||''),
-  email:String(result.email||''),
-  email_confirmed:!!result.email_confirmed_at,
-  created_at:result.created_at||null,
-  last_sign_in_at:result.last_sign_in_at||null,
-  provider:result.provider||'',
-  user_metadata:result.user_metadata||{},
-  app_metadata:result.app_metadata||{},
-  username_history:Array.isArray(profile.username_history)?profile.username_history:[]
+  ...account,
+  user_id:String(account.user_id),
+  username:String(account.username||identifier||''),
+  email:String(account.email||''),
+  email_confirmed:!!(account.email_confirmed||account.email_confirmed_at),
+  username_history:Array.isArray(account.username_history)?account.username_history:[]
  };
 }
 function renderAuthOnlyNotice(account){
@@ -221,7 +210,7 @@ async function act(operation){
   const confirm=String($('f2w-sc-confirm-password')?.value||'');
   if(password.length<12||password.length>128){status('Use a password between 12 and 128 characters.');return}
   if(password!==confirm){status('The new password and confirmation do not match.');return}
-  extras={password};title='Set new account password?';copy='This immediately changes the Supabase Auth password for '+(authAccount.username?'@'+authAccount.username:target)+'. It will not be shown or logged after saving.';
+  extras={password,confirm_password:confirm};title='Set new account password?';copy='This immediately changes the Supabase Auth password for '+(authAccount.username?'@'+authAccount.username:target)+'. It will not be shown or logged after saving.';
  }else if(operation==='send_reset'){
   if(!authAccount.email){status('This account has no email address. Update its email first.');return}
   title='Send password reset email?';copy='Send the Supabase password-reset email to '+authAccount.email+'. The user can choose their own password from that email link.';confirmText='Send reset email';
