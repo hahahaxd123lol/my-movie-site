@@ -28,7 +28,7 @@
  * - no iframe sandbox attribute and no CSP sandbox directive
  */
 
-const VERSION = 'v4-max-final';
+const VERSION = 'v4-max-final-settings-fix2';
 
 const AD_HOST_FRAGMENTS = [
   'doubleclick.net',
