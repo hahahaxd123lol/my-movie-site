@@ -410,8 +410,6 @@ html{overflow-y:scroll}
     }
 
     .tv-controls.active { display: flex; }
-    /* Keep the TV navigator visible even when the markup starts with the HTML hidden attribute. */
-    #tv-controls.active:not([hidden]) { display: flex !important; visibility: visible !important; opacity: 1 !important; }
 
     .control-group {
       display: flex;
@@ -817,16 +815,11 @@ html{overflow-y:scroll}
 
     // v132: account-synced resume state. Local storage makes repeat visits on
     // this browser instant; Supabase keeps the same position across devices.
-    let f2wCloudResumeLoadedKey='';
-    let f2wCloudResumeRequest=0;
-    let f2wEpisodeFetchRequest=0;
+    let f2wCloudResumeLoaded=false;
     let f2wCloudResumeSaveTimer=0;
     let f2wLastCloudResumeSave=0;
     function f2wResumeSuffix(type=mediaType,s=1,e=1){return type==='tv'?`_s${Number(s||1)}e${Number(e||1)}`:'';}
     function f2wResumeKey(type=mediaType,s=1,e=1){return `f2w_resume_${type}_${mediaId}${f2wResumeSuffix(type,s,e)}`;}
-    function f2wLastEpisodeKey(){return `f2w_resume_tv_${mediaId}_last_episode`;}
-    function f2wRememberTvEpisode(s,e){if(mediaType!=='tv')return;try{localStorage.setItem(f2wLastEpisodeKey(),JSON.stringify({season:Number(s||1),episode:Number(e||1),updatedAt:Date.now()}));}catch{}}
-    function f2wReadLastTvEpisode(){if(mediaType!=='tv')return null;try{const v=JSON.parse(localStorage.getItem(f2wLastEpisodeKey())||'null');return v&&Number(v.season)>0&&Number(v.episode)>0?v:null;}catch{return null;}}
     function f2wFmtResume(sec){sec=Math.max(0,Number(sec||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60);return h?`${h}h ${m}m`:`${m}m`;}
     function f2wShowResumePrompt(seconds){
       if(window.__f2wResumePromptShown||seconds<30)return;
@@ -836,7 +829,7 @@ html{overflow-y:scroll}
       box.style.cssText='position:fixed;left:50%;top:88px;transform:translateX(-50%);z-index:2147483000;background:#071321;color:#fff;border:1px solid #d51b32;border-radius:12px;padding:12px 14px;box-shadow:0 15px 50px #000a;display:flex;gap:10px;align-items:center;font:700 12px Arial,sans-serif;max-width:calc(100vw - 24px)';
       box.innerHTML=`<span>Continue where you left off at <b>${f2wFmtResume(seconds)}</b>?</span><button id="f2w-resume-continue" style="border:0;border-radius:8px;padding:8px 11px;background:#d51b32;color:white;font-weight:800;cursor:pointer">Continue</button><button id="f2w-resume-startover" style="border:1px solid #35506a;border-radius:8px;padding:8px 11px;background:#0a1928;color:#b8c8d8;font-weight:800;cursor:pointer">Start over</button>`;
       document.body.appendChild(box);
-      box.querySelector('#f2w-resume-continue')?.addEventListener('click',()=>{box.remove();lastLoadedPlaybackKey='';lastLoadedEmbedUrl='';loadPlayer();});
+      box.querySelector('#f2w-resume-continue')?.addEventListener('click',()=>box.remove());
       box.querySelector('#f2w-resume-startover')?.addEventListener('click',async()=>{
         window.__f2wStartOverRequested=true;window.__f2wCloudResumeSeconds=0;
         try{localStorage.removeItem(f2wResumeKey(mediaType,document.getElementById('season-select')?.value||1,document.getElementById('episode-select')?.value||1));}catch{}
@@ -846,43 +839,14 @@ html{overflow-y:scroll}
       setTimeout(()=>box?.remove(),12000);
     }
     async function f2wLoadCloudResume(){
-      if(!mediaId)return;
-      const seasonEl=document.getElementById('season-select'),episodeEl=document.getElementById('episode-select');
-      // Wait for TMDB to populate both selectors before deciding which episode owns this position.
-      if(mediaType==='tv'&&(!seasonEl?.options?.length||!episodeEl?.options?.length))return;
-      const s=Number(seasonEl?.value||1),e=Number(episodeEl?.value||1);
-      const episodeKey=f2wResumeKey(mediaType,s,e);
-      if(f2wCloudResumeLoadedKey===episodeKey)return;
-      f2wCloudResumeLoadedKey=episodeKey;
-      const requestId=++f2wCloudResumeRequest;
-      let localSec=0;
-      try{localSec=Number(localStorage.getItem(episodeKey)||0);}catch{}
-      // Never carry the previous episode's cloud timestamp into the newly selected episode.
-      window.__f2wCloudResumeSeconds=Number.isFinite(localSec)?localSec:0;
-      const params=new URLSearchParams(window.location.search);
-      const routeResume=Number(params.get('resume')||0);
-      const routeSeason=Number(params.get('season')||0),routeEpisode=Number(params.get('episode')||0);
-      const routeMatches=mediaType!=='tv'||((!routeSeason&&!routeEpisode)||(routeSeason===s&&routeEpisode===e));
-      if(Number.isFinite(routeResume)&&routeResume>10&&routeMatches){
-        window.__f2wCloudResumeSeconds=routeResume;
-        try{localStorage.setItem(episodeKey,String(Math.floor(routeResume)));}catch{}
-        return;
-      }
-      if(localSec>10)f2wShowResumePrompt(localSec);
+      if(f2wCloudResumeLoaded||!mediaId)return;
+      f2wCloudResumeLoaded=true;
       try{
         const {data:{session}}=await chatSupabase.auth.getSession();if(!session?.user)return;
+        const s=Number(document.getElementById('season-select')?.value||1),e=Number(document.getElementById('episode-select')?.value||1);
         const {data,error}=await chatSupabase.rpc('get_my_playback_progress_v132',{p_media_type:mediaType,p_media_id:Number(mediaId),p_season:s,p_episode:e});
-        if(error)throw error;
-        // Ignore slow responses for an episode the user has already switched away from.
-        if(requestId!==f2wCloudResumeRequest||f2wResumeKey(mediaType,Number(seasonEl?.value||1),Number(episodeEl?.value||1))!==episodeKey)return;
-        const row=Array.isArray(data)?data[0]:data;
-        const sec=Number(row?.position_seconds||0);
-        if(sec>10){
-          const best=Math.max(sec,localSec);
-          window.__f2wCloudResumeSeconds=best;
-          try{localStorage.setItem(episodeKey,String(best));}catch{}
-          if(localSec<=10)f2wShowResumePrompt(sec);
-        }
+        if(error)throw error;const row=Array.isArray(data)?data[0]:data;const sec=Number(row?.position_seconds||0);
+        if(sec>10){window.__f2wCloudResumeSeconds=sec;try{localStorage.setItem(f2wResumeKey(mediaType,s,e),String(sec));}catch{} f2wShowResumePrompt(sec);}
       }catch(err){console.warn('Cloud resume unavailable:',err?.message||err);}
     }
     function f2wQueueCloudResumeSave(seconds,duration,status,s=1,e=1){
@@ -897,80 +861,46 @@ html{overflow-y:scroll}
     // Fetch cloud state in parallel; never block initial playback on Supabase.
     setTimeout(f2wLoadCloudResume,0);
 
-    // Persist the most recently reported position every 30 seconds, independently
-    // of provider event frequency. Cross-origin providers must report progress to us
-    // at least once; browsers do not expose their internal currentTime to the parent.
-    setInterval(()=>{
-      const p=window.__f2wLatestProgress;
-      if(!p||p.mediaType!==mediaType||!mediaId)return;
-      const s=Number(document.getElementById('season-select')?.value||1);
-      const e=Number(document.getElementById('episode-select')?.value||1);
-      if(mediaType==='tv'&&(s!==p.season||e!==p.episode))return;
-      const key=f2wResumeKey(mediaType,s,e);
-      try{localStorage.setItem(key,String(Math.floor(p.seconds)));}catch{}
-      f2wRememberTvEpisode(s,e);
-      f2wQueueCloudResumeSave(p.seconds,p.duration,'playing',s,e);
-    },30000);
-
-    // Source-agnostic player progress integration. Only accept messages from
-    // the currently loaded iframe, then normalize common provider progress
-    // payloads. This supports sources that expose postMessage progress without
-    // assuming they share Flix2Watch's origin or exact event field names.
+    // VidSrcMe player integration: save progress from its documented
+    // postMessage PLAYER_EVENT payload. This does not change sources or react
+    // to popup/new-tab activity; closing an external tab leaves playback intact.
     window.addEventListener('message', (event) => {
+      if (event.origin !== 'https://player.flix2watch.com') return;
+      const payload = event.data;
+      if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
+
+      const info = payload.data.player_info || {};
+      const status = String(payload.data.player_status || '');
+      if(status==='playing'){ const starting=document.getElementById('f2w-player-starting'); if(starting) starting.style.display='none'; }
+      const progress = Number(payload.data.player_progress || 0);
+      const eventType = info.mediaType === 'tv' ? 'tv' : 'movie';
+      const id = info.imdb || info.tmdb || currentImdbId || mediaId;
+      if (!id) return;
+
+      const s = Number(info.season || 1);
+      const e = Number(info.episode || 1);
+      const key = f2wResumeKey(eventType,s,e);
+      const duration = Number(payload.data.player_duration || payload.data.duration || info.duration || 0);
+
       try {
-        const frame = document.getElementById('video-frame');
-        if (!frame || event.source !== frame.contentWindow) return;
-        let payload = event.data;
-        if (typeof payload === 'string') {
-          try { payload = JSON.parse(payload); } catch { return; }
-        }
-        if (!payload || typeof payload !== 'object') return;
-        const data = payload.data && typeof payload.data === 'object' ? payload.data
-          : payload.detail && typeof payload.detail === 'object' ? payload.detail : payload;
-        const info = data.player_info || data.playerInfo || data.info || {};
-        const rawStatus = data.player_status ?? data.status ?? data.event ?? data.action ?? payload.type ?? '';
-        let status = String(rawStatus).toLowerCase();
-        const progressValue = data.player_progress ?? data.currentTime ?? data.current_time ??
-          data.position_seconds ?? data.position ?? data.time ?? info.currentTime ?? info.current_time;
-        const durationValue = data.player_duration ?? data.duration ?? data.duration_seconds ??
-          info.duration ?? info.duration_seconds;
-        const progress = Number(progressValue);
-        const duration = Number(durationValue || 0);
-        if (!Number.isFinite(progress) || progress < 0) return;
-        if (!status || /timeupdate|time_update|progress|playing|playback|player_event/i.test(status)) status = 'playing';
-        if (/pause/.test(status)) status = 'paused';
-        else if (/seek/.test(status)) status = 'seeked';
-        else if (/ended|complete|finished/.test(status)) status = 'completed';
-        else if (!/^(playing|paused|seeked|completed)$/.test(status)) return;
-
-        const eventType = (info.mediaType === 'tv' || info.media_type === 'tv') ? 'tv' : mediaType;
-        const s = Number(info.season || document.getElementById('season-select')?.value || 1);
-        const e = Number(info.episode || document.getElementById('episode-select')?.value || 1);
-        const key = f2wResumeKey(eventType, s, e);
-        if (status === 'playing' || status === 'paused' || status === 'seeked') {
-          try { localStorage.setItem(key, String(Math.floor(progress))); } catch (_) {}
-          f2wRememberTvEpisode(s,e);
-          window.__f2wLatestProgress={mediaType:eventType,season:s,episode:e,seconds:progress,duration,updatedAt:Date.now()};
-          window.__f2wCloudResumeSeconds = progress;
+        if ((status === 'playing' || status === 'paused' || status === 'seeked') && Number.isFinite(progress) && progress >= 0) {
+          localStorage.setItem(key, String(progress));
+          window.__f2wCloudResumeSeconds=progress;
         } else if (status === 'completed') {
-          window.__f2wLatestProgress=null;
-          try { localStorage.removeItem(key); } catch (_) {}
-          window.__f2wCloudResumeSeconds = 0;
-        }
-        f2wQueueCloudResumeSave(progress, duration, status, s, e);
-
-        if (status === 'playing') {
-          const starting = document.getElementById('f2w-player-starting');
-          if (starting) starting.style.display = 'none';
-        }
-        if (status === 'completed' && eventType === 'tv' && currentServer === 'flix2watchapi') {
-          const episodeSelect = document.getElementById('episode-select');
-          const nextEpisode = e + 1;
-          if (episodeSelect && [...episodeSelect.options].some(opt => Number(opt.value) === nextEpisode)) {
-            episodeSelect.value = String(nextEpisode);
-          }
+          localStorage.removeItem(key);window.__f2wCloudResumeSeconds=0;
         }
       } catch (_) {}
+      f2wQueueCloudResumeSave(progress,duration,status,s,e);
+
+      // Keep Flix2Watch's own episode selectors in sync after VidSrcMe finishes
+      // and auto-advances. We do not force any source switch.
+      if (status === 'completed' && eventType === 'tv' && currentServer === 'flix2watchapi') {
+        const episodeSelect = document.getElementById('episode-select');
+        const nextEpisode = e + 1;
+        if (episodeSelect && [...episodeSelect.options].some(opt => Number(opt.value) === nextEpisode)) {
+          episodeSelect.value = String(nextEpisode);
+        }
+      }
     });
 
     /* ================= EXTENDED WATCH PAGE ================= */
@@ -6714,8 +6644,6 @@ if(currentUser){
     const urlParams = new URLSearchParams(window.location.search);
     const mediaId = urlParams.get('id');
     const mediaType = urlParams.get('type') || 'movie';
-    // Playback providers prefer IMDb IDs; TMDB season/episode catalog endpoints require a TMDB numeric ID.
-    let tmdbMediaId = /^\\d+$/.test(String(mediaId||'')) ? String(mediaId) : '';
     let currentServer = 'flix2watchapi';
     let currentImdbId = '';
     let tvSeasonsData = [];
@@ -6985,73 +6913,48 @@ if(currentUser){
     // Metadata is public and must start independently of authentication.
     startWatchMetadata();
 
-    async function fetchMediaMetadata() {
-      logTerminal(`Resolving ${mediaType.toUpperCase()} metadata for ID: ${mediaId}...`);
-      try {
-        let data=null;
-        if (/^tt\\d+$/i.test(String(mediaId||''))) {
-          // IMDb IDs cannot be passed directly to /tv/{id}; resolve them through TMDB /find first.
-          currentImdbId=String(mediaId).trim();
-          const findUrl=`https://api.themoviedb.org/3/find/${encodeURIComponent(currentImdbId)}?api_key=${API_KEY}&external_source=imdb_id`;
-          const findResponse=await fetch(findUrl,{cache:'no-store'});
-          if(!findResponse.ok)throw new Error(`TMDB IMDb lookup returned ${findResponse.status}`);
-          const found=await findResponse.json();
-          const matches=mediaType==='tv'?(found.tv_results||[]):(found.movie_results||[]);
-          const match=matches[0];
-          if(!match?.id)throw new Error(`No TMDB ${mediaType} record matched IMDb ID ${currentImdbId}`);
-          tmdbMediaId=String(match.id);
-          const detailResponse=await fetch(`https://api.themoviedb.org/3/${mediaType}/${encodeURIComponent(tmdbMediaId)}?api_key=${API_KEY}&append_to_response=external_ids`,{cache:'no-store'});
-          if(!detailResponse.ok)throw new Error(`TMDB details returned ${detailResponse.status}`);
-          data=await detailResponse.json();
-          currentImdbId=String(data?.external_ids?.imdb_id||data?.imdb_id||currentImdbId).trim();
-        } else {
-          const endpoint=`https://api.themoviedb.org/3/${mediaType}/${encodeURIComponent(tmdbMediaId||mediaId)}?api_key=${API_KEY}&append_to_response=external_ids`;
-          const response=await fetch(endpoint,{cache:'no-store'});
-          if(!response.ok)throw new Error(`TMDB metadata returned ${response.status}`);
-          data=await response.json();
-          tmdbMediaId=String(data.id||tmdbMediaId||mediaId);
-          currentImdbId=String(data?.external_ids?.imdb_id||data?.imdb_id||(/^tt\\d+$/i.test(String(mediaId||''))?mediaId:'')).trim();
-        }
+    function fetchMediaMetadata() {
+      const endpoint = `https://api.themoviedb.org/3/${mediaType}/${mediaId}?api_key=${API_KEY}&append_to_response=external_ids`;
+      logTerminal(`Querying TMDB for metadata payload ID: ${mediaId}...`);
 
-        const title=data.title||data.name;
-        const releaseDate=data.release_date||data.first_air_date;
-        if(!title)throw new Error('TMDB returned no title for this ID');
-        currentFavoriteTitle=title||'';
-        currentFavoritePosterPath=data.poster_path||'';
-        updateFavoriteButton();
-        saveCurrentToRecentlyViewed();
-        document.getElementById('detail-title').textContent=title;
-        document.getElementById('detail-date').innerHTML=`<i class="fa-regular fa-calendar"></i> ${releaseDate?releaseDate.split('-')[0]:'N/A'}`;
-        document.getElementById('detail-rating').innerHTML=`<i class="fa-solid fa-star"></i> ${data.vote_average?data.vote_average.toFixed(1):'NR'}`;
-        document.getElementById('detail-type').textContent=mediaType==='tv'?'TV Series Matrix':'Feature Film';
-        document.getElementById('detail-overview').textContent=data.overview||'No synopsis available.';
-        if(data.poster_path)document.getElementById('detail-poster').src=`https://image.tmdb.org/t/p/w500${data.poster_path}`;
-        window.dispatchEvent(new CustomEvent('flix2watch:media-ready',{detail:{id:mediaId,tmdbId:tmdbMediaId,type:mediaType,title:title||''}}));
+      fetch(endpoint)
+        .then(res => res.json())
+        .then(data => {
+          const title = data.title || data.name;
+          const releaseDate = data.release_date || data.first_air_date;
+          currentImdbId = String(data?.external_ids?.imdb_id || data?.imdb_id || '').trim();
 
-        if(mediaType==='tv'&&Array.isArray(data.seasons)){
-          tvSeasonsData=data.seasons.filter(season=>Number(season.season_number)>=1&&Number(season.episode_count)>0);
-          const tvControls=document.getElementById('tv-controls');
-          tvControls?.removeAttribute('hidden');
-          tvControls?.setAttribute('aria-hidden','false');
-          tvControls?.classList.add('active');
-          tvControls?.style.setProperty('display','flex','important');
-          tvControls?.style.setProperty('visibility','visible','important');
-          populateSeasons();
-        }else{
-          const tvControls=document.getElementById('tv-controls');
-          tvControls?.setAttribute('hidden','');
-          tvControls?.setAttribute('aria-hidden','true');
-          tvControls?.classList.remove('active');
-          tvControls?.style.removeProperty('display');
-          tvControls?.style.removeProperty('visibility');
+          currentFavoriteTitle = title || '';
+          currentFavoritePosterPath = data.poster_path || '';
+          updateFavoriteButton();
+          saveCurrentToRecentlyViewed();
+
+          document.getElementById('detail-title').textContent = title;
+          document.getElementById('detail-date').innerHTML = `<i class="fa-regular fa-calendar"></i> ${releaseDate ? releaseDate.split('-')[0] : 'N/A'}`;
+          document.getElementById('detail-rating').innerHTML = `<i class="fa-solid fa-star"></i> ${data.vote_average ? data.vote_average.toFixed(1) : 'NR'}`;
+          document.getElementById('detail-type').textContent = mediaType === 'tv' ? 'TV Series Matrix' : 'Feature Film';
+          document.getElementById('detail-overview').textContent = data.overview || 'No synopsis available.';
+
+          if (data.poster_path) {
+            document.getElementById('detail-poster').src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
+          }
+          window.dispatchEvent(new CustomEvent('flix2watch:media-ready',{detail:{id:mediaId,type:mediaType,title:title||''}}));
+
+          if (mediaType === 'tv' && data.seasons) {
+            tvSeasonsData = data.seasons.filter(s => s.season_number >= 1 && s.episode_count > 0);
+            populateSeasons();
+            document.getElementById('tv-controls').classList.add('active');
+          } else {
+            loadPlayer();
+          }
+
+          logTerminal(`Successfully parsed metadata for "${title}".`, 'success');
+        })
+        .catch(err => {
+          console.error('Metadata error:', err);
+          logTerminal('Failed to retrieve metadata properties from TMDB API.', 'info');
           loadPlayer();
-        }
-        logTerminal(`Successfully parsed metadata for "${title}" (TMDB ID ${tmdbMediaId}).`,'success');
-      }catch(err){
-        console.error('Metadata error:',err);
-        logTerminal(`Failed to resolve title/episode metadata: ${err?.message||err}`,'info');
-        loadPlayer();
-      }
+        });
     }
 
     function populateSeasons() {
@@ -7066,82 +6969,48 @@ if(currentUser){
       });
 
       if (tvSeasonsData.length > 0) {
-        const requestedSeason = Number(urlParams.get('season') || 0);
-        const lastEpisode = f2wReadLastTvEpisode();
-        const preferredSeason = requestedSeason || (!urlParams.get('episode') && lastEpisode ? Number(lastEpisode.season) : 0);
-        const initialSeason = tvSeasonsData.find(season => Number(season.season_number) === preferredSeason) || tvSeasonsData[0];
-        seasonSelect.value = String(initialSeason.season_number);
-        fetchEpisodes(initialSeason.season_number);
+        fetchEpisodes(tvSeasonsData[0].season_number);
       }
     }
 
     function onSeasonChange() {
-      const seasonNum = Number(document.getElementById('season-select')?.value||1);
-      // A new season invalidates pending episode responses and any cached resume value.
-      f2wCloudResumeLoadedKey='';
-      window.__f2wCloudResumeSeconds=0;
+      const seasonNum = document.getElementById('season-select').value;
       fetchEpisodes(seasonNum);
     }
 
-    async function fetchEpisodes(seasonNumber) {
-      const requestId=++f2wEpisodeFetchRequest;
-      const requestedSeason=Number(seasonNumber||1);
-      logTerminal(`Querying episodes for Season ${requestedSeason}...`);
-      const episodeSelect=document.getElementById('episode-select');
-      if(episodeSelect){episodeSelect.disabled=true;episodeSelect.innerHTML='<option value="">Loading episodes…</option>';}
-      let data=null,lastError=null;
-      // Retry transient TMDB/network failures once; never leave the selector stuck on “Loading”.
-      for(let attempt=0;attempt<2;attempt++){
-        try{
-          const res=await fetch(`https://api.themoviedb.org/3/tv/${encodeURIComponent(tmdbMediaId||mediaId)}/season/${requestedSeason}?api_key=${API_KEY}`,{cache:'no-store'});
-          if(!res.ok)throw new Error(`TMDB returned ${res.status}`);
-          data=await res.json();
-          if(!Array.isArray(data.episodes))throw new Error('TMDB response did not contain an episodes list');
-          lastError=null;break;
-        }catch(err){lastError=err;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,500));}
-      }
-      if(requestId!==f2wEpisodeFetchRequest||Number(document.getElementById('season-select')?.value)!==requestedSeason)return;
-      const select=document.getElementById('episode-select');
-      if(!select)return;
-      select.innerHTML='';
-      if(lastError||!data){
-        console.error('Error fetching episodes:',lastError);
-        select.disabled=false;
-        const opt=document.createElement('option');opt.value='';opt.textContent='Episodes unavailable — reselect season to retry';select.appendChild(opt);
-        logTerminal('Could not fetch episodes for this season. Select the season again to retry.','info');
-        return;
-      }
-      if(data.episodes.length){
-        data.episodes.forEach(ep=>{
-          const opt=document.createElement('option');
-          opt.value=String(ep.episode_number);
-          opt.textContent=`Ep ${ep.episode_number}: ${ep.name||'Untitled episode'}`;
-          select.appendChild(opt);
+    function fetchEpisodes(seasonNumber) {
+      logTerminal(`Querying episodes for Season ${seasonNumber}...`);
+      fetch(`https://api.themoviedb.org/3/tv/${mediaId}/season/${seasonNumber}?api_key=${API_KEY}`)
+        .then(res => res.json())
+        .then(data => {
+          const episodeSelect = document.getElementById('episode-select');
+          episodeSelect.innerHTML = '';
+
+          if (data.episodes && data.episodes.length > 0) {
+            data.episodes.forEach(ep => {
+              const opt = document.createElement('option');
+              opt.value = ep.episode_number;
+              opt.textContent = `Ep ${ep.episode_number}: ${ep.name}`;
+              episodeSelect.appendChild(opt);
+            });
+            logTerminal(`Loaded ${data.episodes.length} episodes for Season ${seasonNumber}.`, 'success');
+          } else {
+            const opt = document.createElement('option');
+            opt.value = 1;
+            opt.textContent = 'Episode 1';
+            episodeSelect.appendChild(opt);
+          }
+          loadPlayer();
+        })
+        .catch(err => {
+          console.error('Error fetching episodes:', err);
+          logTerminal('Failed to fetch episodes list.', 'info');
+          loadPlayer();
         });
-        logTerminal(`Loaded ${data.episodes.length} episodes for Season ${requestedSeason}.`,'success');
-      }else{
-        const opt=document.createElement('option');opt.value='';opt.textContent='No episodes listed for this season';select.appendChild(opt);
-      }
-      const requestedSeasonFromUrl=Number(urlParams.get('season')||0);
-      const requestedEpisode=Number(urlParams.get('episode')||0);
-      const lastEpisode=f2wReadLastTvEpisode();
-      if(!window.__f2wInitialTvEpisodeSelectionDone){
-        let preferredEpisode=0;
-        if(requestedSeasonFromUrl===requestedSeason&&requestedEpisode>0)preferredEpisode=requestedEpisode;
-        else if(!requestedSeasonFromUrl&&!requestedEpisode&&lastEpisode&&Number(lastEpisode.season)===requestedSeason)preferredEpisode=Number(lastEpisode.episode);
-        if(preferredEpisode>0&&[...select.options].some(opt=>Number(opt.value)===preferredEpisode))select.value=String(preferredEpisode);
-        window.__f2wInitialTvEpisodeSelectionDone=true;
-      }
-      select.disabled=false;
-      f2wCloudResumeLoadedKey='';
-      window.__f2wCloudResumeSeconds=0;
-      f2wLoadCloudResume().finally(()=>{if(requestId===f2wEpisodeFetchRequest)loadPlayer();});
     }
 
     function onEpisodeChange() {
-      f2wCloudResumeLoadedKey='';
-      window.__f2wCloudResumeSeconds=0;
-      f2wLoadCloudResume().finally(()=>loadPlayer());
+      loadPlayer();
     }
 
     function loadPlayer() {
@@ -7220,14 +7089,7 @@ if(currentUser){
             // between TMDB and IMDb depending on metadata timing, which made saved
             // positions appear to vanish on a later visit.
             const progressKey = `f2w_resume_${mediaType}_${mediaId}${mediaType === 'tv' ? `_s${seasonNum}e${episodeNum}` : ''}`;
-            const routeResume = !window.__f2wContinueWatchingResumeConsumed ? Number(urlParams.get('resume') || 0) : 0;
-            const useRouteResume = Number.isFinite(routeResume) && routeResume > 10;
-            const saved = useRouteResume ? routeResume : Math.max(Number(localStorage.getItem(progressKey) || 0), Number(window.__f2wCloudResumeSeconds || 0));
-            if (useRouteResume) {
-              window.__f2wContinueWatchingResumeConsumed = true;
-              window.__f2wCloudResumeSeconds = routeResume;
-              try { localStorage.setItem(progressKey, String(Math.floor(routeResume))); } catch (_) {}
-            }
+            const saved = Math.max(Number(localStorage.getItem(progressKey) || 0), Number(window.__f2wCloudResumeSeconds || 0));
             if (Number.isFinite(saved) && saved > 10 && !window.__f2wStartOverRequested) embedUrl += `&startAt=${Math.floor(saved)}`;
           } catch (_) {}
           break;
@@ -7335,6 +7197,11 @@ if(currentUser){
       if(starting) starting.style.display=(currentServer==='flix2watchapi')?'flex':'none';
       iframe.src = embedUrl;
       if(currentServer==='flix2watchapi'){
+        iframe.addEventListener('load',()=>{
+          forceFlix2WatchSubtitlesOff();
+          setTimeout(forceFlix2WatchSubtitlesOff,250);
+          setTimeout(forceFlix2WatchSubtitlesOff,900);
+        },{once:true});
         // Keep the animated startup cover visible until the player reports
         // actual playback, instead of exposing the provider's black boot frame.
         // A fallback removes it if that provider event is unavailable.
@@ -7343,6 +7210,25 @@ if(currentUser){
       }
       const targetLabel = mediaType === 'tv' ? `S${seasonNum}E${episodeNum}` : 'Movie';
       logTerminal(`Stream routed via ${currentServer.toUpperCase()} [${targetLabel}].`, 'success');
+    }
+
+    function forceFlix2WatchSubtitlesOff(){
+      if(currentServer!=='flix2watchapi')return;
+      const frame=document.getElementById('video-frame');
+      const w=frame?.contentWindow;
+      if(!w)return;
+      const target='https://player.flix2watch.com';
+      // The provider does not document a dedicated subtitle-off query flag.
+      // Send the common disable command shapes as a best-effort fallback; unknown
+      // messages are ignored by the iframe. The URL also uses ds_lang=off.
+      const commands=[
+        {type:'PLAYER_COMMAND',action:'subtitles',value:'off'},
+        {type:'PLAYER_COMMAND',command:'subtitles',value:false},
+        {type:'PLAYER_COMMAND',command:'subtitle',value:'off'},
+        {type:'PLAYER_COMMAND',action:'captions',value:false},
+        {type:'PLAYER_COMMAND',command:'cc',value:false}
+      ];
+      for(const msg of commands){try{w.postMessage(msg,target)}catch{}}
     }
 
     function switchServer(serverName, btnElement) {
@@ -7377,53 +7263,39 @@ if(currentUser){
       loadPlayer();
     }
   
-    // Save compatible progress events from whichever supported player is active.
-    // The iframe source check prevents unrelated pages/popups from writing progress.
+    // VidSrcMe player integration: save progress from its documented
+    // postMessage PLAYER_EVENT payload. This does not change sources or react
+    // to popup/new-tab activity; closing an external tab leaves playback intact.
     window.addEventListener('message', (event) => {
-      const frame = document.getElementById('video-frame');
-      if (!frame || !frame.contentWindow || event.source !== frame.contentWindow) return;
+      if (event.origin !== 'https://player.flix2watch.com') return;
+      const payload = event.data;
+      if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
 
-      let payload = event.data;
-      if (typeof payload === 'string') {
-        try { payload = JSON.parse(payload); } catch (_) { return; }
-      }
-      if (!payload || typeof payload !== 'object') return;
+      const info = payload.data.player_info || {};
+      const status = String(payload.data.player_status || '');
+      if(status==='playing'){ const starting=document.getElementById('f2w-player-starting'); if(starting) starting.style.display='none'; }
+      const progress = Number(payload.data.player_progress || 0);
+      const eventType = info.mediaType === 'tv' ? 'tv' : 'movie';
+      const id = info.imdb || info.tmdb || currentImdbId || mediaId;
+      if (!id) return;
 
-      const data = payload.data && typeof payload.data === 'object' ? payload.data : payload;
-      const info = data.player_info || data.playerInfo || data.info || {};
-      const rawStatus = data.player_status ?? data.playerStatus ?? data.status ?? data.event ?? payload.type ?? payload.event;
-      const statusText = String(rawStatus || '').toLowerCase();
-      const status = /complete|ended|finish/.test(statusText) ? 'completed'
-        : /pause/.test(statusText) ? 'paused'
-        : /seek/.test(statusText) ? 'seeked'
-        : /play|progress|timeupdate/.test(statusText) ? 'playing' : '';
-      const rawProgress = data.player_progress ?? data.currentTime ?? data.current_time ?? data.position ?? data.progress ?? data.seconds;
-      const progress = Number(rawProgress);
-      const duration = Number(data.player_duration ?? data.duration ?? data.totalDuration ?? info.duration ?? 0);
-      const eventType = String(info.mediaType || info.media_type || mediaType || 'movie').toLowerCase() === 'tv' ? 'tv' : 'movie';
-      const id = info.imdb || info.tmdb || info.id || currentImdbId || mediaId;
-      if (!id || !Number.isFinite(progress) || progress < 0 || !status) return;
-
-      if (status === 'playing') {
-        const starting = document.getElementById('f2w-player-starting');
-        if (starting) starting.style.display = 'none';
-      }
-      const s = Number(info.season || info.season_number || document.getElementById('season-select')?.value || 1);
-      const e = Number(info.episode || info.episode_number || document.getElementById('episode-select')?.value || 1);
-      const key = f2wResumeKey(eventType, s, e);
+      const s = Number(info.season || 1);
+      const e = Number(info.episode || 1);
+      const key = f2wResumeKey(eventType,s,e);
+      const duration = Number(payload.data.player_duration || payload.data.duration || info.duration || 0);
 
       try {
-        if (status === 'playing' || status === 'paused' || status === 'seeked') {
+        if ((status === 'playing' || status === 'paused' || status === 'seeked') && Number.isFinite(progress) && progress >= 0) {
           localStorage.setItem(key, String(progress));
-          f2wRememberTvEpisode(s,e);
-          window.__f2wCloudResumeSeconds = progress;
+          window.__f2wCloudResumeSeconds=progress;
         } else if (status === 'completed') {
-          localStorage.removeItem(key);
-          window.__f2wCloudResumeSeconds = 0;
+          localStorage.removeItem(key);window.__f2wCloudResumeSeconds=0;
         }
       } catch (_) {}
-      f2wQueueCloudResumeSave(progress, duration, status, s, e);
+      f2wQueueCloudResumeSave(progress,duration,status,s,e);
 
+      // Keep Flix2Watch's own episode selectors in sync after VidSrcMe finishes
+      // and auto-advances. We do not force any source switch.
       if (status === 'completed' && eventType === 'tv' && currentServer === 'flix2watchapi') {
         const episodeSelect = document.getElementById('episode-select');
         const nextEpisode = e + 1;
