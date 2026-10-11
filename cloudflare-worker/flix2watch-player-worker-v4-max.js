@@ -642,11 +642,32 @@ function buildGuardJS() {
       media.__f2wLoudnessCompressor = compressor;
       media.__f2wLoudnessGain = gain;
       const resumeAudio = () => {
-        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+        if (ctx.state === 'suspended') {
+          // Resume only from a media event or user gesture, where browsers are
+          // most likely to permit AudioContext activation.
+          try { ctx.resume().catch(error => console.warn('[Flix2Watch] AudioContext resume failed', error)); } catch (_) {}
+        }
       };
       media.addEventListener('play', resumeAudio, { passive: true });
       media.addEventListener('playing', resumeAudio, { passive: true });
-      try { console.info('[Flix2Watch] loudness enhancement enabled', { sourceURL, gain: F2W_AUDIO_GAIN, compressor: true }); } catch (_) {}
+
+      // The observer can discover a video after playback has already started.
+      // In that case its original play/playing events have passed, leaving the
+      // Web Audio graph suspended and making the player sound silent. Try now,
+      // then retry from the next trusted interaction if autoplay restrictions
+      // prevent activation here.
+      if (!media.paused && !media.ended) resumeAudio();
+      const resumeAllF2WAudio = () => {
+        for (const audioContext of f2wAudioContexts) {
+          if (audioContext.state === 'suspended') {
+            try { audioContext.resume().catch(() => {}); } catch (_) {}
+          }
+        }
+      };
+      for (const eventName of ['pointerdown', 'keydown', 'touchstart']) {
+        try { document.addEventListener(eventName, resumeAllF2WAudio, { capture: true, passive: true }); } catch (_) {}
+      }
+      try { console.info('[Flix2Watch] loudness enhancement enabled', { sourceURL, gain: F2W_AUDIO_GAIN, compressor: true, contextState: ctx.state, mediaPaused: media.paused }); } catch (_) {}
     } catch (error) {
       try { console.warn('[Flix2Watch] audio boost failed to attach', error); } catch (_) {}
       // Unsupported or CORS-restricted media remains on its native audio path.
