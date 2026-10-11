@@ -1,0 +1,14 @@
+Flix2Watch v165 — enforcement dialog + realtime Staff role sync
+
+1) Run V165-REALTIME-STAFF-ROLE.sql once. It only adds chat_moderators to Supabase Realtime and is safe to rerun.
+2) Deploy the full v165 ZIP.
+3) Close old Flix2Watch tabs once and reopen/hard-refresh so v165 JS/service worker replaces legacy moderation code.
+
+Behavior:
+- Site Suspension and Account Ban are rendered by one modal/overlay. The blur is the overlay backdrop itself, never a persistent blur on page content.
+- Removing either restriction destroys the entire overlay, instantly removing the blur and interaction lock.
+- Suspended/banned users can only use Support or Log Out while the restriction is active.
+- Refreshing while suspended/banned reuses the account-scoped cached state immediately, then verifies it with Supabase.
+- Account Ban remains authoritative in account_enforcement_v146; the Rapid Worker already blocks future username/password login using this table.
+- Legacy account_login_bans realtime UI is disabled so it cannot create a second stale ban screen.
+- Staff grant/removal is broadcast through Supabase Realtime; affected users and viewed profiles repaint role styling without page refresh.

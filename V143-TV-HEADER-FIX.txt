@@ -1,0 +1,16 @@
+Flix2Watch v143 — TV / ultra-wide header cleanup
+
+What changed
+- Search Movies and Search Users are made substantially wider on wide-screen/TV layouts.
+- Their placeholders are forced site-wide to exactly "Search movies" and "Search users" so the purpose is always obvious.
+- Search controls keep a proper gap between each other and between Search Users and Chat.
+- Header action buttons now use a flex row on wide screens, so hidden auth/staff buttons collapse instead of leaving empty grid slots.
+- This removes the visible gap between Profile and Account when the controls between them are hidden.
+- Buttons have explicit minimum widths and 10px spacing so they remain visually detached instead of touching.
+- Extra-wide (2200px+) displays get even larger search fields.
+- The fix is injected from the shared global header runtime, so it applies to Home, Watch, Profile, Forum, Leaderboard, Users, genre pages, legal/support pages, etc.
+
+Install
+1. Deploy the full v143 ZIP.
+2. Hard refresh/reopen once so the v143 service-worker cache and shared header JS replace the old version.
+3. No Supabase SQL is required.

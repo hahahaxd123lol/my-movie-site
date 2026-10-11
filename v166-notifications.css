@@ -1,0 +1,4 @@
+#notification-menu[hidden]{display:none!important}
+#notification-menu:not([hidden]){display:block!important;z-index:2147483600!important}
+.f2w-v166-notification{display:flex!important;flex-direction:column!important;gap:4px!important;padding:12px 14px!important;text-decoration:none!important;border-bottom:1px solid rgba(148,163,184,.12)!important;color:#f8fafc!important;background:transparent!important}
+.f2w-v166-notification:hover{background:rgba(255,255,255,.04)!important}.f2w-v166-notification.unread{background:rgba(239,15,37,.08)!important}.f2w-v166-notification strong{font-weight:800!important;color:#fff!important}.f2w-v166-notification span{color:#b6c3d3!important}.f2w-v166-notification small{color:#7890a8!important}

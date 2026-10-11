@@ -1,0 +1,2833 @@
+/* Flix2Watch V35 — reliability / realtime / social hotfix layer */
+:root{--f2w-red:#e50914;--f2w-red-2:#ff1624;--f2w-panel:#07111d;--f2w-panel-2:#0a1625;--f2w-border:#1c2d43;--f2w-muted:#8294ad}
+
+/* Staff control must never be revealed by generic desktop header rules. */
+#staff-control-nav[hidden],#staff-control-nav[aria-disabled="true"],#account-staff-control[hidden],.f2w-staff-only[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+
+/* Keep all site brand marks on the same red master asset. */
+img[data-f2w-logo],.site-logo img,.brand img,.logo img,.staff-brand img,.f2w-brand img,header img[src*="flix2watch-logo"]{filter:none!important}
+
+/* Account / login controls must stay inside the viewport. */
+.account-modal,.account-card,.account-panel,.f2w-guest-card,.f2w-guest-rail,.auth-card{max-width:100%;box-sizing:border-box}
+.account-card input,.account-card select,.account-card textarea,.f2w-guest-card input,.f2w-guest-rail input,.auth-card input{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.account-card,.f2w-guest-card,.f2w-guest-rail{overflow:hidden}
+.f2w-home-stage{gap:18px!important}
+body.f2w-authenticated .f2w-home-stage{grid-template-columns:minmax(0,1fr)!important}
+body.f2w-authenticated .f2w-guest-rail{display:none!important}
+@media(max-width:760px){.account-card,.f2w-guest-card,.f2w-guest-rail{width:min(100%,calc(100vw - 24px))!important;margin-inline:auto!important}.account-modal{padding:12px!important}.f2w-home-stage{display:block!important}.f2w-home-stage>*+*{margin-top:16px}}
+
+/* Role-powered display-name effects. Highest role wins. */
+.f2w-role-name{position:relative;display:inline-flex;align-items:center;isolation:isolate;font-weight:800;--f2w-role-color:#fff;--f2w-role-soft:rgba(255,255,255,.45);color:var(--f2w-role-color)!important;text-shadow:0 0 7px var(--f2w-role-soft),0 0 15px var(--f2w-role-soft);animation:f2wNamePulse 2.1s ease-in-out infinite}
+.f2w-role-name::before,.f2w-role-name::after{content:"✦";position:absolute;font-size:.52em;line-height:1;color:var(--f2w-role-color);opacity:.85;pointer-events:none;filter:drop-shadow(0 0 4px var(--f2w-role-color));animation:f2wSpark 2.2s ease-in-out infinite}
+.f2w-role-name::before{left:-.78em;top:-.22em}.f2w-role-name::after{right:-.82em;bottom:-.2em;animation-delay:1.05s}
+.f2w-role-owner{--f2w-role-color:#ff2634;--f2w-role-soft:rgba(255,38,52,.65)}
+.f2w-role-staff{--f2w-role-color:#c084fc;--f2w-role-soft:rgba(192,132,252,.58)}
+.f2w-role-moderator{--f2w-role-color:#38bdf8;--f2w-role-soft:rgba(56,189,248,.58)}
+.f2w-role-support{--f2w-role-color:#22d3ee;--f2w-role-soft:rgba(34,211,238,.55)}
+.f2w-role-developer{--f2w-role-color:#34d399;--f2w-role-soft:rgba(52,211,153,.55)}
+.f2w-role-verified{--f2w-role-color:#facc15;--f2w-role-soft:rgba(250,204,21,.52)}
+.f2w-role-contributor{--f2w-role-color:#818cf8;--f2w-role-soft:rgba(129,140,248,.55)}
+.f2w-role-curator{--f2w-role-color:#f472b6;--f2w-role-soft:rgba(244,114,182,.55)}
+@keyframes f2wNamePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.17)}}
+@keyframes f2wSpark{0%,100%{opacity:.22;transform:translateY(2px) scale(.7) rotate(0deg)}45%{opacity:1;transform:translateY(-2px) scale(1.18) rotate(135deg)}}
+@media(prefers-reduced-motion:reduce){.f2w-role-name,.f2w-role-name::before,.f2w-role-name::after{animation:none!important}}
+
+/* Presence chips */
+.f2w-presence{display:inline-flex;align-items:center;gap:6px;font:700 .7rem/1.2 var(--font-mono,monospace);color:#9fb0c6}
+.f2w-presence-dot{width:8px;height:8px;border-radius:50%;background:#64748b;box-shadow:0 0 0 2px rgba(100,116,139,.12)}
+.f2w-presence.online .f2w-presence-dot{background:#21d879;box-shadow:0 0 9px rgba(33,216,121,.75)}
+.f2w-presence.offline .f2w-presence-dot{background:#ef3340;animation:f2wOfflineFlash 1.55s ease-in-out infinite;box-shadow:0 0 8px rgba(239,51,64,.55)}
+@keyframes f2wOfflineFlash{0%,100%{opacity:.38}50%{opacity:1}}
+
+/* Leaderboard */
+.f2w-leaderboard-page{max-width:1320px;margin:0 auto;padding:32px 22px 70px}
+.f2w-leader-hero{border:1px solid rgba(229,9,20,.38);border-radius:22px;padding:28px;background:linear-gradient(110deg,rgba(229,9,20,.13),rgba(8,17,30,.92) 45%,rgba(57,23,74,.22));box-shadow:0 20px 50px rgba(0,0,0,.2)}
+.f2w-leader-kicker{font:900 .75rem/1 var(--font-mono,monospace);letter-spacing:.13em;color:#ff2634;text-transform:uppercase}.f2w-leader-hero h1{font-size:clamp(2rem,4vw,3.4rem);margin:10px 0 8px}.f2w-leader-hero p{max-width:820px;color:#a9b6c9;margin:0}
+.f2w-leader-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}.f2w-leader-stat{padding:14px 16px;border:1px solid var(--f2w-border);border-radius:14px;background:rgba(7,17,29,.86)}.f2w-leader-stat span{display:block;color:#6f86a5;font:800 .68rem var(--font-mono,monospace);letter-spacing:.08em;text-transform:uppercase}.f2w-leader-stat strong{display:block;margin-top:5px;font-size:1.2rem}
+.f2w-leader-tabs{display:flex;gap:8px;overflow:auto;padding:8px;border:1px solid var(--f2w-border);border-radius:14px;background:#060f1a;margin-bottom:12px}.f2w-leader-tab{border:1px solid transparent;background:transparent;color:#9eb0c8;border-radius:10px;padding:10px 14px;font-weight:800;white-space:nowrap;cursor:pointer}.f2w-leader-tab.active{background:var(--f2w-red);color:#fff;border-color:#ff3340}
+.f2w-leader-list{display:grid;gap:9px}.f2w-leader-row{display:grid;grid-template-columns:58px minmax(230px,2.1fr) repeat(5,minmax(84px,.7fr)) 76px;align-items:center;gap:12px;border:1px solid var(--f2w-border);border-radius:16px;background:linear-gradient(100deg,#07111d,#091421);padding:12px 14px;min-height:82px}.f2w-leader-row.top{border-color:rgba(229,9,20,.4);box-shadow:inset 2px 0 0 var(--f2w-red)}.f2w-rank{font-weight:950;color:#ff2432}.f2w-leader-user{display:flex;align-items:center;gap:12px;min-width:0}.f2w-leader-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#101d2e;border:1px solid #2a3d56;flex:none}.f2w-leader-copy{min-width:0}.f2w-leader-copy strong{font-size:.92rem}.f2w-leader-copy small{display:block;color:#748ba9;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.f2w-leader-metric{text-align:center}.f2w-leader-metric b{display:block;font-size:.96rem}.f2w-leader-metric span{display:block;color:#59708f;font:700 .6rem var(--font-mono,monospace);letter-spacing:.06em;text-transform:uppercase;margin-top:3px}.f2w-score{border:1px solid rgba(229,9,20,.35);border-radius:10px;padding:9px 7px;text-align:center;color:#ff2f3b;font-weight:950}.f2w-leader-open{width:38px;height:38px;border-radius:10px;border:1px solid #20344d;background:#071423;color:#a9bdd5;cursor:pointer}.f2w-pagination{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:18px;flex-wrap:wrap}.f2w-page-btn{min-width:38px;height:38px;border:1px solid #243750;background:#071423;color:#b7c4d7;border-radius:9px;cursor:pointer}.f2w-page-btn.active{background:var(--f2w-red);border-color:#ff2c38;color:#fff}.f2w-page-btn:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:980px){.f2w-leader-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.f2w-leader-row{grid-template-columns:48px minmax(180px,1fr) 80px 80px 72px}.f2w-leader-row .f2w-leader-metric:nth-of-type(3),.f2w-leader-row .f2w-leader-metric:nth-of-type(4),.f2w-leader-row .f2w-leader-metric:nth-of-type(5){display:none}.f2w-leader-open{display:none}}
+@media(max-width:620px){.f2w-leaderboard-page{padding:18px 10px 50px}.f2w-leader-hero{padding:20px}.f2w-leader-stats{grid-template-columns:1fr 1fr}.f2w-leader-row{grid-template-columns:36px minmax(0,1fr) 68px;padding:10px}.f2w-leader-avatar{width:42px;height:42px}.f2w-leader-row .f2w-leader-metric{display:none}.f2w-leader-row .f2w-score{display:block}.f2w-rank{font-size:.82rem}}
+
+/* Recent title activity */
+.f2w-title-activity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}.f2w-title-activity-card{display:block;text-decoration:none;color:inherit;border:1px solid #1d3047;background:#071321;border-radius:14px;overflow:hidden;transition:.2s ease}.f2w-title-activity-card:hover{transform:translateY(-2px);border-color:#40536e}.f2w-title-activity-card img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:#111d2d}.f2w-title-activity-copy{padding:10px}.f2w-title-activity-copy strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.f2w-title-activity-copy small{display:block;color:#7187a5;margin-top:4px}
+
+/* Profile editing V35 */
+.f2w-edit-profile-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid #354761;background:#0a1726;color:#fff;font-weight:850;cursor:pointer}.f2w-edit-profile-btn:hover{border-color:#5d718e}.f2w-profile-modal{position:fixed;inset:0;z-index:100100;background:rgba(0,0,0,.74);backdrop-filter:blur(6px);display:grid;place-items:center;padding:18px}.f2w-profile-modal[hidden]{display:none!important}.f2w-profile-editor{width:min(900px,100%);max-height:min(760px,92vh);overflow:hidden;border:1px solid #243952;border-radius:20px;background:#07111d;display:grid;grid-template-columns:190px 1fr;box-shadow:0 30px 90px rgba(0,0,0,.55)}.f2w-profile-editor-nav{padding:18px 12px;border-right:1px solid #1b2c42;background:#050d17}.f2w-profile-editor-nav h3{margin:0 8px 14px}.f2w-edit-nav{width:100%;text-align:left;padding:10px 11px;border-radius:9px;border:0;background:transparent;color:#91a4be;font-weight:800;margin:2px 0;cursor:pointer}.f2w-edit-nav.active{background:rgba(229,9,20,.15);color:#fff;box-shadow:inset 2px 0 0 var(--f2w-red)}.f2w-profile-editor-body{padding:22px;overflow:auto}.f2w-editor-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}.f2w-editor-close{border:1px solid #263b54;background:#0a1727;color:#fff;width:38px;height:38px;border-radius:10px;cursor:pointer}.f2w-editor-section{display:none}.f2w-editor-section.active{display:block}.f2w-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.f2w-editor-field.full{grid-column:1/-1}.f2w-editor-field label{display:block;color:#8ca0bd;font:800 .66rem var(--font-mono,monospace);letter-spacing:.08em;margin-bottom:6px}.f2w-editor-field input,.f2w-editor-field textarea,.f2w-editor-field select{width:100%;box-sizing:border-box;border:1px solid #223750;border-radius:10px;background:#06111e;color:#fff;padding:11px 12px;outline:none}.f2w-editor-field textarea{min-height:100px;resize:vertical}.f2w-editor-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.f2w-editor-save{border:0;border-radius:10px;background:var(--f2w-red);color:#fff;padding:11px 16px;font-weight:900;cursor:pointer}.f2w-profile-extra{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.f2w-profile-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #273b54;border-radius:999px;padding:7px 10px;background:#081727;color:#acbbcf;font-size:.78rem}.f2w-profile-socials{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.f2w-profile-socials a{display:inline-flex;align-items:center;gap:6px;border:1px solid #293e59;border-radius:9px;padding:8px 10px;color:#dce5f1;text-decoration:none;background:#081625}
+@media(max-width:700px){.f2w-profile-editor{grid-template-columns:1fr;overflow:auto}.f2w-profile-editor-nav{display:flex;overflow:auto;border-right:0;border-bottom:1px solid #1b2c42;padding:9px}.f2w-profile-editor-nav h3{display:none}.f2w-edit-nav{white-space:nowrap;width:auto}.f2w-profile-editor-body{overflow:visible;padding:16px}.f2w-editor-grid{grid-template-columns:1fr}.f2w-editor-field.full{grid-column:auto}}
+
+/* DM user search */
+.f2w-dm-search-wrap{padding:8px 10px 10px;border-bottom:1px solid #192b40}.f2w-dm-search-wrap input{width:100%;box-sizing:border-box;border:1px solid #273b54;border-radius:9px;background:#06111d;color:#fff;padding:9px 10px}.f2w-dm-search-results{display:grid;gap:5px;margin-top:7px;max-height:220px;overflow:auto}.f2w-dm-result{display:flex;align-items:center;gap:9px;width:100%;border:1px solid transparent;border-radius:9px;background:#091726;color:#e7edf6;text-align:left;padding:7px;cursor:pointer}.f2w-dm-result:hover{border-color:#334b69}.f2w-dm-result img{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#122033}.f2w-dm-result small{display:block;color:#7188a5}
+
+/* Staff quick account moderation */
+.f2w-quick-mod{margin-top:12px;border:1px solid #23364d;border-radius:14px;background:#07131f;padding:14px}.f2w-quick-mod h3{margin:0 0 4px}.f2w-quick-mod>p{margin:0 0 12px;color:#7f92ad;font-size:.78rem}.f2w-quick-mod-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #17283a}.f2w-quick-mod-row:first-of-type{border-top:0}.f2w-quick-mod-copy strong{display:block}.f2w-quick-mod-copy span{display:block;color:#7487a3;font-size:.72rem;margin-top:3px}.f2w-switch{position:relative;width:44px;height:24px}.f2w-switch input{opacity:0;width:0;height:0}.f2w-switch span{position:absolute;inset:0;border-radius:999px;background:#27384e;cursor:pointer;transition:.18s}.f2w-switch span::before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;border-radius:50%;background:#d8e0ea;transition:.18s}.f2w-switch input:checked+span{background:#b90e19;box-shadow:0 0 12px rgba(229,9,20,.3)}.f2w-switch input:checked+span::before{transform:translateX(20px);background:#fff}.f2w-quick-reason{width:100%;box-sizing:border-box;margin-top:10px;border:1px solid #24374f;border-radius:9px;background:#06111d;color:#fff;padding:9px 10px}.f2w-quick-expiry{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.f2w-quick-expiry select{width:100%;box-sizing:border-box;border:1px solid #24374f;border-radius:9px;background:#06111d;color:#fff;padding:9px}
+
+/* Community enrichment */
+.f2w-community-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 16px}.f2w-community-metric{border:1px solid #21344b;border-radius:13px;padding:12px 14px;background:#071522}.f2w-community-metric b{font-size:1.05rem}.f2w-community-metric span{display:block;color:#7289a7;font-size:.7rem;margin-top:3px}.f2w-forum-tools{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}.f2w-forum-tools input,.f2w-forum-tools select{border:1px solid #273b54;border-radius:9px;background:#06111e;color:#fff;padding:9px 11px}.f2w-forum-tools input{flex:1;min-width:220px}.f2w-forum-rankbox{border:1px solid #21344b;border-radius:14px;background:#071522;padding:13px;margin:10px 0}.f2w-forum-rankbox h3{margin:0 0 10px}.f2w-forum-rankline{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid #17283a}.f2w-forum-rankline:first-of-type{border-top:0}.f2w-forum-rankline a{color:#dce6f5;text-decoration:none}.f2w-forum-rankline b{color:#ff3340}
+@media(max-width:720px){.f2w-community-metrics{grid-template-columns:1fr 1fr}}
+
+/* Privacy page */
+.f2w-policy-page{max-width:980px;margin:0 auto;padding:36px 20px 70px}.f2w-policy-card{border:1px solid #20344c;border-radius:20px;background:#07131f;padding:clamp(20px,4vw,38px)}.f2w-policy-card h1{font-size:clamp(2rem,4vw,3rem);margin:0 0 8px}.f2w-policy-card h2{margin:28px 0 8px}.f2w-policy-card p,.f2w-policy-card li{color:#a9b7ca;line-height:1.7}.f2w-policy-card a{color:#ff4a54}.f2w-policy-updated{font:700 .72rem var(--font-mono,monospace);color:#6d83a2}
+
+/* Toast used by V35 on non-staff pages */
+.f2w-toast{position:fixed;right:16px;bottom:16px;z-index:100300;max-width:min(390px,calc(100vw - 32px));border:1px solid #263a53;border-left:3px solid var(--f2w-red);border-radius:11px;background:#07111d;color:#eaf0f8;padding:12px 14px;box-shadow:0 20px 50px rgba(0,0,0,.5);font-size:.82rem}
+
+
+/* ============================================================
+   Flix2Watch v17 — realtime profile / role / comments polish
+   ============================================================ */
+
+/* Highest-role display names: animated gradient + moving sparkle layer. */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  isolation:isolate;
+  font-weight:850!important;
+  color:var(--f2w-role-color)!important;
+  background:
+    linear-gradient(100deg,
+      var(--f2w-role-color) 0%,
+      #ffffff 28%,
+      var(--f2w-role-color) 52%,
+      #ffffff 72%,
+      var(--f2w-role-color) 100%);
+  background-size:240% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:f2wRoleShimmer 3.2s linear infinite,f2wNamePulse 2.2s ease-in-out infinite;
+  text-shadow:none!important;
+  filter:drop-shadow(0 0 7px var(--f2w-role-soft));
+}
+.f2w-role-name::before,.f2w-role-name::after {
+  content:"✦";
+  -webkit-text-fill-color:var(--f2w-role-color);
+  color:var(--f2w-role-color);
+}
+@keyframes f2wRoleShimmer {
+  0%{background-position:180% 0}
+  100%{background-position:-60% 0}
+}
+
+#profile-hero.f2w-has-profile-banner {
+  position:relative;
+  overflow:hidden;
+}
+#profile-hero.f2w-has-profile-banner::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(3,7,13,.92),rgba(3,7,13,.70)),
+    var(--f2w-profile-banner) center/cover no-repeat;
+  z-index:0;
+  pointer-events:none;
+}
+#profile-hero.f2w-has-profile-banner>*{position:relative;z-index:1}
+
+.f2w-profile-presence {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-left:10px;
+  padding:6px 10px;
+  border:1px solid #263a52;
+  border-radius:999px;
+  background:rgba(5,12,20,.75);
+  color:#9fb0c6;
+  font-size:.72rem;
+  font-weight:800;
+  white-space:nowrap;
+}
+.f2w-profile-presence-dot {
+  width:9px;height:9px;border-radius:50%;
+  background:#ef3340;
+  box-shadow:0 0 10px rgba(239,51,64,.65);
+  animation:f2wPresenceBlink 1.45s ease-in-out infinite;
+}
+.f2w-profile-presence.online {
+  color:#79f0ad;border-color:rgba(33,216,121,.35);
+}
+.f2w-profile-presence.online .f2w-profile-presence-dot {
+  background:#21d879;box-shadow:0 0 12px rgba(33,216,121,.8);
+}
+@keyframes f2wPresenceBlink{0%,100%{opacity:.35}50%{opacity:1}}
+
+.f2w-profile-status-text {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-top:10px;
+  color:#dce6f4;
+  font-weight:750;
+}
+.f2w-profile-quote {
+  margin:11px 0 0;
+  padding:10px 13px;
+  border-left:3px solid var(--f2w-red);
+  background:rgba(4,11,18,.5);
+  color:#9db0c8;
+  border-radius:0 10px 10px 0;
+  font-style:italic;
+}
+
+.f2w-recently-watched-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(135px,1fr));
+  gap:12px;
+}
+.f2w-recent-watch-card {
+  display:block;
+  overflow:hidden;
+  border:1px solid #20354d;
+  border-radius:14px;
+  background:#071321;
+  text-decoration:none;
+  color:#fff;
+  transition:.18s ease;
+}
+.f2w-recent-watch-card:hover {
+  transform:translateY(-3px);
+  border-color:#516b8b;
+}
+.f2w-recent-watch-card img {
+  width:100%;
+  aspect-ratio:2/3;
+  object-fit:cover;
+  display:block;
+  background:#0d1927;
+}
+.f2w-recent-watch-card>div{padding:9px 10px}
+.f2w-recent-watch-card strong {
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:.86rem;
+}
+.f2w-recent-watch-card span {
+  display:block;
+  margin-top:4px;
+  color:#7088a6;
+  font-size:.68rem;
+}
+.f2w-profile-empty {
+  padding:18px;
+  border:1px dashed #263b53;
+  border-radius:12px;
+  color:#788da7;
+  background:rgba(5,12,20,.5);
+}
+
+.f2w-profile-comments-panel{margin-top:18px}
+.f2w-profile-comment-compose {
+  border:1px solid #20344c;
+  border-radius:14px;
+  padding:12px;
+  background:#06111d;
+  margin-bottom:12px;
+}
+.f2w-profile-comment-compose textarea {
+  width:100%;
+  min-height:88px;
+  resize:vertical;
+  box-sizing:border-box;
+  border:1px solid #273b54;
+  border-radius:10px;
+  background:#040d17;
+  color:#fff;
+  padding:11px 12px;
+  font:inherit;
+  outline:none;
+}
+.f2w-profile-comment-compose>div {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-top:9px;
+}
+.f2w-profile-comment-compose button {
+  border:0;
+  border-radius:9px;
+  padding:9px 13px;
+  background:var(--f2w-red);
+  color:#fff;
+  font-weight:850;
+  cursor:pointer;
+}
+.f2w-comment-login {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-wrap:wrap;
+  gap:10px!important;
+  color:#92a5bf;
+}
+.f2w-profile-comments{display:grid;gap:9px}
+.f2w-profile-comment {
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr);
+  gap:11px;
+  padding:12px;
+  border:1px solid #1e3147;
+  border-radius:13px;
+  background:linear-gradient(110deg,#07131f,#081522);
+}
+.f2w-profile-comment>img {
+  width:44px;height:44px;border-radius:50%;object-fit:cover;background:#101d2e;
+}
+.f2w-profile-comment-head {
+  display:flex;align-items:center;gap:8px;min-width:0;
+}
+.f2w-profile-comment-head>a {
+  font-weight:850;color:#fff;text-decoration:none;
+}
+.f2w-profile-comment-head>span {
+  color:#627997;font-size:.68rem;margin-left:auto;
+}
+.f2w-profile-comment-head>button {
+  width:28px;height:28px;border:1px solid #2a3d55;border-radius:8px;background:#07101a;color:#899bb2;cursor:pointer;
+}
+.f2w-profile-comment p {
+  margin:6px 0 0;color:#c3cfdf;line-height:1.5;white-space:pre-wrap;word-break:break-word;
+}
+
+/* Profile owner editing is now centralized in the Edit Profile modal. */
+.profile-authenticated-owner .profile-edit-panel,
+.profile-authenticated-owner .profile-private-control {
+  display:none!important;
+}
+.f2w-profile-editor-v17 {
+  width:min(980px,96vw)!important;
+  grid-template-columns:210px minmax(0,1fr)!important;
+}
+.f2w-profile-editor-v17 .f2w-profile-editor-nav {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.f2w-profile-editor-v17 .f2w-edit-nav {
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.f2w-profile-editor-v17 .f2w-editor-head h2 {
+  margin:0;font-size:1.45rem;
+}
+.f2w-profile-editor-v17 .f2w-editor-head small {
+  display:block;margin-top:4px;color:#7186a4;
+}
+.f2w-editor-help {
+  margin-top:12px;
+  padding:11px 12px;
+  border:1px solid #20334a;
+  border-radius:10px;
+  color:#8194ae;
+  background:#06111c;
+}
+@media(max-width:720px){
+  .f2w-profile-editor-v17{grid-template-columns:1fr!important;max-height:94vh!important}
+  .f2w-profile-editor-v17 .f2w-profile-editor-nav{flex-direction:row;overflow:auto}
+  .f2w-profile-presence{margin-left:0;margin-top:8px}
+  #profile-hero .profile-name-row{flex-wrap:wrap}
+  .f2w-recently-watched-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:460px){
+  .f2w-recently-watched-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* f2w-force-save:realtime-profile-leaderboard-css-v17:1788213599 */
+ 
+
+/* ============================================================
+   F2W v22 — CLEAN PROFESSIONAL PROFILE EDITOR
+   ============================================================ */
+.f2w-profile-modal {
+  position:fixed!important;inset:0!important;z-index:10050!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:24px!important;background:rgba(0,4,9,.78)!important;
+  backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important;
+}
+.f2w-profile-modal[hidden]{display:none!important}
+.f2w-profile-editor-v22 {
+  width:min(920px,96vw)!important;height:min(690px,90dvh)!important;max-height:90dvh!important;
+  display:grid!important;grid-template-columns:188px minmax(0,1fr)!important;overflow:hidden!important;
+  border:1px solid rgba(255,255,255,.11)!important;border-radius:20px!important;
+  background:#07111d!important;box-shadow:0 28px 90px rgba(0,0,0,.62),0 0 0 1px rgba(229,9,20,.07)!important;
+  color:#f6f8fb!important;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+.f2w-profile-editor-v22 *{box-sizing:border-box}
+.f2w-profile-editor-v22 .f2w-profile-editor-nav {
+  min-width:0!important;padding:18px 12px!important;background:linear-gradient(180deg,#091523,#06101a)!important;
+  border-right:1px solid rgba(255,255,255,.08)!important;
+}
+.f2w-editor-brand{display:flex;align-items:center;gap:10px;padding:4px 6px 18px;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,.07)}
+.f2w-editor-brand-icon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;color:#fff;background:#e50914;box-shadow:0 7px 24px rgba(229,9,20,.24)}
+.f2w-editor-brand strong{display:block;font-size:.88rem;letter-spacing:-.01em}
+.f2w-editor-brand span{display:block;margin-top:2px;color:#667c98;font-size:.69rem}
+.f2w-profile-editor-v22 .f2w-profile-editor-nav nav{display:grid;gap:4px}
+.f2w-profile-editor-v22 .f2w-edit-nav {
+  width:100%;height:38px;display:flex;align-items:center;gap:9px;border:1px solid transparent;border-radius:10px;padding:0 10px;
+  background:transparent;color:#8295ad;font:750 .78rem/1 Inter,ui-sans-serif,sans-serif;text-align:left;cursor:pointer;
+}
+.f2w-profile-editor-v22 .f2w-edit-nav i{width:16px;text-align:center}
+.f2w-profile-editor-v22 .f2w-edit-nav:hover{background:#0d1b2b;color:#d9e4f2}
+.f2w-profile-editor-v22 .f2w-edit-nav.active{color:#fff;background:linear-gradient(90deg,rgba(229,9,20,.20),rgba(229,9,20,.05));border-color:rgba(229,9,20,.28)}
+.f2w-profile-editor-v22 .f2w-profile-editor-body{min-width:0!important;min-height:0!important;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;background:linear-gradient(180deg,#08131f,#06101a)!important}
+.f2w-profile-editor-v22 .f2w-editor-head{display:flex!important;justify-content:space-between!important;align-items:flex-start!important;gap:20px!important;padding:22px 24px 17px!important;border-bottom:1px solid rgba(255,255,255,.075)!important}
+.f2w-editor-eyebrow{display:block;margin-bottom:5px;color:#ef3943;font-size:.61rem;font-weight:900;letter-spacing:.15em}
+.f2w-profile-editor-v22 .f2w-editor-head h2{margin:0!important;font-size:1.36rem!important;line-height:1.15!important;letter-spacing:-.025em!important;font-weight:850!important}
+.f2w-profile-editor-v22 .f2w-editor-head p{margin:5px 0 0!important;color:#71849d!important;font-size:.76rem!important;line-height:1.45!important}
+.f2w-profile-editor-v22 .f2w-editor-close{width:34px;height:34px;flex:0 0 34px;border:1px solid #22364d;border-radius:10px;background:#0a1724;color:#8293aa;cursor:pointer}
+.f2w-profile-editor-v22 .f2w-editor-close:hover{color:#fff;border-color:#51657d}
+.f2w-profile-editor-v22 .f2w-editor-scroll{min-height:0;overflow:auto;scrollbar-width:thin;padding:20px 24px 24px}
+.f2w-profile-editor-v22 .f2w-editor-section{display:none!important}
+.f2w-profile-editor-v22 .f2w-editor-section.active{display:block!important}
+.f2w-section-title{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.f2w-section-title>i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#ef3943;background:rgba(229,9,20,.09);border:1px solid rgba(229,9,20,.16)}
+.f2w-section-title h3{margin:0;font-size:.98rem;letter-spacing:-.01em}
+.f2w-section-title p{margin:3px 0 0;color:#6e8199;font-size:.72rem}
+.f2w-profile-editor-v22 .f2w-editor-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+.f2w-profile-editor-v22 .f2w-editor-field.full{grid-column:1/-1!important}
+.f2w-profile-editor-v22 .f2w-editor-field label{display:flex!important;align-items:center!important;gap:6px!important;margin-bottom:6px!important;color:#8fa2ba!important;font-size:.61rem!important;font-weight:850!important;letter-spacing:.09em!important}
+.f2w-profile-editor-v22 .f2w-editor-field label em{color:#52677f;font-style:normal;font-size:.55rem}
+.f2w-profile-editor-v22 .f2w-editor-field input,.f2w-profile-editor-v22 .f2w-editor-field textarea{width:100%!important;min-width:0!important;border:1px solid #233851!important;border-radius:10px!important;background:#06101a!important;color:#eef4fb!important;outline:none!important;padding:10px 11px!important;font:600 .79rem/1.4 Inter,ui-sans-serif,sans-serif!important;box-shadow:none!important}
+.f2w-profile-editor-v22 .f2w-editor-field input{height:39px!important}
+.f2w-profile-editor-v22 .f2w-editor-field textarea{min-height:100px!important;resize:vertical!important}
+.f2w-profile-editor-v22 .f2w-editor-field input:focus,.f2w-profile-editor-v22 .f2w-editor-field textarea:focus{border-color:#d72a35!important;box-shadow:0 0 0 3px rgba(229,9,20,.08)!important}
+.f2w-profile-editor-v22 .f2w-editor-field small{display:block;margin-top:5px;color:#536982;font-size:.63rem}
+.f2w-genre-picker{display:flex;flex-wrap:wrap;gap:7px;padding:12px;border:1px solid #20344b;border-radius:12px;background:#06101a}
+.f2w-genre-choice{border:1px solid #253a53;border-radius:999px;padding:7px 10px;background:#0a1724;color:#8398b2;font:750 .69rem/1 Inter,ui-sans-serif,sans-serif;cursor:pointer}
+.f2w-genre-choice:hover{color:#fff;border-color:#536b88}
+.f2w-genre-choice.active{color:#fff;border-color:rgba(229,9,20,.6);background:rgba(229,9,20,.15);box-shadow:inset 0 0 0 1px rgba(229,9,20,.08)}
+.f2w-movie-search-input{position:relative}
+.f2w-movie-search-input>i{position:absolute;left:12px;top:50%;translate:0 -50%;color:#60758f;font-size:.73rem;z-index:1}
+.f2w-profile-editor-v22 .f2w-movie-search-input input{padding-left:34px!important}
+.f2w-movie-results{margin-top:7px;overflow:hidden;border:1px solid #263b53;border-radius:12px;background:#07121e;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+.f2w-movie-result{width:100%;display:grid;grid-template-columns:38px minmax(0,1fr) 24px;align-items:center;gap:10px;padding:7px 9px;border:0;border-bottom:1px solid rgba(255,255,255,.055);background:transparent;color:#fff;text-align:left;cursor:pointer}
+.f2w-movie-result:last-child{border-bottom:0}
+.f2w-movie-result:hover{background:#0d1b2b}
+.f2w-movie-result img{width:38px;height:54px;border-radius:6px;object-fit:cover;background:#0d1925}
+.f2w-movie-result strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.75rem}
+.f2w-movie-result small{display:block;margin-top:3px;color:#617791;font-size:.61rem}
+.f2w-movie-result>i{color:#e8303b}
+.f2w-movie-search-empty{padding:14px;color:#71849c;font-size:.72rem;text-align:center}
+.f2w-movie-selected{min-height:18px;margin-top:7px;color:#72dca3;font-size:.67rem}
+.f2w-movie-selected i{margin-right:5px}
+.f2w-social-editor-grid label i{font-size:.82rem;color:#dbe5f1}
+.f2w-privacy-choice{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 16px;border:1px solid #22364d;border-radius:13px;background:#07131f}
+.f2w-privacy-choice strong{display:block;font-size:.78rem}
+.f2w-privacy-choice span{display:block;margin-top:4px;color:#697e98;font-size:.67rem}
+.f2w-switch{position:relative;width:42px;height:24px;flex:0 0 42px}
+.f2w-switch input{position:absolute;opacity:0;pointer-events:none}
+.f2w-switch span{position:absolute;inset:0;border-radius:999px;background:#1c2e43;border:1px solid #314862;cursor:pointer}
+.f2w-switch span::after{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;border-radius:50%;background:#8799ae;transition:transform .16s ease,background .16s ease}
+.f2w-switch input:checked+span{background:rgba(229,9,20,.24);border-color:#a9212a}
+.f2w-switch input:checked+span::after{transform:translateX(18px);background:#f23843}
+.f2w-editor-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;border-top:1px solid rgba(255,255,255,.075);background:#07121d}
+.f2w-editor-footer>span{color:#5f738d;font-size:.64rem}
+.f2w-profile-editor-v22 .f2w-editor-save{border:0;border-radius:10px;padding:10px 15px;background:#e50914;color:#fff;font:850 .75rem/1 Inter,ui-sans-serif,sans-serif;cursor:pointer}
+.f2w-profile-editor-v22 .f2w-editor-save:disabled{opacity:.55;cursor:wait}
+.f2w-profile-socials-v22{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.f2w-profile-social-link{display:inline-flex!important;align-items:center!important;gap:7px!important;min-height:32px;padding:0 10px!important;border:1px solid #20364d!important;border-radius:9px!important;background:#07131f!important;color:#a8b8ca!important;text-decoration:none!important;font-size:.69rem!important;font-weight:750!important}
+.f2w-profile-social-link:hover{color:#fff!important;border-color:#536c8b!important;background:#0b1a2a!important}
+.f2w-profile-social-link>i:first-child{font-size:.8rem}
+.f2w-profile-social-link .f2w-social-out{font-size:.52rem;color:#566d87}
+.f2w-favorite-movie-chip{text-decoration:none!important}
+.f2w-favorite-movie-chip[href="#"]{pointer-events:none}
+@media(max-width:720px){
+  .f2w-profile-modal{padding:10px!important}
+  .f2w-profile-editor-v22{width:100%!important;height:min(760px,96dvh)!important;max-height:96dvh!important;grid-template-columns:1fr!important}
+  .f2w-profile-editor-v22 .f2w-profile-editor-nav{padding:10px!important;border-right:0!important;border-bottom:1px solid rgba(255,255,255,.08)!important}
+  .f2w-editor-brand{display:none!important}
+  .f2w-profile-editor-v22 .f2w-profile-editor-nav nav{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:5px!important}
+  .f2w-profile-editor-v22 .f2w-edit-nav{justify-content:center!important;padding:0 5px!important;font-size:.66rem!important}
+  .f2w-profile-editor-v22 .f2w-edit-nav i{width:auto!important}
+  .f2w-profile-editor-v22 .f2w-editor-head{padding:16px 16px 13px!important}
+  .f2w-profile-editor-v22 .f2w-editor-scroll{padding:16px!important}
+  .f2w-profile-editor-v22 .f2w-editor-grid{grid-template-columns:1fr!important}
+  .f2w-profile-editor-v22 .f2w-editor-field.full{grid-column:auto!important}
+  .f2w-editor-footer{padding:11px 16px!important}
+  .f2w-editor-footer>span{display:none}
+}
+@media(max-width:430px){.f2w-profile-editor-v22 .f2w-edit-nav span{display:none}.f2w-profile-editor-v22 .f2w-edit-nav i{font-size:.9rem}}
+#v35-edit-avatar,#v17-edit-banner,#v35-edit-accent,.f2w-profile-editor-v22 [data-tab="style"],.f2w-profile-editor-v22 [data-section="style"]{display:none!important}
+/* f2w-force-save:profile-editor-css-v22:1788214990 */
+ 
+
+/* ============================================================
+   F2W v25 — ROLE NAME FAIRY DUST
+   Tight to the word itself; no giant particles sweeping across names.
+   ============================================================ */
+
+.f2w-role-name {
+  --role-a:#ffffff;
+  --role-b:#ffffff;
+  --role-glow:rgba(255,255,255,.55);
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  line-height:1.05!important;
+  vertical-align:baseline!important;
+  padding:0!important;
+  margin:0!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+
+.f2w-role-name-text {
+  position:relative!important;
+  z-index:2!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  color:transparent!important;
+  background:
+    linear-gradient(
+      90deg,
+      var(--role-a) 0%,
+      var(--role-b) 32%,
+      #fff 50%,
+      var(--role-b) 68%,
+      var(--role-a) 100%
+    )!important;
+  background-size:220% 100%!important;
+  background-position:0% 50%!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+  text-shadow:
+    0 0 2px var(--role-glow),
+    0 0 5px color-mix(in srgb,var(--role-a) 58%, transparent)!important;
+  animation:f2wRoleTextShimmer 3.2s linear infinite!important;
+  filter:saturate(1.18)!important;
+}
+
+.f2w-role-fairy-dust {
+  position:absolute!important;
+  z-index:3!important;
+  inset:-2px -3px!important;
+  pointer-events:none!important;
+  overflow:visible!important;
+}
+
+.f2w-role-fairy-dust i {
+  position:absolute!important;
+  width:2px!important;
+  height:2px!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  box-shadow:
+    0 0 2px #fff,
+    0 0 4px rgba(255,255,255,.95),
+    0 0 5px var(--role-glow)!important;
+  opacity:0!important;
+  transform:scale(.35)!important;
+  animation:f2wFairyDustTwinkle 2.25s ease-in-out infinite!important;
+}
+
+.f2w-role-fairy-dust i::before,
+.f2w-role-fairy-dust i::after {
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  background:rgba(255,255,255,.95)!important;
+  transform:translate(-50%,-50%)!important;
+  border-radius:999px!important;
+}
+.f2w-role-fairy-dust i::before { width:1px!important;height:4px!important; }
+.f2w-role-fairy-dust i::after { width:4px!important;height:1px!important; }
+
+.f2w-role-fairy-dust i:nth-child(1){left:3%!important;top:12%!important;animation-delay:.05s!important}
+.f2w-role-fairy-dust i:nth-child(2){left:22%!important;top:86%!important;animation-delay:.52s!important}
+.f2w-role-fairy-dust i:nth-child(3){left:47%!important;top:4%!important;animation-delay:1.02s!important}
+.f2w-role-fairy-dust i:nth-child(4){left:68%!important;top:88%!important;animation-delay:1.46s!important}
+.f2w-role-fairy-dust i:nth-child(5){left:88%!important;top:15%!important;animation-delay:.78s!important}
+.f2w-role-fairy-dust i:nth-child(6){left:97%!important;top:70%!important;animation-delay:1.82s!important}
+
+@keyframes f2wRoleTextShimmer {
+  0%{background-position:0% 50%}
+  100%{background-position:220% 50%}
+}
+
+@keyframes f2wFairyDustTwinkle {
+  0%,72%,100%{opacity:0;transform:scale(.25) rotate(0deg)}
+  80%{opacity:.9;transform:scale(.72) rotate(45deg)}
+  87%{opacity:1;transform:scale(1) rotate(90deg)}
+  94%{opacity:.38;transform:scale(.55) rotate(135deg)}
+}
+
+/* Role palettes: the letters themselves carry the role colour. */
+.f2w-role-owner{--role-a:#ff1830;--role-b:#ff6b79;--role-glow:rgba(255,24,48,.70)}
+.f2w-role-staff{--role-a:#ff3045;--role-b:#ff8a98;--role-glow:rgba(255,48,69,.62)}
+.f2w-role-moderator{--role-a:#9b5cff;--role-b:#c9a6ff;--role-glow:rgba(155,92,255,.62)}
+.f2w-role-support{--role-a:#35a8ff;--role-b:#8bd0ff;--role-glow:rgba(53,168,255,.58)}
+.f2w-role-developer{--role-a:#21d0b2;--role-b:#83f3df;--role-glow:rgba(33,208,178,.58)}
+.f2w-role-verified{--role-a:#2f8cff;--role-b:#83bfff;--role-glow:rgba(47,140,255,.58)}
+.f2w-role-contributor{--role-a:#f3b630;--role-b:#ffe08a;--role-glow:rgba(243,182,48,.56)}
+.f2w-role-curator{--role-a:#f06bff;--role-b:#ffb2ff;--role-glow:rgba(240,107,255,.58)}
+
+/* Prevent old pseudo-particle systems from creating wide moving blobs. */
+.f2w-role-name::before,
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Keep the wrapper no wider than the actual name text. */
+[data-f2w-role-decorated="1"],
+[data-f2w-role-decorated="1"] > .f2w-role-name {
+  max-width:max-content!important;
+}
+
+/* Mobile: keep sparkles subtle instead of noisy. */
+@media(max-width:720px){
+  .f2w-role-fairy-dust i{width:1.5px!important;height:1.5px!important}
+  .f2w-role-name-text{text-shadow:0 0 2px var(--role-glow),0 0 4px color-mix(in srgb,var(--role-a) 50%, transparent)!important}
+}
+
+/* Respect reduced-motion without losing the role colour. */
+@media(prefers-reduced-motion:reduce){
+  .f2w-role-name-text,.f2w-role-fairy-dust i{animation:none!important}
+  .f2w-role-fairy-dust i{opacity:.42!important}
+}
+
+/* f2w-force-save:role-fairy-dust-css-v25:1788215879 */
+ 
+
+/* ============================================================
+   F2W v27 — TRUE TEXT-BOUND ROLE COLOUR + MICRO FAIRY DUST
+   ============================================================ */
+#profile-name[data-f2w-role-decorated="1"],
+[data-f2w-role-decorated="1"] {
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  padding:0 1px!important;
+  overflow:visible!important;
+  vertical-align:baseline!important;
+  isolation:isolate!important;
+}
+
+.f2w-role-name-text {
+  position:relative!important;
+  z-index:2!important;
+  display:inline-block!important;
+  width:max-content!important;
+  color:var(--role-a)!important;
+  -webkit-text-fill-color:transparent!important;
+  background:linear-gradient(90deg,var(--role-a) 0%,var(--role-b) 35%,#fff 50%,var(--role-b) 65%,var(--role-a) 100%)!important;
+  background-size:220% 100%!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  text-shadow:0 0 2px var(--role-glow),0 0 6px var(--role-glow)!important;
+  animation:f2wRoleTextShimmer 2.7s linear infinite!important;
+}
+
+.f2w-role-owner {
+  --role-a:#ff182b!important;
+  --role-b:#ff5364!important;
+  --role-glow:rgba(255,24,43,.82)!important;
+}
+
+.f2w-role-fairy-dust {
+  position:absolute!important;
+  z-index:4!important;
+  inset:-3px -3px!important;
+  width:calc(100% + 6px)!important;
+  height:calc(100% + 6px)!important;
+  pointer-events:none!important;
+  overflow:visible!important;
+}
+
+.f2w-role-fairy-dust i {
+  position:absolute!important;
+  width:1.5px!important;
+  height:1.5px!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  opacity:0!important;
+  box-shadow:0 0 2px #fff,0 0 4px #fff,0 0 5px var(--role-glow)!important;
+  animation:f2wMicroFairy 1.85s ease-in-out infinite!important;
+}
+
+.f2w-role-fairy-dust i:nth-child(1){left:1%!important;top:8%!important;animation-delay:.05s!important}
+.f2w-role-fairy-dust i:nth-child(2){left:13%!important;bottom:2%!important;animation-delay:.38s!important}
+.f2w-role-fairy-dust i:nth-child(3){left:31%!important;top:-1%!important;animation-delay:.76s!important}
+.f2w-role-fairy-dust i:nth-child(4){left:47%!important;bottom:0!important;animation-delay:1.10s!important}
+.f2w-role-fairy-dust i:nth-child(5){left:63%!important;top:1%!important;animation-delay:.22s!important}
+.f2w-role-fairy-dust i:nth-child(6){left:78%!important;bottom:1%!important;animation-delay:.61s!important}
+.f2w-role-fairy-dust i:nth-child(7){right:8%!important;top:4%!important;animation-delay:.96s!important}
+.f2w-role-fairy-dust i:nth-child(8){right:0!important;bottom:7%!important;animation-delay:1.32s!important}
+
+@keyframes f2wMicroFairy {
+  0%,68%,100%{opacity:0;transform:scale(.2)}
+  77%{opacity:.8;transform:scale(.75)}
+  84%{opacity:1;transform:scale(1.15)}
+  92%{opacity:.35;transform:scale(.5)}
+}
+
+/* Kill every older wide particle layer. */
+.f2w-role-name::before,
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* f2w-force-save:true-role-micro-sparkles-v27:1788216279 */
+ 
+
+/* ============================================================
+   F2W v30 — TIGHT ROLE PARTICLE NAMES
+   User-supplied reference approach:
+   text-shadow + Particles.gif constrained to the exact word span.
+   ============================================================ */
+.f2w-role-name {
+  --role-main:#fff;
+  --role-soft:#fff;
+  --role-shadow:rgba(255,255,255,.7);
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1.08!important;
+  vertical-align:baseline!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:repeat-x!important;
+  background-position:center center!important;
+  background-size:6.657em auto!important;
+}
+
+.f2w-role-name-text {
+  position:relative!important;
+  z-index:2!important;
+  display:inline!important;
+  color:var(--role-main)!important;
+  -webkit-text-fill-color:var(--role-main)!important;
+  background:none!important;
+  font:inherit!important;
+  font-weight:inherit!important;
+  text-shadow:
+    0 2px 2px var(--role-shadow),
+    0 0 4px var(--role-shadow),
+    0 0 8px color-mix(in srgb,var(--role-main) 48%,transparent)!important;
+  animation:f2wRoleNamePulse 2.7s ease-in-out infinite!important;
+}
+
+.f2w-role-owner{--role-main:#ff2638!important;--role-soft:#ff7180!important;--role-shadow:rgba(255,0,28,.96)!important}
+.f2w-role-staff{--role-main:#c55cff!important;--role-soft:#e3a5ff!important;--role-shadow:rgba(166,51,255,.96)!important}
+.f2w-role-moderator{--role-main:#56a0ff!important;--role-soft:#9fc8ff!important;--role-shadow:rgba(52,128,255,.9)!important}
+.f2w-role-support{--role-main:#35cbff!important;--role-soft:#94e7ff!important;--role-shadow:rgba(32,183,255,.86)!important}
+.f2w-role-developer{--role-main:#35e0b4!important;--role-soft:#91f4dd!important;--role-shadow:rgba(33,205,166,.86)!important}
+.f2w-role-verified{--role-main:#5a9fff!important;--role-soft:#a9cfff!important;--role-shadow:rgba(60,139,255,.86)!important}
+.f2w-role-contributor{--role-main:#ffc043!important;--role-soft:#ffe39b!important;--role-shadow:rgba(241,169,25,.86)!important}
+.f2w-role-curator{--role-main:#ff70e5!important;--role-soft:#ffb4f2!important;--role-shadow:rgba(244,75,214,.86)!important}
+
+@keyframes f2wRoleNamePulse {
+  0%,100% {
+    color:var(--role-main);
+    -webkit-text-fill-color:var(--role-main);
+    text-shadow:0 2px 2px var(--role-shadow),0 0 4px var(--role-shadow);
+  }
+  50% {
+    color:var(--role-soft);
+    -webkit-text-fill-color:var(--role-soft);
+    text-shadow:0 2px 2px var(--role-shadow),0 0 7px var(--role-shadow),0 0 10px color-mix(in srgb,var(--role-main) 42%,transparent);
+  }
+}
+
+/* White micro fairy dust fallback if the remote GIF is blocked/unavailable. */
+.f2w-role-fairy-dust {
+  position:absolute!important;
+  inset:-3px!important;
+  z-index:5!important;
+  pointer-events:none!important;
+  overflow:visible!important;
+}
+.f2w-role-fairy-dust i {
+  position:absolute!important;
+  width:1.5px!important;height:1.5px!important;border-radius:50%!important;
+  background:#fff!important;opacity:0!important;
+  box-shadow:0 0 2px #fff,0 0 4px #fff,0 0 5px var(--role-shadow)!important;
+  animation:f2wRoleFairy 1.8s ease-in-out infinite!important;
+}
+.f2w-role-fairy-dust i:nth-child(1){left:0;top:8%;animation-delay:.05s!important}
+.f2w-role-fairy-dust i:nth-child(2){left:15%;bottom:0;animation-delay:.28s!important}
+.f2w-role-fairy-dust i:nth-child(3){left:31%;top:-1px;animation-delay:.55s!important}
+.f2w-role-fairy-dust i:nth-child(4){left:47%;bottom:0;animation-delay:.83s!important}
+.f2w-role-fairy-dust i:nth-child(5){left:63%;top:0;animation-delay:1.05s!important}
+.f2w-role-fairy-dust i:nth-child(6){left:78%;bottom:0;animation-delay:.44s!important}
+.f2w-role-fairy-dust i:nth-child(7){right:7%;top:3%;animation-delay:.72s!important}
+.f2w-role-fairy-dust i:nth-child(8){right:0;bottom:6%;animation-delay:1.24s!important}
+@keyframes f2wRoleFairy {
+  0%,68%,100%{opacity:0;transform:scale(.2)}
+  78%{opacity:.8;transform:scale(.75)}
+  85%{opacity:1;transform:scale(1.18)}
+  93%{opacity:.3;transform:scale(.5)}
+}
+
+#account-user-username[data-f2w-role-decorated="1"],
+#profile-name[data-f2w-role-decorated="1"],
+[data-f2w-role-decorated="1"] {
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+
+/* Old wide pseudo-particle implementations are retired. */
+.f2w-role-name::before,.f2w-role-name::after,.f2w-name-effect::before,.f2w-name-effect::after {
+  content:none!important;display:none!important;
+}
+/* f2w-force-save:tight-role-particles-v30:1788216738 */
+ 
+
+/* ============================================================
+   F2W v31 — FINAL STABLE ROLE NAME EFFECT
+   The name element itself owns the colour + particle GIF.
+   No wrapper swapping = no red/white/red flicker.
+   ============================================================ */
+.f2w-role-name {
+  --role-main:#fff;
+  --role-shadow:rgba(255,255,255,.8);
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  position:relative!important;
+  color:var(--role-main)!important;
+  -webkit-text-fill-color:var(--role-main)!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:repeat-x!important;
+  background-position:center!important;
+  background-size:6.657em auto!important;
+  background-color:transparent!important;
+  text-shadow:0 2px 2px var(--role-shadow),0 0 4px var(--role-shadow)!important;
+  overflow:visible!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+.f2w-role-owner{--role-main:#ff2638!important;--role-shadow:#ff001c!important}
+.f2w-role-staff{--role-main:#c05cff!important;--role-shadow:#9b2cff!important}
+.f2w-role-moderator{--role-main:#4f9cff!important;--role-shadow:#287cff!important}
+.f2w-role-support{--role-main:#32c8ff!important;--role-shadow:#00a9e8!important}
+.f2w-role-developer{--role-main:#31d9ad!important;--role-shadow:#12b98f!important}
+.f2w-role-verified{--role-main:#579dff!important;--role-shadow:#2f7ee8!important}
+.f2w-role-contributor{--role-main:#ffc13d!important;--role-shadow:#e79c00!important}
+.f2w-role-curator{--role-main:#ff6be1!important;--role-shadow:#da36ba!important}
+
+/* Retire every older nested shimmer/fairy layer. */
+.f2w-role-name > .f2w-role-name-text,
+.f2w-role-name > .f2w-role-fairy-dust {
+  all:unset!important;
+}
+.f2w-role-name::before,.f2w-role-name::after,
+.f2w-name-effect::before,.f2w-name-effect::after {
+  content:none!important;display:none!important;
+}
+
+/* f2w-force-save:direct-role-name-css-v31:1788217048 */
+ 
+
+/* ============================================================
+   F2W v32 — PROFILE SOCIAL/LAYOUT/PERFORMANCE POLISH
+   ============================================================ */
+
+/* Profile presence lights are still balls, just no animation. */
+.f2w-presence-dot,
+.f2w-profile-presence-dot {
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  opacity:.82!important;
+}
+.f2w-presence.online .f2w-presence-dot,
+.f2w-profile-presence.online .f2w-profile-presence-dot {
+  background:rgba(33,216,121,.78)!important;
+  box-shadow:0 0 4px rgba(33,216,121,.3)!important;
+}
+.f2w-presence.offline .f2w-presence-dot,
+.f2w-profile-presence.offline .f2w-profile-presence-dot {
+  background:rgba(239,51,64,.78)!important;
+  box-shadow:0 0 4px rgba(239,51,64,.26)!important;
+}
+
+/* Social panel lives immediately before Roles & Badges. */
+.f2w-profile-social-panel-v32 {
+  margin-top:14px!important;
+}
+.f2w-profile-socials-v22 {
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:9px!important;
+}
+.f2w-profile-social-link {
+  min-height:36px!important;
+  padding:0 12px!important;
+  font-size:.75rem!important;
+}
+.f2w-profile-social-link.f2w-social-disabled {
+  cursor:default!important;
+  opacity:.72!important;
+  user-select:text!important;
+  pointer-events:auto!important;
+}
+.f2w-profile-social-link.f2w-social-disabled .f2w-social-out {
+  display:none!important;
+}
+
+/* Followers/following are slightly larger, still compact. */
+.profile-social-counts {
+  gap:14px!important;
+  margin-top:14px!important;
+}
+.profile-social-count {
+  font-size:.78rem!important;
+  min-height:32px!important;
+  padding:4px 2px!important;
+}
+.profile-social-count strong {
+  font-size:.88rem!important;
+  margin-right:3px!important;
+}
+
+/* Favorites + join date now live at the bottom where socials used to be. */
+.f2w-profile-bottom-details {
+  margin-top:16px!important;
+  padding-top:12px!important;
+  border-top:1px solid rgba(255,255,255,.065)!important;
+}
+.f2w-profile-bottom-details .profile-meta {
+  margin-top:12px!important;
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+}
+.profile-chip-button {
+  appearance:none!important;
+  cursor:pointer!important;
+  font:inherit!important;
+}
+.profile-chip-button:hover {
+  border-color:#526a87!important;
+  color:#fff!important;
+}
+
+/* Existing favorite cards remain direct links to Watch and get obvious click affordance. */
+.profile-fav-card {
+  cursor:pointer!important;
+}
+.profile-fav-card:focus-within,
+.profile-fav-card:hover {
+  outline:none!important;
+}
+
+/* Avatar opens inside Flix2Watch. */
+.f2w-avatar-clickable {
+  cursor:zoom-in!important;
+}
+.f2w-avatar-viewer {
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483500!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  background:rgba(0,5,10,.88)!important;
+  backdrop-filter:blur(9px)!important;
+}
+.f2w-avatar-viewer[hidden]{display:none!important}
+.f2w-avatar-viewer img {
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:min(720px,90vw)!important;
+  max-height:86dvh!important;
+  object-fit:contain!important;
+  border:1px solid #334a65!important;
+  border-radius:18px!important;
+  box-shadow:0 30px 90px rgba(0,0,0,.65)!important;
+}
+.f2w-avatar-viewer-close {
+  position:fixed!important;
+  top:18px!important;
+  right:18px!important;
+  width:40px!important;
+  height:40px!important;
+  border:1px solid #334a65!important;
+  border-radius:11px!important;
+  background:#081522!important;
+  color:#fff!important;
+  cursor:pointer!important;
+}
+
+/* Highest role = actual display-name colour.
+   Particle GIF is the only status/name animation requested. */
+.f2w-role-owner{--role-main:#ff2638!important;--role-shadow:#ff001c!important}
+.f2w-role-staff{--role-main:#c05cff!important;--role-shadow:#9b2cff!important}
+.f2w-role-moderator{--role-main:#62b4ff!important;--role-shadow:#2f8de8!important}
+.f2w-role-support{--role-main:#32c8ff!important;--role-shadow:#00a9e8!important}
+.f2w-role-developer{--role-main:#31d9ad!important;--role-shadow:#12b98f!important}
+.f2w-role-verified{--role-main:#579dff!important;--role-shadow:#2f7ee8!important}
+.f2w-role-contributor{--role-main:#ffc13d!important;--role-shadow:#e79c00!important}
+.f2w-role-curator{--role-main:#ff6be1!important;--role-shadow:#da36ba!important}
+.f2w-role-name {
+  animation:none!important;
+  transition:none!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-size:6.657em auto!important;
+  background-repeat:repeat-x!important;
+  background-position:center!important;
+}
+
+/* f2w-force-save:profile-layout-role-v32:1788217362 */
+ 
+
+/* ============================================================
+   F2W v33 — RENDERING PERFORMANCE
+   ============================================================ */
+
+/* Off-screen sections can skip paint/layout until approached. */
+body.f2w-main-page main > section,
+body.f2w-main-page .profile-section,
+body.f2w-main-page .forum-v30-panel,
+body.f2w-main-page .forum-v30-feed-card {
+  content-visibility:auto;
+  contain-intrinsic-size:auto 420px;
+}
+
+/* Images shouldn't block surrounding layout. */
+body.f2w-main-page img {
+  content-visibility:auto;
+}
+
+/* Keep role-name Particles.gif as the only intentional animation. */
+.f2w-role-name {
+  animation:none!important;
+  transition:none!important;
+}
+/* f2w-force-save:rendering-performance-v33:1788217440 */
+ 
+
+/* ============================================================
+   F2W v39 — PROFILE ORDER + WHITE PARTICLES + RECENT TITLES
+   ============================================================ */
+.f2w-profile-social-inline-v39 {
+  margin-top:12px!important;
+  margin-bottom:4px!important;
+}
+.f2w-profile-social-inline-v39 .f2w-profile-socials {
+  margin-top:0!important;
+}
+/* Social links are part of the hero, so Roles & Badges naturally moves up. */
+#v32-profile-social-panel { display:none!important; }
+
+/* Particles.gif is rendered as-is (white). Never tint/filter the GIF. */
+.f2w-role-name {
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:repeat-x!important;
+  background-position:center!important;
+  background-size:6.657em auto!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+}
+.f2w-role-name::before,
+.f2w-role-name::after {
+  filter:none!important;
+  mix-blend-mode:normal!important;
+}
+/* The display name itself is still highest-role coloured. */
+.f2w-role-owner{--role-main:#ff2638!important}
+.f2w-role-staff{--role-main:#c05cff!important}
+.f2w-role-moderator{--role-main:#62b4ff!important}
+.f2w-role-support{--role-main:#32c8ff!important}
+.f2w-role-developer{--role-main:#31d9ad!important}
+.f2w-role-verified{--role-main:#579dff!important}
+.f2w-role-contributor{--role-main:#ffc13d!important}
+.f2w-role-curator{--role-main:#ff6be1!important}
+
+.f2w-recently-watched-grid {
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr))!important;
+}
+/* f2w-force-save:profile-order-particles-v39:1788218599 */
+ 
+
+/* ============================================================
+   F2W v40 — UNIFIED WHITE ROLE PARTICLES
+   Same display-name effect site-wide; smaller particles on compact names.
+   ============================================================ */
+.f2w-role-name {
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:repeat-x!important;
+  background-position:center center!important;
+  background-size:3.8em auto!important;
+  background-color:transparent!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+  overflow:visible!important;
+}
+
+/* Larger profile names can carry slightly more spacing while keeping the same particle artwork. */
+#profile-name.f2w-role-name,
+.profile-name.f2w-role-name {
+  background-size:4.6em auto!important;
+}
+
+/* Compact locations: rankings/chat/comments get smaller, tighter particles. */
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  background-size:3.15em auto!important;
+}
+
+/* Kill all legacy particle layers that could create role-coloured blobs. */
+.f2w-role-name::before,
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after,
+.f2w-role-fairy-dust,
+.f2w-role-fairy-dust * {
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+
+/* Role affects the letters only. Particle image stays untouched/white. */
+.f2w-role-owner{--role-main:#ff2638!important;--role-shadow:rgba(255,38,56,.82)!important}
+.f2w-role-staff{--role-main:#c05cff!important;--role-shadow:rgba(192,92,255,.82)!important}
+.f2w-role-moderator{--role-main:#62b4ff!important;--role-shadow:rgba(98,180,255,.82)!important}
+.f2w-role-support{--role-main:#32c8ff!important;--role-shadow:rgba(50,200,255,.82)!important}
+.f2w-role-developer{--role-main:#31d9ad!important;--role-shadow:rgba(49,217,173,.82)!important}
+.f2w-role-verified{--role-main:#579dff!important;--role-shadow:rgba(87,157,255,.82)!important}
+.f2w-role-contributor{--role-main:#ffc13d!important;--role-shadow:rgba(255,193,61,.82)!important}
+.f2w-role-curator{--role-main:#ff6be1!important;--role-shadow:rgba(255,107,225,.82)!important}
+
+/* f2w-force-save:unified-white-particles-v40:1788218691 */
+ 
+
+/* ============================================================
+   F2W v40 — MANDATORY USERNAME GATE
+   ============================================================ */
+.f2w-username-required-gate {
+  position:fixed!important;inset:0!important;z-index:2147483600!important;
+  display:grid!important;place-items:center!important;padding:18px!important;
+  background:rgba(1,6,12,.94)!important;
+}
+.f2w-username-required-gate[hidden]{display:none!important}
+.f2w-username-gate-card {
+  width:min(460px,100%)!important;padding:26px!important;
+  border:1px solid #29425c!important;border-radius:18px!important;
+  background:#071522!important;box-shadow:0 30px 90px rgba(0,0,0,.65)!important;color:#fff!important;
+}
+.f2w-username-gate-icon {
+  width:46px;height:46px;display:grid;place-items:center;margin-bottom:14px;
+  border-radius:13px;background:rgba(229,9,20,.13);color:#ff2b3b;font-size:1.15rem;
+}
+.f2w-username-gate-kicker{color:#ff3040;font-size:.62rem;font-weight:900;letter-spacing:.12em}
+.f2w-username-gate-card h2{margin:7px 0 7px;font-size:1.45rem}
+.f2w-username-gate-card p{margin:0 0 18px;color:#8095ae;font-size:.78rem;line-height:1.55}
+.f2w-username-gate-card label{display:block;color:#8da1b8;font-size:.62rem;font-weight:850;letter-spacing:.09em}
+.f2w-username-gate-input{display:flex;align-items:center;margin-top:6px;border:1px solid #29425c;border-radius:10px;background:#06111c;overflow:hidden}
+.f2w-username-gate-input span{padding-left:12px;color:#ff3040;font-weight:900}
+.f2w-username-gate-input input{width:100%;height:42px;border:0!important;background:transparent!important;color:#fff!important;outline:0!important;padding:0 11px!important;font-size:16px!important}
+.f2w-username-gate-help{margin-top:6px;color:#5f748c;font-size:.64rem}
+.f2w-username-gate-status{min-height:20px;margin-top:9px;color:#7ee0aa;font-size:.68rem}
+.f2w-username-gate-status.error{color:#ff6975}
+.f2w-username-gate-card button{width:100%;min-height:42px;margin-top:8px;border-radius:10px;border:1px solid #ff3444;background:#e50914;color:#fff;font-weight:850;cursor:pointer}
+.f2w-username-gate-card button.secondary{border-color:#29425c;background:#0a1a29;color:#9db0c5}
+html.f2w-username-gated body{overflow:hidden!important}
+/* f2w-force-save:mandatory-username-gate-css-v40:1788218691 */
+ 
+
+/* ============================================================
+   F2W v41 — SITEWIDE CAROUSEL ARROW SAFETY
+   Navigation arrows must not sit over titles or body text.
+   ============================================================ */
+.f2w-carousel,
+.carousel,
+.slider,
+.hero-carousel {
+  position:relative;
+}
+
+.f2w-carousel-arrow,
+.carousel-arrow,
+.slider-arrow,
+.hero-arrow {
+  flex:0 0 auto!important;
+  box-sizing:border-box!important;
+  line-height:1!important;
+  z-index:8!important;
+}
+
+/* Never allow generic arrow controls to inherit huge title/button dimensions. */
+.f2w-carousel-arrow i,
+.carousel-arrow i,
+.slider-arrow i,
+.hero-arrow i,
+.v19-hero-arrow i {
+  pointer-events:none!important;
+  line-height:1!important;
+}
+
+/* f2w-force-save:sitewide-carousel-arrow-safety-v41:1788219230 */
+ 
+
+/* F2W v43 — compact Watch auth fallback */
+body.f2w-main-page .login-to-watch-card,
+body.f2w-main-page .watch-login-card,
+body.f2w-main-page .watch-auth-card {
+  max-width:430px!important;
+}
+@media(max-width:600px){
+  body.f2w-main-page .login-to-watch-card,
+  body.f2w-main-page .watch-login-card,
+  body.f2w-main-page .watch-auth-card {
+    max-width:360px!important;
+  }
+}
+/* f2w-force-save:watch-auth-compact-fallback-v43:1788219527 */
+ 
+
+/* F2W v52 — shared profile-edit modal centering fallback */
+.f2w-profile-edit-overlay,
+.f2w-profile-editor-modal,
+.profile-edit-modal {
+  position:fixed!important;
+  inset:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.f2w-profile-edit-overlay[hidden],
+.f2w-profile-editor-modal[hidden],
+.profile-edit-modal[hidden] {
+  display:none!important;
+}
+/* f2w-force-save:profile-edit-center-fallback-v52:1788220545 */
+ 
+
+/* ============================================================
+   F2W v54 — ACCOUNT IDENTITY DETAILS
+   ============================================================ */
+.account-user-box > div:last-child {
+  min-width:0!important;
+}
+.account-user-email {
+  color:#eef4fb!important;
+  font-size:.78rem!important;
+  font-weight:800!important;
+  line-height:1.25!important;
+  overflow-wrap:anywhere!important;
+}
+.account-user-username {
+  display:block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  margin-top:3px!important;
+  color:#9fb0c4!important;
+  font-size:.72rem!important;
+  font-weight:750!important;
+  line-height:1.25!important;
+}
+.account-user-role {
+  margin-top:4px!important;
+  font-size:.62rem!important;
+  font-weight:900!important;
+  letter-spacing:.08em!important;
+}
+/* f2w-force-save:account-details-css-v54:1788220759 */
+ 
+
+/* ============================================================
+   F2W v59 — PLAIN USERNAMES ARE WHITE
+   Role names keep their role colour + white Particles.gif.
+   Presence/online/offline styling is untouched.
+   ============================================================ */
+.f2w-no-role-name,
+.user-search-name:not(.f2w-role-name),
+.chat-user:not(.f2w-role-name),
+.chat-username:not(.f2w-role-name),
+.comment-author:not(.f2w-role-name),
+.leaderboard-username:not(.f2w-role-name),
+.profile-username:not(.f2w-role-name),
+.user-name:not(.f2w-role-name),
+.display-name:not(.f2w-role-name),
+.forum-v30-author:not(.f2w-role-name),
+.forum-v30-rank-name:not(.f2w-role-name) {
+  color:#fff!important;
+  text-shadow:none!important;
+  background-image:none!important;
+  background:none!important;
+  filter:none!important;
+}
+
+/* f2w-force-save:plain-usernames-white-v59:1788221542 */
+ 
+
+/* ============================================================
+   F2W v64 — ROLELESS USERNAME WHITE FALLBACK
+   ============================================================ */
+.f2w-no-role-name,
+[data-f2w-username]:not(.f2w-role-name),
+[data-username]:not(.f2w-role-name),
+.user-search-name:not(.f2w-role-name),
+.chat-user:not(.f2w-role-name),
+.chat-username:not(.f2w-role-name),
+.comment-author:not(.f2w-role-name),
+.leaderboard-username:not(.f2w-role-name),
+.profile-username:not(.f2w-role-name),
+.user-name:not(.f2w-role-name),
+.display-name:not(.f2w-role-name),
+.forum-v30-author:not(.f2w-role-name),
+.forum-v30-rank-name:not(.f2w-role-name) {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:none!important;
+  background:none!important;
+  filter:none!important;
+}
+
+.f2w-role-name {
+  color:var(--role-main)!important;
+  -webkit-text-fill-color:var(--role-main)!important;
+}
+
+/* f2w-force-save:roleless-usernames-white-final-v64:1788222358 */
+ 
+
+/* ============================================================
+   F2W v75 — FORCE ROLE PARTICLES TO RENDER WHITE
+   The role colour stays on the letters only.
+   The Particles.gif layer is rendered separately and forced white.
+   ============================================================ */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  background-image:none!important;
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  text-shadow:0 2px 2px color-mix(in srgb, var(--role-main,var(--f2w-role-color,#fff)) 55%, transparent),
+              0 0 6px color-mix(in srgb, var(--role-main,var(--f2w-role-color,#fff)) 28%, transparent)!important;
+}
+.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  inset:-0.08em -0.18em!important;
+  display:block!important;
+  pointer-events:none!important;
+  border-radius:.22em!important;
+  background-image:var(--f2w-particles-url,url('https://i.ibb.co/HC3GW9B/Particles.gif'))!important;
+  background-repeat:repeat-x!important;
+  background-position:center center!important;
+  background-size:3.55em auto!important;
+  background-color:transparent!important;
+  filter:grayscale(1) brightness(3.4) contrast(1.2)!important;
+  mix-blend-mode:screen!important;
+  opacity:.98!important;
+  animation:none!important;
+  z-index:2!important;
+}
+.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  background-size:4.4em auto!important;
+}
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before,
+[data-f2w-role-decorated="1"].f2w-role-name::before {
+  background-size:3.0em auto!important;
+}
+/* Never tint the particle layer with role colour or blend from older systems. */
+.f2w-role-name,
+.f2w-role-name::before,
+.f2w-role-name::after {
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+/* f2w-force-save:role-particles-white-v75:1788224563 */
+
+/* ============================================================
+   F2W v77 — COMPACT ROLE PARTICLES IN USER AUTOCOMPLETE
+   Keep the white GIF tight to the actual display-name text.
+   ============================================================ */
+body.f2w-main-page > header .user-search-name.f2w-role-name {
+  display:inline-flex!important;
+  align-items:center!important;
+  align-self:flex-start!important;
+  flex:0 0 auto!important;
+  width:fit-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  position:relative!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+  line-height:1.2!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  top:-2px!important;
+  right:-4px!important;
+  bottom:-2px!important;
+  left:-4px!important;
+  width:auto!important;
+  height:auto!important;
+  display:block!important;
+  pointer-events:none!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  background-color:transparent!important;
+  filter:grayscale(1) brightness(3.4) contrast(1.15)!important;
+  mix-blend-mode:screen!important;
+  opacity:.92!important;
+  z-index:2!important;
+  border-radius:3px!important;
+  animation:none!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Do not let any generic compact-role rule widen this autocomplete effect. */
+body.f2w-main-page > header
+.user-search-result [data-f2w-role-decorated="1"].user-search-name.f2w-role-name::before {
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+  left:-4px!important;
+  right:-4px!important;
+}
+
+/* f2w-force-save:compact-user-search-particles-v77:1788224897 */
+
+/* ============================================================
+   F2W v78 — TIGHT WHITE ROLE PARTICLES EVERYWHERE
+   Same tight particle boundary as the profile display name.
+   ============================================================ */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  width:fit-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  background-image:none!important;
+  background:none!important;
+}
+
+.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  top:-2px!important;
+  right:-4px!important;
+  bottom:-2px!important;
+  left:-4px!important;
+  width:auto!important;
+  height:auto!important;
+  display:block!important;
+  pointer-events:none!important;
+  border-radius:3px!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  background-color:transparent!important;
+  filter:grayscale(1) brightness(3.4) contrast(1.15)!important;
+  mix-blend-mode:screen!important;
+  opacity:.94!important;
+  z-index:2!important;
+  animation:none!important;
+  box-shadow:none!important;
+}
+
+.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Compact locations must remain just as tight; never span the row/card. */
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.user-search-name.f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  width:fit-content!important;
+  max-width:100%!important;
+  align-self:flex-start!important;
+}
+
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before,
+.user-search-name.f2w-role-name::before,
+[data-f2w-role-decorated="1"].f2w-role-name::before {
+  top:-2px!important;
+  right:-4px!important;
+  bottom:-2px!important;
+  left:-4px!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+}
+
+/* Profile uses the exact same geometry, just naturally scales with its bigger text. */
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  top:-3px!important;
+  right:-5px!important;
+  bottom:-3px!important;
+  left:-5px!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+}
+
+/* f2w-force-save:tight-white-role-particles-v78:1788224965 */
+
+/* ============================================================
+   F2W v80 — FORUM HERO BUTTONS: EXACT SAME SIZE / BASELINE
+   ============================================================ */
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions {
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:10px!important;
+}
+
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-primary,
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-secondary {
+  flex:0 0 160px!important;
+  width:160px!important;
+  min-width:160px!important;
+  max-width:160px!important;
+
+  height:44px!important;
+  min-height:44px!important;
+  max-height:44px!important;
+
+  padding:0 14px!important;
+  margin:0!important;
+
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-self:center!important;
+
+  box-sizing:border-box!important;
+  line-height:1!important;
+  font-size:.78rem!important;
+  font-weight:850!important;
+  white-space:nowrap!important;
+  vertical-align:middle!important;
+
+  border-width:1px!important;
+  border-style:solid!important;
+  border-radius:10px!important;
+
+  transform:none!important;
+  translate:none!important;
+  position:relative!important;
+  top:auto!important;
+  bottom:auto!important;
+}
+
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-primary > i,
+body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-secondary > i {
+  width:14px!important;
+  min-width:14px!important;
+  max-width:14px!important;
+  margin:0!important;
+  line-height:1!important;
+  text-align:center!important;
+  flex:0 0 14px!important;
+}
+
+@media(max-width:700px){
+  body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions {
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+  }
+
+  body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-primary,
+  body.f2w-main-page .forum-v30-hero .forum-v30-hero-actions > .forum-v30-secondary {
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+}
+
+/* f2w-force-save:forum-hero-buttons-v80:1788225203 */
+
+/* ============================================================
+   F2W v81 — TIGHT COMPACT ROLE PARTICLES SITE-WIDE
+   Keep the white particle GIF hugging the actual display name,
+   especially in compact rows like Forum rankings/autocomplete/chat.
+   ============================================================ */
+.f2w-role-name {
+  display:inline-block!important;
+  width:fit-content!important;
+  max-width:max-content!important;
+  min-width:0!important;
+  line-height:1.02!important;
+  white-space:nowrap!important;
+  vertical-align:baseline!important;
+  justify-self:start!important;
+  align-self:center!important;
+  overflow:visible!important;
+}
+
+.f2w-role-name::before {
+  top:-1px!important;
+  right:-3px!important;
+  bottom:-1px!important;
+  left:-3px!important;
+  border-radius:2px!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  opacity:.93!important;
+}
+
+/* Compact surfaces: clamp extra width so particles never span the row/card. */
+.forum-v30-rank-row .forum-v30-rank-name.f2w-role-name,
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.user-search-name.f2w-role-name,
+.f2w-dm-result [data-f2w-username].f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  display:inline-block!important;
+  width:auto!important;
+  max-width:max-content!important;
+  min-width:0!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  justify-self:start!important;
+  align-self:center!important;
+}
+
+.forum-v30-rank-row .forum-v30-rank-name.f2w-role-name::before,
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before,
+.user-search-name.f2w-role-name::before,
+.f2w-dm-result [data-f2w-username].f2w-role-name::before,
+[data-f2w-role-decorated="1"].f2w-role-name::before {
+  top:-1px!important;
+  right:-3px!important;
+  bottom:-1px!important;
+  left:-3px!important;
+  border-radius:2px!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+}
+
+/* Forum rankings: ultra-tight to match the profile look in a tiny row. */
+.forum-v30-rank-row .forum-v30-rank-name.f2w-role-name {
+  font-size:inherit!important;
+  line-height:1!important;
+  padding:0!important;
+}
+
+.forum-v30-rank-row .forum-v30-rank-name.f2w-role-name::before {
+  top:-1px!important;
+  right:-2px!important;
+  bottom:-1px!important;
+  left:-2px!important;
+  opacity:.9!important;
+}
+
+/* Profile still keeps a slightly roomier box because the text is bigger. */
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  top:-2px!important;
+  right:-4px!important;
+  bottom:-2px!important;
+  left:-4px!important;
+}
+
+/* f2w-force-save:tight-compact-role-particles-v81:1788225523 */
+
+/* ============================================================
+   F2W v82 — PARTICLES ONLY INSIDE THE DISPLAY-NAME BOX
+   No particles may fly across rows/cards. Same compact effect site-wide.
+   ============================================================ */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1.05!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  vertical-align:baseline!important;
+  background:none!important;
+  isolation:isolate!important;
+}
+
+.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  pointer-events:none!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  background-color:transparent!important;
+  filter:grayscale(1) brightness(3.4) contrast(1.15)!important;
+  mix-blend-mode:screen!important;
+  opacity:.92!important;
+  border-radius:0!important;
+  z-index:2!important;
+  animation:none!important;
+  box-shadow:none!important;
+}
+
+.f2w-role-name::after,
+.f2w-role-fairy-dust,
+.f2w-role-fairy-dust *,
+.f2w-name-effect::before,
+.f2w-name-effect::after {
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+
+/* Compact name locations use ONLY their own text width, never the parent row width. */
+.user-search-name.f2w-role-name,
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.profile-username.f2w-role-name,
+.display-name.f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  align-self:auto!important;
+  justify-self:start!important;
+}
+
+.user-search-name.f2w-role-name::before,
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before,
+.profile-username.f2w-role-name::before,
+.display-name.f2w-role-name::before,
+[data-f2w-role-decorated="1"].f2w-role-name::before {
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  background-size:100% 100%!important;
+}
+
+/* Profile uses the exact same compact rule; larger text naturally gives a larger GIF area. */
+#profile-name.f2w-role-name,
+.profile-name.f2w-role-name {
+  overflow:hidden!important;
+}
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  background-size:100% 100%!important;
+}
+
+/* f2w-force-save:display-name-only-particles-v82:1788225709 */
+
+/* ============================================================
+   F2W v83 — ROLE COLOUR + WHITE PARTICLES ON DISPLAY NAME ONLY
+   The actual name element owns the GIF. No pseudo-layer banners.
+   ============================================================ */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1.08!important;
+  white-space:nowrap!important;
+  vertical-align:baseline!important;
+  overflow:visible!important;
+
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  text-shadow:
+    0 1px 2px var(--role-shadow,rgba(255,255,255,.55)),
+    0 0 5px var(--role-shadow,rgba(255,255,255,.35))!important;
+
+  /* The GIF is attached DIRECTLY to the text-width box. */
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  background-color:transparent!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+/* Completely retire pseudo particle layers site-wide. */
+.f2w-role-name::before,
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after,
+.f2w-role-fairy-dust,
+.f2w-role-fairy-dust * {
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  box-shadow:none!important;
+  animation:none!important;
+}
+
+/* Correct highest-role letter colours. */
+.f2w-role-owner {
+  --role-main:#ff2638!important;
+  --role-shadow:rgba(255,38,56,.86)!important;
+}
+.f2w-role-staff {
+  --role-main:#c05cff!important;
+  --role-shadow:rgba(192,92,255,.86)!important;
+}
+.f2w-role-moderator {
+  --role-main:#62b4ff!important;
+  --role-shadow:rgba(98,180,255,.84)!important;
+}
+.f2w-role-support {
+  --role-main:#32c8ff!important;
+  --role-shadow:rgba(50,200,255,.82)!important;
+}
+.f2w-role-developer {
+  --role-main:#31d9ad!important;
+  --role-shadow:rgba(49,217,173,.82)!important;
+}
+.f2w-role-verified {
+  --role-main:#579dff!important;
+  --role-shadow:rgba(87,157,255,.82)!important;
+}
+.f2w-role-contributor {
+  --role-main:#ffc13d!important;
+  --role-shadow:rgba(255,193,61,.82)!important;
+}
+.f2w-role-curator {
+  --role-main:#ff6be1!important;
+  --role-shadow:rgba(255,107,225,.82)!important;
+}
+
+/* Header autocomplete: ONLY display name gets role effect.
+   @username and "View public profile" remain normal text. */
+body.f2w-main-page > header .user-search-copy {
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  overflow:hidden!important;
+}
+
+body.f2w-main-page > header .user-search-name {
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  line-height:1.12!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name {
+  overflow:visible!important;
+  flex:0 0 auto!important;
+  align-self:flex-start!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:100% 100%!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::before,
+body.f2w-main-page > header .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+body.f2w-main-page > header .user-search-handle {
+  display:block!important;
+  margin-top:2px!important;
+  color:#9aacc0!important;
+  -webkit-text-fill-color:#9aacc0!important;
+  font-size:.66rem!important;
+  font-weight:750!important;
+  line-height:1.2!important;
+  background:none!important;
+  text-shadow:none!important;
+}
+
+body.f2w-main-page > header .user-search-sub {
+  margin-top:2px!important;
+  background:none!important;
+  text-shadow:none!important;
+}
+
+/* Compact surfaces stay text-width only — never parent/card width. */
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.profile-name.f2w-role-name,
+#profile-name.f2w-role-name,
+.display-name.f2w-role-name {
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+}
+
+/* f2w-force-save:display-name-role-effect-v83:1788226300 */
+
+/* ============================================================
+   F2W v86 — WHITE ROLE PARTICLES FOREVER
+   Role colour belongs ONLY to the letters.
+   Particles stay WHITE and float just around the whole word.
+   ============================================================ */
+
+/* The display name itself keeps the highest-role colour. */
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  background:none!important;
+  background-image:none!important;
+  filter:none!important;
+}
+
+/* ONE particle layer only.
+   Slightly larger than the word so the animated GIF moves AROUND the letters,
+   but never stretches into a row/card banner. */
+.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-0.20em!important;
+  right:-0.30em!important;
+  bottom:-0.20em!important;
+  left:-0.30em!important;
+  width:auto!important;
+  height:auto!important;
+  pointer-events:none!important;
+  z-index:3!important;
+  border-radius:.20em!important;
+
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:112% 145%!important;
+  background-color:transparent!important;
+
+  /* Force the GIF to WHITE regardless of role colour/source tint. */
+  filter:grayscale(1) saturate(0) brightness(4.2) contrast(1.28)!important;
+  mix-blend-mode:screen!important;
+  opacity:.96!important;
+
+  box-shadow:none!important;
+  animation:none!important;
+}
+
+/* No second/legacy particle system. */
+.f2w-role-name::after,
+.f2w-name-effect::before,
+.f2w-name-effect::after,
+.f2w-role-fairy-dust,
+.f2w-role-fairy-dust * {
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  box-shadow:none!important;
+  animation:none!important;
+}
+
+/* Autocomplete had a higher-specificity rule disabling ::before.
+   Override it here so ONLY the display name gets the white particles. */
+body.f2w-main-page > header .user-search-copy {
+  overflow:visible!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  align-self:flex-start!important;
+  overflow:visible!important;
+  background:none!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-0.18em!important;
+  right:-0.28em!important;
+  bottom:-0.18em!important;
+  left:-0.28em!important;
+  width:auto!important;
+  height:auto!important;
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:112% 145%!important;
+  filter:grayscale(1) saturate(0) brightness(4.2) contrast(1.28)!important;
+  mix-blend-mode:screen!important;
+  opacity:.96!important;
+  pointer-events:none!important;
+  z-index:3!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Compact surfaces use the SAME word-bound effect, never the parent width. */
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.profile-username.f2w-role-name,
+.display-name.f2w-role-name,
+[data-f2w-role-decorated="1"].f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  background:none!important;
+}
+
+/* Slightly tighter on tiny rows, still visibly around the letters. */
+.forum-v30-rank-name.f2w-role-name::before,
+.leaderboard-username.f2w-role-name::before,
+.chat-user.f2w-role-name::before,
+.chat-username.f2w-role-name::before,
+.comment-author.f2w-role-name::before {
+  top:-0.16em!important;
+  right:-0.25em!important;
+  bottom:-0.16em!important;
+  left:-0.25em!important;
+  background-size:110% 140%!important;
+}
+
+/* Profile gets a touch more breathing room around the larger name. */
+#profile-name.f2w-role-name::before,
+.profile-name.f2w-role-name::before {
+  top:-0.22em!important;
+  right:-0.32em!important;
+  bottom:-0.22em!important;
+  left:-0.32em!important;
+  background-size:114% 148%!important;
+}
+
+/* Role palette remains letters-only. */
+.f2w-role-owner      {--role-main:#ff2638!important}
+.f2w-role-staff      {--role-main:#c05cff!important}
+.f2w-role-moderator  {--role-main:#62b4ff!important}
+.f2w-role-support    {--role-main:#32c8ff!important}
+.f2w-role-developer  {--role-main:#31d9ad!important}
+.f2w-role-verified   {--role-main:#579dff!important}
+.f2w-role-contributor{--role-main:#ffc13d!important}
+.f2w-role-curator    {--role-main:#ff6be1!important}
+
+/* f2w-force-save:white-role-particles-v86:1788226708 */
+
+/* ============================================================
+   F2W v87 — REAL PROFILE EDIT MODAL CENTERING
+   Actual modal: #v35-profile-modal.f2w-profile-modal
+   ============================================================ */
+
+html.f2w-profile-editor-open-v87,
+html.f2w-profile-editor-open-v87 body,
+body.f2w-profile-editor-open-v87 {
+  contain:none!important;
+  overflow:hidden!important;
+}
+
+#v35-profile-modal.f2w-profile-modal {
+  position:fixed!important;
+  inset:0!important;
+  top:0!important;
+  right:0!important;
+  bottom:0!important;
+  left:0!important;
+
+  width:100vw!important;
+  min-width:100vw!important;
+  max-width:100vw!important;
+
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+
+  margin:0!important;
+  padding:18px!important;
+
+  z-index:2147483646!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+
+  background:rgba(0,0,0,.80)!important;
+  backdrop-filter:blur(10px)!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+
+  transform:none!important;
+  translate:none!important;
+  filter:none!important;
+  isolation:isolate!important;
+}
+
+#v35-profile-modal.f2w-profile-modal[hidden] {
+  display:none!important;
+}
+
+#v35-profile-modal.f2w-profile-modal > .f2w-profile-editor,
+#v35-profile-modal.f2w-profile-modal > .f2w-profile-editor-v22 {
+  position:relative!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+
+  width:min(900px,calc(100vw - 36px))!important;
+  max-width:900px!important;
+
+  height:min(720px,calc(100dvh - 36px))!important;
+  min-height:0!important;
+  max-height:calc(100dvh - 36px)!important;
+
+  margin:0!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+
+  transform:none!important;
+  translate:none!important;
+  align-self:center!important;
+  justify-self:center!important;
+}
+
+#v35-profile-modal .f2w-profile-editor-v22 .f2w-profile-editor-body {
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+#v35-profile-modal .f2w-profile-editor-v22 .f2w-editor-scroll {
+  min-height:0!important;
+  max-height:none!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+}
+
+html.f2w-profile-editor-open-v87 body > header {
+  z-index:2147480000!important;
+}
+
+@media(max-width:760px){
+  #v35-profile-modal.f2w-profile-modal {
+    padding:max(12px,env(safe-area-inset-top))
+            12px
+            max(12px,env(safe-area-inset-bottom))!important;
+  }
+
+  #v35-profile-modal.f2w-profile-modal > .f2w-profile-editor,
+  #v35-profile-modal.f2w-profile-modal > .f2w-profile-editor-v22 {
+    width:min(96vw,680px)!important;
+    max-width:96vw!important;
+    height:min(86dvh,720px)!important;
+    max-height:86dvh!important;
+    margin:0!important;
+  }
+}
+
+@media(max-height:680px){
+  #v35-profile-modal.f2w-profile-modal {
+    padding:10px!important;
+  }
+
+  #v35-profile-modal.f2w-profile-modal > .f2w-profile-editor,
+  #v35-profile-modal.f2w-profile-modal > .f2w-profile-editor-v22 {
+    height:calc(100dvh - 20px)!important;
+    max-height:calc(100dvh - 20px)!important;
+  }
+}
+
+/* f2w-force-save:profile-edit-centering-css-v87:1788227242 */
+
+/* ============================================================
+   F2W v89 — DIRECT MESSAGES: ROLE EFFECT ON DISPLAY NAME ONLY
+   ============================================================ */
+
+/* Never allow a DM row/container/avatar/copy/meta to own the role effect. */
+#v17-dm-conversations .v17-dm-conversation.f2w-role-name,
+#v17-dm-conversations .v17-dm-conversation-copy.f2w-role-name,
+#v17-dm-conversations .v17-dm-conversation-meta.f2w-role-name,
+#v17-dm-conversations .v17-dm-avatar.f2w-role-name,
+#v17-dm-conversations img.f2w-role-name,
+#v17-dm-conversations button.f2w-role-name {
+  color:inherit!important;
+  -webkit-text-fill-color:inherit!important;
+  text-shadow:none!important;
+  background:none!important;
+  background-image:none!important;
+  filter:none!important;
+  width:auto!important;
+  max-width:none!important;
+  overflow:visible!important;
+}
+
+#v17-dm-conversations .v17-dm-conversation.f2w-role-name::before,
+#v17-dm-conversations .v17-dm-conversation.f2w-role-name::after,
+#v17-dm-conversations .v17-dm-conversation-copy.f2w-role-name::before,
+#v17-dm-conversations .v17-dm-conversation-copy.f2w-role-name::after,
+#v17-dm-conversations .v17-dm-conversation-meta.f2w-role-name::before,
+#v17-dm-conversations .v17-dm-conversation-meta.f2w-role-name::after,
+#v17-dm-conversations .v17-dm-avatar.f2w-role-name::before,
+#v17-dm-conversations .v17-dm-avatar.f2w-role-name::after,
+#v17-dm-conversations img.f2w-role-name::before,
+#v17-dm-conversations img.f2w-role-name::after,
+#v17-dm-conversations button.f2w-role-name::before,
+#v17-dm-conversations button.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+  background:none!important;
+}
+
+/* The display-name strong/b is the ONLY DM-list element allowed to sparkle. */
+#v17-dm-conversations .v17-dm-conversation-copy > strong.f2w-role-name,
+#v17-dm-conversations .v17-dm-conversation-copy > b.f2w-role-name,
+#v17-dm-conversations [data-f2w-dm-display-name].f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1.08!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  background:none!important;
+  background-image:none!important;
+  filter:none!important;
+}
+
+/* White particles fly around the display-name word only. */
+#v17-dm-conversations .v17-dm-conversation-copy > strong.f2w-role-name::before,
+#v17-dm-conversations .v17-dm-conversation-copy > b.f2w-role-name::before,
+#v17-dm-conversations [data-f2w-dm-display-name].f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-0.18em!important;
+  right:-0.28em!important;
+  bottom:-0.18em!important;
+  left:-0.28em!important;
+  width:auto!important;
+  height:auto!important;
+  pointer-events:none!important;
+  z-index:3!important;
+  border-radius:.18em!important;
+
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:112% 145%!important;
+  background-color:transparent!important;
+
+  filter:grayscale(1) saturate(0) brightness(4.2) contrast(1.28)!important;
+  mix-blend-mode:screen!important;
+  opacity:.96!important;
+}
+
+#v17-dm-conversations .v17-dm-conversation-copy > strong.f2w-role-name::after,
+#v17-dm-conversations .v17-dm-conversation-copy > b.f2w-role-name::after,
+#v17-dm-conversations [data-f2w-dm-display-name].f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Subtitle/username/time must remain plain and particle-free. */
+#v17-dm-conversations .v17-dm-conversation-copy > span,
+#v17-dm-conversations .v17-dm-conversation-copy > small,
+#v17-dm-conversations .v17-dm-conversation-meta,
+#v17-dm-conversations .v17-dm-conversation-meta * {
+  background:none!important;
+  background-image:none!important;
+  text-shadow:none!important;
+  filter:none!important;
+}
+
+#v17-dm-conversations .v17-dm-conversation-copy {
+  min-width:0!important;
+  overflow:visible!important;
+}
+
+#v17-dm-conversations .v17-dm-conversation {
+  overflow:hidden!important;
+}
+
+/* f2w-force-save:dm-display-name-particles-css-v89:1788227613 */
+
+/* ============================================================
+   F2W v90 — PARTICLES ON DISPLAY NAME ONLY, NO BANNERS
+   ============================================================ */
+
+/* Search autocomplete containers can NEVER sparkle. */
+body.f2w-main-page > header .user-search-result,
+body.f2w-main-page > header .user-search-copy,
+body.f2w-main-page > header .user-search-handle,
+body.f2w-main-page > header .user-search-sub,
+body.f2w-main-page > header .user-search-result > i,
+body.f2w-main-page > header .user-search-result > .user-search-avatar {
+  background-image:none!important;
+  background:none!important;
+  text-shadow:none!important;
+  filter:none!important;
+}
+
+body.f2w-main-page > header .user-search-result::before,
+body.f2w-main-page > header .user-search-result::after,
+body.f2w-main-page > header .user-search-copy::before,
+body.f2w-main-page > header .user-search-copy::after,
+body.f2w-main-page > header .user-search-handle::before,
+body.f2w-main-page > header .user-search-handle::after,
+body.f2w-main-page > header .user-search-sub::before,
+body.f2w-main-page > header .user-search-sub::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* ONLY the actual display-name span gets role colour + white particles. */
+body.f2w-main-page > header .user-search-name.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  flex:0 0 auto!important;
+  align-self:flex-start!important;
+  width:max-content!important;
+  max-width:calc(100% - 8px)!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1.08!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  background:none!important;
+  background-image:none!important;
+  filter:none!important;
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-.14em!important;
+  right:-.24em!important;
+  bottom:-.14em!important;
+  left:-.24em!important;
+  width:auto!important;
+  height:auto!important;
+  pointer-events:none!important;
+  z-index:3!important;
+
+  background-image:var(--f2w-particles-url,url("https://i.ibb.co/HC3GW9B/Particles.gif"))!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:108% 138%!important;
+  background-color:transparent!important;
+
+  filter:grayscale(1) saturate(0) brightness(4.2) contrast(1.25)!important;
+  mix-blend-mode:screen!important;
+  opacity:.94!important;
+}
+
+body.f2w-main-page > header .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Generic rows/cards/containers must never render role particles. */
+.user-search-result.f2w-role-name,
+.user-search-copy.f2w-role-name,
+.v17-dm-conversation.f2w-role-name,
+.v17-dm-conversation-copy.f2w-role-name,
+.v17-dm-conversation-meta.f2w-role-name,
+.f2w-user-card.f2w-role-name,
+.forum-v30-rank-row.f2w-role-name,
+.leaderboard-row.f2w-role-name {
+  background:none!important;
+  background-image:none!important;
+  text-shadow:none!important;
+  filter:none!important;
+  color:inherit!important;
+  -webkit-text-fill-color:inherit!important;
+}
+
+.user-search-result.f2w-role-name::before,
+.user-search-result.f2w-role-name::after,
+.user-search-copy.f2w-role-name::before,
+.user-search-copy.f2w-role-name::after,
+.v17-dm-conversation.f2w-role-name::before,
+.v17-dm-conversation.f2w-role-name::after,
+.v17-dm-conversation-copy.f2w-role-name::before,
+.v17-dm-conversation-copy.f2w-role-name::after,
+.v17-dm-conversation-meta.f2w-role-name::before,
+.v17-dm-conversation-meta.f2w-role-name::after,
+.f2w-user-card.f2w-role-name::before,
+.f2w-user-card.f2w-role-name::after,
+.forum-v30-rank-row.f2w-role-name::before,
+.forum-v30-rank-row.f2w-role-name::after,
+.leaderboard-row.f2w-role-name::before,
+.leaderboard-row.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Site-wide actual display-name targets stay compact around the word only. */
+#profile-name.f2w-role-name,
+.display-name.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.forum-v30-author.f2w-role-name,
+.forum-v30-rank-name.f2w-role-name,
+[data-f2w-dm-display-name].f2w-role-name {
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:visible!important;
+}
+
+/* f2w-force-save:display-name-only-particles-css-v90:1788227716 */
+ 
+
+/* ============================================================
+   F2W v97 — RESTORED MAIN CATALOGUE GRID
+   ============================================================ */
+#movie-grid.movie-grid {
+  min-height:260px!important;
+  width:100%!important;
+}
+
+#catalog-pagination.catalog-pagination {
+  width:100%!important;
+  margin-top:24px!important;
+}
+
+/* f2w-force-save:restored-catalog-grid-v97:1788281880 */
+
+/* ============================================================
+   F2W v103 — STABLE ROLE DISPLAY NAMES + WHITE PARTICLES
+   ============================================================ */
+
+/* Never animate role text colour. This removes white/red flicker. */
+.f2w-role-name,
+.f2w-role-name * {
+  transition:none!important;
+  animation:none!important;
+}
+
+/* Highest role decides letters. */
+.f2w-role-owner      {--role-main:#ff2638!important;--f2w-role-color:#ff2638!important;}
+.f2w-role-staff      {--role-main:#c05cff!important;--f2w-role-color:#c05cff!important;}
+.f2w-role-moderator  {--role-main:#62b4ff!important;--f2w-role-color:#62b4ff!important;}
+.f2w-role-support    {--role-main:#32c8ff!important;--f2w-role-color:#32c8ff!important;}
+.f2w-role-developer  {--role-main:#31d9ad!important;--f2w-role-color:#31d9ad!important;}
+.f2w-role-verified   {--role-main:#579dff!important;--f2w-role-color:#579dff!important;}
+.f2w-role-contributor{--role-main:#ffc13d!important;--f2w-role-color:#ffc13d!important;}
+.f2w-role-curator    {--role-main:#ff6be1!important;--f2w-role-color:#ff6be1!important;}
+
+.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--role-main,var(--f2w-role-color,#fff))!important;
+  background:none!important;
+  background-image:none!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+}
+
+/* Particles are permanently WHITE and sit around the whole display name. */
+.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-.18em!important;
+  right:-.28em!important;
+  bottom:-.18em!important;
+  left:-.28em!important;
+  pointer-events:none!important;
+  z-index:3!important;
+  background-image:url("https://i.ibb.co/HC3GW9B/Particles.gif")!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:112% 145%!important;
+  filter:grayscale(1) saturate(0) brightness(4.5) contrast(1.25)!important;
+  mix-blend-mode:screen!important;
+  opacity:.96!important;
+  animation:none!important;
+}
+
+.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* No-role display names are plain white and never sparkle. */
+.f2w-no-role-name {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:none!important;
+  background-image:none!important;
+  text-shadow:none!important;
+}
+.f2w-no-role-name::before,
+.f2w-no-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Compact sites stay word-bound, never full-row/banner. */
+.user-search-name.f2w-role-name,
+.forum-v30-rank-name.f2w-role-name,
+.leaderboard-username.f2w-role-name,
+.chat-user.f2w-role-name,
+.chat-username.f2w-role-name,
+.comment-author.f2w-role-name,
+[data-f2w-dm-display-name].f2w-role-name {
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+
+/* f2w-force-save:stable-role-display-v103:1788289090 */
+
+/* ============================================================
+   F2W v108 — PROFILE ROLE / PARTICLE / BADGE STABILITY
+   ============================================================ */
+
+/* The display-name effect is owned only by the display name. */
+#profile-name.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  transition:none!important;
+  animation:none!important;
+  background:none!important;
+  background-image:none!important;
+  text-shadow:none!important;
+}
+
+/* Highest role controls letters only. */
+#profile-name.f2w-role-owner {
+  color:#ff2638!important;
+  -webkit-text-fill-color:#ff2638!important;
+}
+#profile-name.f2w-role-staff {
+  color:#c05cff!important;
+  -webkit-text-fill-color:#c05cff!important;
+}
+#profile-name.f2w-role-moderator {
+  color:#62b4ff!important;
+  -webkit-text-fill-color:#62b4ff!important;
+}
+#profile-name.f2w-role-support {
+  color:#32c8ff!important;
+  -webkit-text-fill-color:#32c8ff!important;
+}
+#profile-name.f2w-role-developer {
+  color:#31d9ad!important;
+  -webkit-text-fill-color:#31d9ad!important;
+}
+#profile-name.f2w-role-verified {
+  color:#579dff!important;
+  -webkit-text-fill-color:#579dff!important;
+}
+#profile-name.f2w-role-contributor {
+  color:#ffc13d!important;
+  -webkit-text-fill-color:#ffc13d!important;
+}
+#profile-name.f2w-role-curator {
+  color:#ff6be1!important;
+  -webkit-text-fill-color:#ff6be1!important;
+}
+
+/*
+ * The GIF remains mounted continuously. No class removal/re-add means it
+ * keeps moving instead of restarting/flashing. Normal blend mode prevents
+ * white particles being tinted by Owner/Staff text underneath.
+ */
+#profile-name.f2w-role-name::before {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  inset:-.20em -.30em!important;
+  z-index:4!important;
+  pointer-events:none!important;
+  background-image:url("https://i.ibb.co/HC3GW9B/Particles.gif")!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:112% 145%!important;
+  background-color:transparent!important;
+  filter:grayscale(1) saturate(0) brightness(5) contrast(1.35)!important;
+  mix-blend-mode:normal!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+#profile-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Permanent separate badge row — never part of the display-name effect. */
+#profile-hero .profile-role-row {
+  min-height:26px!important;
+  margin:6px 0 2px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+
+#profile-hero #profile-role-badge {
+  position:static!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+  transform:none!important;
+  transition:none!important;
+  animation:none!important;
+  background-image:none!important;
+}
+
+#profile-hero #profile-role-badge,
+#profile-hero #profile-role-badge * {
+  transition:none!important;
+  animation:none!important;
+}
+
+#profile-hero #profile-role-badge::before,
+#profile-hero #profile-role-badge::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* Presence itself never pulses/blinks. */
+#v17-profile-presence,
+#v17-profile-presence *,
+.f2w-profile-presence-dot {
+  animation:none!important;
+  transition:none!important;
+}
+
+/* f2w-force-save:profile-role-particle-stability-v108:1788290088 */
+
+ 
+
+/* F2W v110 profile role fallback */
+#profile-name.f2w-role-name {
+  color:var(--f2w-profile-role-color,var(--f2w-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--f2w-profile-role-color,var(--f2w-role-color,#fff))!important;
+}
+/* f2w-force-save:profile-role-fallback-v110:1788290464 */
+
+/* ============================================================
+   F2W v112 — AUTOCOMPLETE ROLE DISPLAY-NAME EFFECT
+   ============================================================ */
+.user-search-result .user-search-name.f2w-role-name {
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  color:var(--f2w-role-color,#fff)!important;
+  -webkit-text-fill-color:var(--f2w-role-color,#fff)!important;
+  background:none!important;
+  background-image:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+.user-search-result .user-search-name.f2w-role-name::before {
+  content:""!important;
+  position:absolute!important;
+  inset:-.20em -.28em!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  background-image:url("https://i.ibb.co/HC3GW9B/Particles.gif")!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:100% 100%!important;
+  filter:grayscale(1) saturate(0) brightness(5.2) contrast(1.4)!important;
+  mix-blend-mode:screen!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+.user-search-result .user-search-name.f2w-role-name::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* @username stays plain, always. */
+.user-search-result .user-search-sub {
+  color:#8ea2b8!important;
+  -webkit-text-fill-color:#8ea2b8!important;
+  background:none!important;
+  background-image:none!important;
+}
+
+.user-search-result .user-search-sub::before,
+.user-search-result .user-search-sub::after {
+  content:none!important;
+  display:none!important;
+}
+
+/* f2w-force-save:autocomplete-role-css-v112:1788290771 */
+/* ============================================================
+   F2W v116 — SITE-WIDE ROLE USERNAME + DISPLAY NAME PARTICLES
+   ============================================================ */
+.f2w-role-name{
+  position:relative!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  color:var(--f2w-role-color,var(--f2w-profile-role-color,#fff))!important;
+  -webkit-text-fill-color:var(--f2w-role-color,var(--f2w-profile-role-color,#fff))!important;
+  background:none!important;
+  background-image:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+.f2w-role-name::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-.24em -.34em!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  background:url("https://i.ibb.co/HC3GW9B/Particles.gif") center/100% 100% no-repeat!important;
+  filter:grayscale(1) saturate(0) brightness(5.35) contrast(1.45)!important;
+  mix-blend-mode:screen!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+.f2w-role-name::after{content:none!important;display:none!important}
+/* Keep effects compact to text nodes, never rows/cards. */
+.f2w-user-card.f2w-role-name,
+.user-search-result.f2w-role-name,
+.v17-dm-conversation.f2w-role-name,
+.leaderboard-row.f2w-role-name,
+.forum-v30-rank-row.f2w-role-name{
+  background-image:none!important;
+}
+/* f2w-force-save:sitewide-role-particles-v116:1788295578 */
+
+ 

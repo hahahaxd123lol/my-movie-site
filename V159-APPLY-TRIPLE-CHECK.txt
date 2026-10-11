@@ -1,0 +1,87 @@
+Flix2Watch v159 — FULL RECOVERY + LOW-USAGE PASS
+================================================
+
+APPLY IN THIS ORDER
+1) Run V159-FULL-RECOVERY-LOW-USAGE.sql in Supabase SQL Editor.
+2) Replace the Rapid Worker Edge Function with:
+   supabase/functions/rapid-worker/index.ts
+   and redeploy the function named rapid-worker.
+3) Deploy the full v159 website ZIP.
+4) Close every Flix2Watch tab, reopen the site, then hard-refresh once.
+5) In Staff Control Center, for the account used during the broken Site Suspension test,
+   toggle Site Suspension OFF once. If an older login-ban remains, use the v159 clear
+   restrictions RPC/action or clear the restriction from the same Staff panel.
+
+WHAT v159 FIXES
+- Leaderboard:
+  * One bundled RPC instead of separate leaderboard + stats requests.
+  * XP-only rank order remains authoritative.
+  * Cached first paint; database refresh once every 30 seconds.
+  * Profile clicks use /profile/@username.
+  * Removed duplicate 30-second presence heartbeat from leaderboard page.
+- Forum:
+  * Legacy author_id/author_user_id posting compatibility repaired.
+  * Thread/reply posting RPCs use auth.uid() directly.
+  * Broken icon-font squares replaced at runtime with inline SVG icons.
+  * Permanent forum Realtime subscriptions removed; visible page refreshes once/30s.
+- Public chat:
+  * Chat bootstrap now tries the single Supabase RPC first and falls back to Edge only if needed.
+  * Sitewide prewarm is cached for 60 seconds per tab/session so /chat/ can paint instantly.
+  * Public chat image sending is hidden and rejected by both RPC and Edge paths.
+  * Own-message delete no longer requires legacy chat identity readiness.
+  * Realtime chat remains enabled on /chat/ itself.
+- Login / Create Account:
+  * One canonical modal behavior loaded last sitewide.
+  * Close X works.
+  * Login/Create Account tabs switch correctly and only the active tab is red.
+  * Create Account submit works from the modal.
+  * Email login uses direct Supabase Auth for speed; username login uses Rapid Worker.
+  * Removed old device-wide auth preflight from normal login/signup path so a Site Suspension
+    on one account cannot poison every account on the same browser/network.
+- Staff moderation:
+  * Site Suspension is account-scoped and stored only against the target user_id.
+  * Realtime account-enforcement subscription is filtered to the signed-in user_id.
+  * Restriction shows one proper blocking popup immediately; no blur-only state.
+  * Unticking clears the popup through Realtime without needing a refresh.
+  * Fallback enforcement check is once/minute; Realtime is the instant path.
+  * Owner -> Staff functions repaired as v159 RPCs.
+  * Account-ban remains account-specific and Rapid Worker blocks future login for that account.
+- Player / sources:
+  * Flix2Watch API remains enabled and priority #1.
+  * Player no longer waits on the moderation RPC before assigning the iframe URL.
+  * A stale restriction belonging to another account cannot black-screen the current player.
+  * player.flix2watch.com is warmed sitewide without using Supabase.
+  * Existing animated loading cover remains over provider boot instead of exposing dead black UI.
+- Home Featured:
+  * No more "Loading Spotlight..." placeholder.
+  * Last fresh TMDB trending set is cached locally and paints immediately on return visits.
+  * Fresh trending data still updates in background.
+- User search:
+  * New indexed search_public_users_v159 RPC.
+  * Search page no longer runs an exact-count REST scan that could time out.
+  * Header autocomplete waits for 2 chars, debounces to 300ms and caches identical prefixes 60s.
+- Red UI:
+  * Sitewide red/primary controls use one gradient treatment.
+  * Inactive Login/Create Account tabs are explicitly dark so both cannot remain red.
+  * Forum New Discussion and other primary red controls are covered.
+- Header spacing:
+  * Detached action-button gaps remain enforced from the final sitewide CSS layer.
+- Profile routing:
+  * /profile/@username remains the canonical URL.
+  * Service worker profile-shell fallback from v155 remains included.
+
+SUPABASE USAGE REDUCTIONS
+- One shared browser Supabase client is reused on the main interactive pages.
+- Removed duplicate leaderboard presence heartbeat.
+- Removed bulk idle prefetch of up to 12 profile live snapshots; exact hover/touch/focus prefetch remains.
+- Leaderboard: 1 RPC every 30s instead of 2 RPCs every 30s.
+- Forum: no permanent Realtime subscription; 1 bounded refresh every 30s while visible.
+- Moderation: one filtered Realtime subscription for the current account + 60s safety check.
+- Announcements: 60s visible-page polling instead of a sitewide Realtime channel.
+- Stream controls: 60s polling only while on /watch/.
+- Chat prewarm: maximum one bootstrap RPC per 60s per tab session; chat itself uses Realtime.
+- User autocomplete: 300ms debounce + 60s prefix cache + minimum 2 characters.
+
+Free-tier note: these changes minimize request/subscription volume while keeping requested realtime
+features, but no code can guarantee a free-tier bill under unlimited traffic. The remaining recurring
+calls are deliberately bounded and are only active on pages/features that need them.

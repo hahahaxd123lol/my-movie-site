@@ -1,0 +1,19 @@
+Flix2Watch v145 — combined repair pass
+
+1. Run V145-FIXES.sql in Supabase SQL Editor.
+2. Deploy the full v145 website build.
+3. If you deploy rapid-worker.ts separately for public-chat commands/moderation, deploy the included v145 copy too.
+4. Hard refresh/reopen once so the v145 service-worker cache takes over.
+
+Fixed:
+- Forum legacy author_id NOT NULL posting failure (threads + replies).
+- Forum icon-font square/box glyphs removed from forum UI.
+- Public chat own-message deletion now uses stable signed-in user ownership.
+- Public chat image sending disabled in UI, direct RPC, and included worker.
+- Leaderboard/forum Account button opens the account modal instead of navigating home.
+- Account modal text contrast on Forum repaired.
+- Clicking inside Account modal no longer dismisses it.
+- Notifications table/RPCs guaranteed to exist.
+- Username availability appears inside Account while typing/clicking.
+- Username changes are atomic and account metadata follows the new username.
+- Old username profile cache is invalidated; successful old-username lookup no longer preserves a ghost profile.

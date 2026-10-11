@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script id="f2w-discord-link-authority-v250">
+(()=>{
+  'use strict';
+  if(window.__f2wDiscordLinkAuthorityV250)return;
+  window.__f2wDiscordLinkAuthorityV250=true;
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v250[href]')||null}catch{return null}}
+  function openExternal(event){
+    const a=anchorFrom(event.target); if(!a)return;
+    const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
+    event.preventDefault(); event.stopImmediatePropagation(); event.stopPropagation();
+    try{
+      const tab=nativeOpen?.('about:blank','_blank');
+      if(tab){
+        try{tab.opener=null}catch{}
+        try{tab.location.replace(href)}catch{try{tab.location.href=href}catch{}}
+        return;
+      }
+    }catch{}
+  }
+  window.addEventListener('click',openExternal,true);
+})();
+</script>
+<style id="f2w-discord-link-pointer-v250">
+#f2w-discord-join-v250{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+#f2w-discord-join-v250 *{pointer-events:none!important}
+</style>
+  <link rel="manifest" href="/site.webmanifest">
+<link href="https://player.flix2watch.com" rel="preconnect" crossorigin>
+<link href="https://player.flix2watch.com" rel="dns-prefetch">
+
+<script id="f2w-transition-boot-v135">
+try{document.documentElement.classList.add('f2w-transition-boot')}catch(e){}
+</script>
+<link rel="stylesheet" href="/page-transitions-v135.css?v=183-20260902">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e50914">
+<meta name="color-scheme" content="dark">
+<title>User Search | Flix2Watch</title>
+  <!-- Flix2Watch SEO / social authority v214 -->
+  <meta name="description" content="Search Flix2Watch member profiles by username.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="bingbot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <link rel="canonical" href="https://flix2watch.com/users/search/">
+  <meta property="og:site_name" content="Flix2Watch">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="User Search | Flix2Watch">
+  <meta property="og:description" content="Search Flix2Watch member profiles by username.">
+  <meta property="og:url" content="https://flix2watch.com/users/search/">
+  <meta property="og:image" content="https://flix2watch.com/flix2watch-share-v214.png">
+  <meta property="og:image:secure_url" content="https://flix2watch.com/flix2watch-share-v214.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Flix2Watch — Watch. Chill. Repeat.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="User Search | Flix2Watch">
+  <meta name="twitter:description" content="Search Flix2Watch member profiles by username.">
+  <meta name="twitter:image" content="https://flix2watch.com/flix2watch-share-v214.png">
+  <meta name="twitter:image:alt" content="Flix2Watch — Watch. Chill. Repeat.">
+  <meta name="theme-color" content="#e50914">
+  <script type="application/ld+json" data-f2w-seo-v214>{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://flix2watch.com/#website","url":"https://flix2watch.com/","name":"Flix2Watch","description":"Search Flix2Watch member profiles by username.","inLanguage":"en"},{"@type":"Organization","@id":"https://flix2watch.com/#organization","name":"Flix2Watch","url":"https://flix2watch.com/","logo":{"@type":"ImageObject","url":"https://flix2watch.com/flix2watch-logo-red-v34.png"}}]}</script>
+  <!-- /Flix2Watch SEO / social authority v214 -->
+
+<link rel="icon" href="/favicon-v16.ico" sizes="any">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/responsive-v7.css">
+<link rel="stylesheet" href="/final-v9.css">
+<link rel="stylesheet" href="/approved-ui-v12.css">
+<link rel="stylesheet" href="/final-fixes-v13.css">
+<link rel="stylesheet" href="/final-v14.css">
+<link rel="stylesheet" href="/final-v15.css">
+<link rel="stylesheet" href="/final-v16.css">
+<link rel="stylesheet" href="/final-v17.css">
+<link rel="stylesheet" href="/final-v18.css">
+<link rel="stylesheet" href="/final-v19.css">
+<link rel="stylesheet" href="/final-v20.css">
+<link rel="stylesheet" href="/final-v22.css">
+<link rel="stylesheet" href="/final-v27.css">
+<link rel="stylesheet" href="/final-v28.css">
+<link rel="stylesheet" href="/final-v32.css">
+<link rel="stylesheet" href="/final-v33.css">
+<link rel="stylesheet" href="/final-v34.css">
+<link rel="stylesheet" href="/final-v35.css?v=125-1788300576">
+<link rel="stylesheet" href="/final-v26.css">
+<link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
+
+<style id="f2w-user-search-lean-v116-css">
+html,body{margin:0!important;min-height:100%!important;background:#020914!important;color:#fff!important}
+body.f2w-user-search-page{background:radial-gradient(circle at 92% 0%,rgba(229,9,20,.06),transparent 30%),#020914!important}
+.f2w-us-main{width:min(1500px,calc(100% - 36px))!important;margin:28px auto 74px!important}
+.f2w-us-head{padding:4px 0 20px!important;border-bottom:1px solid #23384d!important}
+.f2w-us-kicker{color:#ff2638!important;font-size:.72rem!important;font-weight:950!important;letter-spacing:.14em!important;margin-bottom:8px!important}
+.f2w-us-head h1{margin:0!important;font-size:clamp(2rem,4vw,3rem)!important;line-height:1.05!important}
+.f2w-us-head p{margin:9px 0 0!important;color:#8ea2b8!important;font-size:.86rem!important}
+.f2w-us-status{margin:14px 0 18px!important;min-height:58px!important;padding:12px 15px!important;border:1px solid #28445e!important;border-radius:12px!important;background:#071522!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;color:#8fa4ba!important;font-size:.78rem!important}
+.f2w-us-status strong{color:#fff!important;margin-left:8px!important}
+#f2w-us-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;min-height:230px!important}
+.f2w-us-card{position:relative!important;display:flex!important;align-items:center!important;gap:16px!important;min-height:122px!important;padding:17px 56px 17px 17px!important;border:1px solid #28445f!important;border-radius:15px!important;background:linear-gradient(145deg,#081827,#07131f)!important;text-decoration:none!important;color:inherit!important}
+.f2w-us-card:hover{border-color:#4b7092!important}
+.f2w-us-avatar{width:76px!important;height:76px!important;min-width:76px!important;border-radius:50%!important;overflow:hidden!important;background:#0c2031!important;display:grid!important;place-items:center!important;color:#fff!important;font-weight:900!important}
+.f2w-us-avatar img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+.f2w-us-copy{min-width:0!important}
+.f2w-us-display,.f2w-us-handle{width:max-content!important;max-width:100%!important;overflow:visible!important}
+.f2w-us-display{font-size:1.05rem!important;font-weight:900!important;color:#fff!important}
+.f2w-us-handle{margin-top:4px!important;font-size:.82rem!important;color:#8fa4ba!important}
+.f2w-us-bio{margin-top:8px!important;color:#8296ab!important;font-size:.75rem!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:560px!important}
+.f2w-us-arrow{position:absolute!important;right:18px!important;top:50%!important;transform:translateY(-50%)!important;width:34px!important;height:34px!important;border-radius:50%!important;display:grid!important;place-items:center!important;color:#8fa5bc!important;background:#0c2031!important;border:1px solid #29465f!important}
+.f2w-us-state{grid-column:1/-1!important;min-height:200px!important;border:1px dashed #2a445e!important;border-radius:14px!important;background:#071522!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;color:#8fa4ba!important}
+#f2w-us-pages{margin-top:28px!important;display:flex!important;justify-content:center!important;align-items:center!important;gap:7px!important;flex-wrap:wrap!important}
+.f2w-us-page{min-width:42px!important;height:42px!important;padding:0 13px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;border:1px solid #29465f!important;border-radius:9px!important;background:#081725!important;color:#dbe7f3!important;text-decoration:none!important;font-size:.78rem!important;font-weight:850!important}
+.f2w-us-page.active{background:#e50914!important;border-color:#ff3445!important;color:#fff!important}
+.f2w-us-page.disabled{opacity:.38!important;pointer-events:none!important}
+@media(max-width:850px){#f2w-us-grid{grid-template-columns:1fr!important}}
+@media(max-width:700px){.f2w-us-main{width:calc(100% - 22px)!important;margin-top:18px!important}.f2w-us-status{flex-direction:column!important;align-items:flex-start!important}}
+/* f2w-force-save:user-search-lean-css-v116:1788295578 */
+</style>
+
+  <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
+  <link rel="stylesheet" href="/v146-live-ops.css?v=159">
+  <link rel="stylesheet" href="/v154-global-ui.css?v=159">
+  <script src="/v154-global-ui.js?v=159" defer></script>
+<link rel="stylesheet" href="/v165-enforcement.css?v=165">
+<script src="/v160-bootstrap.js?v=205-live-sports-sitewide"></script>
+  <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
+<link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"></head>
+<body class="theme-red f2w-main-page f2w-user-search-page">
+<header>
+    <a href="/home/" class="logo" aria-label="Flix2Watch home">
+      <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch" class="logo-image">
+    </a>
+
+    <button class="f2w-mobile-nav-toggle" type="button" aria-label="Open navigation" onclick="toggleF2WMobileMenu()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="header-tools">
+      <nav class="f2w-primary-nav" aria-label="Main navigation">
+        <a class="f2w-nav-link" id="f2w-nav-home" href="/home/"><i class="fa-solid fa-house"></i> Home</a>
+        <a class="f2w-nav-link" id="f2w-nav-movies" href="/home/?tab=movie"><i class="fa-solid fa-film"></i> Movies</a>
+        <a class="f2w-nav-link" id="f2w-nav-tv" href="/home/?tab=tv"><i class="fa-solid fa-tv"></i> TV Shows</a>
+        
+
+          <div class="f2w-genre-wrap">
+            <button class="f2w-nav-button" id="f2w-nav-genres" type="button" onclick="toggleF2WGenreMenu(event)">
+              <i class="fa-solid fa-location-dot"></i> Genres <i class="fa-solid fa-chevron-down" style="font-size:.55rem"></i>
+            </button>
+            <div class="f2w-genre-menu" id="f2w-genre-menu">
+              <a href="/genre/action/">Action</a>
+              <a href="/genre/comedy/">Comedy</a>
+              <a href="/genre/horror/">Horror</a>
+              <a href="/genre/sci-fi/">Sci-Fi</a>
+              <a href="/genre/thriller/">Thriller</a>
+              <a href="/genre/crime/">Crime</a>
+              <a href="/genre/romance/">Romance</a>
+              <a href="/genre/animation/">Animation</a>
+              <a href="/genre/documentary/">Documentary</a>
+              <a href="/genre/fantasy/">Fantasy</a>
+              <a href="/genre/adventure/">Adventure</a>
+              <a href="/genre/drama/">Drama</a>
+              <a href="/genre/family/">Family</a>
+              <a href="/genre/mystery/">Mystery</a>
+              <a href="/genre/history/">History</a>
+              <a href="/genre/music/">Music</a>
+              <a href="/genre/war/">War</a>
+              <a href="/genre/western/">Western</a>
+            </div>
+          </div>
+
+      </nav>
+
+      <div class="f2w-search-pair">
+        <div class="search-container" role="search">
+          <i class="fa-solid fa-search"></i>
+          <input
+            id="movie-search"
+           
+            class="search-bar"
+            type="search"
+            placeholder="Search movies..."
+            autocomplete="off"
+            inputmode="search"
+            enterkeyhint="search"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Search movies and TV shows"
+            aria-autocomplete="off"
+            data-form-type="search"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-protonpass-ignore="true"
+            data-keeper-ignore="true"
+           
+            oninput="v18HeaderMovieSearch(this.value)"
+            onfocus="protectMovieSearchField(this)" role="searchbox">
+        </div>
+
+        <div class="user-search-container" role="search">
+          <i class="fa-solid fa-user"></i>
+          <input
+            type="search"
+            id="user-search"
+           
+            class="user-search-bar"
+            placeholder="Search users..."
+            autocomplete="off"
+            inputmode="search"
+            enterkeyhint="search"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Search Flix2Watch users"
+            aria-autocomplete="off"
+            data-form-type="search"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-protonpass-ignore="true"
+            data-keeper-ignore="true"
+           
+            oninput="handleUserSearchInput(this)"
+            onfocus="protectUserSearchField(this)"
+           role="searchbox">
+          <button class="user-search-submit" type="button" aria-label="Search users" title="Search users" onclick="submitUserDirectorySearch()">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          
+        </div>
+      </div>
+
+      <div class="f2w-action-cluster">
+        <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
+          <i class="fa-regular fa-message"></i> Chat 
+        </button>
+
+        
+
+        <button class="f2w-auth-top-btn login" id="header-login-btn" type="button" style="display:none" onclick="openHeaderAuth('login')"><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> Login</button>
+        <button class="f2w-auth-top-btn signup" id="header-signup-btn" type="button" style="display:none" onclick="openHeaderAuth('signup')"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> Sign Up</button>
+
+        <button class="tool-btn" id="favorites-nav-btn" onclick="window.location.href='/favorites/'" style="display:none"><i class="fa-regular fa-heart"></i> Favorites</button>
+        <button class="tool-btn" id="profile-nav-btn" onclick="openMyProfile()" style="display:none"><i class="fa-regular fa-id-card"></i> Profile</button>
+        <button class="tool-btn f2w-hide-tablet" id="support-nav-btn" onclick="window.location.href='/support/'" style="display:none"><i class="fa-regular fa-life-ring"></i> Support</button>
+        <button class="tool-btn" id="account-btn" onclick="window.location.href='/account/'" style="display:none"><i class="fa-regular fa-user"></i> Account</button>
+
+
+        <div class="v17-notification-wrap" id="notification-wrap" style="display:none">
+          <button class="tool-btn v17-notification-btn" id="notification-btn" type="button" onclick="window.location.href='/notifications/';return false" aria-label="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span>Notifications</span>
+            <b class="v17-notification-count" id="notification-count" hidden>0</b>
+          </button>
+          <div class="v17-notification-menu" id="notification-menu" hidden>
+            <div class="v17-notification-head">
+              <strong>Notifications</strong>
+              <button type="button" onclick="markAllNotificationsRead()">Mark all read</button>
+            </div>
+            <div class="v17-notification-list" id="notification-list">
+              <div class="v17-notification-empty">No notifications yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="tool-btn" id="staff-control-nav" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1">
+          <i class="fa-solid fa-shield-halved"></i> Staff Control Panel
+        </button>
+      </div>
+    </div>
+  </header>
+
+<main class="f2w-us-main">
+  <section class="f2w-us-head">
+    <div class="f2w-us-kicker"><i class="fa-solid fa-users"></i> USER SEARCH</div>
+    <h1 id="f2w-us-heading">Search Flix2Watch users</h1>
+    <p>Matches usernames containing the letters or numbers you typed. Up to 30 per page.</p>
+  </section>
+  <section class="f2w-us-status">
+    <div>Searching for <strong id="f2w-us-query">—</strong></div>
+    <div id="f2w-us-count">Starting search…</div>
+  </section>
+  <section id="f2w-us-grid" aria-live="polite">
+    <div class="f2w-us-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading users…</div>
+  </section>
+  <nav id="f2w-us-pages" aria-label="User search pages"></nav>
+</main>
+
+
+<script id="f2w-user-search-core-v116">
+(() => {
+  'use strict';
+  const SUPABASE_URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+  const LIMIT=30;
+  const OWNER_UUID='f5454804-a2a6-4602-9086-51cf51f11c77';
+
+  const params=new URLSearchParams(location.search);
+  const query=String(params.get('q')||'').trim().replace(/[^A-Za-z0-9]/g,'').slice(0,30);
+  const page=Math.max(1,Number(params.get('page'))||1);
+  if(!query){location.replace('/users/');return}
+
+  const qEl=document.getElementById('f2w-us-query');
+  const countEl=document.getElementById('f2w-us-count');
+  const heading=document.getElementById('f2w-us-heading');
+  const grid=document.getElementById('f2w-us-grid');
+  const pages=document.getElementById('f2w-us-pages');
+  const userInput=document.getElementById('user-search');
+  if(userInput)userInput.value=query;
+  qEl.textContent=query;
+  heading.textContent=`Users matching “${query}”`;
+  countEl.textContent='Searching…';
+
+  const esc=(v='')=>String(v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+  const initials=v=>String(v||'?').slice(0,2).toUpperCase();
+
+  const roleColors={
+    owner:'#ff2638',staff:'#c05cff',moderator:'#62b4ff',support:'#32c8ff',
+    developer:'#31d9ad',verified:'#579dff',contributor:'#ffc13d',curator:'#ff6be1'
+  };
+
+  function roleWrap(text,username,role,cls){
+    role=String(role||'').toLowerCase();
+    const safe=esc(text);
+    const user=esc(username);
+    if(!roleColors[role])return `<span class="${cls}" data-username="${user}">${safe}</span>`;
+    return `<span class="${cls} f2w-role-name f2w-role-${role}" data-role="${role}" data-username="${user}" style="--f2w-role-color:${roleColors[role]};color:${roleColors[role]}!important;-webkit-text-fill-color:${roleColors[role]}!important">${safe}</span>`;
+  }
+
+  function card(p){
+    const username=String(p.username||'');
+    const display=String(p.display_name||username||'Member');
+    const role=String(p.user_id||'')===OWNER_UUID?'owner':String(p.top_role||'').toLowerCase();
+    const avatar=p.avatar_url
+      ? `<img src="${esc(p.avatar_url)}" alt="${esc(display)} profile picture" loading="lazy" decoding="async">`
+      : `<span>${esc(initials(username))}</span>`;
+    return `<a class="f2w-us-card" href="/profile/@${encodeURIComponent(username)}">
+      <div class="f2w-us-avatar">${avatar}</div>
+      <div class="f2w-us-copy">
+        ${roleWrap(display,username,role,'f2w-us-display display-name')}
+        ${roleWrap('@'+username,username,role,'f2w-us-handle username')}
+        ${p.bio?`<div class="f2w-us-bio">${esc(p.bio)}</div>`:''}
+      </div>
+      <span class="f2w-us-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+    </a>`;
+  }
+
+  function pagination(total){
+    const totalPages=Math.max(1,Math.ceil(total/LIMIT));
+    pages.innerHTML='';
+    if(totalPages<=1)return;
+    const add=(label,target,active=false,disabled=false)=>{
+      const node=document.createElement(disabled?'span':'a');
+      node.className='f2w-us-page'+(active?' active':'')+(disabled?' disabled':'');
+      node.textContent=label;
+      if(!disabled)node.href=`/users/search/?q=${encodeURIComponent(query)}&page=${target}`;
+      pages.appendChild(node);
+    };
+    add('Prev',Math.max(1,page-1),false,page<=1);
+    for(let n=Math.max(1,page-2);n<=Math.min(totalPages,page+2);n++)add(String(n),n,n===page);
+    add('Next',Math.min(totalPages,page+1),false,page>=totalPages);
+  }
+
+  async function load(){
+    const from=(page-1)*LIMIT;
+    const rest=new URLSearchParams();
+    rest.set('select','user_id,username,display_name,avatar_url,bio');
+    rest.set('username',`ilike.*${query}*`);
+    rest.set('order','username.asc');
+    rest.set('offset',String(from));
+    rest.set('limit',String(LIMIT));
+
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),5000);
+    try{
+      const response=await fetch(`${SUPABASE_URL}/rest/v1/profiles?${rest.toString()}`,{
+        method:'GET',cache:'no-store',signal:controller.signal,
+        headers:{apikey:KEY,Authorization:`Bearer ${KEY}`,Prefer:'count=exact',Accept:'application/json'}
+      });
+      const rows=await response.json().catch(()=>[]);
+      if(!response.ok)throw new Error(rows?.message||`HTTP ${response.status}`);
+
+      let total=Array.isArray(rows)?rows.length:0;
+      const range=response.headers.get('content-range')||'';
+      const match=range.match(/\/(\d+)$/);
+      if(match)total=Number(match[1]);
+
+      // Resolve roles separately. Search still renders if role lookup fails.
+      let effects={};
+      try{
+        const usernames=(rows||[]).map(x=>x.username).filter(Boolean);
+        if(usernames.length){
+          const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_name_effects`,{
+            method:'POST',cache:'no-store',
+            headers:{apikey:KEY,Authorization:`Bearer ${KEY}`,'Content-Type':'application/json'},
+            body:JSON.stringify({p_usernames:usernames})
+          });
+          const e=await r.json().catch(()=>[]);
+          if(r.ok&&Array.isArray(e))e.forEach(x=>{effects[String(x.username||'').toLowerCase()]=String(x.top_role||'').toLowerCase()});
+        }
+      }catch{}
+
+      const decorated=(rows||[]).map(x=>({...x,top_role:effects[String(x.username||'').toLowerCase()]||''}));
+      countEl.textContent=total?`${total} matching user${total===1?'':'s'}`:'No matching users';
+      grid.innerHTML=decorated.length?decorated.map(card).join(''):'<div class="f2w-us-state"><i class="fa-regular fa-face-meh"></i> No matching users found.</div>';
+      pagination(total);
+    }catch(error){
+      console.error('User search failed:',error);
+      countEl.textContent='Search failed';
+      grid.innerHTML=`<div class="f2w-us-state"><i class="fa-solid fa-triangle-exclamation"></i> ${error?.name==='AbortError'?'User search timed out. Please try again.':'Could not load users. Please try again.'}</div>`;
+      pages.innerHTML='';
+    }finally{clearTimeout(timer)}
+  }
+  load();
+})();
+/* f2w-force-save:user-search-core-v116:1788295578 */
+</script>
+
+
+<script id="f2w-user-search-header-v116">
+(() => {
+  const movie=document.getElementById('movie-search');
+  const users=document.getElementById('user-search');
+  if(movie){movie.removeAttribute('readonly');movie.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();const q=String(movie.value||'').trim();if(q)location.href=`/movies/search/?q=${encodeURIComponent(q)}&page=1`}})}
+  if(users){users.removeAttribute('readonly');users.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();const q=String(users.value||'').trim().replace(/[^A-Za-z0-9]/g,'');if(q)location.href=`/users/search/?q=${encodeURIComponent(q)}&page=1`}})}
+  window.openGlobalChat=()=>{location.href='/chat/'};
+  window.openMyProfile=()=>{location.href='/profile/'};
+  window.toggleF2WGenreMenu=e=>{e?.stopPropagation?.();document.getElementById('f2w-genre-menu')?.classList.toggle('show')};
+})();
+/* f2w-force-save:user-search-header-v116:1788295578 */
+</script>
+
+<script src="/page-transitions-v135.js?v=183-20260902" defer></script>
+<script src="/player-warm-v142.js?v=142" defer></script>
+  <script src="/v145-sitewide-fixes.js?v=145" defer></script>
+  <script src="/v147-account-logout.js?v=183-20260902"></script>
+  <script src="/v149-account-route.js?v=153"></script>
+
+<!-- F2W v159 core recovery -->
+<link rel="stylesheet" href="/v159-core.css?v=159">
+<script src="/v159-core.js?v=190-20260902-auth-authority" defer></script>
+<script src="/v165-enforcement.js?v=183-20260902"></script>
+  <script src="/v170-sitewide-fixes.js?v=170" defer></script>
+<script src="/v172-sitewide.js?v=172"></script>
+<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=190-20260902-auth-authority"></script>
+<script src="/v176-sitewide.js?v=205-live-sports-sitewide" defer></script></body>
+</html>
+<!-- f2w-force-save:user-search-lean-v116:1788295578 -->
+<!-- f2w-force-save:v116-cache:1788295578:users/search/index.html -->
+<!-- f2w-force-save:v117-cache:1788295984:users/search/index.html -->
+<!-- f2w-force-save:v118-cache:1788296424:users/search/index.html -->
+<!-- f2w-force-save:v119-cache:1788296897:users/search/index.html -->
+<!-- f2w-force-save:v120-cache:1788297036:users/search/index.html -->
+<!-- f2w-force-save:v121-cache:1788297958:users/search/index.html -->
+<!-- f2w-force-save:v123-cache:1788298849:users/search/index.html -->
+<!-- f2w-force-save:v124-cache:1788299294:users/search/index.html -->
+<!-- f2w-force-save:v125-cache:1788300576:users/search/index.html -->
+ 
+<!-- f2w-force-save:v183-sitewide-cache-bust:20260902 -->
+
+<!-- f2w-force-save:v185-auth-cache-bust:20260902 -->
+
+<!-- f2w-force-save:v190-auth-controller-cleanup:20260902 -->
+
+<!-- f2w-force-save:seo-social-v214:/users/search/ -->
+
+<!-- f2w-force-save:v250-discord-every-site-page:20260904 -->

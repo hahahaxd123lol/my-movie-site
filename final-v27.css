@@ -1,0 +1,43 @@
+
+/* V27 — clean DM rollback: slightly roomier chat, no E2EE control clutter */
+.chat-modal .v17-chat-hub{
+  width:min(860px,calc(100vw - 28px)) !important;
+  max-width:860px !important;
+  height:min(640px,calc(100dvh - 92px)) !important;
+  max-height:640px !important;
+}
+
+.v17-dm-panel{
+  grid-template-columns:250px minmax(0,1fr) !important;
+}
+
+.v17-dm-avatar{
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  min-height:40px !important;
+}
+
+.v17-dm-conversation{
+  min-height:56px !important;
+}
+
+.v17-dm-message{
+  max-width:74% !important;
+}
+
+.v17-dm-message small{
+  font-size:.48rem !important;
+}
+
+@media(max-width:820px), (max-width:1366px) and (pointer:coarse){
+  .chat-modal .v17-chat-hub{
+    width:calc(100vw - 14px) !important;
+    height:min(650px,calc(100svh - 72px)) !important;
+    max-height:calc(100svh - 72px) !important;
+  }
+
+  .v17-dm-panel{
+    grid-template-columns:1fr !important;
+  }
+}

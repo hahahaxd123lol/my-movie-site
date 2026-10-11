@@ -1,0 +1,15 @@
+FLIX2WATCH v142 — PLAYER FAST START + SUBTITLES DEFAULT OFF
+
+Changes
+- Flix2Watch API no longer sends ds_lang=en. The provider documents that ds_lang auto-selects a subtitle language, so omitting it keeps captions off by default while leaving subtitle tracks available if a viewer turns them on manually.
+- Keeps autoplay=1 on the custom player domain.
+- Adds site-wide DNS/TLS preconnect to player.flix2watch.com.
+- Adds a low-cost background origin warmup after site load and on watch-link intent, without creating a hidden autoplaying movie iframe.
+- Replaces the dead black startup area with a short branded STARTING FLIX2WATCH API state while the provider iframe boots.
+- Startup overlay clears on iframe load / playing event and has a hard timeout so it never blocks controls.
+- No Supabase SQL required.
+
+Browser note
+Autoplay is still subject to browser autoplay policy. The provider documents that custom domains support autoplay=1 and can fall back to muted playback where browsers block unmuted autoplay.
+
+Deploy the full v142 build and hard refresh/reopen once.

@@ -1,0 +1,22 @@
+FLIX2WATCH v144 — APPLY
+
+1. In Supabase SQL Editor run:
+   V144-FORUM-CHAT-ACCOUNT-NOTIFICATIONS.sql
+
+2. Deploy the entire v144 ZIP.
+
+3. Hard-refresh/reopen once so global-header-chat-v1.js?v=144 is loaded.
+
+Fixed in this build:
+- Forum posting on legacy databases where forum_threads.author_id is still NOT NULL.
+- Forum icon/symbol boxes fallback.
+- Public chat own-message deletion uses authenticated user ID instead of username/token alias.
+- Public chat image sending UI is disabled.
+- Leaderboard Account button opens the account modal instead of returning Home.
+- Forum account modal text/inputs have correct light contrast.
+- Notifications RPC/table are repaired if v125 was skipped; header has Retry instead of a dead state.
+- Username availability is shown inside the Change Username box while typing.
+- Username changes are atomic and keep user-owned data on the same UUID; old profile cache is purged.
+- Old username URLs no longer remain alive from a stale local profile cache.
+- Clicking inside the Account card cannot close the modal as if the backdrop was clicked.
+- Staff support tickets now render the actual ticket messages inside the visible modal, with a darker dimmed backdrop and readable boxed conversation.

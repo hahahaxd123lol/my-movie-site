@@ -1,0 +1,26 @@
+Flix2Watch v166.2 enforcement hotfix
+
+Problem
+-------
+Site Suspension and Account Login Ban failed with:
+  column "role" does not exist
+
+Cause
+-----
+The v164 enforcement RPC tried to authorize Staff by reading profiles.role.
+Your production profiles table does not have that column.
+
+Fix
+---
+The RPC now authorizes using immutable account IDs only:
+- Owner UUID is allowed directly.
+- Staff is detected from public.chat_moderators.user_id.
+- profiles.role is never referenced.
+
+The same RPC name/signature is retained, so the current Staff Control Center needs no JS change.
+Both Site Suspension and Account Login Ban use this fixed RPC.
+
+Apply
+-----
+Run V166.2-ENFORCEMENT-ROLE-HOTFIX.sql in Supabase SQL Editor.
+Then retry the switches. No Rapid Worker redeploy is needed for this error.

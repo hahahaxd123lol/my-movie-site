@@ -1,0 +1,46 @@
+Flix2Watch v160 — full recovery / account isolation / realtime UI / low usage
+
+APPLY IN THIS ORDER
+1. Supabase SQL Editor: run V160-FULL-RECOVERY.sql once.
+2. Supabase Edge Functions: replace rapid-worker/index.ts with V160-RAPID-WORKER-index.ts and redeploy rapid-worker.
+3. Deploy the full v160 website ZIP.
+4. Close every Flix2Watch tab in that browser, reopen, hard refresh once.
+5. In Staff > user you previously tested (for example Cody), turn Site Suspension and Account Ban OFF once. v160 also clears stale legacy login-ban rows where the authoritative account ban is off.
+
+WHAT v160 FIXES
+- One Supabase browser client site-wide. Old duplicate clients were causing auth/session races, logged-in headers showing Login/Sign Up, profile/account failures and unnecessary CPU/network use.
+- Header auth state is read from the local Supabase session immediately on every page; Login/Sign Up are hidden when signed in.
+- Green Chat status dot is injected on every header Chat link site-wide.
+- Notifications use one user-filtered realtime channel. 30-second fallback only runs while the notification menu is open.
+- Followers/Following modal is a real centered dark dialog, no blur-only box. Missing follower/following RPCs are recreated.
+- Profile loading uses one stable security-definer profile RPC, so a temporary RLS/auth-client race no longer turns valid profiles into “Profile unavailable”.
+- Public role removal is authoritative: removing Moderator clears the UUID role and stale role cache. Profile role changes refresh live.
+- Staff Profiles tab now has Give Staff/Remove Staff before Moderator. Owner staff assignment is UUID based.
+- Staff Control Center resolves Owner / Staff / Moderator / Support / Developer separately and keeps the existing role-specific tab/permission layouts.
+- Role toggles, staff toggles, permission toggles and instant restrictions autosave; the selected staff profile listens for role/restriction changes in realtime.
+- Account enforcement is strictly scoped to the currently authenticated UUID. A Realtime event for Cody cannot apply to Josh or another account.
+- Old v159 enforcement subscription is disabled so there is only one account-enforcement realtime channel.
+- Site Suspension no longer uses a global blur; it shows one blocking dialog immediately and clears immediately when Staff removes it.
+- Rapid Worker login checks account_enforcement_v146.account_banned only. A stale historical account_login_bans row from an old Site Suspension can no longer block login.
+- Chat bootstrap SQL no longer references optional legacy chat columns, fixing endless “Connecting to public chat”.
+- Chat is still prewarmed once/cached rather than polled constantly.
+- Leaderboard uses one bundled v160 RPC every 30 seconds and now returns total_count explicitly so pagination can show additional people.
+- Forum missing icon-font boxes are replaced by inline SVG icons at runtime.
+- Login/Create Account uses the shared auth modal; active Login/Sign Up tab styling is corrected, close button and mode switching remain handled by the v159 canonical auth controller.
+- Site-wide red controls are normalized to the same red gradient after legacy page styles load.
+- Account page uses one fast account-summary RPC and the existing local session instead of waiting on multiple profile/role requests.
+- Home Spotlight no longer displays “Loading” text before the cached/fresh trending title is available.
+
+LOW SUPABASE USAGE
+- 1 shared Supabase client per page instead of many competing clients.
+- Signed-in site-wide realtime: only account enforcement + notifications (two user-filtered channels).
+- Notifications fallback: 30 sec only while its menu is open.
+- Account enforcement fallback: handled by v160 recovery without duplicate v159 subscription.
+- Leaderboard: one RPC / 30 sec only while on leaderboard.
+- Chat prewarm: cached in sessionStorage; no REST HEAD database warmup.
+- Forum does not gain extra realtime subscriptions in v160.
+- Profile role realtime exists only while actually viewing a profile.
+- Staff profile-management realtime exists only in Staff Control Center.
+
+IMPORTANT ABOUT MULTIPLE ACCOUNTS
+Separate devices/browsers are isolated correctly. Two accounts cannot remain logged into the same Flix2Watch origin inside the exact same browser profile/storage at the same time because Supabase Auth stores one session for that origin. Logging a second account into the same browser profile intentionally replaces that browser profile's current session; it does not affect other devices/browsers.

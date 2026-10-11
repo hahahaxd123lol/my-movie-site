@@ -1,0 +1,8 @@
+Flix2Watch v166 Notifications fix
+
+- Removes the old notification loader from the enforcement runtime so two scripts no longer overwrite each other.
+- One final site-wide notification controller now owns open/close, loading, realtime updates and mark-all-read.
+- The dropdown stays open until you click Notifications again, click outside it, or press Escape.
+- Realtime/30-second refreshes update the contents without closing the dropdown.
+- Mark all read marks rows read, clears the unread badge, keeps the notifications visible, then verifies against Supabase.
+- SQL adds defensive v166 RPCs with explicit DROP statements to avoid return-type migration errors.

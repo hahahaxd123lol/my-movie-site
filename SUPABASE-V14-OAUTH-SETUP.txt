@@ -1,0 +1,182 @@
+FLIX2WATCH V14 — SUPABASE GOOGLE + DISCORD SETUP
+
+This is the provider setup required for the Google / Discord buttons included
+in V14.
+
+PROJECT
+Supabase project ref:
+  viqufxlcxwgboyxbdhjb
+
+Supabase OAuth callback URL for BOTH Google and Discord:
+  https://viqufxlcxwgboyxbdhjb.supabase.co/auth/v1/callback
+
+
+============================================================
+1. RUN THE V14 SQL
+============================================================
+
+If your V13 / latest Staff backend is already installed:
+  Run ONLY:
+    v14_oauth_profile_setup.sql
+
+This adds:
+  public.ensure_my_oauth_profile(...)
+
+It safely creates a normal Flix2Watch profile + permanent unique ASCII username
+for a first-time Google/Discord user.
+
+If you are setting up the entire backend from scratch instead:
+  Run:
+    staff_control_center_setup.sql
+
+The complete V14 function is also appended to that full setup file.
+
+
+============================================================
+2. SUPABASE URL CONFIGURATION
+============================================================
+
+Supabase Dashboard:
+  Authentication
+  -> URL Configuration
+
+Site URL:
+  https://flix2watch.com
+
+Add Redirect URLs:
+  https://flix2watch.com/**
+  https://www.flix2watch.com/**
+
+The V14 frontend returns OAuth users through:
+  https://flix2watch.com/home/?oauth=complete
+
+and then sends them back to the page they started from.
+
+Keep "Allow new users to sign up" enabled if you want a first-time Google or
+Discord user to become a new Flix2Watch account automatically.
+
+
+============================================================
+3. GOOGLE
+============================================================
+
+A. Google Auth Platform / Google Cloud:
+   Create an OAuth Client ID.
+   Application type:
+     Web application
+
+B. Authorized JavaScript origins:
+     https://flix2watch.com
+     https://www.flix2watch.com   (only if you use www directly)
+
+C. Authorized redirect URI:
+     https://viqufxlcxwgboyxbdhjb.supabase.co/auth/v1/callback
+
+D. Copy the Google:
+     Client ID
+     Client Secret
+
+E. Supabase Dashboard:
+     Authentication
+     -> Sign In / Providers
+     -> Google
+
+   Enable Google and paste:
+     Client ID
+     Client Secret
+
+   Save.
+
+
+============================================================
+4. DISCORD
+============================================================
+
+A. Discord Developer Portal:
+   Create / open your Discord application.
+
+B. OAuth2:
+   Add Redirect:
+     https://viqufxlcxwgboyxbdhjb.supabase.co/auth/v1/callback
+
+C. Copy:
+     Client ID
+     Client Secret
+
+D. Supabase Dashboard:
+     Authentication
+     -> Sign In / Providers
+     -> Discord
+
+   Enable Discord and paste:
+     Client ID
+     Client Secret
+
+   Save.
+
+
+============================================================
+5. HOW V14 HANDLES FIRST-TIME SOCIAL USERS
+============================================================
+
+When Google/Discord authentication succeeds:
+
+1. Supabase Auth signs the user in.
+2. If they do not yet have public.profiles row:
+   ensure_my_oauth_profile() creates one.
+3. Username is converted to strict ASCII letters/numbers.
+4. If the requested username already belongs to somebody, V14 generates a
+   unique variant tied to the user's UUID.
+5. Auth metadata username/chat_alias is synchronized.
+6. The account remains a normal Member.
+7. Warnings/bans/Staff permissions remain UUID-backed as before.
+
+Google/Discord login does NOT automatically grant Staff.
+
+
+============================================================
+6. EDGE FUNCTION
+============================================================
+
+No new rapid-worker.ts deployment is required only for V14 OAuth/mobile/player
+changes if your current V13 backend worker is already deployed.
+
+The full V14 ZIP still includes rapid-worker.ts for a complete replacement
+backup.
+
+
+============================================================
+7. PLAYER SANDBOX CHANGE
+============================================================
+
+V14 removes the HTML sandbox attribute from the streaming iframe because some
+providers refuse to run inside sandboxed frames.
+
+V14 adds best-effort parent-page protections:
+- blocks external window.open calls made by Flix2Watch parent-page code
+- detects recent provider-frame interaction
+- requests browser confirmation on suspicious immediate top-page navigation
+- refocuses the Flix2Watch window after provider-frame blur
+
+IMPORTANT:
+Once a cross-origin iframe is unsandboxed, browser Same-Origin Policy means
+Flix2Watch cannot guarantee blocking every popup created by the provider itself.
+There is no parent-page JavaScript replacement that has sandbox-equivalent
+control over arbitrary code running on another origin.
+
+
+============================================================
+8. DEPLOYMENT
+============================================================
+
+Upload/replace the ENTIRE V14 ZIP.
+
+Service worker cache:
+  flix2watch-ultra-v14
+
+New files:
+  final-v14.css
+  final-v14.js
+  v14_oauth_profile_setup.sql
+  SUPABASE-V14-OAUTH-SETUP.txt
+  README-FINAL-V14.txt

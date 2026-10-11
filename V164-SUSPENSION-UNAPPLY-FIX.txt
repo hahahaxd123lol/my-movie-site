@@ -1,0 +1,15 @@
+Flix2Watch v164 - Site Suspension / Account Ban clear-state fix
+
+What changed:
+- A realtime UPDATE now applies or clears the restriction directly from payload.new. It no longer waits for a second RPC before removing the lock.
+- When a restriction is OFF, every known old enforcement overlay/class/cache key and any inline body/html blur/backdrop-filter lock is scrubbed.
+- The active restriction overlay explicitly uses no backdrop blur.
+- A 30-second visible-tab authoritative fallback remains in case Realtime disconnects.
+- New staff_set_account_enforcement_v164 is the canonical Staff setter and clears stale legacy ban mirrors when a restriction is switched off.
+- v164 uses new JS/CSS filenames and a new service-worker cache so stale v159/v162 moderation code cannot keep winning from cache.
+
+Apply:
+1. Run V164-ENFORCEMENT-CLEAR.sql.
+2. Deploy the full v164 build.
+3. Close all Flix2Watch tabs for the affected browser once, reopen, hard refresh.
+4. In Staff, turn Site Suspension and Account Ban OFF for the affected user once. The page should unlock immediately without blur.

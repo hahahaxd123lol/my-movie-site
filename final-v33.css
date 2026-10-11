@@ -1,0 +1,91 @@
+
+/* ============================================================
+   FLIX2WATCH V33 — NEW POPCORN/CINEMA LOGO + CHAT LINKS
+   ============================================================ */
+
+/* New wide logo: slightly bigger everywhere, without increasing header height. */
+@media (min-width:1181px){
+  body.f2w-main-page > header > .logo{
+    flex-basis:188px !important;
+    width:188px !important;
+    min-width:188px !important;
+    max-width:188px !important;
+  }
+
+  body.f2w-main-page > header > .logo .logo-image{
+    width:188px !important;
+    max-width:188px !important;
+    max-height:62px !important;
+    object-fit:contain !important;
+  }
+}
+
+@media (min-width:821px) and (max-width:1180px){
+  body.f2w-main-page > header > .logo,
+  body.f2w-main-page > header > .logo .logo-image{
+    width:170px !important;
+    min-width:170px !important;
+    max-width:170px !important;
+  }
+
+  body.f2w-main-page > header > .logo .logo-image{
+    max-height:58px !important;
+  }
+}
+
+@media (max-width:820px), (max-width:1366px) and (pointer:coarse){
+  body.f2w-main-page > header > .logo,
+  body.f2w-main-page > header > .logo .logo-image{
+    width:154px !important;
+    max-width:154px !important;
+  }
+
+  body.f2w-main-page > header > .logo .logo-image{
+    max-height:54px !important;
+  }
+}
+
+/* Make secondary brand surfaces use the new artwork at a useful size. */
+.f2w-guest-brand img,
+.f2w-account-brand img,
+.support-v16-brand img,
+.staff-page-toolbar .logo img,
+.footer-brand img,
+.watch-footer-logo,
+.f2w-block-logo{
+  object-fit:contain !important;
+}
+
+.f2w-guest-brand img,
+.f2w-account-brand img,
+.support-v16-brand img{
+  width:min(260px,95%) !important;
+  max-width:260px !important;
+}
+
+.watch-footer-logo,
+.footer-brand img{
+  width:min(230px,90%) !important;
+  max-width:230px !important;
+}
+
+.chat-link{
+  color:var(--accent) !important;
+  text-decoration:underline !important;
+  text-decoration-thickness:1px !important;
+  text-underline-offset:2px !important;
+  overflow-wrap:anywhere !important;
+  word-break:break-word !important;
+}
+
+.chat-link:hover{
+  filter:brightness(1.18) !important;
+}
+
+/* Support creator identity is deliberately obvious to both the user and Staff. */
+.support-v16-ticket-user{
+  margin-top:4px !important;
+  color:var(--accent) !important;
+  font-size:.50rem !important;
+  font-weight:750 !important;
+}

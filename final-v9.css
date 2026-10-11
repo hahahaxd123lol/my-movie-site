@@ -1,0 +1,406 @@
+
+/* ============================================================
+   FLIX2WATCH FINAL V9 — STRICT CENTER HEADER + COMPACT SCALE
+   ============================================================ */
+
+/* ---------- Normal site header: logo centered, controls centered ---------- */
+body.f2w-main-page > header{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) !important;
+  justify-items:center !important;
+  align-items:center !important;
+  width:100% !important;
+  padding:9px 22px 11px !important;
+  gap:8px !important;
+  flex-wrap:unset !important;
+}
+
+body.f2w-main-page > header > .logo{
+  grid-row:1 !important;
+  justify-self:center !important;
+  margin:0 auto !important;
+  position:static !important;
+  transform:none !important;
+  width:auto !important;
+  max-width:none !important;
+  z-index:2;
+}
+
+body.f2w-main-page > header > .logo .logo-image{
+  display:block !important;
+  width:96px !important;
+  max-width:96px !important;
+  height:auto !important;
+  margin:0 auto !important;
+}
+
+body.f2w-main-page > header > .header-tools{
+  grid-row:2 !important;
+  width:min(100%,1720px) !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  align-content:center !important;
+  gap:7px !important;
+  flex-wrap:wrap !important;
+}
+
+body.f2w-main-page > header .search-container,
+body.f2w-main-page > header .user-search-container{
+  flex:0 1 auto !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+
+body.f2w-main-page > header .search-bar,
+body.f2w-main-page > header .search-bar:focus{
+  width:210px !important;
+  max-width:210px !important;
+  min-width:160px !important;
+  height:38px !important;
+  padding-top:7px !important;
+  padding-bottom:7px !important;
+  font-size:.78rem !important;
+}
+
+body.f2w-main-page > header .user-search-bar{
+  width:175px !important;
+  max-width:175px !important;
+  min-width:145px !important;
+  height:38px !important;
+  padding-top:7px !important;
+  padding-bottom:7px !important;
+  font-size:.78rem !important;
+}
+
+body.f2w-main-page > header .tool-btn{
+  min-height:38px !important;
+  height:auto !important;
+  padding:7px 10px !important;
+  font-size:.70rem !important;
+  line-height:1.15 !important;
+  border-radius:8px !important;
+  white-space:nowrap !important;
+}
+
+body.f2w-main-page > header .f2w-discover-wrap,
+body.f2w-main-page > header .dropdown-wrapper{
+  flex:0 0 auto !important;
+  min-width:0 !important;
+}
+
+/* Results remain anchored below their own centered search field. */
+body.f2w-main-page > header .user-search-results,
+body.f2w-main-page > header .f2w-discover-menu,
+body.f2w-main-page > header .dropdown-menu{
+  text-align:left !important;
+}
+
+/* ---------- Scale desktop back down from V7 ---------- */
+@media(min-width:821px){
+  body.f2w-main-page{
+    font-size:15px !important;
+  }
+
+  body.f2w-main-page main{
+    max-width:1520px !important;
+    padding-left:26px !important;
+    padding-right:26px !important;
+  }
+
+  body.f2w-main-page .hero-banner{
+    height:410px !important;
+    min-height:0 !important;
+    max-height:440px !important;
+    padding:30px !important;
+  }
+
+  body.f2w-main-page .hero-title{
+    font-size:clamp(2.55rem,4.8vw,4.2rem) !important;
+  }
+
+  body.f2w-main-page .section-header h2,
+  body.f2w-main-page h2{
+    font-size:clamp(1.45rem,2.4vw,2rem) !important;
+  }
+
+  body.f2w-main-page .movie-grid{
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr)) !important;
+    gap:18px !important;
+  }
+
+  body.f2w-main-page .movie-info{
+    padding:10px !important;
+  }
+
+  body.f2w-main-page .movie-title{
+    font-size:.80rem !important;
+  }
+
+  body.f2w-main-page .movie-meta{
+    font-size:.68rem !important;
+  }
+
+  body.f2w-main-page button,
+  body.f2w-main-page a,
+  body.f2w-main-page input,
+  body.f2w-main-page select{
+    min-height:38px;
+  }
+}
+
+/* Override V7's intentionally oversized large-screen treatment. */
+@media(min-width:1500px){
+  body.f2w-main-page{
+    font-size:16px !important;
+  }
+
+  body.f2w-main-page > header{
+    padding:10px 30px 12px !important;
+  }
+
+  body.f2w-main-page > header .search-bar,
+  body.f2w-main-page > header .search-bar:focus{
+    width:225px !important;
+    max-width:225px !important;
+    font-size:.80rem !important;
+  }
+
+  body.f2w-main-page > header .user-search-bar{
+    width:185px !important;
+    max-width:185px !important;
+    font-size:.80rem !important;
+  }
+
+  body.f2w-main-page > header .tool-btn{
+    padding:8px 11px !important;
+    font-size:.73rem !important;
+  }
+
+  body.f2w-main-page main{
+    max-width:1600px !important;
+    padding-left:32px !important;
+    padding-right:32px !important;
+  }
+
+  body.f2w-main-page .hero-banner{
+    height:435px !important;
+    padding:34px !important;
+  }
+
+  body.f2w-main-page .movie-grid{
+    grid-template-columns:repeat(auto-fill,minmax(195px,1fr)) !important;
+    gap:21px !important;
+  }
+}
+
+@media(min-width:1900px){
+  body.f2w-main-page{
+    font-size:16px !important;
+  }
+
+  body.f2w-main-page main{
+    max-width:1720px !important;
+  }
+
+  body.f2w-main-page .movie-grid{
+    grid-template-columns:repeat(auto-fill,minmax(205px,1fr)) !important;
+    gap:23px !important;
+  }
+}
+
+/* ---------- Tablet / mobile: still centered and balanced ---------- */
+@media(max-width:820px){
+  body.f2w-main-page > header{
+    grid-template-columns:1fr !important;
+    padding:8px 12px 10px !important;
+    gap:7px !important;
+  }
+
+  body.f2w-main-page > header > .logo{
+    grid-column:1 !important;
+    grid-row:1 !important;
+  }
+
+  body.f2w-main-page > header > .logo .logo-image{
+    width:86px !important;
+    max-width:86px !important;
+  }
+
+  body.f2w-main-page > header > .header-tools{
+    grid-column:1 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    justify-content:center !important;
+    gap:7px !important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+  }
+
+  body.f2w-main-page > header .search-bar,
+  body.f2w-main-page > header .search-bar:focus,
+  body.f2w-main-page > header .user-search-bar{
+    width:100% !important;
+    max-width:none !important;
+    height:42px !important;
+    font-size:16px !important;
+  }
+
+  body.f2w-main-page > header .tool-btn{
+    width:100% !important;
+    min-height:42px !important;
+    padding:8px 8px !important;
+    justify-content:center !important;
+    white-space:normal !important;
+    font-size:.72rem !important;
+  }
+
+  body.f2w-main-page main{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+
+  body.f2w-main-page .hero-banner{
+    min-height:300px !important;
+    height:46svh !important;
+    max-height:455px !important;
+    padding:16px !important;
+  }
+
+  body.f2w-main-page .hero-title{
+    font-size:clamp(2rem,10.5vw,3rem) !important;
+  }
+}
+
+@media(max-width:430px){
+  body.f2w-main-page > header > .header-tools{
+    grid-template-columns:1fr !important;
+  }
+
+  body.f2w-main-page > header > .header-tools > *{
+    grid-column:1 !important;
+  }
+}
+
+/* ---------- Staff Center: centered brand/actions, slightly more compact ---------- */
+body.f2w-staff-page #staff-app-header .top{
+  max-width:1620px !important;
+  margin:0 auto !important;
+  padding:11px 22px 13px !important;
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  justify-items:center !important;
+  gap:8px !important;
+}
+
+body.f2w-staff-page #staff-app-header .logo{
+  justify-self:center !important;
+  margin:0 auto !important;
+}
+
+body.f2w-staff-page #staff-app-header .logo img{
+  width:96px !important;
+  max-width:96px !important;
+  margin:0 auto !important;
+}
+
+body.f2w-staff-page #staff-app-header .top-title{
+  text-align:center !important;
+}
+
+body.f2w-staff-page #staff-app-header .top-actions{
+  margin:0 auto !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  flex-wrap:wrap !important;
+  gap:7px !important;
+}
+
+body.f2w-staff-page{
+  font-size:14.5px !important;
+}
+
+body.f2w-staff-page .shell{
+  max-width:1580px !important;
+  grid-template-columns:235px minmax(0,1fr) !important;
+  gap:17px !important;
+  padding:20px !important;
+}
+
+body.f2w-staff-page .hero{
+  padding:22px !important;
+  margin-bottom:14px !important;
+}
+
+body.f2w-staff-page .hero h1,
+body.f2w-staff-page h1{
+  font-size:clamp(2rem,3vw,2.7rem) !important;
+}
+
+body.f2w-staff-page .hero p{
+  font-size:.86rem !important;
+}
+
+body.f2w-staff-page .card{
+  padding:16px !important;
+}
+
+body.f2w-staff-page .tab-btn{
+  padding:10px !important;
+  font-size:.80rem !important;
+}
+
+body.f2w-staff-page .btn,
+body.f2w-staff-page .ghost{
+  min-height:38px !important;
+  padding:8px 10px !important;
+  font-size:.75rem !important;
+}
+
+/* ---------- Support: centered simple header ---------- */
+body.f2w-support-page > header .top{
+  max-width:1050px !important;
+  margin:0 auto !important;
+  padding:10px 18px 12px !important;
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  justify-items:center !important;
+  gap:8px !important;
+  text-align:center !important;
+}
+
+body.f2w-support-page > header .top > a:first-child{
+  margin:0 auto !important;
+}
+
+body.f2w-support-page > header .top img{
+  width:96px !important;
+  max-width:96px !important;
+}
+
+body.f2w-support-page > header .top > a:last-child{
+  margin:0 auto !important;
+}
+
+body.f2w-support-page main{
+  max-width:980px !important;
+}
+
+body.f2w-support-page{
+  font-size:15px !important;
+}
+
+/* Keep centered layout stable when hidden auth-only buttons appear/disappear. */
+body.f2w-main-page > header .header-tools > [style*="display:none"],
+body.f2w-main-page > header .header-tools > [hidden]{
+  margin:0 !important;
+}

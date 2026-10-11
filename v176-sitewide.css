@@ -1,0 +1,51 @@
+/* v176 profile identity sizing */
+body #profile-hero #profile-name{font-size:1.72rem!important;font-weight:900!important;line-height:1.12!important}
+body #profile-hero #profile-username-line{font-size:.86rem!important;font-weight:800!important;line-height:1.25!important;margin-top:4px!important}
+@media(max-width:760px){body #profile-hero #profile-name{font-size:1.48rem!important}body #profile-hero #profile-username-line{font-size:.82rem!important}}
+
+/* v178 profile/auth/nav hardening */
+#profile-joined{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;line-height:1.2!important}
+#account-modal.open{pointer-events:auto!important}
+#account-modal.open .account-card,#account-modal.open input,#account-modal.open textarea,#account-modal.open button,#account-modal.open select{pointer-events:auto!important}
+.f2w-primary-nav a[href="/leaderboard/"]{white-space:nowrap}
+/* f2w-force-save:v178-hardening:20260902 */
+
+/* v183 auth modal interaction + profile/nav repairs */
+#account-modal.f2w-v183-auth-open{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:2147483000!important}
+#account-modal.f2w-v183-auth-open .account-card,
+#account-modal.f2w-v183-auth-open .account-card *,
+#account-modal.f2w-v183-auth-open input,
+#account-modal.f2w-v183-auth-open textarea,
+#account-modal.f2w-v183-auth-open select,
+#account-modal.f2w-v183-auth-open button{pointer-events:auto!important}
+#account-modal .chat-close,#account-modal .account-close,#account-modal .f2w-auth-close-v56,#account-modal [aria-label*="close" i]{cursor:pointer!important;touch-action:manipulation!important;z-index:2147483600!important}
+#account-modal input,#account-modal textarea{user-select:text!important;-webkit-user-select:text!important}
+.f2w-primary-nav>a[href="/leaderboard/"]{white-space:nowrap}
+.profile-actions{display:flex!important;align-items:center!important;gap:10px!important;flex-wrap:wrap!important}
+#v35-edit-profile:not([hidden]){display:inline-flex!important;align-items:center!important}
+#profile-joined{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;vertical-align:middle!important;line-height:1!important;min-height:34px!important}
+/* f2w-force-save:v183-sitewide-css:20260902 */
+
+/* v185 canonical auth interaction: never let legacy transition/scroll locks block the account form. */
+#account-modal.f2w-v185-auth-open{
+  display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+  position:fixed!important;inset:0!important;z-index:2147483646!important;
+}
+#account-modal.f2w-v185-auth-open .account-card,
+#account-modal.f2w-v185-auth-open .account-card *,
+#account-modal.f2w-v185-auth-open input,
+#account-modal.f2w-v185-auth-open textarea,
+#account-modal.f2w-v185-auth-open select,
+#account-modal.f2w-v185-auth-open button{pointer-events:auto!important}
+#account-modal.f2w-v185-auth-open input,
+#account-modal.f2w-v185-auth-open textarea{user-select:text!important;-webkit-user-select:text!important;touch-action:manipulation!important}
+/* f2w-force-save:v185-auth-css-hardfix:20260902 */
+
+
+/* v200 canonical account modal appearance on every page */
+#account-modal{font-family:var(--font-body,'Poppins',Inter,system-ui,sans-serif)!important}
+#account-modal .account-card{width:min(520px,calc(100vw - 28px))!important;max-width:520px!important;background:linear-gradient(180deg,#0a1523,#07101b)!important;border:1px solid color-mix(in srgb,var(--accent,#e50914) 58%,#314157)!important;border-radius:16px!important;box-shadow:0 28px 80px rgba(0,0,0,.72),0 0 28px var(--accent-glow,rgba(229,9,20,.3))!important;color:#fff!important;overflow:hidden!important}
+#account-modal .account-close,#account-modal .chat-close,#account-modal .f2w-auth-close-v56,#account-modal [aria-label*="close" i]{display:grid!important;place-items:center!important;width:38px!important;height:38px!important;min-width:38px!important;padding:0!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:9px!important;background:rgba(255,255,255,.035)!important;color:#dbe7f5!important;box-shadow:none!important;filter:none!important}
+#account-modal .account-close:hover,#account-modal .chat-close:hover,#account-modal .f2w-auth-close-v56:hover,#account-modal [aria-label*="close" i]:hover{background:rgba(255,255,255,.08)!important;border-color:var(--accent,#e50914)!important;color:#fff!important}
+#account-modal button,#account-modal input,#account-modal textarea,#account-modal select{font-family:var(--font-body,'Poppins',Inter,system-ui,sans-serif)!important}
+/* f2w-force-save:v200-canonical-account-modal:20260902 */

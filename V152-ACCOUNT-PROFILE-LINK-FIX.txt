@@ -1,0 +1,13 @@
+Flix2Watch v152 — Account > My profile navigation fix
+
+Problem:
+The Account page generated /profile/@username. On static hosting, that friendly path can be rejected by the origin before the profile shell is served, making the button appear to do nothing or land on the wrong fallback.
+
+Fix:
+- Account > My profile now uses /profile/?user=username, which always loads the real /profile/ page shell.
+- Added a direct click handler on the Account page so the global transition script cannot interfere with this action.
+- Username changes immediately update the same working profile URL.
+- Service worker cache bumped to v152.
+
+No Supabase SQL required.
+Deploy the full build and hard refresh once.

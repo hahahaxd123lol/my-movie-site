@@ -1,0 +1,33 @@
+FLIX2WATCH v137 — FORUM REPAIR + REVAMP
+========================================
+
+WHAT WAS BROKEN
+- The New Discussion modal lived inside the page content, so site-wide transition/transform CSS could make fixed positioning behave like it was anchored to the page instead of the viewport. That is why the box could appear off-screen/not centred.
+- The thread modal markup was missing the #forum-thread-detail container that the JavaScript tried to render into.
+- Reply UI code referenced #forum-reply-status even though that element did not exist.
+- The forum runtime created its own duplicated Supabase client and used fragile v30 RPCs.
+- Posting could fail when an older helper function/dependency was missing, and the UI waited too long before showing a posted thread.
+
+V137 FIXES
+- Composer and thread modals are moved directly under <body> at runtime and are true viewport-centred dialogs on desktop/mobile.
+- New authoritative forum-v137.css refreshes spacing, typography, cards, controls, thread rows, forms, modals and responsive layout while keeping the Flix2Watch look.
+- New forum-v137.js replaces the old v30 runtime.
+- Threads post through create_forum_thread_v137 and appear optimistically/instantly in the feed after the server confirms the insert.
+- New posts automatically open after publishing.
+- Replies work and Enter sends a reply (Shift+Enter adds a line).
+- Ctrl/Cmd+Enter posts a new discussion from the composer.
+- Search, category filtering, Hot/New sorting, thread opening, profile links and realtime refresh remain working.
+- Added visible posting/reply status and request timeouts instead of silent hanging.
+- Fixed missing thread detail/reply-status DOM targets.
+- Realtime publication setup is safe to rerun.
+- Forum reads use LEFT JOIN profiles so a missing/incomplete profile row cannot hide an otherwise valid thread.
+- Service worker cache bumped to v137.
+
+APPLY
+1. In Supabase SQL Editor, run: forum-v137.sql
+2. Deploy the complete v137 site bundle.
+3. Hard-refresh/reopen once so the v137 service worker replaces the old cached forum code.
+4. Test: /forum/ -> New Discussion -> enter title/body -> Post discussion.
+5. Open the posted thread and send a reply. Also test mobile sizing if possible.
+
+The v136 SQL repair and all previous site updates remain included in this build.

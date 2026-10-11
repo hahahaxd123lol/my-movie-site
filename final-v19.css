@@ -1,0 +1,324 @@
+
+/* ============================================================
+   FLIX2WATCH V19 — PLAYER LOCK / THEME MENU / AUTOFILL / HERO
+   Loads after V18 and is the final authority for these fixes.
+   ============================================================ */
+
+/* ---------- Theme menu can NEVER be visible unless explicitly opened ---------- */
+#theme-menu[hidden],
+body.f2w-main-page > header #theme-menu[hidden],
+body.f2w-main-page > header .dropdown-menu[hidden]{
+  display:none !important;
+}
+
+body.f2w-main-page > header #theme-menu:not(.show){
+  display:none !important;
+}
+
+body.f2w-main-page > header #theme-menu.show:not([hidden]){
+  display:block !important;
+}
+
+/* ---------- Theme all auth/login accents, including the login tab ---------- */
+.account-tabs{
+  border:1px solid #24374e !important;
+  background:#06101c !important;
+}
+
+.account-tab{
+  color:#8290a3 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+.account-tab.active{
+  border-color:var(--accent) !important;
+  background:var(--accent) !important;
+  color:#fff !important;
+  box-shadow:0 0 9px rgba(var(--f2w-accent-rgb),.16) !important;
+}
+
+.account-primary,
+#account-submit,
+.f2w-quick-login-btn,
+.f2w-guest-tabs .primary,
+.watch-login-actions .primary,
+.f2w-auth-top-btn.signup{
+  border-color:var(--accent) !important;
+  background:var(--accent) !important;
+  color:#fff !important;
+  box-shadow:0 0 9px rgba(var(--f2w-accent-rgb),.13) !important;
+}
+
+.account-primary:hover,
+#account-submit:hover,
+.f2w-quick-login-btn:hover,
+.f2w-guest-tabs .primary:hover,
+.watch-login-actions .primary:hover{
+  filter:brightness(1.07) !important;
+}
+
+/* ---------- Exact V19 logos: transparent art + theme glow only ---------- */
+html[data-flix2watch-theme] body .logo-image,
+html[data-flix2watch-theme] body .f2w-guest-brand img,
+html[data-flix2watch-theme] body .f2w-account-brand img,
+html[data-flix2watch-theme] body .support-v16-brand img,
+html[data-flix2watch-theme] body .staff-page-toolbar .logo img,
+html[data-flix2watch-theme] body .footer-brand img,
+html[data-flix2watch-theme] body img[src*="flix2watch-logo-"]{
+  background:transparent !important;
+  filter:drop-shadow(0 3px 11px rgba(var(--f2w-accent-rgb),.14)) !important;
+}
+
+/* ---------- User Search is a search box, never a login credential box ---------- */
+body.f2w-main-page > header #user-search{
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+
+body.f2w-main-page > header #user-search:-webkit-autofill,
+body.f2w-main-page > header #user-search:-webkit-autofill:hover,
+body.f2w-main-page > header #user-search:-webkit-autofill:focus,
+body.f2w-main-page > header #user-search:-webkit-autofill:active{
+  -webkit-text-fill-color:#eef2f7 !important;
+  caret-color:#eef2f7 !important;
+  -webkit-box-shadow:0 0 0 1000px #07111d inset !important;
+  box-shadow:0 0 0 1000px #07111d inset !important;
+  transition:background-color 99999s ease-out 0s !important;
+}
+
+/* ---------- Logged-out Watch: NO visible about:blank iframe ---------- */
+body.f2w-watch-page #flix-player-container{
+  position:relative !important;
+  isolation:isolate !important;
+  overflow:hidden !important;
+  aspect-ratio:16/9 !important;
+  min-height:0 !important;
+  background:#000 !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+body.f2w-watch-page.watch-locked #video-frame,
+body.f2w-watch-page:not(.watch-authenticated) #video-frame,
+body.f2w-watch-page #video-frame[aria-hidden="true"]{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+body.f2w-watch-page.watch-authenticated #video-frame:not([aria-hidden="true"]){
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+body.f2w-watch-page.watch-locked #watch-login-overlay,
+body.f2w-watch-page:not(.watch-authenticated) #watch-login-overlay,
+body.f2w-watch-page:not(.watch-authenticated) #watch-login-overlay[hidden]{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:100 !important;
+
+  display:grid !important;
+  place-items:center !important;
+
+  width:100% !important;
+  height:100% !important;
+  padding:16px !important;
+
+  background:
+    radial-gradient(circle at 50% 42%,rgba(var(--f2w-accent-rgb),.055),transparent 30%),
+    rgba(0,0,0,.90) !important;
+  backdrop-filter:blur(2px) !important;
+  -webkit-backdrop-filter:blur(2px) !important;
+  pointer-events:auto !important;
+}
+
+body.f2w-watch-page.watch-authenticated #watch-login-overlay,
+body.f2w-watch-page.watch-authenticated #watch-login-overlay[hidden]{
+  display:none !important;
+}
+
+body.f2w-watch-page .watch-login-card{
+  width:min(365px,94%) !important;
+  margin:0 !important;
+  padding:15px !important;
+
+  border:1px solid color-mix(in srgb,var(--accent) 25%,#293b51) !important;
+  border-radius:9px !important;
+  background:rgba(7,17,29,.985) !important;
+  box-shadow:
+    0 16px 48px rgba(0,0,0,.55),
+    0 0 12px rgba(var(--f2w-accent-rgb),.05) !important;
+
+  text-align:center !important;
+}
+
+body.f2w-watch-page .watch-login-card h2{
+  margin:0 !important;
+  color:#fff !important;
+  font-size:.92rem !important;
+}
+
+body.f2w-watch-page .watch-login-card p{
+  margin:6px auto 0 !important;
+  color:#8997aa !important;
+  font-size:.56rem !important;
+  line-height:1.48 !important;
+}
+
+body.f2w-watch-page .watch-login-actions{
+  display:flex !important;
+  justify-content:center !important;
+  gap:6px !important;
+  margin-top:10px !important;
+}
+
+body.f2w-watch-page .watch-login-actions button{
+  min-width:105px !important;
+  min-height:29px !important;
+  height:29px !important;
+  padding:4px 8px !important;
+  border-radius:6px !important;
+  font-size:.53rem !important;
+}
+
+/* Keep the rest of Watch scrollable; the player lock never becomes page-wide. */
+body.f2w-watch-page.watch-locked{
+  overflow-y:auto !important;
+}
+
+/* ---------- Featured 5-title carousel ---------- */
+#hero-banner{
+  touch-action:pan-y !important;
+  user-select:none !important;
+}
+
+.hero-carousel-dots{
+  position:absolute !important;
+  z-index:6 !important;
+  left:50% !important;
+  bottom:14px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  gap:7px !important;
+
+  transform:translateX(-50%) !important;
+}
+
+.hero-carousel-dots button{
+  width:8px !important;
+  height:8px !important;
+  min-width:8px !important;
+  min-height:8px !important;
+  margin:0 !important;
+  padding:0 !important;
+
+  border:0 !important;
+  border-radius:50% !important;
+  background:rgba(255,255,255,.35) !important;
+  box-shadow:0 0 0 1px rgba(0,0,0,.28) !important;
+  cursor:pointer !important;
+
+  transition:
+    width .16s ease,
+    border-radius .16s ease,
+    background .16s ease,
+    transform .16s ease !important;
+}
+
+.hero-carousel-dots button:hover{
+  transform:scale(1.18) !important;
+  background:rgba(255,255,255,.72) !important;
+}
+
+.hero-carousel-dots button.active{
+  width:22px !important;
+  border-radius:999px !important;
+  background:var(--accent) !important;
+  box-shadow:0 0 8px rgba(var(--f2w-accent-rgb),.28) !important;
+}
+
+.v19-hero-arrow{
+  position:absolute !important;
+  z-index:7 !important;
+  top:50% !important;
+
+  width:36px !important;
+  height:48px !important;
+  min-width:36px !important;
+  min-height:48px !important;
+
+  display:grid !important;
+  place-items:center !important;
+
+  padding:0 !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:8px !important;
+  background:rgba(4,10,18,.58) !important;
+  color:#fff !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.30) !important;
+  backdrop-filter:blur(8px) !important;
+  -webkit-backdrop-filter:blur(8px) !important;
+
+  opacity:.72 !important;
+  transform:translateY(-50%) !important;
+  cursor:pointer !important;
+  transition:.16s ease !important;
+}
+
+.v19-hero-arrow.prev{
+  left:12px !important;
+}
+
+.v19-hero-arrow.next{
+  right:12px !important;
+}
+
+.v19-hero-arrow:hover{
+  opacity:1 !important;
+  border-color:color-mix(in srgb,var(--accent) 42%,#68798d) !important;
+  background:rgba(7,17,29,.83) !important;
+  color:var(--accent) !important;
+}
+
+#hero-banner.v19-hero-changing .hero-content{
+  opacity:.36 !important;
+  transform:translateY(2px) !important;
+}
+
+#hero-banner .hero-content{
+  transition:opacity .16s ease,transform .16s ease !important;
+}
+
+/* ---------- Mobile featured swipe ---------- */
+@media(max-width:820px), (max-width:1366px) and (pointer:coarse){
+  .v19-hero-arrow{
+    width:32px !important;
+    height:42px !important;
+    min-width:32px !important;
+    min-height:42px !important;
+    opacity:.62 !important;
+  }
+
+  .v19-hero-arrow.prev{left:7px !important}
+  .v19-hero-arrow.next{right:7px !important}
+
+  .hero-carousel-dots{
+    bottom:9px !important;
+  }
+}
+
+/* Very small phones rely mostly on swipe/dots and keep arrows subtle. */
+@media(max-width:480px){
+  .v19-hero-arrow{
+    width:29px !important;
+    height:38px !important;
+    min-width:29px !important;
+    min-height:38px !important;
+    background:rgba(3,9,16,.42) !important;
+  }
+}

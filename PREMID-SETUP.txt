@@ -1,0 +1,23 @@
+FLIX2WATCH PREMID V229
+
+Website patch:
+- Upload v177-watch-realtime.js to Flix2Watch.
+- No SQL required.
+- The new #f2w-premid-state bridge is local DOM only and adds zero Supabase calls.
+
+PreMiD setup:
+1. Clone https://github.com/PreMiD/Activities and npm install.
+2. Copy websites/F/Flix2Watch into the repository.
+3. In metadata.json replace REPLACE_WITH_YOUR_DISCORD_USER_ID.
+4. In presence.ts replace REPLACE_WITH_DISCORD_APPLICATION_CLIENT_ID with the Discord Application client ID used for this Activity.
+5. For store submission, PreMiD guidelines require metadata logo/thumbnail on Imgur; replace the development URLs after uploading those assets there.
+6. Run: npx pmd dev Flix2Watch
+7. Enable Activity Developer Mode in the PreMiD extension and test flix2watch.com.
+8. Validate before PR: npx pmd build Flix2Watch --validate
+
+Presence behavior:
+- Watch pages: title, dynamic TMDB poster, Watching activity type, play/pause/buffering state.
+- Playing: Discord start/end timestamps track current playback position.
+- TV: Season/Episode shown when available.
+- Button links back to the exact Flix2Watch watch page.
+- Other site pages: optional browsing presence.

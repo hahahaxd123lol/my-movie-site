@@ -1,0 +1,23 @@
+Flix2Watch v149 emergency page-load fix
+
+WHAT BROKE IN v148
+The v148 account-route helper used a MutationObserver that watched child-list changes.
+Its normalize() function then rewrote the Account button innerHTML every time it ran.
+That rewrite created another child-list mutation, which called normalize() again, which
+rewrote the innerHTML again, creating a self-triggering loop on the browser main thread.
+On pages with the shared Account button this could prevent the page from painting or
+responding at all, making the whole website appear dead.
+
+WHAT v149 CHANGES
+- Removes the self-triggering MutationObserver behavior.
+- Account controls are normalized once using a data guard.
+- Newly inserted Account controls are handled once, without rewriting existing controls.
+- Account routing remains /account/ site-wide.
+- Bumps the service-worker asset request/cache to v149 so browsers fetch the repaired JS.
+- No Supabase SQL is required.
+
+DEPLOY
+Deploy the full v149 build over v148.
+If a browser tab is currently frozen on the v148 build, close that tab and open the site
+again after deployment. A hard refresh is recommended once so the repaired v149 script
+and service worker are installed.

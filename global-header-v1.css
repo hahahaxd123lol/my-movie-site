@@ -1,0 +1,2636 @@
+
+    /* V21: final, cache-resistant desktop header authority */
+    @media (min-width: 1181px) {
+      body.f2w-main-page > header{
+        position:sticky !important;
+        top:0 !important;
+        z-index:2147480000 !important;
+        display:flex !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        width:100% !important;
+        max-width:none !important;
+        height:82px !important;
+        min-height:82px !important;
+        max-height:82px !important;
+        margin:0 !important;
+        padding:10px 16px !important;
+        gap:14px !important;
+        overflow:visible !important;
+        background:rgba(2,8,19,.97) !important;
+        border:0 !important;
+        border-bottom:1px solid color-mix(in srgb,var(--accent) 18%,#27394f) !important;
+        border-radius:0 !important;
+        box-shadow:0 8px 26px rgba(0,0,0,.28) !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header > .logo{
+        position:static !important;
+        display:flex !important;
+        flex:0 0 158px !important;
+        width:158px !important;
+        min-width:158px !important;
+        max-width:158px !important;
+        height:56px !important;
+        margin:0 !important;
+        padding:0 !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header > .logo .logo-image{
+        display:block !important;
+        width:158px !important;
+        min-width:0 !important;
+        max-width:158px !important;
+        height:auto !important;
+        max-height:56px !important;
+        margin:0 !important;
+        object-fit:contain !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header > .f2w-mobile-nav-toggle{
+        display:none !important;
+      }
+
+      body.f2w-main-page > header > .header-tools{
+        position:static !important;
+        display:flex !important;
+        flex:1 1 auto !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        align-content:center !important;
+        min-width:0 !important;
+        width:auto !important;
+        height:42px !important;
+        min-height:42px !important;
+        max-height:42px !important;
+        margin:0 !important;
+        padding:0 !important;
+        gap:7px !important;
+        overflow:visible !important;
+        background:transparent !important;
+        border:0 !important;
+        box-shadow:none !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header .f2w-primary-nav{
+        display:flex !important;
+        flex:0 0 auto !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        width:auto !important;
+        height:42px !important;
+        margin:0 !important;
+        padding:0 !important;
+        gap:1px !important;
+      }
+
+      body.f2w-main-page > header .f2w-nav-link,
+      body.f2w-main-page > header .f2w-nav-button{
+        display:inline-flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:5px !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:40px !important;
+        min-height:40px !important;
+        max-height:40px !important;
+        margin:0 !important;
+        padding:7px 8px !important;
+        border-radius:7px !important;
+        font-size:11px !important;
+        line-height:1 !important;
+        white-space:nowrap !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header .f2w-search-pair{
+        display:flex !important;
+        flex:1 1 390px !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        width:auto !important;
+        min-width:260px !important;
+        max-width:585px !important;
+        height:40px !important;
+        margin:0 3px !important;
+        padding:0 !important;
+        gap:7px !important;
+      }
+
+      body.f2w-main-page > header .search-container,
+      body.f2w-main-page > header .user-search-container{
+        display:flex !important;
+        position:relative !important;
+        flex:1 1 0 !important;
+        min-width:115px !important;
+        width:auto !important;
+        height:40px !important;
+        margin:0 !important;
+        padding:0 !important;
+      }
+
+      body.f2w-main-page > header .search-bar,
+      body.f2w-main-page > header .user-search-bar{
+        width:100% !important;
+        min-width:0 !important;
+        height:40px !important;
+        min-height:40px !important;
+        max-height:40px !important;
+        margin:0 !important;
+        padding:8px 34px !important;
+        border-radius:8px !important;
+        font-size:11px !important;
+        line-height:1 !important;
+      }
+
+      body.f2w-main-page > header .f2w-action-cluster{
+        display:flex !important;
+        flex:0 0 auto !important;
+        flex-flow:row nowrap !important;
+        align-items:center !important;
+        justify-content:flex-end !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:40px !important;
+        margin:0 0 0 auto !important;
+        padding:0 !important;
+        gap:6px !important;
+      }
+
+      body.f2w-main-page > header .tool-btn,
+      body.f2w-main-page > header .f2w-auth-top-btn,
+      body.f2w-main-page > header #staff-control-nav{
+        display:inline-flex !important;
+        flex:0 0 auto !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:5px !important;
+        width:auto !important;
+        min-width:0 !important;
+        height:40px !important;
+        min-height:40px !important;
+        max-height:40px !important;
+        margin:0 !important;
+        padding:7px 8px !important;
+        border-radius:8px !important;
+        font-size:11px !important;
+        line-height:1 !important;
+        white-space:nowrap !important;
+        transform:none !important;
+      }
+
+      body.f2w-main-page > header .dropdown-wrapper,
+      body.f2w-main-page > header .f2w-genre-wrap,
+      body.f2w-main-page > header .v17-notification-wrap{
+        position:relative !important;
+        flex:0 0 auto !important;
+        width:auto !important;
+        margin:0 !important;
+      }
+
+      body.f2w-main-page > header .dropdown-menu{
+        top:calc(100% + 8px) !important;
+        right:0 !important;
+        left:auto !important;
+      }
+
+      body.f2w-main-page > header .f2w-genre-menu{
+        top:calc(100% + 8px) !important;
+        left:0 !important;
+        right:auto !important;
+      }
+    }
+
+    /* Medium desktop/laptop: still one row, simply tighter. */
+    @media (min-width:1181px) and (max-width:1650px){
+      body.f2w-main-page > header{
+        gap:9px !important;
+        padding-left:11px !important;
+        padding-right:11px !important;
+      }
+      body.f2w-main-page > header > .logo{
+        flex-basis:145px !important;
+        width:145px !important;
+        min-width:145px !important;
+        max-width:145px !important;
+      }
+      body.f2w-main-page > header > .logo .logo-image{
+        width:145px !important;
+        max-width:145px !important;
+      }
+      body.f2w-main-page > header .f2w-nav-link,
+      body.f2w-main-page > header .f2w-nav-button,
+      body.f2w-main-page > header .tool-btn,
+      body.f2w-main-page > header .f2w-auth-top-btn,
+      body.f2w-main-page > header #staff-control-nav{
+        padding-left:7px !important;
+        padding-right:7px !important;
+        font-size:10px !important;
+      }
+      body.f2w-main-page > header .f2w-search-pair{
+        min-width:235px !important;
+        max-width:500px !important;
+      }
+    }
+  
+
+/* Flix2Watch global preloaded chat shell */
+#f2w-global-chat-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(1,5,12,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#f2w-global-chat-overlay.open{display:flex}
+#f2w-global-chat-panel{position:relative;width:min(1180px,96vw);height:min(820px,92vh);border:1px solid color-mix(in srgb,var(--accent,#e50914) 48%,#26374b);border-radius:22px;overflow:hidden;background:#050a12;box-shadow:0 28px 90px rgba(0,0,0,.68)}
+#f2w-global-chat-frame{display:block;width:100%;height:100%;border:0;background:#050a12}
+#f2w-global-chat-close{position:absolute;right:12px;top:12px;z-index:8;width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(5,10,18,.92);color:#fff;cursor:pointer;font-size:18px;display:grid;place-items:center}
+#f2w-global-chat-loading{position:absolute;inset:0;display:grid;place-items:center;color:#cbd5e1;font:700 14px/1.4 Inter,system-ui,sans-serif;letter-spacing:.04em;background:#050a12;z-index:3}
+#f2w-global-chat-panel.ready #f2w-global-chat-loading{display:none}
+body.f2w-global-chat-open{overflow:hidden!important}
+@media(max-width:760px){#f2w-global-chat-overlay{padding:0}#f2w-global-chat-panel{width:100vw;height:100dvh;border-radius:0;border:0}#f2w-global-chat-close{right:8px;top:8px}}
+
+/* F2W chat v7: live silent preload. Runtime JS owns final visibility. */
+#f2w-global-chat-overlay{display:flex;visibility:hidden;opacity:0;pointer-events:none}
+#f2w-global-chat-overlay.open{visibility:visible;opacity:1;pointer-events:auto}
+body.f2w-global-chat-open{overflow:initial!important}
+/* f2w-update-marker: global-header-css-chat-v7 */
+/* f2w-force-save: 20260831-2110 */
+
+/* =========================================================
+   F2W DEVICE STABILITY v9 — iPhone/iPad/Android/Tablet/TV
+   Prevents landscape horizontal oscillation and layout jumps.
+   ========================================================= */
+html{
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:clip !important;
+  -webkit-text-size-adjust:100% !important;
+  text-size-adjust:100% !important;
+}
+body{
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:clip !important;
+  overscroll-behavior-x:none !important;
+}
+*,*::before,*::after{box-sizing:border-box}
+img,video,canvas,svg,iframe{max-width:100%}
+
+/* Theme switching was removed site-wide. Keep stale markup inert. */
+#theme-menu-button,#theme-menu,.theme-dropdown,[data-theme-menu]{display:none !important}
+
+/* Full-width announcement without 100vw/translateX iOS viewport jitter. */
+.site-announcement{
+  left:0 !important;
+  right:0 !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  transform:none !important;
+  margin-inline:0 !important;
+}
+
+/* Shared header: stable tablet/mobile layout. It becomes an overlay menu
+   instead of changing document width/height when opened. */
+@media (max-width:1180px){
+  body.f2w-main-page > header{
+    position:sticky !important;
+    top:0 !important;
+    z-index:2147480000 !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    height:64px !important;
+    min-height:64px !important;
+    margin:0 !important;
+    padding:6px max(12px,env(safe-area-inset-right)) 6px max(12px,env(safe-area-inset-left)) !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:10px !important;
+    overflow:visible !important;
+    transform:none !important;
+    background:rgba(2,8,19,.985) !important;
+    border-bottom:1px solid rgba(95,125,155,.28) !important;
+  }
+  body.f2w-main-page > header > .logo{
+    position:static !important;
+    flex:0 0 auto !important;
+    width:136px !important;
+    min-width:0 !important;
+    max-width:42vw !important;
+    height:50px !important;
+    margin:0 !important;
+    padding:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    transform:none !important;
+  }
+  body.f2w-main-page > header > .logo .logo-image{
+    display:block !important;
+    width:136px !important;
+    max-width:100% !important;
+    height:auto !important;
+    max-height:50px !important;
+    object-fit:contain !important;
+    transform:none !important;
+  }
+  body.f2w-main-page > header > .f2w-mobile-nav-toggle{
+    display:inline-flex !important;
+    flex:0 0 44px !important;
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    margin-left:auto !important;
+    border:1px solid rgba(120,150,180,.35) !important;
+    border-radius:10px !important;
+    background:#071322 !important;
+    color:#fff !important;
+    font-size:18px !important;
+  }
+  body.f2w-main-page > header > .header-tools{
+    position:fixed !important;
+    top:64px !important;
+    left:0 !important;
+    right:0 !important;
+    z-index:2147479999 !important;
+    display:none !important;
+    width:auto !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    height:auto !important;
+    max-height:calc(100dvh - 64px) !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding:12px max(12px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)) !important;
+    margin:0 !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:10px !important;
+    background:rgba(2,8,19,.995) !important;
+    border-bottom:1px solid rgba(120,150,180,.3) !important;
+    box-shadow:0 18px 44px rgba(0,0,0,.5) !important;
+    transform:none !important;
+  }
+  body.f2w-main-page > header > .header-tools.mobile-open{display:flex !important}
+  body.f2w-main-page > header .f2w-primary-nav,
+  body.f2w-main-page > header .f2w-action-cluster{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:auto !important;
+    flex-flow:row wrap !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:7px !important;
+    margin:0 !important;
+  }
+  body.f2w-main-page > header .f2w-search-pair{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:auto !important;
+    gap:8px !important;
+    margin:0 !important;
+  }
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container{
+    width:100% !important;
+    min-width:0 !important;
+    height:42px !important;
+    margin:0 !important;
+  }
+  body.f2w-main-page > header .search-bar,
+  body.f2w-main-page > header .user-search-bar{
+    width:100% !important;
+    min-width:0 !important;
+    height:42px !important;
+    font-size:16px !important; /* prevents iOS input auto-zoom */
+  }
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn,
+  body.f2w-main-page > header #staff-control-nav{
+    min-height:40px !important;
+    height:40px !important;
+    max-width:100% !important;
+    padding:7px 10px !important;
+    font-size:12px !important;
+    white-space:nowrap !important;
+    transform:none !important;
+  }
+  body.f2w-main-page > header .dropdown-menu,
+  body.f2w-main-page > header .f2w-genre-menu,
+  body.f2w-main-page > header .user-search-results{
+    max-width:calc(100vw - 24px) !important;
+  }
+}
+
+/* iPhone/Android landscape: compact fixed-height header and scrollable menu.
+   Avoid vw transforms and viewport-height animations while browser chrome moves. */
+@media (orientation:landscape) and (max-width:1180px) and (max-height:560px){
+  body.f2w-main-page > header{
+    height:54px !important;
+    min-height:54px !important;
+    padding-top:4px !important;
+    padding-bottom:4px !important;
+  }
+  body.f2w-main-page > header > .logo{width:116px !important;height:44px !important}
+  body.f2w-main-page > header > .logo .logo-image{width:116px !important;max-height:44px !important}
+  body.f2w-main-page > header > .f2w-mobile-nav-toggle{width:40px !important;height:40px !important;min-width:40px !important}
+  body.f2w-main-page > header > .header-tools{
+    top:54px !important;
+    max-height:calc(100dvh - 54px) !important;
+    padding-top:8px !important;
+    gap:8px !important;
+  }
+  body.f2w-main-page > header .f2w-search-pair{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important}
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn{height:36px !important;min-height:36px !important;font-size:11px !important}
+}
+
+@media (max-width:620px){
+  body.f2w-main-page > header .f2w-search-pair{grid-template-columns:1fr !important}
+  body.f2w-main-page > header .f2w-primary-nav,
+  body.f2w-main-page > header .f2w-action-cluster{gap:6px !important}
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn{flex:1 1 auto !important}
+}
+
+/* Chat shell: avoid 100vw on iOS, which can oscillate as the visual viewport changes. */
+@media(max-width:760px){
+  #f2w-global-chat-overlay{padding:0 !important}
+  #f2w-global-chat-panel{
+    width:100% !important;
+    max-width:100% !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    border-radius:0 !important;
+    border:0 !important;
+  }
+}
+
+/* Prevent common page containers from creating fractional horizontal overflow. */
+main,.container,.page-shell,.page-wrap,.content-wrap,.player-container,.hero-banner,.modal-card,.account-card,.chat-card{
+  max-width:100% !important;
+}
+
+/* f2w-force-save:device-stability-v9:20260831-205349 */
+
+/* ================= F2W COMPACT ACCOUNT MODAL / SWIPE AUTH v10 ================= */
+/* Keep every sign-in/create-account gate compact like the Home auth card. */
+.account-modal{
+  padding:clamp(14px,3vw,28px) !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+.account-modal .account-card{
+  width:min(92vw,520px) !important;
+  max-width:520px !important;
+  max-height:min(88dvh,760px) !important;
+  margin:auto !important;
+  border-radius:18px !important;
+  overflow:hidden !important;
+  box-shadow:0 28px 80px rgba(0,0,0,.72),0 0 26px rgba(229,9,20,.12) !important;
+}
+.account-modal .account-header{
+  padding:15px 18px 13px !important;
+  align-items:center !important;
+}
+.account-modal .account-title{
+  font-size:1.2rem !important;
+  line-height:1.1 !important;
+  letter-spacing:.5px !important;
+}
+.account-modal .account-subtitle{
+  display:none !important;
+}
+.account-modal .account-body{
+  padding:16px 18px 18px !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+}
+.account-modal .f2w-account-brand{
+  margin:0 0 13px !important;
+  padding:0 !important;
+  text-align:center !important;
+}
+.account-modal .f2w-account-brand img{
+  width:min(210px,58%) !important;
+  max-height:74px !important;
+  object-fit:contain !important;
+  margin:0 auto 5px !important;
+}
+.account-modal .f2w-account-brand strong{
+  font-size:.9rem !important;
+}
+.account-modal .f2w-account-brand > span{
+  font-size:.68rem !important;
+}
+.account-modal .v17-free-note{
+  margin-top:10px !important;
+  padding:9px 10px !important;
+  border-radius:9px !important;
+  text-align:left !important;
+}
+.account-modal .v17-free-note strong{font-size:.68rem !important}
+.account-modal .v17-free-note span{font-size:.61rem !important;line-height:1.4 !important}
+.account-modal .account-tabs{
+  position:relative !important;
+  gap:4px !important;
+  padding:4px !important;
+  margin-bottom:13px !important;
+  border-radius:11px !important;
+  overflow:hidden !important;
+}
+.account-modal .account-tab{
+  position:relative !important;
+  z-index:1 !important;
+  padding:9px 8px !important;
+  font-size:.75rem !important;
+  transition:color .22s ease,transform .22s ease !important;
+}
+.account-modal .account-tab.active{
+  box-shadow:0 0 12px rgba(229,9,20,.24) !important;
+}
+.account-modal .account-label{
+  margin:9px 0 5px !important;
+  font-size:.61rem !important;
+}
+.account-modal .account-input{
+  padding:10px 11px !important;
+  min-height:40px !important;
+  font-size:.79rem !important;
+  border-radius:8px !important;
+}
+.account-modal .account-primary{
+  margin-top:12px !important;
+  min-height:42px !important;
+  padding:10px 13px !important;
+  font-size:.78rem !important;
+}
+.account-modal .f2w-oauth-block{margin-top:11px !important}
+.account-modal .f2w-oauth-divider{margin:9px 0 !important}
+.account-modal .f2w-oauth-grid{gap:7px !important}
+.account-modal .f2w-oauth-btn{
+  min-height:39px !important;
+  padding:9px 10px !important;
+  font-size:.72rem !important;
+}
+.account-modal .f2w-oauth-note{
+  margin-top:7px !important;
+  font-size:.58rem !important;
+  line-height:1.35 !important;
+}
+.account-modal .account-message{margin-top:7px !important;font-size:.62rem !important}
+
+/* Swipe the form content when the existing Log In / Create Account tabs change. */
+@keyframes f2wAuthSwipeToLogin{
+  0%{opacity:.3;transform:translateX(-22px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+@keyframes f2wAuthSwipeToSignup{
+  0%{opacity:.3;transform:translateX(22px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+.account-modal .account-card:has(#account-login-tab.active) #account-logged-out{
+  animation:f2wAuthSwipeToLogin .24s cubic-bezier(.2,.8,.2,1);
+}
+.account-modal .account-card:has(#account-signup-tab.active) #account-logged-out{
+  animation:f2wAuthSwipeToSignup .24s cubic-bezier(.2,.8,.2,1);
+}
+
+@media(max-width:640px){
+  .account-modal{padding:12px !important}
+  .account-modal .account-card{
+    width:min(94vw,440px) !important;
+    max-width:440px !important;
+    max-height:90dvh !important;
+  }
+  .account-modal .account-header{padding:13px 14px 11px !important}
+  .account-modal .account-body{padding:13px 14px 15px !important}
+  .account-modal .f2w-account-brand img{width:min(180px,56%) !important}
+  .account-modal .v17-free-note{display:none !important}
+  .account-modal .f2w-oauth-note{display:none !important}
+}
+
+@media(min-width:1200px){
+  .account-modal .account-card{width:500px !important;max-width:500px !important}
+}
+
+/* f2w-force-save:auth-modal-v10:1788210514 */
+
+/* ================= F2W COMPACT MODAL WIDTH GUARD v11 ================= */
+/* Never let account/auth cards stretch across desktop or TV layouts. */
+.account-modal,
+#account-modal,
+.auth-modal,
+.login-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:clamp(16px,3vw,34px) !important;
+}
+.account-modal.open,
+#account-modal.open,
+.auth-modal.open,
+.login-modal.open{
+  display:flex !important;
+}
+.account-modal > .account-card,
+#account-modal > .account-card,
+.auth-modal > .account-card,
+.login-modal > .account-card{
+  width:min(92vw,620px) !important;
+  max-width:620px !important;
+  min-width:0 !important;
+  margin:auto !important;
+  max-height:min(88dvh,820px) !important;
+  overflow:hidden !important;
+  border-radius:18px !important;
+}
+.account-modal .account-body,
+#account-modal .account-body{
+  max-height:calc(min(88dvh,820px) - 62px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+/* Logged-out auth stays even tighter, matching the Home swipe card. */
+.account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])),
+#account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])){
+  width:min(92vw,520px) !important;
+  max-width:520px !important;
+}
+/* Logged-in account controls stay compact instead of becoming full-width rows. */
+.account-modal .account-user-box,
+.account-modal .account-username-change,
+.account-modal .account-favorites,
+.account-modal .account-warning-box,
+.account-modal .owner-chat-auth{
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+.account-modal .account-secondary,
+.account-modal .account-primary,
+.account-modal .account-input{
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+@media (min-width:1400px){
+  .account-modal > .account-card,
+  #account-modal > .account-card{
+    width:600px !important;
+    max-width:600px !important;
+  }
+  .account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])),
+  #account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])){
+    width:520px !important;
+    max-width:520px !important;
+  }
+}
+@media (max-width:700px){
+  .account-modal,
+  #account-modal{
+    padding:12px !important;
+  }
+  .account-modal > .account-card,
+  #account-modal > .account-card{
+    width:min(94vw,560px) !important;
+    max-width:560px !important;
+    max-height:92dvh !important;
+  }
+}
+/* f2w-force-save:compact-modal-v11 */
+
+/* f2w-force-save:1788210997:global-header */
+ 
+
+/* ============================================================
+   F2W v13 — compact account modal + header clearance, sitewide
+   Additive override. Does not remove auth modes or swipe behavior.
+   ============================================================ */
+:root {
+  --f2w-fixed-header-clearance: 82px;
+  --f2w-modal-bottom-gap: 18px;
+}
+
+/* Keep the overlay below the fixed site header and let the overlay itself
+   handle short-screen overflow. The CARD never gets its own scrollbar. */
+.account-modal,
+#account-modal,
+.auth-modal,
+.login-modal {
+  position: fixed !important;
+  top: var(--f2w-fixed-header-clearance) !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  inset: var(--f2w-fixed-header-clearance) 0 0 0 !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding: 18px 14px var(--f2w-modal-bottom-gap) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  overscroll-behavior: contain !important;
+}
+.account-modal::-webkit-scrollbar,
+#account-modal::-webkit-scrollbar,
+.auth-modal::-webkit-scrollbar,
+.login-modal::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+.account-modal > .account-card,
+#account-modal > .account-card,
+.auth-modal > .account-card,
+.login-modal > .account-card {
+  width: min(92vw, 540px) !important;
+  max-width: 540px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 auto !important;
+  overflow: visible !important;
+  border-radius: 18px !important;
+  flex: 0 0 auto !important;
+}
+
+.account-modal .account-body,
+#account-modal .account-body,
+.auth-modal .account-body,
+.login-modal .account-body {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Create-account can be taller, but it stays compact and never touches header. */
+.account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])),
+#account-modal > .account-card:has(#account-logged-out:not([style*="display: none"])) {
+  width: min(92vw, 520px) !important;
+  max-width: 520px !important;
+}
+
+/* Avoid hidden horizontal overflow from full-width form rows/buttons. */
+.account-modal *,
+#account-modal * {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Mobile/tablet: account panel starts below the actual compact header,
+   remains easy to reach, and has no visible scrollbar. */
+@media (max-width: 1180px) {
+  :root { --f2w-fixed-header-clearance: 72px; }
+  .account-modal,
+  #account-modal,
+  .auth-modal,
+  .login-modal {
+    padding: 14px 12px 18px !important;
+  }
+  .account-modal > .account-card,
+  #account-modal > .account-card,
+  .auth-modal > .account-card,
+  .login-modal > .account-card {
+    width: min(94vw, 520px) !important;
+    max-width: 520px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  :root { --f2w-fixed-header-clearance: 66px; }
+  .account-modal,
+  #account-modal,
+  .auth-modal,
+  .login-modal {
+    padding: 12px 10px 18px !important;
+  }
+  .account-modal > .account-card,
+  #account-modal > .account-card,
+  .auth-modal > .account-card,
+  .login-modal > .account-card {
+    width: min(96vw, 500px) !important;
+    max-width: 500px !important;
+  }
+}
+
+/* f2w-force-save:account-gap-no-card-scroll-v13:1788211530 */
+/* f2w-force-save:remove-nettools-v14:1788211808:global-header-v1.css */
+ 
+
+/* ==========================================================
+   F2W v15 — universal legal footer
+   ========================================================== */
+.f2w-legal-footer {
+  width:100%;
+  box-sizing:border-box;
+  margin-top:48px;
+  padding:26px max(18px, env(safe-area-inset-left)) calc(28px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-right));
+  border-top:1px solid rgba(255,255,255,.09);
+  background:linear-gradient(180deg,rgba(5,9,16,.72),rgba(2,5,10,.98));
+  color:#8e9aae;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.f2w-legal-footer-inner {
+  width:min(1280px,100%);
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px 28px;
+  flex-wrap:wrap;
+}
+.f2w-legal-footer-brand {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:180px;
+  font-size:.82rem;
+}
+.f2w-legal-footer-brand img {
+  width:auto;
+  height:26px;
+  object-fit:contain;
+}
+.f2w-legal-footer-links {
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:8px 18px;
+  flex-wrap:wrap;
+}
+.f2w-legal-footer-links a {
+  color:#aab4c4;
+  text-decoration:none;
+  font-size:.8rem;
+  font-weight:650;
+  white-space:nowrap;
+  transition:color .16s ease,opacity .16s ease;
+}
+.f2w-legal-footer-links a:hover {
+  color:#fff;
+}
+@media (max-width:760px) {
+  .f2w-legal-footer {
+    margin-top:34px;
+    padding-top:22px;
+  }
+  .f2w-legal-footer-inner {
+    display:block;
+    text-align:center;
+  }
+  .f2w-legal-footer-brand {
+    justify-content:center;
+    margin-bottom:15px;
+  }
+  .f2w-legal-footer-links {
+    justify-content:center;
+    gap:11px 16px;
+  }
+  .f2w-legal-footer-links a {
+    font-size:.78rem;
+  }
+}
+/* f2w-force-save:universal-legal-footer-v15:1788212347 */
+ 
+
+
+
+/* ============================================================
+   F2W v19 — HEADER LAYOUT REPAIR / STATIC INTERACTION
+   Keeps the proven one-row flex layout. No hidden-slot reservation.
+   ============================================================ */
+
+@media (min-width:1181px) {
+  body.f2w-main-page > header {
+    display:flex !important;
+    flex-flow:row nowrap !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    height:82px !important;
+    min-height:82px !important;
+    max-height:82px !important;
+    width:100% !important;
+    padding:10px 16px !important;
+    gap:14px !important;
+    overflow:visible !important;
+    transform:none !important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    flex:0 0 158px !important;
+    width:158px !important;
+    min-width:158px !important;
+    max-width:158px !important;
+  }
+
+  body.f2w-main-page > header > .header-tools {
+    position:static !important;
+    display:flex !important;
+    flex:1 1 auto !important;
+    flex-flow:row nowrap !important;
+    align-items:center !important;
+    min-width:0 !important;
+    width:auto !important;
+    height:42px !important;
+    gap:7px !important;
+    overflow:visible !important;
+    transform:none !important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    display:flex !important;
+    flex:0 0 auto !important;
+    flex-flow:row nowrap !important;
+    align-items:center !important;
+    height:42px !important;
+    gap:1px !important;
+    min-width:0 !important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    display:flex !important;
+    flex:1 1 390px !important;
+    flex-flow:row nowrap !important;
+    min-width:240px !important;
+    max-width:585px !important;
+    height:40px !important;
+    gap:7px !important;
+    margin:0 3px !important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    display:flex !important;
+    flex:0 0 auto !important;
+    flex-flow:row nowrap !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    margin-left:auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    height:40px !important;
+    gap:6px !important;
+  }
+
+  /* Only visible controls participate in layout. Inline display:none stays hidden.
+     This is the piece v18 got wrong and is what caused the overlap. */
+  body.f2w-main-page > header .f2w-action-cluster > [style*="display:none"],
+  body.f2w-main-page > header .f2w-action-cluster > [style*="display: none"],
+  body.f2w-main-page > header .f2w-action-cluster > [hidden] {
+    visibility:visible;
+  }
+
+  /* Prevent click/focus/active states from changing geometry. */
+  body.f2w-main-page > header a,
+  body.f2w-main-page > header button,
+  body.f2w-main-page > header input,
+  body.f2w-main-page > header .f2w-genre-wrap,
+  body.f2w-main-page > header .v17-notification-wrap {
+    translate:none !important;
+    transform:none !important;
+    margin-top:0 !important;
+    margin-bottom:0 !important;
+  }
+
+  body.f2w-main-page > header a:hover,
+  body.f2w-main-page > header a:focus,
+  body.f2w-main-page > header a:active,
+  body.f2w-main-page > header button:hover,
+  body.f2w-main-page > header button:focus,
+  body.f2w-main-page > header button:active {
+    translate:none !important;
+    transform:none !important;
+  }
+
+  /* Never animate dimensions/position in the header. */
+  body.f2w-main-page > header *,
+  body.f2w-main-page > header *::before,
+  body.f2w-main-page > header *::after {
+    transition-property:color,background-color,border-color,box-shadow,opacity !important;
+  }
+}
+
+/* Medium desktop: keep everything one row without collisions. */
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page > header {
+    padding-left:10px !important;
+    padding-right:10px !important;
+    gap:8px !important;
+  }
+  body.f2w-main-page > header > .logo {
+    flex-basis:136px !important;
+    width:136px !important;
+    min-width:136px !important;
+    max-width:136px !important;
+  }
+  body.f2w-main-page > header > .logo .logo-image {
+    width:136px !important;
+    max-width:136px !important;
+  }
+  body.f2w-main-page > header .f2w-search-pair {
+    flex-basis:300px !important;
+    min-width:210px !important;
+    max-width:430px !important;
+  }
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn,
+  body.f2w-main-page > header #staff-control-nav {
+    padding-left:6px !important;
+    padding-right:6px !important;
+    font-size:10px !important;
+  }
+}
+
+/* Very wide desktop/TV: give searches room without stretching actions. */
+@media (min-width:1651px) {
+  body.f2w-main-page > header .f2w-search-pair {
+    flex-basis:450px !important;
+  }
+}
+
+/* Mobile/tablet remains an overlay menu and never pushes the page around. */
+@media (max-width:1180px) {
+  body.f2w-main-page > header {
+    contain:none !important;
+  }
+  body.f2w-main-page > header > .header-tools {
+    transform:none !important;
+  }
+}
+
+/* f2w-force-save:header-layout-repair-v19:1788214305 */
+ 
+
+/* F2W v20 — Account modal cleanup
+   Favorites remain available from the normal Favorites page/header button.
+   They are intentionally removed from every Account box for every role. */
+.account-modal #account-favorites,
+#account-modal #account-favorites,
+.account-modal .account-favorites,
+#account-modal .account-favorites {
+  display:none !important;
+}
+/* f2w-force-save:remove-account-favorites-sitewide-v20:1788214488 */
+ 
+
+/* ============================================================
+   F2W v21 — TRUE STATIC CANONICAL HEADER
+   Every page now ships the exact same header markup.
+   Auth controls use fixed grid cells, so hydration cannot move buttons.
+   ============================================================ */
+
+@media (min-width:1181px) {
+  body.f2w-main-page > header {
+    display:flex !important;
+    align-items:center !important;
+    flex-wrap:nowrap !important;
+    width:100% !important;
+    height:82px !important;
+    min-height:82px !important;
+    max-height:82px !important;
+    padding:10px 12px !important;
+    gap:10px !important;
+    overflow:visible !important;
+    transform:none !important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    flex:0 0 145px !important;
+    width:145px !important;
+    min-width:145px !important;
+    max-width:145px !important;
+  }
+
+  body.f2w-main-page > header > .header-tools {
+    position:static !important;
+    display:flex !important;
+    flex:1 1 auto !important;
+    align-items:center !important;
+    flex-wrap:nowrap !important;
+    min-width:0 !important;
+    width:auto !important;
+    height:42px !important;
+    gap:7px !important;
+    transform:none !important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    display:flex !important;
+    align-items:center !important;
+    flex:0 1 auto !important;
+    flex-wrap:nowrap !important;
+    min-width:0 !important;
+    height:42px !important;
+    gap:1px !important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    display:grid !important;
+    grid-template-columns:minmax(120px,1fr) minmax(120px,1fr) !important;
+    flex:1 1 320px !important;
+    width:auto !important;
+    min-width:240px !important;
+    max-width:500px !important;
+    height:40px !important;
+    gap:7px !important;
+    margin:0 2px !important;
+  }
+
+  /* Fixed action grid. Login occupies the Favorites cell and Sign Up occupies
+     the Profile cell while logged out. Logged-in controls occupy those exact
+     same coordinates, so nothing can slide when Supabase restores the session. */
+  body.f2w-main-page > header .f2w-action-cluster {
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:62px 84px 74px 76px 78px 112px 122px !important;
+    grid-template-rows:40px !important;
+    align-items:stretch !important;
+    justify-content:start !important;
+    flex:0 0 644px !important;
+    width:644px !important;
+    min-width:644px !important;
+    max-width:644px !important;
+    height:40px !important;
+    gap:6px !important;
+    margin-left:auto !important;
+    overflow:visible !important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > .chat-button {
+    grid-column:1 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #header-login-btn,
+  body.f2w-main-page > header #favorites-nav-btn {
+    grid-column:2 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #header-signup-btn,
+  body.f2w-main-page > header #profile-nav-btn {
+    grid-column:3 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #support-nav-btn {
+    grid-column:4 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #account-btn {
+    grid-column:5 !important;
+    grid-row:1 !important;
+  }
+  body.f2w-main-page > header #notification-wrap {
+    grid-column:6 !important;
+    grid-row:1 !important;
+    min-width:0 !important;
+    width:112px !important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    grid-column:7 !important;
+    grid-row:1 !important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > button,
+  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap,
+  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap > button {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    height:40px !important;
+    box-sizing:border-box !important;
+    margin:0 !important;
+    transform:none !important;
+    translate:none !important;
+  }
+
+  /* Hidden auth-state controls remain in their fixed cells invisibly.
+     This is safe because Login/Favorites and SignUp/Profile intentionally share cells. */
+  body.f2w-main-page > header #header-login-btn[style*="display:none"],
+  body.f2w-main-page > header #header-login-btn[style*="display: none"],
+  body.f2w-main-page > header #header-signup-btn[style*="display:none"],
+  body.f2w-main-page > header #header-signup-btn[style*="display: none"],
+  body.f2w-main-page > header #favorites-nav-btn[style*="display:none"],
+  body.f2w-main-page > header #favorites-nav-btn[style*="display: none"],
+  body.f2w-main-page > header #profile-nav-btn[style*="display:none"],
+  body.f2w-main-page > header #profile-nav-btn[style*="display: none"],
+  body.f2w-main-page > header #support-nav-btn[style*="display:none"],
+  body.f2w-main-page > header #support-nav-btn[style*="display: none"],
+  body.f2w-main-page > header #account-btn[style*="display:none"],
+  body.f2w-main-page > header #account-btn[style*="display: none"],
+  body.f2w-main-page > header #notification-wrap[style*="display:none"],
+  body.f2w-main-page > header #notification-wrap[style*="display: none"],
+  body.f2w-main-page > header #staff-control-nav[hidden] {
+    display:flex !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+
+  /* Visible state wins without changing geometry. */
+  body.f2w-main-page > header #header-login-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #header-signup-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #favorites-nav-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #profile-nav-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #support-nav-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #account-btn:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #notification-wrap:not([style*="display:none"]):not([style*="display: none"]),
+  body.f2w-main-page > header #staff-control-nav:not([hidden]) {
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page > header a,
+  body.f2w-main-page > header button,
+  body.f2w-main-page > header input {
+    transform:none !important;
+    translate:none !important;
+    transition-property:color,background-color,border-color,box-shadow,opacity !important;
+  }
+}
+
+/* Compress only typography/search width on narrower desktop; coordinates stay fixed. */
+@media (min-width:1181px) and (max-width:1550px) {
+  body.f2w-main-page > header > .logo {
+    flex-basis:126px !important;
+    width:126px !important;
+    min-width:126px !important;
+    max-width:126px !important;
+  }
+  body.f2w-main-page > header > .logo .logo-image {
+    width:126px !important;
+    max-width:126px !important;
+  }
+  body.f2w-main-page > header .f2w-search-pair {
+    min-width:180px !important;
+    max-width:300px !important;
+  }
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button {
+    padding-left:5px !important;
+    padding-right:5px !important;
+    font-size:9px !important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:56px 76px 68px 68px 72px 102px 108px !important;
+    flex-basis:586px !important;
+    width:586px !important;
+    min-width:586px !important;
+    max-width:586px !important;
+    gap:6px !important;
+  }
+}
+
+/* Theme is retired everywhere. */
+body.f2w-main-page > header #theme-menu-button,
+body.f2w-main-page > header #theme-menu {
+  display:none !important;
+}
+
+/* f2w-force-save:true-static-header-v21:1788214596 */
+ 
+
+/* ============================================================
+   F2W v23 — CHAT ONLINE GREEN PULSE, SITEWIDE
+   ============================================================ */
+body.f2w-main-page > header .chat-button {
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  overflow:visible !important;
+}
+
+body.f2w-main-page > header .chat-button .chat-online-dot {
+  display:inline-block !important;
+  flex:0 0 7px !important;
+  width:7px !important;
+  height:7px !important;
+  min-width:7px !important;
+  min-height:7px !important;
+  margin-left:1px !important;
+  border-radius:50% !important;
+  background:#10b981 !important;
+  box-shadow:0 0 0 0 rgba(16,185,129,.72),0 0 8px #10b981 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  animation:f2wChatOnlinePulse 1.45s ease-in-out infinite !important;
+}
+
+@keyframes f2wChatOnlinePulse {
+  0%,100% {
+    opacity:.58;
+    box-shadow:0 0 0 0 rgba(16,185,129,.52),0 0 6px #10b981;
+    transform:scale(.92);
+  }
+  50% {
+    opacity:1;
+    box-shadow:0 0 0 5px rgba(16,185,129,0),0 0 12px #10b981;
+    transform:scale(1.08);
+  }
+}
+
+/* Keep the indicator visible even inside the fixed-width static header cell. */
+@media (min-width:1181px) {
+  body.f2w-main-page > header .f2w-action-cluster > .chat-button {
+    overflow:visible !important;
+  }
+}
+
+/* f2w-force-save:chat-online-dot-v23:1788215130 */
+ 
+
+
+ 
+
+/* F2W v27 — user-search result geometry lock */
+body.f2w-main-page > header .user-search-wrap,
+body.f2w-main-page > header .search-users-wrap {
+  position:relative!important;
+  min-width:0!important;
+}
+body.f2w-main-page > header #user-search-results {
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:calc(100% + 6px)!important;
+  width:100%!important;
+  min-width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  transform:none!important;
+  contain:layout paint!important;
+}
+body.f2w-main-page > header #user-search-results.show {
+  display:block!important;
+}
+/* f2w-force-save:user-search-geometry-v27:1788216279 */
+ 
+
+/* ============================================================
+   F2W v31 — NOTIFICATION READABILITY
+   Bigger dropdown and text; header button geometry stays fixed.
+   ============================================================ */
+body.f2w-main-page > header .v17-notification-menu {
+  width:430px!important;
+  min-width:430px!important;
+  max-width:min(430px,calc(100vw - 20px))!important;
+  max-height:570px!important;
+  border-radius:13px!important;
+}
+
+body.f2w-main-page > header .v17-notification-head {
+  min-height:58px!important;
+  padding:14px 15px!important;
+  font-size:13px!important;
+}
+
+body.f2w-main-page > header .v17-notification-head strong {
+  font-size:13px!important;
+  font-weight:850!important;
+}
+
+body.f2w-main-page > header .v17-notification-head button,
+body.f2w-main-page > header .v17-notification-head a {
+  font-size:10px!important;
+}
+
+body.f2w-main-page > header .v17-notification-list {
+  max-height:500px!important;
+  overflow-y:auto!important;
+  scrollbar-width:auto!important;
+}
+
+body.f2w-main-page > header .v17-notification-list > * {
+  min-height:62px!important;
+  padding:11px 12px!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+}
+
+body.f2w-main-page > header .v17-notification-list strong,
+body.f2w-main-page > header .v17-notification-list b {
+  font-size:11px!important;
+  line-height:1.3!important;
+}
+
+body.f2w-main-page > header .v17-notification-list p,
+body.f2w-main-page > header .v17-notification-list span,
+body.f2w-main-page > header .v17-notification-list small {
+  font-size:9.5px!important;
+  line-height:1.4!important;
+}
+
+body.f2w-main-page > header .v17-notification-list img,
+body.f2w-main-page > header .v17-notification-list [class*="icon"] {
+  flex-shrink:0!important;
+}
+
+@media(max-width:600px){
+  body.f2w-main-page > header .v17-notification-menu {
+    width:min(94vw,430px)!important;
+    min-width:0!important;
+    right:0!important;
+  }
+}
+/* f2w-force-save:notification-readability-v31:1788217048 */
+ 
+
+/* ============================================================
+   F2W v32 — STATIC STATUS LIGHTS SITEWIDE
+   No pulsing/blinking. Fixed translucent status balls only.
+   ============================================================ */
+body.f2w-main-page .chat-online-dot,
+body.f2w-main-page .live-dot,
+body.f2w-main-page .chat-status-dot,
+body.f2w-main-page .f2w-presence-dot,
+body.f2w-main-page .f2w-profile-presence-dot,
+body.f2w-main-page [class*="status-dot"],
+body.f2w-main-page [class*="online-dot"] {
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  opacity:.82!important;
+  border-radius:50%!important;
+}
+
+body.f2w-main-page .chat-online-dot,
+body.f2w-main-page .live-dot,
+body.f2w-main-page .chat-status.connected .chat-status-dot,
+body.f2w-main-page .f2w-presence.online .f2w-presence-dot,
+body.f2w-main-page .f2w-profile-presence.online .f2w-profile-presence-dot {
+  background:rgba(33,216,121,.78)!important;
+  box-shadow:0 0 0 1px rgba(33,216,121,.18),0 0 4px rgba(33,216,121,.28)!important;
+}
+
+body.f2w-main-page .chat-status.error .chat-status-dot,
+body.f2w-main-page .f2w-presence.offline .f2w-presence-dot,
+body.f2w-main-page .f2w-profile-presence.offline .f2w-profile-presence-dot {
+  background:rgba(239,51,64,.78)!important;
+  box-shadow:0 0 0 1px rgba(239,51,64,.18),0 0 4px rgba(239,51,64,.25)!important;
+}
+
+body.f2w-main-page .chat-status:not(.connected):not(.error) .chat-status-dot {
+  background:rgba(245,158,11,.78)!important;
+  box-shadow:0 0 0 1px rgba(245,158,11,.16)!important;
+}
+
+/* f2w-force-save:static-status-lights-v32:1788217362 */
+ 
+
+/* ============================================================
+   F2W v33 — SMOOTH 1.35s SITEWIDE FADE
+   One compositor-friendly opacity transition only.
+   ============================================================ */
+
+/* The page starts transparent and fades as one layer. */
+html.f2w-page-enter body {
+  opacity:0!important;
+}
+html.f2w-page-ready body {
+  opacity:1!important;
+  transition:opacity 1.35s cubic-bezier(.22,.61,.36,1)!important;
+}
+
+/* Retire old child/section reveal animations. */
+html.f2w-page-ready body.f2w-main-page > main,
+html.f2w-page-ready body.f2w-main-page > .page,
+html.f2w-page-ready body.f2w-main-page > .container,
+html.f2w-page-ready body.f2w-main-page > footer {
+  animation:none!important;
+}
+
+/* During the initial fade, avoid expensive blur/filter repaint work. */
+html.f2w-page-enter body * {
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Promote only the one layer actually animating. */
+html.f2w-page-enter body,
+html.f2w-page-ready body {
+  will-change:opacity;
+}
+html.f2w-page-ready body {
+  contain:paint;
+}
+@keyframes f2wV33FadeIn {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@keyframes f2wV33FadeOut {
+  from { opacity:1; }
+  to { opacity:.98; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  html.f2w-page-enter body,
+  html.f2w-page-ready body {
+    opacity:1!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+  
+}
+
+/* f2w-force-save:smooth-page-fade-v33:1788217440 */
+
+
+/* ============================================================
+   F2W v33 — SITEWIDE MOTION PERFORMANCE LOCK
+   Keep only role-name Particles.gif animation.
+   ============================================================ */
+body.f2w-main-page *:not(.f2w-role-name):not(.f2w-role-name *) {
+  animation-duration:0s!important;
+  animation-delay:0s!important;
+  animation-iteration-count:1!important;
+}
+
+/* Controls can still have instant color feedback, but never geometry animation. */
+body.f2w-main-page a,
+body.f2w-main-page button,
+body.f2w-main-page input,
+body.f2w-main-page select,
+body.f2w-main-page textarea {
+  transition-property:color,background-color,border-color,box-shadow,opacity!important;
+  transition-duration:.08s!important;
+  transform:none!important;
+}
+
+/* Avoid expensive backdrop blur on persistent menus/panels sitewide. */
+body.f2w-main-page > header,
+body.f2w-main-page .dropdown-menu,
+body.f2w-main-page .v17-notification-menu {
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Don't reserve compositor layers for static UI. */
+body.f2w-main-page * {
+  will-change:auto;
+}
+
+/* f2w-force-save:motion-performance-lock-v33:1788217440 */
+ 
+
+/* ============================================================
+   F2W v35 — HEADER BUTTON TEXT FIT
+   Chat / Staff Control Panel text must stay fully inside buttons.
+   ============================================================ */
+@media (min-width:1181px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:72px 84px 76px 78px 82px 116px 144px !important;
+    flex:0 0 688px !important;
+    width:688px !important;
+    min-width:688px !important;
+    max-width:688px !important;
+    gap:6px !important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > button,
+  body.f2w-main-page > header .f2w-action-cluster > a,
+  body.f2w-main-page > header .f2w-action-cluster .tool-btn,
+  body.f2w-main-page > header #staff-control-nav,
+  body.f2w-main-page > header .chat-button {
+    min-width:0 !important;
+    max-width:100% !important;
+    padding-left:8px !important;
+    padding-right:8px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+    box-sizing:border-box !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    font-size:10px !important;
+  }
+
+  body.f2w-main-page > header #staff-control-nav {
+    font-size:9.5px !important;
+    letter-spacing:-.01em !important;
+  }
+}
+
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:66px 76px 70px 70px 76px 104px 132px !important;
+    flex:0 0 630px !important;
+    width:630px !important;
+    min-width:630px !important;
+    max-width:630px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    font-size:9px !important;
+    padding-left:6px !important;
+    padding-right:6px !important;
+  }
+
+  body.f2w-main-page > header #staff-control-nav {
+    font-size:8.8px !important;
+    padding-left:6px !important;
+    padding-right:6px !important;
+  }
+}
+
+/* f2w-force-save:header-button-fit-v35:1788217735 */
+ 
+
+/* ============================================================
+   F2W v38 — CHAT BUTTON WIDTH
+   Gives Chat + green status dot enough fixed room.
+   ============================================================ */
+@media (min-width:1181px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:82px 84px 76px 78px 82px 116px 144px !important;
+    flex:0 0 698px !important;
+    width:698px !important;
+    min-width:698px !important;
+    max-width:698px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    padding-left:8px !important;
+    padding-right:8px !important;
+    overflow:visible !important;
+    white-space:nowrap !important;
+  }
+
+  body.f2w-main-page > header .chat-button .chat-online-dot {
+    flex:0 0 7px !important;
+    width:7px !important;
+    min-width:7px !important;
+    margin-left:2px !important;
+  }
+}
+
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:76px 76px 70px 70px 76px 104px 132px !important;
+    flex:0 0 640px !important;
+    width:640px !important;
+    min-width:640px !important;
+    max-width:640px !important;
+  }
+}
+
+/* f2w-force-save:chat-button-width-v38:1788218284 */
+ 
+
+/* ============================================================
+   F2W v42 — FINAL CHAT BUTTON WIDTH / CENTERING
+   Widen the box; do NOT shrink the text.
+   ============================================================ */
+@media (min-width:1181px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:94px 84px 76px 78px 82px 116px 144px !important;
+    flex:0 0 710px !important;
+    width:710px !important;
+    min-width:710px !important;
+    max-width:710px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:7px !important;
+    padding-left:10px !important;
+    padding-right:10px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+    box-sizing:border-box !important;
+    font-size:10px !important;
+  }
+
+  body.f2w-main-page > header .chat-button .chat-online-dot {
+    display:inline-block !important;
+    flex:0 0 7px !important;
+    width:7px !important;
+    height:7px !important;
+    min-width:7px !important;
+    min-height:7px !important;
+    margin:0 !important;
+  }
+}
+
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-template-columns:88px 76px 70px 70px 76px 104px 132px !important;
+    flex:0 0 652px !important;
+    width:652px !important;
+    min-width:652px !important;
+    max-width:652px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    font-size:10px !important;
+    padding-left:9px !important;
+    padding-right:9px !important;
+  }
+}
+
+/* f2w-force-save:chat-button-final-width-v42:1788219270 */
+ 
+
+/* ============================================================
+   F2W v44 — GUEST HEADER RESTORE + PROPER CHAT WIDTH
+   ============================================================ */
+
+/* Logged-in desktop: make Chat generously wide. */
+@media (min-width:1181px) {
+  body.f2w-main-page.f2w-authenticated > header .f2w-action-cluster {
+    grid-template-columns:118px 84px 76px 78px 82px 116px 144px !important;
+    flex:0 0 734px !important;
+    width:734px !important;
+    min-width:734px !important;
+    max-width:734px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px !important;
+    padding:0 14px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+    font-size:10px !important; /* unchanged */
+  }
+
+  body.f2w-main-page > header .chat-button > i {
+    flex:0 0 13px !important;
+    width:13px !important;
+    min-width:13px !important;
+    text-align:center !important;
+  }
+
+  body.f2w-main-page > header .chat-button .chat-online-dot {
+    position:static !important;
+    display:block !important;
+    flex:0 0 7px !important;
+    width:7px !important;
+    height:7px !important;
+    min-width:7px !important;
+    min-height:7px !important;
+    margin:0 !important;
+    translate:none !important;
+    transform:none !important;
+  }
+
+  /*
+   * Logged out:
+   * keep the useful navigation buttons instead of collapsing the whole right side.
+   * Layout = Chat | Favorites | Profile | Support | Login | Sign Up
+   */
+  body.f2w-main-page:not(.f2w-authenticated) > header .f2w-action-cluster {
+    display:grid !important;
+    grid-template-columns:118px 92px 82px 84px 82px 88px !important;
+    grid-template-rows:40px !important;
+    flex:0 0 576px !important;
+    width:576px !important;
+    min-width:576px !important;
+    max-width:576px !important;
+    gap:6px !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header .chat-button {
+    grid-column:1 !important;
+    grid-row:1 !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn {
+    grid-column:2 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn {
+    grid-column:3 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn {
+    grid-column:4 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn {
+    grid-column:5 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn {
+    grid-column:6 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  /* Logged-out-only: user-only controls stay out of the visible row. */
+  body.f2w-main-page:not(.f2w-authenticated) > header #account-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #notification-wrap,
+  body.f2w-main-page:not(.f2w-authenticated) > header #staff-control-nav {
+    display:none !important;
+  }
+
+  /* Center every guest action label/icon without shrinking text. */
+  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn {
+    align-items:center !important;
+    justify-content:center !important;
+    white-space:nowrap !important;
+    min-width:0 !important;
+    width:100% !important;
+    height:40px !important;
+    margin:0 !important;
+    padding-left:8px !important;
+    padding-right:8px !important;
+    box-sizing:border-box !important;
+  }
+}
+
+@media (min-width:1181px) and (max-width:1650px) {
+  body.f2w-main-page.f2w-authenticated > header .f2w-action-cluster {
+    grid-template-columns:110px 76px 70px 70px 76px 104px 132px !important;
+    flex:0 0 664px !important;
+    width:664px !important;
+    min-width:664px !important;
+    max-width:664px !important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header .f2w-action-cluster {
+    grid-template-columns:110px 84px 76px 78px 76px 82px !important;
+    flex:0 0 536px !important;
+    width:536px !important;
+    min-width:536px !important;
+    max-width:536px !important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    font-size:10px !important; /* still unchanged */
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+}
+
+/* f2w-force-save:guest-header-chat-fit-v44:1788219651 */
+ 
+
+/* F2W v50 — keep chat button stable while route is prewarmed */
+body.f2w-main-page > header .chat-button {
+  contain:layout style!important;
+}
+/* f2w-force-save:chat-preload-style-v50:1788220357 */
+
+
+/* ============================================================
+   F2W v56 — SITE-WIDE AUTH MODAL
+   ============================================================ */
+.f2w-auth-modal-v56,
+#account-modal {
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483500!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+}
+#account-modal.open {
+  display:flex!important;
+}
+.f2w-auth-card-v56 {
+  width:min(520px,calc(100vw - 28px))!important;
+  max-width:520px!important;
+  max-height:calc(100dvh - 36px)!important;
+  overflow:auto!important;
+}
+.f2w-auth-slider-v56 {
+  overflow:hidden!important;
+}
+.f2w-auth-pane-v56 {
+  transition:transform .2s ease,opacity .2s ease!important;
+}
+.f2w-auth-pane-v56.swipe-left {
+  transform:translateX(-10px)!important;
+  opacity:.7!important;
+}
+.f2w-auth-pane-v56.swipe-right {
+  transform:translateX(10px)!important;
+  opacity:.7!important;
+}
+.f2w-auth-hint-v56 {
+  margin-top:5px!important;
+  color:#687d95!important;
+  font-size:.64rem!important;
+}
+html.f2w-auth-open-v56 {
+  overflow:hidden!important;
+}
+@media(max-width:600px){
+  .f2w-auth-card-v56,
+  #account-modal .account-card {
+    width:min(94vw,480px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+  #account-modal {
+    padding:12px!important;
+  }
+}
+/* f2w-force-save:sitewide-auth-css-v56:1788221054 */
+ 
+
+/* ============================================================
+   F2W v57 — USER SEARCH AUTOCOMPLETE DROPDOWN
+   ============================================================ */
+body.f2w-main-page > header .user-search-container {
+  position:relative!important;
+  overflow:visible!important;
+}
+
+body.f2w-main-page > header .f2w-user-search-results-v57,
+body.f2w-main-page > header .user-search-results {
+  position:absolute!important;
+  top:calc(100% + 7px)!important;
+  left:0!important;
+  right:0!important;
+  z-index:2147482500!important;
+  display:none!important;
+  max-height:330px!important;
+  overflow-y:auto!important;
+  border:1px solid #29435d!important;
+  border-radius:11px!important;
+  background:#061421!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.52)!important;
+  padding:5px!important;
+}
+
+body.f2w-main-page > header .f2w-user-search-results-v57.show,
+body.f2w-main-page > header .user-search-results.show {
+  display:block!important;
+}
+
+body.f2w-main-page > header .user-search-result {
+  width:100%!important;
+  min-height:52px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:7px 9px!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  color:#fff!important;
+  cursor:pointer!important;
+  text-align:left!important;
+}
+
+body.f2w-main-page > header .user-search-result:hover,
+body.f2w-main-page > header .user-search-result:focus {
+  background:#0c2032!important;
+  outline:none!important;
+}
+
+body.f2w-main-page > header .user-search-avatar {
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+  display:grid!important;
+  place-items:center!important;
+  background:#14293c!important;
+  color:#dce8f5!important;
+  font-size:.66rem!important;
+  font-weight:850!important;
+}
+
+body.f2w-main-page > header .user-search-copy {
+  min-width:0!important;
+  flex:1 1 auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:2px!important;
+}
+
+body.f2w-main-page > header .user-search-name {
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:.76rem!important;
+  color:#ff5260!important;
+}
+
+body.f2w-main-page > header .user-search-sub,
+body.f2w-main-page > header .user-search-empty {
+  color:#8196ad!important;
+  font-size:.64rem!important;
+}
+
+body.f2w-main-page > header .user-search-empty {
+  padding:12px!important;
+}
+
+body.f2w-main-page > header .user-search-result > i {
+  color:#71879e!important;
+  font-size:.66rem!important;
+  flex:0 0 auto!important;
+}
+
+/* f2w-force-save:user-autocomplete-css-v57:1788221142 */
+ 
+
+/* ============================================================
+   F2W v60 — AUTH MODAL VIEWPORT LOCK
+   Popup stays centered; page behind it does not move.
+   ============================================================ */
+html.f2w-auth-open-v60,
+body.f2w-auth-open-v60 {
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+
+#account-modal.f2w-auth-modal-open-v60 {
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483600!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:18px!important;
+  overflow:hidden!important;
+  background:rgba(0,0,0,.82)!important;
+  backdrop-filter:blur(10px)!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+  transform:none!important;
+}
+
+#account-modal.f2w-auth-modal-open-v60 .account-card {
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  margin:0!important;
+  width:min(520px,calc(100vw - 36px))!important;
+  max-width:520px!important;
+  max-height:calc(100dvh - 36px)!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  box-sizing:border-box!important;
+}
+
+#account-modal .account-card.f2w-auth-swipe-left-v60 {
+  animation:f2wAuthSwipeLeftV60 .24s ease both!important;
+}
+#account-modal .account-card.f2w-auth-swipe-right-v60 {
+  animation:f2wAuthSwipeRightV60 .24s ease both!important;
+}
+@keyframes f2wAuthSwipeLeftV60 {
+  from{opacity:.72;transform:translateX(18px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes f2wAuthSwipeRightV60 {
+  from{opacity:.72;transform:translateX(-18px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+@media(max-width:600px){
+  #account-modal.f2w-auth-modal-open-v60 {
+    padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))!important;
+  }
+  #account-modal.f2w-auth-modal-open-v60 .account-card {
+    width:min(94vw,480px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+}
+
+/* f2w-force-save:auth-modal-lock-css-v60:1788221799 */
+ 
+
+/* ============================================================
+   F2W v62 — NORMAL SEARCH/TEXT INPUTS
+   ============================================================ */
+body.f2w-main-page input[type="search"]:not(#account-modal input),
+body.f2w-main-page .user-search-container input,
+body.f2w-main-page .movie-search-container input,
+body.f2w-main-page .forum-search input {
+  -webkit-text-security:none!important;
+  appearance:none!important;
+}
+
+body.f2w-main-page input[type="search"]::-webkit-credentials-auto-fill-button,
+body.f2w-main-page input[type="search"]::-webkit-contacts-auto-fill-button {
+  visibility:hidden!important;
+  display:none!important;
+  pointer-events:none!important;
+  position:absolute!important;
+  right:0!important;
+}
+
+/* f2w-force-save:text-input-css-v62:1788221977 */
+ 
+
+/* ============================================================
+   F2W v63 — SEARCH FIELDS ARE NEVER AUTH FIELDS
+   ============================================================ */
+body.f2w-main-page input[data-f2w-search-isolated-v63="1"] {
+  -webkit-text-security:none!important;
+  appearance:none!important;
+}
+
+body.f2w-main-page input[data-f2w-search-isolated-v63="1"]::-webkit-credentials-auto-fill-button,
+body.f2w-main-page input[data-f2w-search-isolated-v63="1"]::-webkit-contacts-auto-fill-button {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* f2w-force-save:search-password-isolation-css-v63:1788222324 */
+ 
+
+/* ============================================================
+   F2W v64 — ROLELESS USERNAMES ARE WHITE
+   Highest-role colours still win when .f2w-role-name is applied.
+   ============================================================ */
+
+/* Header user-search results were explicitly red in v57. Remove that. */
+body.f2w-main-page > header .user-search-name:not(.f2w-role-name),
+body.f2w-main-page > header .user-search-result .user-search-name:not(.f2w-role-name) {
+  color:#fff!important;
+  text-shadow:none!important;
+  background:none!important;
+  -webkit-text-fill-color:#fff!important;
+}
+
+/* Generic roleless username/name surfaces site-wide. */
+body .f2w-no-role-name,
+body [data-f2w-username]:not(.f2w-role-name),
+body [data-username]:not(.f2w-role-name),
+body .chat-user:not(.f2w-role-name),
+body .chat-username:not(.f2w-role-name),
+body .comment-author:not(.f2w-role-name),
+body .leaderboard-username:not(.f2w-role-name),
+body .profile-username:not(.f2w-role-name),
+body .user-name:not(.f2w-role-name),
+body .display-name:not(.f2w-role-name),
+body .forum-v30-author:not(.f2w-role-name),
+body .forum-v30-rank-name:not(.f2w-role-name) {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:none!important;
+  background-image:none!important;
+  background-color:transparent!important;
+  filter:none!important;
+}
+
+/* Role-decorated names remain role-coloured. */
+body .f2w-role-name {
+  color:var(--role-main)!important;
+  -webkit-text-fill-color:var(--role-main)!important;
+}
+
+/* f2w-force-save:roleless-usernames-white-global-v64:1788222358 */
+ 
+
+/* ============================================================
+   F2W v65 — NORMAL SEARCH FIELD VISUALS
+   ============================================================ */
+body.f2w-main-page input[type="search"] {
+  -webkit-text-security:none!important;
+}
+
+body.f2w-main-page input[type="search"]:-webkit-autofill,
+body.f2w-main-page input[type="search"]:-webkit-autofill:hover,
+body.f2w-main-page input[type="search"]:-webkit-autofill:focus {
+  -webkit-text-fill-color:inherit!important;
+  transition:background-color 999999s ease-out 0s!important;
+}
+
+body.f2w-main-page input[type="search"]::-webkit-credentials-auto-fill-button,
+body.f2w-main-page input[type="search"]::-webkit-contacts-auto-fill-button {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* f2w-force-save:search-field-visuals-v65:1788222474 */
+ 
+
+/* ============================================================
+   F2W v66 — USER SEARCH ARROW STAYS INSIDE THE BOX
+   ============================================================ */
+
+body.f2w-main-page > header .user-search-container {
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  overflow:visible!important;
+}
+
+body.f2w-main-page > header .user-search-container .user-search-bar,
+body.f2w-main-page > header .user-search-container #user-search {
+  width:100%!important;
+  min-width:0!important;
+  padding-right:42px!important;
+  box-sizing:border-box!important;
+}
+
+/* The real submit arrow belongs INSIDE the search field. */
+body.f2w-main-page > header .user-search-container .user-search-submit,
+body.f2w-main-page > header .user-search-container [data-user-search-submit],
+body.f2w-main-page > header .user-search-container button[onclick*="submitUserDirectorySearch"],
+body.f2w-main-page > header .user-search-container button[aria-label*="user" i] {
+  position:absolute!important;
+  right:8px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  margin:0!important;
+  width:28px!important;
+  min-width:28px!important;
+  max-width:28px!important;
+  height:28px!important;
+  min-height:28px!important;
+  max-height:28px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  z-index:5!important;
+  border:0!important;
+  background:transparent!important;
+  color:#91a5ba!important;
+  overflow:hidden!important;
+}
+
+/* Kill any legacy duplicate/floating arrow outside the user-search box. */
+body.f2w-main-page > header .f2w-search-pair > .user-search-submit,
+body.f2w-main-page > header .f2w-search-pair > [data-user-search-submit],
+body.f2w-main-page > header .f2w-search-pair > button[onclick*="submitUserDirectorySearch"] {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* No pseudo arrow from old CSS outside the box. */
+body.f2w-main-page > header .user-search-container::after,
+body.f2w-main-page > header .user-search-container::before {
+  pointer-events:none!important;
+}
+
+/* f2w-force-save:user-search-arrow-fix-v66:1788222669 */
+ 
+
+/* ============================================================
+   F2W v72 — LOGIN / SIGN UP HEADER ICONS
+   ============================================================ */
+body.f2w-main-page > header #header-login-btn,
+body.f2w-main-page > header #header-signup-btn {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  white-space:nowrap!important;
+}
+
+body.f2w-main-page > header #header-login-btn > i,
+body.f2w-main-page > header #header-signup-btn > i {
+  flex:0 0 auto!important;
+  font-size:.88em!important;
+  line-height:1!important;
+}
+
+/* f2w-force-save:auth-button-icons-css-v72:1788223976 */
+ 
+
+/* ============================================================
+   F2W v74 — CANONICAL FOOTER AT PAGE BOTTOM
+   ============================================================ */
+html,
+body {
+  min-height:100%;
+}
+
+body.f2w-main-page {
+  min-height:100dvh!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+
+body.f2w-main-page > header {
+  flex:0 0 auto!important;
+}
+
+body.f2w-main-page > main,
+body.f2w-main-page > .page-shell,
+body.f2w-main-page > .f2w-users-main,
+body.f2w-main-page > .content-wrap,
+body.f2w-main-page > .site-main {
+  flex:0 0 auto!important;
+}
+
+body.f2w-main-page > .f2w-site-footer {
+  margin-top:auto!important;
+  width:100%!important;
+  flex:0 0 auto!important;
+  position:relative!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+}
+
+/* Hide any legacy loose Privacy anchor that survives dynamic injection. */
+body.f2w-main-page > a[href="/privacy/"],
+body.f2w-main-page > a[href="/privacy"],
+body.f2w-main-page > main + a[href="/privacy/"],
+body.f2w-main-page > main + a[href="/privacy"],
+body.f2w-main-page > footer + a[href="/privacy/"],
+body.f2w-main-page > footer + a[href="/privacy"] {
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* /users/ is a short page: keep its legal bar at the real viewport bottom. */
+body.f2w-users-page {
+  min-height:100dvh!important;
+}
+
+body.f2w-users-page > .f2w-users-main {
+  flex:0 0 auto!important;
+}
+
+body.f2w-users-page > .f2w-site-footer {
+  margin-top:auto!important;
+}
+
+/* f2w-force-save:footer-bottom-v74:1788224239 */
+ 
+
+/* ============================================================
+   F2W v88 — STATIC PRESENCE UI SITE-WIDE
+   ============================================================ */
+body.f2w-main-page .f2w-profile-presence,
+body.f2w-main-page .f2w-presence,
+body.f2w-main-page .presence,
+body.f2w-main-page [class*="presence"] {
+  animation:none!important;
+  transition:none!important;
+}
+
+body.f2w-main-page .f2w-profile-presence-dot,
+body.f2w-main-page .f2w-presence-dot,
+body.f2w-main-page .presence {
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+}
+
+#v17-profile-presence {
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-height:30px!important;
+  min-width:82px!important;
+  white-space:nowrap!important;
+  visibility:visible!important;
+  opacity:1!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+/* f2w-force-save:static-presence-ui-v88:1788227370 */
+ 
+
+/* ============================================================
+   F2W v92 — LOGIN / SIGNUP STATUS FEEDBACK
+   ============================================================ */
+#account-modal #account-message {
+  display:block!important;
+  min-height:20px!important;
+  margin-top:10px!important;
+  padding:7px 9px!important;
+  border-radius:8px!important;
+  font-size:.72rem!important;
+  line-height:1.35!important;
+  font-weight:750!important;
+  text-align:left!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+
+#account-modal #account-message:empty {
+  min-height:0!important;
+  padding:0!important;
+  margin-top:7px!important;
+}
+
+#account-modal #account-submit[data-f2w-busy="1"] {
+  cursor:wait!important;
+  opacity:.88!important;
+}
+
+#account-modal #account-submit[data-f2w-busy="1"] i {
+  margin-right:7px!important;
+}
+
+/* f2w-force-save:auth-feedback-css-v92:1788228465 */
+ 
+
+/* ============================================================
+   F2W v93 — NO STALE GREY AUTH LAYERS / TV SCROLL SAFETY
+   ============================================================ */
+#account-modal:not(.open):not(.f2w-auth-v67):not(.f2w-auth-hard-open-v58):not(.f2w-auth-modal-open-v60) {
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+#account-modal.open,
+#account-modal.f2w-auth-v67,
+#account-modal.f2w-auth-hard-open-v58,
+#account-modal.f2w-auth-modal-open-v60 {
+  visibility:visible!important;
+  opacity:1!important;
+}
+
+/* contain:paint was causing fixed overlays and some TV-browser scroll/focus bugs. */
+html.f2w-page-ready body {
+  contain:none!important;
+}
+
+/* A restored signed-in page must always be normally scrollable. */
+body.f2w-authenticated:not(.f2w-profile-editor-open-v87) {
+  overflow-y:auto!important;
+}
+
+/* f2w-force-save:no-stale-auth-dim-v93:1788229371 */
+
+/* ============================================================
+   F2W v100 — DARK PAGE FADE / NO WHITE NAVIGATION BAR
+   ============================================================ */
+html,
+html.f2w-page-enter,
+html.f2w-page-ready {
+  background:#020914!important;
+  background-color:#020914!important;
+}
+
+body,
+body.f2w-main-page {
+  background-color:#020914!important;
+}
+
+/*
+ * The native cross-document View Transition snapshot was causing a white
+ * horizontal flash/strip between the fixed header and incoming page content.
+ * v100 uses ONLY the existing 1.35s body opacity fade.
+ */
+html.f2w-page-enter body {
+  opacity:0!important;
+}
+
+html.f2w-page-ready body {
+  opacity:1!important;
+  transition:opacity 1.35s cubic-bezier(.22,.61,.36,1)!important;
+  background-color:#020914!important;
+}
+
+/* Never expose the browser's default white canvas while the body is transparent. */
+html.f2w-page-enter::before {
+  content:""!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:-1!important;
+  background:#020914!important;
+  pointer-events:none!important;
+}
+
+/* f2w-force-save:no-white-navigation-flash-v100:1788283039 */
+/* ============================================================
+   F2W v116 — NOTIFICATIONS / STAFF BUTTON SEPARATION
+   ============================================================ */
+body.f2w-main-page > header #notification-wrap{
+  margin-right:9px!important;
+}
+body.f2w-main-page > header #staff-control-nav{
+  margin-left:0!important;
+}
+body.f2w-main-page > header .f2w-action-cluster{
+  column-gap:7px!important;
+}
+/* f2w-force-save:header-staff-gap-v116:1788295578 */
+
+/* ============================================================
+   F2W v119 — NOTIFICATIONS / STAFF CONTROL HARD GAP
+   ============================================================ */
+body.f2w-main-page > header .f2w-action-cluster{
+  gap:10px!important;
+  column-gap:10px!important;
+}
+
+body.f2w-main-page > header #notification-wrap{
+  margin-right:6px!important;
+}
+
+body.f2w-main-page > header #staff-control-nav{
+  margin-left:6px!important;
+}
+
+/* Constrained desktop widths still keep a visible gap. */
+@media(min-width:1181px) and (max-width:1650px){
+  body.f2w-main-page > header .f2w-action-cluster{
+    gap:9px!important;
+    column-gap:9px!important;
+  }
+  body.f2w-main-page > header #notification-wrap{
+    margin-right:5px!important;
+  }
+  body.f2w-main-page > header #staff-control-nav{
+    margin-left:5px!important;
+  }
+}
+
+/* f2w-force-save:header-action-gap-v119:1788296897 */
+
+ 
+/* ============================================================
+   F2W v125 — LARGER NOTIFICATIONS MENU
+   ============================================================ */
+body.f2w-main-page>header #notification-menu,
+.v17-notification-menu{
+  width:min(430px,calc(100vw - 28px))!important;
+  max-height:560px!important;
+  overflow:hidden!important;
+}
+.v17-notification-list{max-height:470px!important;overflow:auto!important;padding:7px!important}
+.f2w-v125-notification{
+  display:block!important;padding:12px!important;margin:0 0 7px!important;border:1px solid #223c54!important;border-radius:10px!important;background:#071522!important;text-decoration:none!important
+}
+.f2w-v125-notification.unread{border-color:#9b2531!important;background:#0c1723!important}
+.f2w-v125-notification strong{display:block!important;color:#fff!important;font-size:.78rem!important}
+.f2w-v125-notification span{display:block!important;margin-top:5px!important;color:#9db0c3!important;font-size:.72rem!important;line-height:1.45!important}
+.f2w-v125-notification small{display:block!important;margin-top:7px!important;color:#60778f!important;font-size:.62rem!important}
+/* f2w-force-save:notifications-css-v125:1788300576 */
+ 

@@ -1,0 +1,1590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script id="f2w-discord-link-authority-v250">
+(()=>{
+  'use strict';
+  if(window.__f2wDiscordLinkAuthorityV250)return;
+  window.__f2wDiscordLinkAuthorityV250=true;
+  const nativeOpen=typeof window.open==='function'?window.open.bind(window):null;
+  function anchorFrom(target){try{return target?.closest?.('#f2w-discord-join-v250[href]')||null}catch{return null}}
+  function openExternal(event){
+    const a=anchorFrom(event.target); if(!a)return;
+    const href=String(a.href||'').trim(); if(!/^https?:\/\//i.test(href))return;
+    event.preventDefault(); event.stopImmediatePropagation(); event.stopPropagation();
+    try{
+      const tab=nativeOpen?.('about:blank','_blank');
+      if(tab){
+        try{tab.opener=null}catch{}
+        try{tab.location.replace(href)}catch{try{tab.location.href=href}catch{}}
+        return;
+      }
+    }catch{}
+  }
+  window.addEventListener('click',openExternal,true);
+})();
+</script>
+<style id="f2w-discord-link-pointer-v250">
+#f2w-discord-join-v250{position:relative!important;z-index:2147483000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+#f2w-discord-join-v250 *{pointer-events:none!important}
+</style>
+  <link rel="manifest" href="/site.webmanifest">
+<link href="https://player.flix2watch.com" rel="preconnect" crossorigin>
+<link href="https://player.flix2watch.com" rel="dns-prefetch">
+
+<script id="f2w-transition-boot-v135">
+try{document.documentElement.classList.add('f2w-transition-boot')}catch(e){}
+</script>
+<link rel="stylesheet" href="/page-transitions-v135.css?v=183-20260902">
+
+<script id="f2w-page-fade-boot-v33">
+(function(){
+  try{
+    var root=document.documentElement;
+    root.classList.add('f2w-page-enter');
+    requestAnimationFrame(function(){
+      root.classList.remove('f2w-page-enter');
+      root.classList.add('f2w-page-ready');
+    });
+  }catch(e){}
+})();
+</script>
+
+<style id="f2w-critical-header-v24">
+html{overflow-y:scroll}
+@media (min-width:1181px){
+  body.f2w-main-page>header{
+    display:flex!important;align-items:center!important;flex-wrap:nowrap!important;
+    width:100%!important;height:82px!important;min-height:82px!important;max-height:82px!important;
+    padding:10px 12px!important;gap:10px!important;overflow:visible!important;
+    transform:none!important;font-family:Inter,Arial,sans-serif!important
+  }
+  body.f2w-main-page>header>.logo{flex:0 0 145px!important;width:145px!important;min-width:145px!important;max-width:145px!important}
+  body.f2w-main-page>header>.logo .logo-image{display:block!important;width:145px!important;height:auto!important}
+  body.f2w-main-page>header>.header-tools{
+    position:static!important;display:flex!important;flex:1 1 auto!important;align-items:center!important;
+    flex-wrap:nowrap!important;min-width:0!important;width:auto!important;height:42px!important;gap:7px!important;transform:none!important
+  }
+  body.f2w-main-page>header .f2w-primary-nav{
+    display:flex!important;align-items:center!important;flex:0 1 auto!important;flex-wrap:nowrap!important;
+    min-width:0!important;height:42px!important;gap:1px!important
+  }
+  body.f2w-main-page>header .f2w-search-pair{
+    display:grid!important;grid-template-columns:minmax(120px,1fr) minmax(120px,1fr)!important;
+    flex:1 1 320px!important;width:auto!important;min-width:240px!important;max-width:500px!important;
+    height:40px!important;gap:7px!important;margin:0 2px!important
+  }
+  body.f2w-main-page>header .f2w-action-cluster{
+    position:relative!important;display:grid!important;
+    grid-template-columns:62px 84px 74px 76px 78px 112px 122px!important;
+    grid-template-rows:40px!important;align-items:stretch!important;justify-content:start!important;
+    flex:0 0 644px!important;width:644px!important;min-width:644px!important;max-width:644px!important;
+    height:40px!important;gap:6px!important;margin-left:auto!important;overflow:visible!important
+  }
+  body.f2w-main-page>header .chat-button{grid-column:1!important;grid-row:1!important}
+  body.f2w-main-page>header #header-login-btn,body.f2w-main-page>header #favorites-nav-btn{grid-column:2!important;grid-row:1!important}
+  body.f2w-main-page>header #header-signup-btn,body.f2w-main-page>header #profile-nav-btn{grid-column:3!important;grid-row:1!important}
+  body.f2w-main-page>header #support-nav-btn{grid-column:4!important;grid-row:1!important}
+  body.f2w-main-page>header #account-btn{grid-column:5!important;grid-row:1!important}
+  body.f2w-main-page>header #notification-wrap{grid-column:6!important;grid-row:1!important;width:112px!important}
+  body.f2w-main-page>header #staff-control-nav{grid-column:7!important;grid-row:1!important}
+  body.f2w-main-page>header .f2w-action-cluster>button,
+  body.f2w-main-page>header .f2w-action-cluster>.v17-notification-wrap,
+  body.f2w-main-page>header .f2w-action-cluster>.v17-notification-wrap>button{
+    width:100%!important;min-width:0!important;max-width:100%!important;height:40px!important;
+    box-sizing:border-box!important;margin:0!important;transform:none!important;translate:none!important
+  }
+  body.f2w-main-page>header #header-login-btn[style*="display:none"],
+  body.f2w-main-page>header #header-login-btn[style*="display: none"],
+  body.f2w-main-page>header #header-signup-btn[style*="display:none"],
+  body.f2w-main-page>header #header-signup-btn[style*="display: none"],
+  body.f2w-main-page>header #favorites-nav-btn[style*="display:none"],
+  body.f2w-main-page>header #favorites-nav-btn[style*="display: none"],
+  body.f2w-main-page>header #profile-nav-btn[style*="display:none"],
+  body.f2w-main-page>header #profile-nav-btn[style*="display: none"],
+  body.f2w-main-page>header #support-nav-btn[style*="display:none"],
+  body.f2w-main-page>header #support-nav-btn[style*="display: none"],
+  body.f2w-main-page>header #account-btn[style*="display:none"],
+  body.f2w-main-page>header #account-btn[style*="display: none"],
+  body.f2w-main-page>header #notification-wrap[style*="display:none"],
+  body.f2w-main-page>header #notification-wrap[style*="display: none"],
+  body.f2w-main-page>header #staff-control-nav[hidden]{
+    display:flex!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important
+  }
+  body.f2w-main-page>header i[class*="fa-"]{display:inline-block!important;width:13px!important;min-width:13px!important;text-align:center!important}
+  body.f2w-main-page>header a,body.f2w-main-page>header button,body.f2w-main-page>header input{
+    transform:none!important;translate:none!important
+  }
+}
+@media (min-width:1181px) and (max-width:1550px){
+  body.f2w-main-page>header>.logo{flex-basis:126px!important;width:126px!important;min-width:126px!important;max-width:126px!important}
+  body.f2w-main-page>header>.logo .logo-image{width:126px!important}
+  body.f2w-main-page>header .f2w-search-pair{min-width:180px!important;max-width:300px!important}
+  body.f2w-main-page>header .f2w-action-cluster{
+    grid-template-columns:56px 76px 68px 68px 72px 102px 108px!important;
+    flex-basis:586px!important;width:586px!important;min-width:586px!important;max-width:586px!important
+  }
+}
+
+
+
+</style>
+
+<link rel="preload" as="image" href="/flix2watch-logo-red-v34.png" fetchpriority="high">
+<link rel="dns-prefetch" href="//viqufxlcxwgboyxbdhjb.supabase.co">
+<link rel="preconnect" href="https://viqufxlcxwgboyxbdhjb.supabase.co" crossorigin>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Law Enforcement · Flix2Watch</title>
+  <!-- Flix2Watch SEO / social authority v214 -->
+  <meta name="description" content="Flix2Watch information for lawful law-enforcement requests.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="bingbot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <link rel="canonical" href="https://flix2watch.com/law-enforcement/">
+  <meta property="og:site_name" content="Flix2Watch">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Law Enforcement · Flix2Watch">
+  <meta property="og:description" content="Flix2Watch information for lawful law-enforcement requests.">
+  <meta property="og:url" content="https://flix2watch.com/law-enforcement/">
+  <meta property="og:image" content="https://flix2watch.com/flix2watch-share-v214.png">
+  <meta property="og:image:secure_url" content="https://flix2watch.com/flix2watch-share-v214.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Flix2Watch — Watch. Chill. Repeat.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Law Enforcement · Flix2Watch">
+  <meta name="twitter:description" content="Flix2Watch information for lawful law-enforcement requests.">
+  <meta name="twitter:image" content="https://flix2watch.com/flix2watch-share-v214.png">
+  <meta name="twitter:image:alt" content="Flix2Watch — Watch. Chill. Repeat.">
+  <meta name="theme-color" content="#e50914">
+  <script type="application/ld+json" data-f2w-seo-v214>{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://flix2watch.com/#website","url":"https://flix2watch.com/","name":"Flix2Watch","description":"Flix2Watch information for lawful law-enforcement requests.","inLanguage":"en"},{"@type":"Organization","@id":"https://flix2watch.com/#organization","name":"Flix2Watch","url":"https://flix2watch.com/","logo":{"@type":"ImageObject","url":"https://flix2watch.com/flix2watch-logo-red-v34.png"}}]}</script>
+  <!-- /Flix2Watch SEO / social authority v214 -->
+
+<link rel="icon" type="image/png" href="/flix2watch-logo-red-v34.png">
+<link rel="stylesheet" href="/global-header-v1.css?v=125-1788300576">
+<style>
+:root{--bg:#03070d;--panel:#09111c;--line:rgba(255,255,255,.09);--muted:#9aa7b8;--red:#e50914}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at top,#111b2b 0,#050912 38%,#02050a 100%);color:#f6f8fb;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.legal-shell{width:min(980px,calc(100% - 28px));margin:0 auto;padding:116px 0 48px}
+.legal-hero{padding:28px 30px;border:1px solid rgba(229,9,20,.24);border-radius:22px;background:linear-gradient(145deg,rgba(229,9,20,.08),rgba(8,14,24,.92));box-shadow:0 20px 55px rgba(0,0,0,.28);margin-bottom:18px}
+.legal-kicker{color:#ff4e58;font-size:.75rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.legal-hero h1{font-size:clamp(1.9rem,4vw,3.1rem);line-height:1.04;margin:0 0 12px}
+.legal-hero p,.legal-card p{color:var(--muted);font-size:1rem;line-height:1.72;margin:0}
+.legal-card{padding:22px 25px;border:1px solid var(--line);border-radius:18px;background:rgba(8,14,24,.78);margin:12px 0}
+.legal-card h2{font-size:1.05rem;margin:0 0 9px}
+.legal-note{font-size:.8rem;color:#778396;margin-top:18px}
+@media(max-width:700px){.legal-shell{padding-top:88px}.legal-hero{padding:22px 20px}.legal-card{padding:19px 18px}}
+</style>
+
+<style id="f2w-header-gorilla-lock-v30">
+@media(min-width:1181px){
+body.f2w-main-page>header{position:sticky!important;top:0!important;z-index:2147480000!important;display:flex!important;flex-flow:row nowrap!important;align-items:center!important;width:100%!important;max-width:100%!important;height:82px!important;min-height:82px!important;max-height:82px!important;margin:0!important;padding:10px 12px!important;gap:10px!important;overflow:visible!important;transform:none!important;translate:none!important}
+body.f2w-main-page>header>.logo{flex:0 0 126px!important;width:126px!important;min-width:126px!important;max-width:126px!important}
+body.f2w-main-page>header>.logo .logo-image{width:126px!important;max-width:126px!important}
+body.f2w-main-page>header>.header-tools{position:static!important;display:flex!important;flex:1 1 auto!important;align-items:center!important;flex-wrap:nowrap!important;min-width:0!important;width:auto!important;height:42px!important;gap:6px!important;transform:none!important}
+body.f2w-main-page>header .f2w-primary-nav{display:flex!important;flex:0 1 auto!important;align-items:center!important;flex-wrap:nowrap!important;min-width:455px!important;height:42px!important;gap:0!important}
+body.f2w-main-page>header .f2w-search-pair{display:grid!important;grid-template-columns:minmax(150px,1fr) minmax(150px,1fr)!important;flex:1 1 430px!important;min-width:300px!important;max-width:560px!important;height:40px!important;gap:7px!important;margin:0 2px!important}
+body.f2w-main-page>header .f2w-action-cluster{display:grid!important;grid-template-columns:58px 82px 72px 76px 78px 112px 116px!important;grid-template-rows:40px!important;flex:0 0 630px!important;width:630px!important;min-width:630px!important;max-width:630px!important;height:40px!important;gap:6px!important;margin-left:auto!important;align-items:stretch!important;overflow:visible!important}
+body.f2w-main-page>header .chat-button{grid-column:1!important}
+body.f2w-main-page>header #header-login-btn,body.f2w-main-page>header #favorites-nav-btn{grid-column:2!important}
+body.f2w-main-page>header #header-signup-btn,body.f2w-main-page>header #profile-nav-btn{grid-column:3!important}
+body.f2w-main-page>header #support-nav-btn{grid-column:4!important}
+body.f2w-main-page>header #account-btn{grid-column:5!important}
+body.f2w-main-page>header #notification-wrap{grid-column:6!important;width:112px!important}
+body.f2w-main-page>header #staff-control-nav{grid-column:7!important}
+body.f2w-main-page>header a,body.f2w-main-page>header button,body.f2w-main-page>header input,body.f2w-main-page>header .v17-notification-wrap{transform:none!important;translate:none!important;margin-top:0!important;margin-bottom:0!important;box-sizing:border-box!important}
+body.f2w-main-page>header #staff-control-nav[hidden]{display:flex!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+}
+@media(min-width:1181px) and (max-width:1650px){
+body.f2w-main-page>header .f2w-primary-nav{min-width:410px!important}
+body.f2w-main-page>header .f2w-search-pair{min-width:240px!important;max-width:420px!important}
+body.f2w-main-page>header .f2w-action-cluster{grid-template-columns:54px 74px 66px 68px 70px 100px 104px!important;flex-basis:572px!important;width:572px!important;min-width:572px!important;max-width:572px!important}
+body.f2w-main-page>header .f2w-nav-link,body.f2w-main-page>header .f2w-nav-button{font-size:9px!important;padding-left:5px!important;padding-right:5px!important}
+}
+body.f2w-main-page>header *{transition-property:color,background-color,border-color,box-shadow,opacity!important}
+
+body.f2w-main-page>header .f2w-action-cluster>button,
+body.f2w-main-page>header .f2w-action-cluster>a,
+body.f2w-main-page>header #staff-control-nav,
+body.f2w-main-page>header .chat-button{
+  min-width:0!important;max-width:100%!important;
+  padding-left:8px!important;padding-right:8px!important;
+  white-space:nowrap!important;overflow:hidden!important;
+  text-overflow:clip!important;box-sizing:border-box!important
+}
+body.f2w-main-page>header .chat-button{font-size:10px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding-left:10px!important;padding-right:10px!important;white-space:nowrap!important;overflow:hidden!important;box-sizing:border-box!important}
+body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-spacing:-.01em!important}
+/* f2w-force-save:header-button-fit-inline-v35:1788217735 */
+/* f2w-force-save:header-gorilla-lock-v30:1788216738 */
+</style>
+
+
+<style id="f2w-legal-back-v125-css">
+.f2w-legal-back-v125{position:fixed;left:18px;bottom:18px;z-index:9999;display:inline-flex;align-items:center;gap:8px;padding:10px 13px;border:1px solid #30485f;border-radius:10px;background:#071522;color:#fff;text-decoration:none;font:800 12px Poppins,sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.f2w-legal-back-v125:hover{border-color:#e50914}
+</style>
+
+  <link rel="stylesheet" href="/v145-sitewide-fixes.css?v=145">
+  <link rel="stylesheet" href="/v146-live-ops.css?v=159">
+  <link rel="stylesheet" href="/v154-global-ui.css?v=159">
+  <script src="/v154-global-ui.js?v=159" defer></script>
+<link rel="stylesheet" href="/v165-enforcement.css?v=165">
+<script src="/v160-bootstrap.js?v=205-live-sports-sitewide"></script>
+  <link rel="stylesheet" href="/v170-sitewide-fixes.css?v=170">
+<link rel="stylesheet" href="/v176-sitewide.css?v=185-20260902-authfix"></head>
+<body>
+<main class="legal-shell">
+  <section class="legal-hero">
+    <div class="legal-kicker">OFFICIAL REQUESTS</div>
+    <h1>Law Enforcement</h1>
+    <p>This page is for law-enforcement agencies and authorised government bodies seeking information relating to Flix2Watch.</p>
+  </section>
+  <section class="legal-card"><h2>Official channel</h2><p>Requests should be sent through the Support page with “Law Enforcement Request” in the subject and must include the requesting agency, officer name, official contact details and legal authority.</p></section>
+<section class="legal-card"><h2>Scope</h2><p>Requests should identify the relevant account, username, URL, date range or other specific information. Overly broad requests may require clarification.</p></section>
+<section class="legal-card"><h2>Preservation</h2><p>A preservation request should identify the information to be preserved and the applicable period. Preservation does not guarantee that particular information exists or is retained.</p></section>
+<section class="legal-card"><h2>Emergency matters</h2><p>If there is an imminent threat to life or serious physical harm, clearly mark the request as an emergency and explain the nature of the emergency and the information sought.</p></section>
+<section class="legal-card"><h2>User notice</h2><p>Where legally permitted and appropriate, Flix2Watch may notify an affected user about a request concerning their account.</p></section>
+  <p class="legal-note">Last updated: 31 August 2026. This page describes Flix2Watch site policy and is not a substitute for professional legal advice.</p>
+</main>
+<script src="/global-header-chat-v1.js?v=183-20260902"></script>
+<!-- f2w-force-save:legal-page-v15:1788212347 -->
+ 
+<div class="account-modal" id="account-modal">
+    <div class="account-card">
+      <div class="account-header">
+        <div>
+          <div class="account-title"><i class="fa-solid fa-user"></i> Account</div>
+          <div class="account-subtitle">USERNAME + EMAIL + PASSWORD // SUPABASE AUTH</div>
+        </div>
+        <button class="chat-close" onclick="closeAccountModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="account-body">
+      <div id="account-logged-out">
+        <div class="f2w-account-brand">
+          <img src="/flix2watch-logo-red-v34.png" alt="Flix2Watch">
+          <strong>Watch. Chill. Repeat.</strong>
+          <span>Log in or create an account to unlock playback.</span>
+          <div class="v17-free-note">
+            <strong><i class="fa-solid fa-circle-check"></i> Free to use after sign-in</strong>
+            <span>Flix2Watch does not require a subscription or payment. Accounts help reduce automated abuse and scraping, and let us apply account-level moderation when needed.</span>
+          </div>
+        </div>
+        <div class="account-tabs">
+          <button class="account-tab active" id="account-login-tab" onclick="showAccountMode('login')">Log In</button>
+          <button class="account-tab" id="account-signup-tab" onclick="showAccountMode('signup')">Create Account</button>
+        </div>
+
+        <div id="account-username-wrap" style="display:none;">
+          <label class="account-label">USERNAME</label>
+          <input class="account-input" id="account-username" pattern="[A-Za-z0-9]+" inputmode="text" title="Use only normal English letters A-Z and numbers 0-9." maxlength="30" autocomplete="username" placeholder="Choose your username...">
+          <div class="username-rule-note">
+            Normal English letters A-Z and numbers 0-9 only. No spaces, dashes, underscores, symbols or stylized Unicode letters.
+          </div>
+        </div>
+
+        <label class="account-label" id="account-email-label">USERNAME OR EMAIL</label>
+        <input class="account-input" id="account-email" type="text" autocomplete="username" placeholder="Username or email">
+
+        <label class="account-label">PASSWORD</label>
+        <input class="account-input" id="account-password" type="password" autocomplete="current-password" placeholder="Password">
+
+        <div id="account-confirm-wrap" style="display:none;">
+          <label class="account-label">CONFIRM PASSWORD</label>
+          <input class="account-input" id="account-confirm" type="password" autocomplete="new-password" placeholder="Repeat password">
+        </div>
+
+        <button class="account-primary" id="account-submit" onclick="submitAccountAuth()">Log In</button>
+
+        <div class="f2w-oauth-block">
+          <div class="f2w-oauth-divider"><span>or continue with</span></div>
+          <div class="f2w-oauth-grid">
+            <button class="f2w-oauth-btn google" type="button" onclick="signInWithOAuthProvider('google')">
+              <i class="fa-brands fa-google"></i> <span class="f2w-oauth-label">Sign in with Google</span>
+            </button>
+            <button class="f2w-oauth-btn discord" type="button" onclick="signInWithOAuthProvider('discord')">
+              <i class="fa-brands fa-discord"></i> <span class="f2w-oauth-label">Sign in with Discord</span>
+            </button>
+          </div>
+          <div class="f2w-oauth-note">Works for both Login and Create Account. If this is your first time, Flix2Watch creates your account and profile automatically.</div>
+        </div>
+        
+      </div>
+
+      <div id="account-logged-in" style="display:none;">
+        <div class="account-user-box">
+          <div class="account-avatar"><i class="fa-solid fa-user"></i></div>
+          <div>
+            
+            
+            <div class="account-user-email" id="account-user-email">Signed-in user</div>
+            <div class="account-user-username" id="account-user-username">@username</div>
+            <div class="account-role" id="account-user-role">MEMBER</div>
+            <div class="account-owner-note" id="account-owner-note" style="display:none;"><i class="fa-solid fa-crown"></i> WEBSITE OWNER</div>
+          </div>
+        </div>
+
+        <div class="account-warning-box" id="account-warning-box" hidden>
+          <strong><i class="fa-solid fa-triangle-exclamation"></i> ACCOUNT WARNINGS</strong>
+          
+        </div>
+
+        <div class="owner-chat-auth" id="owner-chat-auth">
+          <label class="account-label">OWNER CHAT ACCESS</label>
+          <div class="owner-chat-auth-row">
+            <input
+              class="account-input"
+              id="owner-chat-password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Owner chat password"
+            >
+            <button class="owner-chat-auth-btn" id="owner-chat-auth-btn" onclick="activateOwnerChat()">Activate</button>
+          </div>
+          
+        </div>
+
+
+
+        <div class="account-username-change" id="account-username-change-box">
+          <div class="account-username-change-head">
+            <div>
+              <strong><i class="fa-solid fa-at"></i> CHANGE USERNAME</strong>
+              <span>You can change it whenever you want.</span>
+            </div>
+          </div>
+          <div class="account-username-change-row">
+            <input
+              class="account-input"
+              id="account-change-username"
+              type="text"
+              inputmode="text"
+              pattern="[A-Za-z0-9]+"
+              minlength="2"
+              maxlength="30"
+              autocomplete="off"
+              placeholder="New username"
+            >
+            <button class="account-secondary account-change-username-btn" type="button" onclick="changeFlix2WatchUsername()">
+              Update Username
+            </button>
+          </div>
+          <div class="account-username-change-note">
+            2–30 English letters or numbers only. Your old usernames stay reserved to your account, and bans, mutes, warnings and Staff permissions follow your account automatically.
+          </div>
+          
+        </div>
+<button class="account-secondary" id="account-support-btn" hidden onclick="window.location.href='/support/'"><i class="fa-solid fa-life-ring"></i> Support</button>
+        <button class="account-secondary" id="account-staff-control" type="button" hidden style="display:none!important" aria-disabled="true" tabindex="-1"><i class="fa-solid fa-shield-halved"></i> Staff Control Center</button>
+        <button class="account-secondary" onclick="signOutAccount()">Log Out</button>
+        
+      </div>
+      </div>
+    </div>
+  </div>
+
+
+<style id="f2w-auth-hardfix-v58-css">
+#account-modal.f2w-auth-hard-open-v58 {
+  display:flex!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483600!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  background:rgba(0,0,0,.84)!important;
+}
+#account-modal.f2w-auth-hard-open-v58 .account-card {
+  width:min(520px,calc(100vw - 28px))!important;
+  max-width:520px!important;
+  max-height:calc(100dvh - 36px)!important;
+  overflow:auto!important;
+}
+@media(max-width:600px){
+  #account-modal.f2w-auth-hard-open-v58 {
+    padding:12px!important;
+  }
+  #account-modal.f2w-auth-hard-open-v58 .account-card {
+    width:min(94vw,480px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+}
+/* f2w-force-save:auth-hardfix-css-v58:1788221340 */
+</style>
+
+
+<!-- f2w-auth-modal-lock-v60 removed by v190: superseded by canonical site-wide controller -->
+<style id="f2w-sitewide-shell-v67">
+/* ============================================================
+   F2W v67 — ONE SITE-WIDE HEADER + ONE AUTH POPUP
+   ============================================================ */
+
+/* ---------- Header: identical geometry on every desktop page ---------- */
+@media (min-width:1181px) {
+  body.f2w-main-page > header {
+    position:sticky!important;
+    top:0!important;
+    z-index:2147482000!important;
+    display:flex!important;
+    align-items:center!important;
+    min-height:74px!important;
+    height:74px!important;
+    padding:0 14px!important;
+    gap:10px!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+    translate:none!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    flex:0 0 126px!important;
+    width:126px!important;
+    min-width:126px!important;
+    max-width:126px!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    flex:0 0 auto!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    height:42px!important;
+    white-space:nowrap!important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    flex:1 1 440px!important;
+    min-width:300px!important;
+    max-width:560px!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    height:40px!important;
+    margin-left:auto!important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container {
+    width:100%!important;
+    min-width:0!important;
+    height:40px!important;
+    position:relative!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    flex:0 0 auto!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:6px!important;
+    min-height:40px!important;
+    height:40px!important;
+    margin-left:8px!important;
+    transform:none!important;
+    translate:none!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > button,
+  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap,
+  body.f2w-main-page > header .f2w-action-cluster > .v17-notification-wrap > button {
+    min-height:40px!important;
+    height:40px!important;
+    margin:0!important;
+    transform:none!important;
+    translate:none!important;
+    white-space:nowrap!important;
+    box-sizing:border-box!important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    min-width:112px!important;
+    padding:0 14px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+  }
+}
+
+/* ---------- Auth modal: same popup on EVERY page ---------- */
+html.f2w-auth-v67-open,
+body.f2w-auth-v67-open {
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+
+#account-modal.f2w-auth-v67 {
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483646!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:18px!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  transform:none!important;
+  translate:none!important;
+  filter:none!important;
+}
+
+#account-modal.f2w-auth-v67.open {
+  display:flex!important;
+}
+
+#account-modal.f2w-auth-v67 .account-card {
+  position:relative!important;
+  z-index:2!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  width:min(520px,calc(100vw - 36px))!important;
+  max-width:520px!important;
+  min-width:0!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:auto!important;
+  box-sizing:border-box!important;
+  border:1px solid rgba(255,61,78,.42)!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#0b1826,#07121e)!important;
+  box-shadow:0 30px 100px rgba(0,0,0,.78),0 0 34px rgba(229,9,20,.12)!important;
+  transform:none!important;
+  translate:none!important;
+}
+
+#account-modal.f2w-auth-v67 .account-header {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  min-height:66px!important;
+  padding:16px 18px!important;
+  border-bottom:1px solid #23394f!important;
+  background:#081522!important;
+}
+
+#account-modal.f2w-auth-v67 .account-title {
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  margin:0!important;
+  color:#fff!important;
+  font-size:1.05rem!important;
+  font-weight:900!important;
+  line-height:1.1!important;
+}
+
+#account-modal.f2w-auth-v67 .account-subtitle {
+  margin-top:3px!important;
+  color:#71879d!important;
+  font-size:.62rem!important;
+}
+
+#account-modal.f2w-auth-v67 .chat-close,
+#account-modal.f2w-auth-v67 .account-close {
+  position:static!important;
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  padding:0!important;
+  margin:0!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid transparent!important;
+  border-radius:9px!important;
+  background:transparent!important;
+  color:#8497ad!important;
+  font-size:1rem!important;
+  line-height:1!important;
+  cursor:pointer!important;
+  transform:none!important;
+  translate:none!important;
+}
+
+#account-modal.f2w-auth-v67 .chat-close:hover,
+#account-modal.f2w-auth-v67 .account-close:hover {
+  background:#102132!important;
+  color:#fff!important;
+}
+
+#account-modal.f2w-auth-v67 .account-body {
+  padding:16px 18px 18px!important;
+}
+
+#account-modal.f2w-auth-v67 .account-tabs {
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:5px!important;
+  margin:0 0 14px!important;
+  padding:4px!important;
+  border:1px solid #28425b!important;
+  border-radius:11px!important;
+  background:#071522!important;
+}
+
+#account-modal.f2w-auth-v67 .account-tab {
+  min-height:40px!important;
+  padding:0 10px!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  color:#8ea0b5!important;
+  font-size:.76rem!important;
+  font-weight:800!important;
+  cursor:pointer!important;
+}
+
+#account-modal.f2w-auth-v67 .account-tab.active {
+  background:#e50914!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+
+#account-modal.f2w-auth-v67 .account-label {
+  display:block!important;
+  margin:10px 0 6px!important;
+  color:#91a3b7!important;
+  font-size:.63rem!important;
+  font-weight:800!important;
+}
+
+#account-modal.f2w-auth-v67 .account-input {
+  width:100%!important;
+  min-height:42px!important;
+  padding:0 12px!important;
+  border:1px solid #29455f!important;
+  border-radius:9px!important;
+  background:#061421!important;
+  color:#fff!important;
+  font-size:.82rem!important;
+  box-sizing:border-box!important;
+  outline:none!important;
+}
+
+#account-modal.f2w-auth-v67 .account-input:focus {
+  border-color:#e50914!important;
+  box-shadow:0 0 0 2px rgba(229,9,20,.12)!important;
+}
+
+#account-modal.f2w-auth-v67 .account-primary {
+  width:100%!important;
+  min-height:42px!important;
+  margin-top:14px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:#e50914!important;
+  color:#fff!important;
+  font-size:.8rem!important;
+  font-weight:900!important;
+}
+
+#account-modal.f2w-auth-v67 .f2w-oauth-block {
+  margin-top:14px!important;
+}
+
+@media(max-width:600px) {
+  #account-modal.f2w-auth-v67 {
+    padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))!important;
+  }
+  #account-modal.f2w-auth-v67 .account-card {
+    width:min(94vw,480px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+    border-radius:15px!important;
+  }
+}
+
+/* f2w-force-save:sitewide-shell-css-v67:1788222795 */
+</style>
+
+<!-- f2w-sitewide-shell-v67-js removed by v190: superseded by canonical site-wide controller -->
+<style id="f2w-header-hardlock-v69">
+/* ============================================================
+   F2W v69 — TRUE SITE-WIDE HEADER HARD LOCK
+   One geometry model on every page. No page-local header CSS wins.
+   ============================================================ */
+
+/* ---------- DESKTOP / WIDE ---------- */
+@media (min-width:1601px) {
+  body.f2w-main-page > header {
+    position:sticky!important;
+    top:0!important;
+    z-index:2147482000!important;
+    width:100%!important;
+    min-height:74px!important;
+    height:74px!important;
+    padding:0 12px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    position:static!important;
+    flex:0 0 126px!important;
+    width:126px!important;
+    min-width:126px!important;
+    max-width:126px!important;
+    height:52px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header > .logo .logo-image {
+    width:126px!important;
+    max-width:126px!important;
+    max-height:48px!important;
+    object-fit:contain!important;
+  }
+
+  body.f2w-main-page > header > .f2w-mobile-nav-toggle {
+    display:none!important;
+  }
+
+  body.f2w-main-page > header > .header-tools {
+    position:static!important;
+    flex:1 1 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    height:44px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:max-content minmax(340px,460px) 782px!important;
+    grid-template-rows:44px!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    column-gap:10px!important;
+    overflow:visible!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    grid-column:1!important;
+    grid-row:1!important;
+    position:static!important;
+    width:max-content!important;
+    min-width:0!important;
+    height:44px!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:2px!important;
+    overflow:visible!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav > * {
+    flex:0 0 auto!important;
+  }
+
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button {
+    min-height:38px!important;
+    height:38px!important;
+    padding:0 7px!important;
+    margin:0!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    white-space:nowrap!important;
+    font-size:10px!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    grid-column:2!important;
+    grid-row:1!important;
+    position:static!important;
+    width:100%!important;
+    min-width:340px!important;
+    max-width:460px!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:8px!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container {
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    overflow:visible!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .search-container > i,
+  body.f2w-main-page > header .user-search-container > i {
+    position:absolute!important;
+    left:11px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    width:13px!important;
+    min-width:13px!important;
+    z-index:3!important;
+    pointer-events:none!important;
+  }
+
+  body.f2w-main-page > header #movie-search,
+  body.f2w-main-page > header #user-search {
+    position:static!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0 38px 0 34px!important;
+    box-sizing:border-box!important;
+    font-size:10px!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .user-search-submit {
+    position:absolute!important;
+    right:7px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    width:28px!important;
+    min-width:28px!important;
+    max-width:28px!important;
+    height:28px!important;
+    min-height:28px!important;
+    max-height:28px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+    z-index:4!important;
+    border:0!important;
+    background:transparent!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-column:3!important;
+    grid-row:1!important;
+    position:relative!important;
+    width:782px!important;
+    min-width:782px!important;
+    max-width:782px!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:112px 92px 82px 88px 90px 126px 156px!important;
+    grid-template-rows:40px!important;
+    gap:6px!important;
+    align-items:center!important;
+    justify-content:start!important;
+    overflow:visible!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster > * {
+    position:static!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    min-height:40px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+    translate:none!important;
+  }
+
+  body.f2w-main-page > header .chat-button {
+    grid-column:1!important;
+    grid-row:1!important;
+    width:112px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    padding:0 12px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+  }
+
+  body.f2w-main-page > header #favorites-nav-btn {
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+  body.f2w-main-page > header #profile-nav-btn {
+    grid-column:3!important;
+    grid-row:1!important;
+  }
+  body.f2w-main-page > header #support-nav-btn {
+    grid-column:4!important;
+    grid-row:1!important;
+  }
+
+  /* Same physical slots when auth state changes = no jitter. */
+  body.f2w-main-page > header #account-btn,
+  body.f2w-main-page > header #header-login-btn {
+    grid-column:5!important;
+    grid-row:1!important;
+  }
+  body.f2w-main-page > header #notification-wrap,
+  body.f2w-main-page > header #header-signup-btn {
+    grid-column:6!important;
+    grid-row:1!important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    grid-column:7!important;
+    grid-row:1!important;
+  }
+
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn,
+  body.f2w-main-page > header #notification-btn,
+  body.f2w-main-page > header #staff-control-nav {
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:40px!important;
+    min-height:40px!important;
+    padding:0 8px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:6px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    font-size:10px!important;
+    box-sizing:border-box!important;
+  }
+
+  body.f2w-main-page > header #notification-wrap {
+    width:126px!important;
+    min-width:126px!important;
+    max-width:126px!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header #notification-btn {
+    width:126px!important;
+  }
+
+  body.f2w-main-page > header #staff-control-nav {
+    width:156px!important;
+  }
+
+  /* Preserve auth/permission visibility; only geometry is forced. */
+  body.f2w-main-page > header [hidden] {
+    display:none!important;
+  }
+
+  body.f2w-main-page.f2w-authenticated > header #header-login-btn,
+  body.f2w-main-page.f2w-authenticated > header #header-signup-btn {
+    display:none!important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #account-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #notification-wrap,
+  body.f2w-main-page:not(.f2w-authenticated) > header #staff-control-nav {
+    display:none!important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn {
+    display:flex!important;
+  }
+}
+
+/* ---------- NORMAL DESKTOP / LAPTOP ---------- */
+@media (min-width:1181px) and (max-width:1600px) {
+  body.f2w-main-page > header {
+    position:sticky!important;
+    top:0!important;
+    z-index:2147482000!important;
+    width:100%!important;
+    min-height:68px!important;
+    height:68px!important;
+    padding:0 8px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:6px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header > .logo {
+    flex:0 0 104px!important;
+    width:104px!important;
+    min-width:104px!important;
+    max-width:104px!important;
+  }
+
+  body.f2w-main-page > header > .logo .logo-image {
+    width:104px!important;
+    max-width:104px!important;
+  }
+
+  body.f2w-main-page > header > .f2w-mobile-nav-toggle {
+    display:none!important;
+  }
+
+  body.f2w-main-page > header > .header-tools {
+    position:static!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    width:auto!important;
+    height:42px!important;
+    display:grid!important;
+    grid-template-columns:max-content minmax(220px,300px) 576px!important;
+    grid-template-rows:42px!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:6px!important;
+    overflow:visible!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-primary-nav {
+    grid-column:1!important;
+    grid-row:1!important;
+    position:static!important;
+    width:max-content!important;
+    height:42px!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    gap:0!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button {
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 5px!important;
+    font-size:9px!important;
+    gap:4px!important;
+    white-space:nowrap!important;
+  }
+
+  body.f2w-main-page > header .f2w-search-pair {
+    grid-column:2!important;
+    grid-row:1!important;
+    position:static!important;
+    width:100%!important;
+    min-width:220px!important;
+    max-width:300px!important;
+    height:38px!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+    margin:0!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container {
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    height:38px!important;
+    display:flex!important;
+    align-items:center!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header #movie-search,
+  body.f2w-main-page > header #user-search {
+    width:100%!important;
+    min-width:0!important;
+    height:38px!important;
+    padding:0 32px!important;
+    font-size:9px!important;
+    box-sizing:border-box!important;
+  }
+
+  body.f2w-main-page > header .search-container > i,
+  body.f2w-main-page > header .user-search-container > i {
+    position:absolute!important;
+    left:9px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    z-index:3!important;
+  }
+
+  body.f2w-main-page > header .user-search-submit {
+    position:absolute!important;
+    right:5px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    width:25px!important;
+    height:25px!important;
+    min-width:25px!important;
+    min-height:25px!important;
+    max-width:25px!important;
+    max-height:25px!important;
+    padding:0!important;
+    margin:0!important;
+    display:grid!important;
+    place-items:center!important;
+    background:transparent!important;
+    border:0!important;
+    z-index:4!important;
+  }
+
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-column:3!important;
+    grid-row:1!important;
+    position:relative!important;
+    width:576px!important;
+    min-width:576px!important;
+    max-width:576px!important;
+    height:38px!important;
+    display:grid!important;
+    grid-template-columns:90px 72px 66px 68px 72px 92px 116px!important;
+    grid-template-rows:38px!important;
+    gap:4px!important;
+    margin:0!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header .chat-button {grid-column:1!important}
+  body.f2w-main-page > header #favorites-nav-btn {grid-column:2!important}
+  body.f2w-main-page > header #profile-nav-btn {grid-column:3!important}
+  body.f2w-main-page > header #support-nav-btn {grid-column:4!important}
+  body.f2w-main-page > header #account-btn,
+  body.f2w-main-page > header #header-login-btn {grid-column:5!important}
+  body.f2w-main-page > header #notification-wrap,
+  body.f2w-main-page > header #header-signup-btn {grid-column:6!important}
+  body.f2w-main-page > header #staff-control-nav {grid-column:7!important}
+
+  body.f2w-main-page > header .f2w-action-cluster > *,
+  body.f2w-main-page > header .tool-btn,
+  body.f2w-main-page > header .f2w-auth-top-btn,
+  body.f2w-main-page > header #notification-btn,
+  body.f2w-main-page > header #staff-control-nav {
+    min-width:0!important;
+    max-width:100%!important;
+    width:100%!important;
+    height:38px!important;
+    min-height:38px!important;
+    margin:0!important;
+    padding:0 5px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    font-size:9px!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+  }
+
+  body.f2w-main-page > header #notification-wrap {
+    width:92px!important;
+    min-width:92px!important;
+    max-width:92px!important;
+    overflow:visible!important;
+  }
+
+  body.f2w-main-page > header [hidden] {
+    display:none!important;
+  }
+
+  body.f2w-main-page.f2w-authenticated > header #header-login-btn,
+  body.f2w-main-page.f2w-authenticated > header #header-signup-btn {
+    display:none!important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #account-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #notification-wrap,
+  body.f2w-main-page:not(.f2w-authenticated) > header #staff-control-nav {
+    display:none!important;
+  }
+
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-login-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #header-signup-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #favorites-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #profile-nav-btn,
+  body.f2w-main-page:not(.f2w-authenticated) > header #support-nav-btn {
+    display:flex!important;
+  }
+}
+
+/* Mobile/tablet keeps the established overlay menu. */
+@media (max-width:1180px) {
+  body.f2w-main-page > header {
+    transform:none!important;
+    translate:none!important;
+  }
+}
+
+/* f2w-force-save:header-hardlock-v69:1788223204 */
+</style>
+
+
+<style id="f2w-account-canonical-v70">
+/* F2W v70 — canonical Account/Auth card on every page */
+#account-modal.f2w-auth-v67,
+#account-modal.f2w-auth-modal-open-v60,
+#account-modal.open {
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483646!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  background:rgba(0,0,0,.84)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  overflow:hidden!important;
+}
+
+#account-modal.open {
+  display:flex!important;
+}
+
+#account-modal .account-card {
+  position:relative!important;
+  width:min(540px,calc(100vw - 36px))!important;
+  max-width:540px!important;
+  max-height:calc(100dvh - 36px)!important;
+  margin:0!important;
+  border:1px solid rgba(255,64,82,.38)!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#0b1826,#07121e)!important;
+  box-shadow:0 30px 100px rgba(0,0,0,.78),0 0 32px rgba(229,9,20,.10)!important;
+  overflow:auto!important;
+  transform:none!important;
+}
+
+#account-modal .account-header {
+  min-height:66px!important;
+  padding:16px 18px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  border-bottom:1px solid #23394f!important;
+  background:#081522!important;
+}
+
+#account-modal .account-title {
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  color:#fff!important;
+  font-size:1.05rem!important;
+  font-weight:900!important;
+}
+
+#account-modal .account-body {
+  padding:16px 18px 18px!important;
+}
+
+#account-modal .account-user-box {
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  padding:12px!important;
+  border:1px solid #24394f!important;
+  border-radius:11px!important;
+  background:#0b1927!important;
+}
+
+#account-modal .account-user-avatar {
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:10px!important;
+  background:#142536!important;
+  color:#ff2637!important;
+}
+
+#account-modal .account-user-email {
+  color:#fff!important;
+  font-size:.78rem!important;
+  font-weight:850!important;
+}
+
+#account-modal .account-user-username {
+  margin-top:2px!important;
+  color:#a8b8c9!important;
+  font-size:.71rem!important;
+  font-weight:750!important;
+}
+
+#account-modal .account-role {
+  margin-top:3px!important;
+  color:#ffbf3f!important;
+  font-size:.60rem!important;
+  font-weight:900!important;
+  letter-spacing:.07em!important;
+}
+
+#account-modal .account-username-change {
+  margin:13px 0!important;
+  padding:12px!important;
+  border:1px solid #24394f!important;
+  border-radius:11px!important;
+  background:#091725!important;
+}
+
+#account-modal .account-username-change-row {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:8px!important;
+}
+
+#account-modal .account-input {
+  min-height:42px!important;
+  width:100%!important;
+  padding:0 12px!important;
+  border:1px solid #29455f!important;
+  border-radius:9px!important;
+  background:#061421!important;
+  color:#fff!important;
+  box-sizing:border-box!important;
+}
+
+#account-modal .account-secondary,
+#account-modal .account-primary {
+  min-height:40px!important;
+  border-radius:9px!important;
+  font-size:.76rem!important;
+  font-weight:850!important;
+}
+
+#account-modal #account-support-btn,
+#account-modal #account-staff-control {
+  width:100%!important;
+  margin-top:8px!important;
+}
+
+@media(max-width:600px){
+  #account-modal {
+    padding:12px!important;
+  }
+  #account-modal .account-card {
+    width:min(94vw,500px)!important;
+    max-width:94vw!important;
+    max-height:calc(100dvh - 24px)!important;
+  }
+  #account-modal .account-username-change-row {
+    grid-template-columns:1fr!important;
+  }
+}
+/* f2w-force-save:account-canonical-css-v70:1788223711 */
+</style>
+
+
+<style id="f2w-header-spacing-v70">
+@media (min-width:1181px) and (max-width:1600px) {
+  body.f2w-main-page > header > .header-tools {
+    grid-template-columns:max-content minmax(220px,300px) 612px!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster {
+    width:612px!important;
+    min-width:612px!important;
+    max-width:612px!important;
+    grid-template-columns:90px 72px 66px 68px 72px 92px 116px!important;
+    gap:6px!important;
+  }
+  body.f2w-main-page > header #notification-wrap {
+    margin-right:0!important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    margin-left:0!important;
+  }
+}
+@media (min-width:1601px) {
+  body.f2w-main-page > header .f2w-action-cluster {
+    gap:8px!important;
+    width:794px!important;
+    min-width:794px!important;
+    max-width:794px!important;
+  }
+  body.f2w-main-page > header > .header-tools {
+    grid-template-columns:max-content minmax(340px,460px) 794px!important;
+  }
+}
+/* f2w-force-save:header-spacing-v70:1788223711 */
+</style>
+
+<a class="f2w-legal-back-v125" href="/home/"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+<script src="/page-transitions-v135.js?v=183-20260902" defer></script>
+<script src="/player-warm-v142.js?v=142" defer></script>
+  <script src="/v145-sitewide-fixes.js?v=145" defer></script>
+  <script src="/v147-account-logout.js?v=183-20260902"></script>
+  <script src="/v149-account-route.js?v=153"></script>
+
+<!-- F2W v159 core recovery -->
+<link rel="stylesheet" href="/v159-core.css?v=159">
+<script src="/v159-core.js?v=190-20260902-auth-authority" defer></script>
+<script src="/v165-enforcement.js?v=183-20260902"></script>
+  <script src="/v170-sitewide-fixes.js?v=170" defer></script>
+<script src="/v172-sitewide.js?v=172"></script>
+<link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=190-20260902-auth-authority"></script>
+<script src="/v176-sitewide.js?v=205-live-sports-sitewide" defer></script></body>
+</html>
+<!-- f2w-force-save:chat-route-cache-v16:1788212934:law-enforcement/index.html -->
+<!-- f2w-force-save:sitewide-v17:1788213599:law-enforcement/index.html -->
+<!-- f2w-force-save:sitewide-header-v18:1788213893:law-enforcement/index.html -->
+<!-- f2w-force-save:sitewide-header-repair-v19:1788214305:law-enforcement/index.html -->
+<!-- f2w-force-save:account-favorites-cache-v20:1788214488:law-enforcement/index.html -->
+<!-- f2w-force-save:header-static-cache-v21:1788214596:law-enforcement/index.html -->
+<!-- f2w-force-save:final-assets-v22:1788214990:law-enforcement/index.html -->
+<!-- f2w-force-save:chat-green-dot-v23:1788215130:law-enforcement/index.html -->
+<!-- f2w-force-save:chat-dot-js-cache-v23:178821-v23-dot-guard:law-enforcement/index.html -->
+<!-- f2w-force-save:critical-header-v24:1788215534:law-enforcement/index.html -->
+<!-- f2w-force-save:instant-profile-route-v24:1788215534:law-enforcement/index.html -->
+<!-- f2w-force-save:performance-cache-v24:1788215534:law-enforcement/index.html -->
+<!-- f2w-force-save:role-name-cache-v25:1788215879:law-enforcement/index.html -->
+<!-- f2w-force-save:sitewide-fade-page-v26:1788216027:law-enforcement/index.html -->
+<!-- f2w-force-save:fade-js-cache-v26:1788216027:law-enforcement/index.html -->
+<!-- f2w-force-save:v27-cache:1788216279:law-enforcement/index.html -->
+<!-- f2w-force-save:v30-page:1788216738:law-enforcement/index.html -->
+<!-- f2w-force-save:v31-cache:1788217048:law-enforcement/index.html -->
+<!-- f2w-force-save:v32-cache:1788217362:law-enforcement/index.html -->
+<!-- f2w-force-save:v33-performance-cache:1788217440:law-enforcement/index.html -->
+<!-- f2w-force-save:v34-performance:1788217565:law-enforcement/index.html -->
+<!-- f2w-force-save:header-button-fit-v35:1788217735:law-enforcement/index.html -->
+<!-- f2w-force-save:footer-cache-v36:1788217803:law-enforcement/index.html -->
+<!-- f2w-force-save:chat-width-v38:1788218284:law-enforcement/index.html -->
+<!-- f2w-force-save:v39-cache:1788218599:law-enforcement/index.html -->
+<!-- f2w-force-save:v40-cache:1788218691:law-enforcement/index.html -->
+<!-- f2w-force-save:v41-arrow-cache:1788219230:law-enforcement/index.html -->
+<!-- f2w-force-save:chat-button-final-width-v42:1788219270:law-enforcement/index.html -->
+<!-- f2w-force-save:v43-watch-auth-cache:1788219527:law-enforcement/index.html -->
+<!-- f2w-force-save:v44-header-cache:1788219651:law-enforcement/index.html -->
+<!-- f2w-force-save:v50-cache:1788220357:law-enforcement/index.html -->
+<!-- f2w-force-save:v52-profile-edit-cache:1788220545:law-enforcement/index.html -->
+<!-- f2w-force-save:account-details-cache-v54:1788220759:law-enforcement/index.html -->
+<!-- f2w-force-save:v56-auth-cache:1788221054:law-enforcement/index.html -->
+<!-- f2w-force-save:v57-user-search-cache:1788221142:law-enforcement/index.html -->
+<!-- f2w-force-save:v58-auth-hardfix:1788221340:law-enforcement/index.html -->
+<!-- f2w-force-save:v58-cache:1788221340:law-enforcement/index.html -->
+<!-- f2w-force-save:v59-cache:1788221542:law-enforcement/index.html -->
+<!-- f2w-force-save:auth-modal-lock-v60:1788221799:law-enforcement/index.html -->
+<!-- f2w-force-save:v60-auth-cache:1788221799:law-enforcement/index.html -->
+<!-- f2w-force-save:text-input-cache-v62:1788221977:law-enforcement/index.html -->
+<!-- f2w-force-save:v63-search-isolation:1788222324:law-enforcement/index.html -->
+<!-- f2w-force-save:v64-cache:1788222358:law-enforcement/index.html -->
+<!-- f2w-force-save:v65-search-cache:1788222474:law-enforcement/index.html -->
+<!-- f2w-force-save:v66-arrow-cache:1788222669:law-enforcement/index.html -->
+<!-- f2w-force-save:v67-page:1788222795:law-enforcement/index.html -->
+<!-- f2w-force-save:v69-header:1788223204:law-enforcement/index.html -->
+<!-- f2w-force-save:v70-cache:1788223711:law-enforcement/index.html -->
+<!-- f2w-force-save:canonical-account-v70:law-enforcement/index.html -->
+<!-- f2w-force-save:auth-button-icons-v72:1788223976:law-enforcement/index.html -->
+<!-- f2w-force-save:v72-cache:1788223976:law-enforcement/index.html -->
+<!-- f2w-force-save:footer-privacy-v74:1788224239:law-enforcement/index.html -->
+<!-- f2w-force-save:v76-cache:1788224745:law-enforcement/index.html -->
+<!-- f2w-force-save:v77-role-particles:1788224897:law-enforcement/index.html -->
+<!-- f2w-force-save:v78-cache:1788224965:law-enforcement/index.html -->
+<!-- f2w-force-save:v79-cache:1788225124:law-enforcement/index.html -->
+<!-- f2w-force-save:v80-cache:1788225203:law-enforcement/index.html -->
+<!-- f2w-force-save:v81-cache:1788225523:law-enforcement/index.html -->
+<!-- f2w-force-save:v82-cache:1788225709:law-enforcement/index.html -->
+<!-- f2w-force-save:v83-cache:1788226300:law-enforcement/index.html -->
+<!-- f2w-force-save:v84-cache:1788226452:law-enforcement/index.html -->
+<!-- f2w-force-save:v86-cache:1788226708:law-enforcement/index.html -->
+<!-- f2w-force-save:v87-cache:1788227242:law-enforcement/index.html -->
+<!-- f2w-force-save:v88-cache:1788227370:law-enforcement/index.html -->
+<!-- f2w-force-save:v89-cache:1788227613:law-enforcement/index.html -->
+<!-- f2w-force-save:v90-cache:1788227716:law-enforcement/index.html -->
+<!-- f2w-force-save:v91-cache:1788228094:law-enforcement/index.html -->
+<!-- f2w-force-save:v92-cache:1788228465:law-enforcement/index.html -->
+<!-- f2w-force-save:v93-cache:1788229371:law-enforcement/index.html -->
+<!-- f2w-force-save:v94-links:1788280907:law-enforcement/index.html -->
+<!-- f2w-force-save:v97-cache:1788281880:law-enforcement/index.html -->
+<!-- f2w-force-save:v98-cache:1788282202:law-enforcement/index.html -->
+<!-- f2w-force-save:native-transition-off-v100:1788283039:law-enforcement/index.html -->
+<!-- f2w-force-save:v100-cache:1788283039:law-enforcement/index.html -->
+<!-- f2w-force-save:v103-cache:1788289090:law-enforcement/index.html -->
+<!-- f2w-force-save:v104-cache:1788289281:law-enforcement/index.html -->
+<!-- f2w-force-save:v105-cache:1788289468:law-enforcement/index.html -->
+<!-- f2w-force-save:v106-cache:1788289648:law-enforcement/index.html -->
+<!-- f2w-force-save:v107-cache:1788289786:law-enforcement/index.html -->
+<!-- f2w-force-save:v108-cache:1788290088:law-enforcement/index.html -->
+<!-- f2w-force-save:v109-cache:1788290239:law-enforcement/index.html -->
+<!-- f2w-force-save:v110-cache:1788290464:law-enforcement/index.html -->
+<!-- f2w-force-save:v111-cache:1788290601:law-enforcement/index.html -->
+<!-- f2w-force-save:v112-cache:1788290771:law-enforcement/index.html -->
+<!-- f2w-force-save:v113-cache:1788290934:law-enforcement/index.html -->
+<!-- f2w-force-save:v114-cache:1788291301:law-enforcement/index.html -->
+<!-- f2w-force-save:v115-cache:1788295289:law-enforcement/index.html -->
+<!-- f2w-force-save:v116-cache:1788295578:law-enforcement/index.html -->
+<!-- f2w-force-save:v117-cache:1788295984:law-enforcement/index.html -->
+<!-- f2w-force-save:v118-cache:1788296424:law-enforcement/index.html -->
+<!-- f2w-force-save:v119-cache:1788296897:law-enforcement/index.html -->
+<!-- f2w-force-save:v120-cache:1788297036:law-enforcement/index.html -->
+<!-- f2w-force-save:v121-cache:1788297958:law-enforcement/index.html -->
+<!-- f2w-force-save:v123-cache:1788298849:law-enforcement/index.html -->
+<!-- f2w-force-save:v124-cache:1788299294:law-enforcement/index.html -->
+<!-- f2w-force-save:v125-cache:1788300576:law-enforcement/index.html -->
+ 
+<!-- f2w-force-save:v183-sitewide-cache-bust:20260902 -->
+
+<!-- f2w-force-save:v185-auth-cache-bust:20260902 -->
+
+<!-- f2w-force-save:v190-auth-controller-cleanup:20260902 -->
+
+<!-- f2w-force-save:seo-social-v214:/law-enforcement/ -->
+
+<!-- f2w-force-save:v250-discord-every-site-page:20260904 -->

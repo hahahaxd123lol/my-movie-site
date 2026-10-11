@@ -1,0 +1,34 @@
+FLIX2WATCH v129 — MEMBER AGE + CHAT/DM FIX
+
+APPLY ORDER
+1. If you have not already run site-realtime-dm-performance-v126.sql, run that first.
+2. Run member-age-chat-dm-v129.sql in the Supabase SQL Editor.
+3. Deploy this entire v129 site build.
+4. Hard refresh/reopen once so the v129 service-worker cache replaces older JS.
+
+WHAT CHANGED
+- Member age now uses the real auth.users.created_at account creation timestamp.
+- Existing profiles.created_at values are backfilled to the real account creation date.
+- New/updated profile membership timestamps are protected by a DB trigger.
+- Member-age display uses calendar years/months/days instead of the old rough 30.4375-day month calculation.
+- Member age updates locally every 30 seconds without repeatedly querying Supabase.
+- Profile Joined and Member Since displays are corrected from the same authoritative timestamp.
+- Direct-message bootstrap no longer fires overlapping refreshDirectMessages() calls every 100ms.
+- DM conversation opening removes a duplicate conversation-list RPC.
+- DM sending is optimistic: the message appears immediately while the RPC finishes.
+- Enter-to-send is bound directly to the DM input in capture mode as well as the send button.
+- DM realtime refreshes are debounced instead of recursively hammering the backend.
+- get_dm_messages_v126 only marks genuinely unread messages as viewed, preventing realtime UPDATE loops.
+- Existing Supabase client/session is reused where available instead of creating unnecessary auth clients.
+- The global chat overlay stops showing Loading chat as soon as the chat iframe itself has loaded; DM warmup can no longer block it.
+- Public chat worker requests now have an 8-second timeout instead of hanging indefinitely.
+- If a public-chat custom token expired or became stale, sending automatically rebuilds the signed-in chat identity once and retries.
+- Shared JS URLs and service-worker cache were bumped to v129 site-wide.
+
+FILES
+- member-age-chat-dm-v129.sql  <-- run in Supabase SQL Editor
+- final-v35.js                <-- DM v129 runtime
+- global-header-chat-v1.js    <-- global chat load fix
+- chat/index.html             <-- public chat + chat-route bootstrap fix
+- profile/index.html          <-- accurate member age rendering
+- sw-v34.js                   <-- v129 cache version

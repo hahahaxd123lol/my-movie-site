@@ -1,0 +1,22 @@
+Flix2Watch v133 — Featured carousel stability
+
+Changes
+- Replaced the Featured carousel setInterval with one chained 5-second timeout.
+- This prevents delayed/background callbacks from bunching together and skipping multiple titles.
+- Returning to a backgrounded tab starts a fresh 5-second countdown instead of trying to catch up.
+- Trending Featured data refreshes from TMDB every 5 minutes without jumping the visible title backwards.
+- The current title is preserved across trending-data refreshes when it is still in the top five.
+- Next backdrop is preloaded for smoother visual transitions.
+- Old catalogue compatibility code can no longer hijack/reset an already healthy Featured carousel.
+- Service-worker cache bumped to v133.
+
+Apply
+1. Deploy this build.
+2. Hard-refresh/reopen once so the v133 service-worker cache replaces v132.
+3. No Supabase SQL is required for this update.
+
+Expected behaviour
+- Featured advances exactly one title every 5 seconds while the page is visible.
+- It loops 1 -> 2 -> 3 -> 4 -> 5 -> 1 cleanly.
+- It does not rapidly skip or jump backwards due to overlapping timers.
+- Trending Featured titles refresh in the background every 5 minutes.

@@ -1,0 +1,13 @@
+Flix2Watch v172 — no @ symbols in display names
+
+- Existing profile display names are cleaned immediately.
+- Future profile writes strip @ in the database and are protected by a CHECK constraint.
+- Auth metadata display_name values are cleaned too.
+- Profile and Staff display-name editors strip @ before saving.
+- Any site-wide display-name input strips @ while typing/pasting.
+- Usernames are unchanged: handles still use @username and profile URLs remain /profile/@username.
+
+Apply:
+1. Run V172-NO-AT-DISPLAY-NAMES.sql in Supabase SQL Editor.
+2. Deploy the full v172 ZIP.
+3. Hard-refresh/reopen once.

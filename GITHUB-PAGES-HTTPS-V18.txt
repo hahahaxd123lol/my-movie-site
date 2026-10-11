@@ -1,0 +1,115 @@
+FLIX2WATCH V18 — GITHUB PAGES HTTPS FIX
+
+V18 now contains an immediate browser redirect on every HTML entry point:
+
+  http://flix2watch.com/...
+    -> https://flix2watch.com/...
+
+and:
+
+  https://www.flix2watch.com/...
+    -> https://flix2watch.com/...
+
+This is a useful fallback, but the BEST / TRUE fix is GitHub Pages HTTPS
+enforcement because that redirects at the hosting layer before the site page
+runs.
+
+============================================================
+GITHUB PAGES
+============================================================
+
+Repository:
+  hahahaxd123lol/my-movie-site
+
+1. Open GitHub.
+2. Open the repository.
+3. Settings
+4. Pages
+5. Confirm Custom domain is:
+     flix2watch.com
+6. Wait for the DNS/certificate check to succeed.
+7. Turn on:
+     Enforce HTTPS
+
+When Enforce HTTPS is available and checked, GitHub Pages transparently
+redirects HTTP requests to HTTPS.
+
+============================================================
+IF "ENFORCE HTTPS" IS DISABLED / NOT AVAILABLE
+============================================================
+
+GitHub has normally not finished issuing the TLS certificate, or the domain DNS
+is preventing certificate provisioning.
+
+For the apex/root domain, GitHub's documented A records are:
+
+  @  A  185.199.108.153
+  @  A  185.199.109.153
+  @  A  185.199.110.153
+  @  A  185.199.111.153
+
+Optional IPv6:
+
+  @  AAAA  2606:50c0:8000::153
+  @  AAAA  2606:50c0:8001::153
+  @  AAAA  2606:50c0:8002::153
+  @  AAAA  2606:50c0:8003::153
+
+For www:
+
+  www  CNAME  hahahaxd123lol.github.io
+
+The V18 CNAME file already contains:
+
+  flix2watch.com
+
+IMPORTANT:
+- Remove conflicting/extra A, AAAA, ALIAS or ANAME records for @.
+- Remove conflicting extra CNAME records for www.
+- Do not use wildcard DNS records for this GitHub Pages setup.
+- If your DNS has CAA records, allow Let's Encrypt:
+    letsencrypt.org
+
+============================================================
+RETRIGGER GITHUB'S CERTIFICATE
+============================================================
+
+If DNS is correct but GitHub still says the certificate is not ready:
+
+1. GitHub -> repository -> Settings -> Pages
+2. Remove the custom domain.
+3. Add:
+     flix2watch.com
+   again.
+4. Save it.
+5. Give GitHub time to provision the certificate.
+6. Once the certificate succeeds, enable:
+     Enforce HTTPS
+
+GitHub documents that HTTPS may take some time after custom-domain/DNS changes.
+
+============================================================
+V18 CLIENT-SIDE FALLBACK
+============================================================
+
+Every V18 HTML page includes a synchronous redirect before the normal site
+scripts/styles load.
+
+That means visitors who reach an HTTP copy that is actually served will be sent
+to the HTTPS URL immediately.
+
+However, a browser-side redirect cannot replace a valid TLS certificate.
+If https://flix2watch.com itself has no valid certificate yet, the GitHub
+Pages/DNS steps above must be fixed first.
+
+============================================================
+OPTIONAL CLOUDFLARE
+============================================================
+
+The included optional cloudflare-worker.js was also updated to:
+
+- redirect HTTP -> HTTPS at the edge
+- redirect www -> apex
+- send Strict-Transport-Security over HTTPS
+
+Only use that if flix2watch.com is actually proxied through Cloudflare.

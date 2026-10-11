@@ -1,0 +1,381 @@
+(()=>{
+'use strict';
+if(window.__f2wV160Bootstrap)return;window.__f2wV160Bootstrap=true;
+const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
+
+/* V224: low-egress site-wide presence authority.
+   - General Online presence stays completely separate from playback.
+   - Only one visible Flix2Watch tab per browser sends Supabase heartbeats.
+   - Hidden/background tabs send no periodic database traffic.
+   - 30-second heartbeat; SQL keeps a 75-second online lease. */
+window.__f2wGlobalPresenceAuthorityV210=true;
+window.__f2wGlobalPresenceAuthorityV224=true;
+
+const PRESENCE_HEARTBEAT_MS=30000;
+const PRESENCE_LEADER_RENEW_MS=10000;
+const PRESENCE_LEADER_LEASE_MS=45000;
+const PRESENCE_LEADER_KEY='f2w_presence_leader_v224';
+const PRESENCE_SESSION_KEY='f2w_presence_browser_session_v224';
+
+let presenceTimer=null;
+let presenceLeaderTimer=null;
+let presenceClient=null;
+let presenceSessionId='';
+let presenceBusy=false;
+let presenceLastSentAt=0;
+
+const presenceTabId=(()=>{
+  try{
+    let id=sessionStorage.getItem('f2w_presence_tab_v224')||'';
+    if(!id){
+      id=crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      sessionStorage.setItem('f2w_presence_tab_v224',id);
+    }
+    return id;
+  }catch{
+    return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+})();
+
+function getPresenceSessionId(){
+  if(presenceSessionId)return presenceSessionId;
+  try{
+    presenceSessionId=localStorage.getItem(PRESENCE_SESSION_KEY)||'';
+    if(!presenceSessionId){
+      presenceSessionId=crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      localStorage.setItem(PRESENCE_SESSION_KEY,presenceSessionId);
+    }
+  }catch{
+    presenceSessionId=`${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+  return presenceSessionId;
+}
+
+function readPresenceLeader(){
+  try{
+    const row=JSON.parse(localStorage.getItem(PRESENCE_LEADER_KEY)||'null');
+    return row&&row.id?row:null;
+  }catch{return null}
+}
+
+function writePresenceLeader(){
+  try{
+    localStorage.setItem(PRESENCE_LEADER_KEY,JSON.stringify({
+      id:presenceTabId,
+      expires:Date.now()+PRESENCE_LEADER_LEASE_MS
+    }));
+    return true;
+  }catch{return true}
+}
+
+function isPresenceLeader(){
+  const row=readPresenceLeader();
+  return Boolean(row&&row.id===presenceTabId&&Number(row.expires||0)>Date.now());
+}
+
+function claimPresenceLeadership(){
+  if(document.visibilityState!=='visible')return false;
+  const row=readPresenceLeader();
+  const expired=!row||Number(row.expires||0)<=Date.now();
+  if(expired||row.id===presenceTabId){
+    writePresenceLeader();
+    return true;
+  }
+  return false;
+}
+
+function releasePresenceLeadership(){
+  try{
+    const row=readPresenceLeader();
+    if(row?.id===presenceTabId)localStorage.removeItem(PRESENCE_LEADER_KEY);
+  }catch{}
+}
+
+async function touchSitePresence({force=false}={}){
+  if(presenceBusy||document.visibilityState!=='visible')return;
+  if(!claimPresenceLeadership()&&!isPresenceLeader())return;
+
+  const now=Date.now();
+  if(!force && now-presenceLastSentAt<PRESENCE_HEARTBEAT_MS-1500)return;
+
+  const client=presenceClient||window.f2wSupabase||window.chatSupabase||window.supabaseClient;
+  if(!client?.auth?.getSession||!client?.rpc)return;
+
+  presenceBusy=true;
+  try{
+    const {data}=await client.auth.getSession();
+    const session=data?.session||null;
+    if(!session?.user)return;
+
+    const sid=getPresenceSessionId();
+    const {error}=await client.rpc('touch_presence_v203',{p_session_id:sid});
+    if(error){
+      try{await client.rpc('touch_presence_v17',{p_session_id:sid});}catch{}
+    }else{
+      presenceLastSentAt=Date.now();
+    }
+  }catch{}finally{
+    presenceBusy=false;
+  }
+}
+
+function schedulePresenceHeartbeat(){
+  if(presenceTimer)clearInterval(presenceTimer);
+  presenceTimer=setInterval(()=>{
+    if(document.visibilityState==='visible'&&isPresenceLeader()){
+      void touchSitePresence();
+    }
+  },PRESENCE_HEARTBEAT_MS);
+
+  if(presenceLeaderTimer)clearInterval(presenceLeaderTimer);
+  presenceLeaderTimer=setInterval(()=>{
+    if(document.visibilityState!=='visible'){
+      if(isPresenceLeader())releasePresenceLeadership();
+      return;
+    }
+    if(claimPresenceLeadership()){
+      writePresenceLeader();
+      if(Date.now()-presenceLastSentAt>PRESENCE_HEARTBEAT_MS-1500){
+        void touchSitePresence();
+      }
+    }
+  },PRESENCE_LEADER_RENEW_MS);
+}
+
+function startSitePresence(client){
+  if(client)presenceClient=client;
+  schedulePresenceHeartbeat();
+  if(claimPresenceLeadership())void touchSitePresence({force:true});
+  window.__f2wTouchSitePresenceV210=()=>touchSitePresence({force:true});
+  window.__f2wTouchSitePresenceV224=()=>touchSitePresence({force:true});
+}
+
+function stopSitePresence(){
+  if(presenceTimer){clearInterval(presenceTimer);presenceTimer=null;}
+  if(presenceLeaderTimer){clearInterval(presenceLeaderTimer);presenceLeaderTimer=null;}
+  releasePresenceLeadership();
+}
+
+function bindPresenceAuth(client){
+  if(!client?.auth||client.__f2wV224PresenceBound)return;
+  client.__f2wV224PresenceBound=true;
+  presenceClient=client;
+
+  try{
+    client.auth.onAuthStateChange((event,session)=>{
+      if(session?.user){
+        startSitePresence(client);
+      }else if(event==='SIGNED_OUT'){
+        stopSitePresence();
+      }
+    });
+  }catch{}
+
+  startSitePresence(client);
+
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'){
+      if(claimPresenceLeadership())void touchSitePresence({force:true});
+    }else if(isPresenceLeader()){
+      releasePresenceLeadership();
+    }
+  },{passive:true});
+
+  window.addEventListener('focus',()=>{
+    if(claimPresenceLeadership())void touchSitePresence({force:true});
+  },{passive:true});
+
+  window.addEventListener('pageshow',()=>{
+    if(claimPresenceLeadership())void touchSitePresence({force:true});
+  },{passive:true});
+
+  window.addEventListener('pagehide',()=>{
+    releasePresenceLeadership();
+  },{passive:true});
+
+  window.addEventListener('storage',event=>{
+    if(event.key!==PRESENCE_LEADER_KEY||document.visibilityState!=='visible')return;
+    const row=readPresenceLeader();
+    if(!row||Number(row.expires||0)<=Date.now()){
+      if(claimPresenceLeadership())void touchSitePresence({force:true});
+    }
+  });
+}
+
+function install(){
+  if(!window.supabase?.createClient)return false;
+  if(window.__f2wOriginalCreateClient){
+    const existing=window.f2wSupabase||window.chatSupabase||window.supabaseClient||null;
+    if(existing)bindPresenceAuth(existing);
+    return true;
+  }
+  const original=window.supabase.createClient.bind(window.supabase);
+  window.__f2wOriginalCreateClient=original;
+  let singleton=window.f2wSupabase||window.chatSupabase||window.supabaseClient||null;
+  if(!singleton){
+    try{singleton=original(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch{}
+  }
+  if(singleton){
+    window.f2wSupabase=singleton;window.chatSupabase=singleton;window.supabaseClient=singleton;window.__supabaseClient=singleton;
+    bindPresenceAuth(singleton);
+  }
+  window.supabase.createClient=function(url,key,opts){
+    if(String(url||'').replace(/\/$/,'')===URL && String(key||'')===KEY){
+      if(singleton){bindPresenceAuth(singleton);return singleton;}
+      singleton=original(url,key,{...(opts||{}),auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,...((opts||{}).auth||{})}});
+      window.f2wSupabase=window.chatSupabase=window.supabaseClient=window.__supabaseClient=singleton;
+      bindPresenceAuth(singleton);
+      return singleton;
+    }
+    return original(url,key,opts);
+  };
+  try{singleton?.auth?.getSession?.().then(({data})=>window.dispatchEvent(new CustomEvent('f2w:v160-session',{detail:data?.session||null}))).catch(()=>{})}catch{}
+  return true;
+}
+if(!install()){
+  let tries=0;const t=setInterval(()=>{tries++;if(install()||tries>80)clearInterval(t)},25);
+}
+})();
+// f2w-force-save:v210-sitewide-presence-authority:20260902
+
+// f2w-force-save:v224-low-egress-presence-leader:20260903
+
+
+/* V250 — Discord beside Leaderboard on every standard Flix2Watch header. */
+(()=>{
+  'use strict';
+  if(window.__f2wDiscordEveryPageV250)return;
+  window.__f2wDiscordEveryPageV250=true;
+
+  const ID='f2w-discord-join-v250';
+  const INVITE='https://discord.gg/q5k46TpxUk';
+
+  function ensureStyle(){
+    if(document.getElementById('f2w-discord-nav-v250-css'))return;
+    const s=document.createElement('style');
+    s.id='f2w-discord-nav-v250-css';
+    s.textContent=`
+      #${ID}{
+        display:inline-flex!important;align-items:center!important;justify-content:center!important;
+        gap:6px!important;height:34px!important;min-height:34px!important;max-height:34px!important;
+        width:auto!important;min-width:104px!important;max-width:none!important;
+        padding:0 10px!important;margin:0 0 0 7px!important;box-sizing:border-box!important;
+        border:1px solid rgba(88,101,242,.72)!important;border-radius:8px!important;
+        background:rgba(88,101,242,.12)!important;color:#fff!important;text-decoration:none!important;
+        white-space:nowrap!important;font-size:9px!important;font-weight:800!important;line-height:1!important;
+        cursor:pointer!important;pointer-events:auto!important;position:relative!important;z-index:2147483000!important;
+        flex:0 0 auto!important;grid-column:auto!important;grid-row:auto!important;
+        transform:none!important;translate:none!important;touch-action:manipulation!important
+      }
+      #${ID}:hover{
+        background:rgba(88,101,242,.27)!important;border-color:#5865f2!important;
+        color:#fff!important;text-decoration:none!important
+      }
+      #${ID} svg{width:15px!important;height:15px!important;flex:0 0 15px!important;fill:currentColor!important;pointer-events:none!important}
+      #${ID} span{pointer-events:none!important}
+      #f2w-live-sports-nav-v205{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;height:34px!important;min-height:34px!important;max-height:34px!important;width:auto!important;min-width:100px!important;padding:0 9px!important;margin:0 0 0 7px!important;box-sizing:border-box!important;border:1px solid rgba(255,49,65,.72)!important;border-radius:8px!important;background:rgba(229,9,20,.10)!important;color:#fff!important;text-decoration:none!important;white-space:nowrap!important;font-size:9px!important;font-weight:800!important;line-height:1!important;cursor:pointer!important;pointer-events:auto!important;position:relative!important;z-index:2147482999!important;flex:0 0 auto!important;transform:none!important;translate:none!important;touch-action:manipulation!important}
+      #f2w-live-sports-nav-v205:hover{background:rgba(229,9,20,.22)!important;border-color:#ff3141!important;color:#fff!important;text-decoration:none!important}
+      #f2w-live-sports-nav-v205 *{pointer-events:none!important}
+      #f2w-live-sports-nav-v205 .f2w-live-pill-v205{display:inline-flex!important;align-items:center!important;gap:4px!important;padding:2px 6px!important;border:1px solid #ff3141!important;border-radius:999px!important;color:#ff3141!important;font-size:7px!important;font-weight:900!important;letter-spacing:.05em!important;line-height:1!important}
+      #f2w-live-sports-nav-v205 .f2w-live-dot-v205{width:5px!important;height:5px!important;border-radius:50%!important;background:#ff2638!important;animation:f2wLivePulseV205 1.25s ease-out infinite!important}
+      @keyframes f2wLivePulseV205{0%{box-shadow:0 0 0 0 rgba(255,38,56,.65);opacity:1}70%{box-shadow:0 0 0 6px rgba(255,38,56,0);opacity:.82}100%{box-shadow:0 0 0 0 rgba(255,38,56,0);opacity:1}}
+      @media(prefers-reduced-motion:reduce){#f2w-live-sports-nav-v205 .f2w-live-dot-v205{animation:none!important}}
+      body.f2w-main-page>header .f2w-primary-nav,
+      header .f2w-primary-nav{overflow:visible!important}
+      @media(max-width:1400px){
+        #${ID}{min-width:92px!important;padding:0 7px!important;margin-left:4px!important;font-size:8px!important}
+      }
+    `;
+    (document.head||document.documentElement).appendChild(s);
+  }
+
+  function make(){
+    const a=document.createElement('a');
+    a.id=ID;
+    a.className='f2w-nav-link f2w-discord-nav-link';
+    a.href=INVITE;
+    a.target='_blank';
+    a.rel='noopener noreferrer external';
+    a.title='Join the Flix2Watch Discord';
+    a.setAttribute('aria-label','Join the Flix2Watch Discord');
+    a.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.54 5.34A16.8 16.8 0 0 0 15.44 4l-.2.4a15.6 15.6 0 0 1 3.62 1.14 12.5 12.5 0 0 0-13.7 0A15.8 15.8 0 0 1 8.8 4.4L8.6 4a16.9 16.9 0 0 0-4.12 1.35C1.88 9.17 1.18 12.9 1.53 16.58a16.4 16.4 0 0 0 5.03 2.55l1.22-1.67a10.6 10.6 0 0 1-1.93-.92l.47-.36a11.9 11.9 0 0 0 11.36 0l.47.36c-.62.36-1.27.67-1.94.92l1.23 1.67a16.4 16.4 0 0 0 5.03-2.55c.42-4.26-.72-7.96-2.91-11.24ZM8.88 14.83c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.96 2.45-2.18 2.45Zm6.24 0c-1.2 0-2.18-1.1-2.18-2.45s.96-2.45 2.18-2.45c1.23 0 2.2 1.11 2.18 2.45 0 1.35-.95 2.45-2.18 2.45Z"/></svg><span>Join Discord</span>';
+    return a;
+  }
+
+  function makeLive(){
+    const a=document.createElement('a');
+    a.id='f2w-live-sports-nav-v205';
+    a.className='f2w-nav-link f2w-live-sports-link';
+    a.href='/live/';
+    a.setAttribute('data-f2w-live-sports','1');
+    a.title='Live Sports';
+    a.setAttribute('aria-label','Live Sports');
+    a.innerHTML='<span class="f2w-live-pill-v205"><span class="f2w-live-dot-v205" aria-hidden="true"></span>LIVE</span><span>Live Sports</span>';
+    return a;
+  }
+
+  function install(){
+    ensureStyle();
+
+    // Delete every cached/older Discord experiment.
+    document.querySelectorAll('[id^="f2w-discord-join-v"]').forEach(el=>{
+      if(el.id!==ID)el.remove();
+    });
+
+    const nav=document.querySelector('header .f2w-primary-nav');
+    if(!nav)return false;
+
+    const leaderboard =
+      nav.querySelector('#f2w-nav-leaderboard') ||
+      [...nav.querySelectorAll('a,button')].find(el=>/leaderboard/i.test(el.textContent||''));
+
+    let live=document.getElementById('f2w-live-sports-nav-v205') || nav.querySelector('[data-f2w-live-sports],a[href="/live/"],a[href="/live"]');
+    if(!live)live=makeLive();
+    if(live.id!=='f2w-live-sports-nav-v205')live.id='f2w-live-sports-nav-v205';
+    live.dataset.f2wLiveSports='1';
+
+    let a=document.getElementById(ID);
+    if(!a)a=make();
+
+    if(leaderboard){
+      // Canonical order: Leaderboard -> Live Sports -> Join Discord.
+      if(live.parentElement!==nav || live.previousElementSibling!==leaderboard)
+        leaderboard.insertAdjacentElement('afterend',live);
+      if(a.parentElement!==nav || a.previousElementSibling!==live)
+        live.insertAdjacentElement('afterend',a);
+    }else{
+      // Until Leaderboard appears, keep Live Sports immediately before Discord.
+      if(live.parentElement!==nav)nav.appendChild(live);
+      if(a.parentElement!==nav || a.previousElementSibling!==live)live.insertAdjacentElement('afterend',a);
+    }
+
+    return true;
+  }
+
+  function start(){
+    install();
+
+    let queued=false;
+    const repair=()=>{
+      if(queued)return;
+      queued=true;
+      requestAnimationFrame(()=>{queued=false;install()});
+    };
+
+    new MutationObserver(repair).observe(document.documentElement,{childList:true,subtree:true});
+
+    // Covers delayed header construction on search/account/route transitions.
+    let tries=0;
+    const fast=setInterval(()=>{
+      install();
+      if(++tries>=80)clearInterval(fast);
+    },125);
+  }
+
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded',start,{once:true});
+  else
+    start();
+})();
+// f2w-force-save:v250-discord-every-page:20260904

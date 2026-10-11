@@ -1,0 +1,22 @@
+FLIX2WATCH V148 — ACCOUNT PAGE / LOGOUT FIX
+
+WHAT CHANGED
+- Account is now a real site-wide route: /account/
+- Every #account-btn across the site links to /account/ instead of opening a page-local modal.
+- A final v148 route guard catches dynamically-created/stale Account buttons and sends them to /account/ too.
+- The new Account page has one centralized username editor, Support link, Favorites link, My Profile link and Staff Control Center link for privileged roles.
+- Logout is handled directly on /account/ with Supabase signOut plus a local auth-storage fallback and then location.replace('/home/').
+- Username availability is checked in the page while typing.
+- The username field/button area is taller and has proper spacing between the availability text and the 2–30 character note.
+- Support is a real /support/ link, so it cannot be swallowed by old modal click handlers.
+- Service-worker cache bumped to v148 and /account/ is precached.
+
+APPLY
+1. Deploy the entire v148 ZIP over the current site.
+2. Hard refresh/reopen once so the v148 service worker and account-route script replace old cached modal handlers.
+3. Click Account from several pages. It should always navigate to /account/.
+4. Test Support, username availability/update and Log Out from /account/.
+
+SUPABASE SQL
+- No new SQL is required for v148 if the earlier v145 username RPC migration is already installed.
+- The Account page uses is_username_available_v145 and change_my_username_v145 from that existing migration.

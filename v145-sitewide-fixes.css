@@ -1,0 +1,14 @@
+/* Flix2Watch v145 repairs */
+#account-username-availability-v145{margin-top:7px!important;font-size:.72rem!important;color:#aab3c2!important}
+#account-username-availability-v145[data-state="good"]{color:#55e69b!important}
+#account-username-availability-v145[data-state="bad"]{color:#ff7b86!important}
+#account-modal .account-card,#account-modal .account-card *{color:inherit}
+body.f2w-main-page #account-modal .account-card{color:#eef2f7!important;background:linear-gradient(180deg,#0d0d13,#08080c)!important}
+body.f2w-main-page #account-modal .account-label,body.f2w-main-page #account-modal .account-subtitle,body.f2w-main-page #account-modal .account-message,body.f2w-main-page #account-modal .account-username-change-note{color:#9ba7b8!important}
+body.f2w-main-page #account-modal input{color:#fff!important;background:rgba(255,255,255,.045)!important}
+body.f2w-main-page #account-modal button{color:#fff}
+/* Forum icon-font fallback: no tofu/square glyphs if CDN icon fonts fail. */
+body.f2w-forum-v145 .forum-v30-shell i,body.f2w-forum-v145 .forum-v30-modal i{display:none!important}
+body.f2w-forum-v145 .forum-v30-thread-icon{display:none!important}
+body.f2w-forum-v145 .forum-v30-nav,body.f2w-forum-v145 .forum-v30-primary,body.f2w-forum-v145 .forum-v30-secondary{gap:8px!important}
+#chat-media-btn,#chat-media-input,#chat-attachment-preview{display:none!important}

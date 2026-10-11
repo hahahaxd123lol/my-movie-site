@@ -1,0 +1,26 @@
+FLIX2WATCH v134 — INSTANT SITE-WIDE REALTIME PROFILE DATA
+
+WHAT THIS FIXES
+- Member age no longer sits on a stale cached "1MO" and corrects itself much later.
+- Member age now comes from the actual auth.users.created_at in the same fast live snapshot as status.
+- Cached profile rows are repaired in-browser after the authoritative timestamp is received, so the old 30-second renderer cannot change it back.
+- Profile status paints from the last live snapshot immediately, then verifies with Supabase.
+- Offline users with a recorded presence show "Last online …". Accounts that genuinely have never produced a presence heartbeat show "Last online not recorded yet" instead of inventing a timestamp.
+- Currently Watching shares the same fast profile snapshot and realtime refresh path.
+- The active profile subscribes to Supabase Realtime for presence, current-watching, and profile changes. The 30-second checks remain only as a safety fallback.
+- Profile links are prewarmed on hover/focus/touch and a small capped set of visible profile links is warmed during idle time, so profile realtime information is often already in local cache before the click.
+- A BroadcastChannel shares fresh profile snapshots between tabs/windows on the same browser.
+
+WHY IT WAS SLOW
+The profile initially rendered an old profile cache, including an incorrect profiles.created_at. The authoritative auth.users date was requested later through a separate RPC. Presence and Currently Watching also had separate request paths. Under cache/auth/network timing, the wrong age could remain visible until a later 30-second tick.
+
+V134 CHANGES THAT TO ONE HOT PATH
+get_public_profile_live_v134(username) returns the true member creation date + presence + current watching in one indexed request. Cached data paints synchronously; the network refresh and Realtime subscription update it afterward.
+
+APPLY
+1. Run realtime-fast-profile-v134.sql in Supabase SQL Editor.
+2. Deploy this v134 site build.
+3. Hard-refresh/reopen once so the f2w-v134 service-worker cache replaces the old bundle.
+
+LOAD SAFETY
+This does NOT poll every user every 30 seconds. The active profile uses Realtime, while prewarming is capped to 12 visible profile destinations and runs only on idle/intent. This gives the instant feel without turning Supabase into a site-wide polling loop.

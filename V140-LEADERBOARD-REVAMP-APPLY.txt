@@ -1,0 +1,26 @@
+Flix2Watch v140 — Leaderboard revamp + working controls
+
+WHAT CHANGED
+- Fixed the dead leaderboard metric controls. Titles Watched / Watch Time / Ratings / Achievements were spans, not buttons. They are now real accessible buttons.
+- Ranking remains XP-only everywhere. Metric controls only change which stat is visually highlighted; they never reorder rank.
+- Watch time remains the dominant XP source: 20 XP per minute.
+- Redesigned the leaderboard hero, XP rules, stat cards, top-3 podium, toolbar and rank rows.
+- Added a local "Filter this page" player search.
+- Added a manual Refresh now control.
+- Added a visible countdown to the next automatic update.
+- Removed change-by-change Supabase Realtime subscriptions from the leaderboard. The leaderboard now fetches exactly every 30 seconds (plus an explicit manual refresh or a stale-tab return), so it does not spam refreshes for every database change.
+- Presence heartbeat remains every 30 seconds.
+- Added a short local cache so the last good leaderboard can paint immediately while the fresh 30-second data request completes.
+- Current signed-in account is marked YOU when it appears on the visible page.
+- Service worker cache bumped to v140.
+
+SQL
+No new SQL is required for v140 if V139-INSTANT-MEMBER-AGE-LEADERBOARD-FIX.sql has already run successfully.
+
+DEPLOY
+1. Deploy this entire v140 build.
+2. Hard refresh/reopen the site once so the v140 service-worker cache replaces v139.
+3. Open /leaderboard/ and test all five metric buttons, pagination, Refresh now and the page filter.
+
+IMPORTANT
+The metric buttons are views, not alternate ranking algorithms. A user with more XP always stays above a user with less XP, matching the site-wide XP-only leaderboard rule.

@@ -1,0 +1,17 @@
+
+/* V22: Movie Search must remain a search control, never a credential field. */
+body.f2w-main-page > header #movie-search{
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+
+body.f2w-main-page > header #movie-search:-webkit-autofill,
+body.f2w-main-page > header #movie-search:-webkit-autofill:hover,
+body.f2w-main-page > header #movie-search:-webkit-autofill:focus,
+body.f2w-main-page > header #movie-search:-webkit-autofill:active{
+  -webkit-text-fill-color:#eef2f7 !important;
+  caret-color:#eef2f7 !important;
+  -webkit-box-shadow:0 0 0 1000px #07111d inset !important;
+  box-shadow:0 0 0 1000px #07111d inset !important;
+  transition:background-color 99999s ease-out 0s !important;
+}

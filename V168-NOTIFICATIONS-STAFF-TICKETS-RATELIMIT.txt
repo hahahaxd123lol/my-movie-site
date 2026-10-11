@@ -1,0 +1,28 @@
+Flix2Watch v168
+
+Fixes included:
+
+1) Notifications stay open site-wide
+- Clicking Notifications now has one final capture-phase controller.
+- Legacy click handlers cannot instantly close the panel after it opens.
+- The panel stays visible through async and realtime refreshes.
+- It closes only when Notifications is toggled again, Escape is pressed, or a notification link is opened.
+- Mark all read uses the existing repaired v166/v161 RPC fallback and keeps the panel open.
+- A 30-second fallback refresh runs only while the panel is open.
+
+2) Staff command UI anti-spam
+- Staff write controls are limited to 2 user-triggered command actions per rolling 30 seconds per browser tab.
+- Holding Enter is ignored after the normal action and repeated rapid clicks are blocked.
+- A visible countdown tells Staff/Owner how long remains.
+- Read-only actions such as loading tabs, refreshing lists, navigation and ticket viewing are not rate-limited.
+
+3) Staff Support Ticket modal
+- Fixed duplicate/wrong support-ticket message container.
+- Ticket messages are now rendered inside the actual modal that opens.
+- The modal has a properly dimmed backdrop, centered conversation card, visible scrollable message history and readable text.
+- Reply / Resolve / priority controls remain in the same modal.
+
+Deployment:
+- Deploy the full ZIP.
+- Close existing Flix2Watch tabs once and reopen/hard-refresh so service worker v168 replaces older notification scripts.
+- No new SQL is required for these three fixes if V166.1 notifications SQL is already installed.

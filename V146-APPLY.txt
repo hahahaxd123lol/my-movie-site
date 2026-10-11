@@ -1,0 +1,13 @@
+Flix2Watch v146
+
+1. Run V146-LIVE-OPS.sql in Supabase SQL Editor.
+2. Deploy the full v146 ZIP.
+3. Hard-refresh/reopen once so the v146 service-worker cache is active.
+
+What changed:
+- Staff Announcements now have a real Supabase table/RPC and push site-wide in realtime.
+- Staff Streams Enabled / Priority / Public Notice controls now persist and update viewers. Flix2Watch API is forced enabled + priority #1.
+- Account moderation now has a dedicated realtime enforcement row per user. Site suspension/account ban pushes immediately, exits fullscreen where browser APIs permit it, unloads active player embeds, and shows a blocking moderation screen. Account bans also sign the user out.
+- A 30-second fallback verification exists in case a realtime websocket is temporarily disconnected; realtime itself is immediate.
+- Flix2Watch player origin warming now starts immediately instead of waiting for browser idle time.
+- The player loading spinner has an explicit CSS animation so it visibly spins even if the icon library's animation class fails.

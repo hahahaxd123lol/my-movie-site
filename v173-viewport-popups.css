@@ -1,0 +1,49 @@
+/* v173: every modal/popup is tethered to the CURRENT VIEWPORT, never document midpoint. */
+#f2w-viewport-modal-portal{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:2147483000!important;
+  pointer-events:none!important;
+  overflow:visible!important;
+  transform:none!important;
+  filter:none!important;
+  contain:none!important;
+}
+#f2w-viewport-modal-portal>.f2w-viewport-popup{
+  position:absolute!important;
+  inset:0!important;
+  top:0!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  transform:none!important;
+  pointer-events:auto!important;
+  box-sizing:border-box!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+#f2w-viewport-modal-portal>.f2w-viewport-popup>*,
+#f2w-viewport-modal-portal>.f2w-viewport-popup .modal-card,
+#f2w-viewport-modal-portal>.f2w-viewport-popup .account-card,
+#f2w-viewport-modal-portal>.f2w-viewport-popup .chat-card,
+#f2w-viewport-modal-portal>.f2w-viewport-popup .social-modal,
+#f2w-viewport-modal-portal>.f2w-viewport-popup .panel{
+  max-height:calc(100dvh - 32px)!important;
+  overflow:auto;
+}
+/* Native dialogs remain top-layer and centered in the visible browser viewport. */
+dialog.f2w-viewport-dialog{
+  position:fixed!important;
+  inset:0!important;
+  margin:auto!important;
+  transform:none!important;
+  max-height:calc(100dvh - 32px)!important;
+}
+html.f2w-popup-scroll-lock,html.f2w-popup-scroll-lock body{overflow:hidden!important}

@@ -1,0 +1,29 @@
+/* v174: modal UI is always anchored to the CURRENT browser viewport. */
+#f2w-viewport-modal-portal[popover]{
+  position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+  max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;
+  background:transparent!important;overflow:visible!important;z-index:2147483000!important;
+  pointer-events:none!important;transform:none!important;filter:none!important;contain:none!important;
+}
+#f2w-viewport-modal-portal::backdrop{background:transparent!important;pointer-events:none!important}
+#f2w-viewport-modal-portal>.f2w-viewport-popup{
+  position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;
+  margin:0!important;padding:0!important;transform:none!important;box-sizing:border-box!important;pointer-events:auto!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+}
+#f2w-viewport-modal-portal>.f2w-viewport-popup>*{max-height:calc(100dvh - 32px)!important;overflow:auto!important}
+
+/* Native dialogs are browser top-layer and the DIALOG ITSELF is centered in the visible viewport. */
+dialog.f2w-viewport-dialog,
+#f2w-v165-enforcement[open]{
+  position:fixed!important;inset:auto!important;top:50%!important;left:50%!important;right:auto!important;bottom:auto!important;
+  margin:0!important;transform:translate(-50%,-50%)!important;
+  max-width:calc(100vw - 32px)!important;max-height:calc(100dvh - 32px)!important;
+}
+/* Enforcement dialog is the card container's backdrop owner; it must not be a full document-sized flex box. */
+#f2w-v165-enforcement[open]{
+  width:min(620px,calc(100vw - 32px))!important;height:auto!important;padding:0!important;border:0!important;background:transparent!important;overflow:visible!important;
+}
+#f2w-v165-enforcement[open] .panel{margin:0!important;max-height:calc(100dvh - 32px)!important;overflow:auto!important}
+#f2w-v165-enforcement::backdrop{background:rgba(2,4,8,.68)!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important}
+html.f2w-popup-scroll-lock,html.f2w-popup-scroll-lock body,body.f2w-popup-scroll-lock{overflow:hidden!important}

@@ -1,0 +1,10 @@
+Flix2Watch v157 — site-wide top-header action spacing
+
+Fix:
+- Chat, Favorites, Profile, Support, Account, Notifications and Staff Control Panel now keep a real visible gap between every control.
+- Removes legacy per-button margins that fought the flex gap.
+- Uses 12px on normal desktop, 14px on wide/TV layouts, and 9px on constrained desktop widths so the header still fits.
+- Adds a final runtime style layer after the older TV/header scripts, so older injected !important rules cannot collapse the spacing again.
+- Cache-busts the global header JS/CSS to v157 across the site.
+
+No Supabase SQL is required.

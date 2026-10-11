@@ -1,0 +1,21 @@
+FLIX2WATCH v136 — v134 SQL dependency repair + all v135 site changes
+
+WHAT BROKE
+The original v134 SQL created get_public_profile_live_v134() before guaranteeing that
+public.current_watching_v125 existed. PostgreSQL therefore stopped at:
+  ERROR 42P01: relation public.current_watching_v125 does not exist
+
+WHAT v136 CHANGES
+- The fixed migration creates current_watching_v125 first.
+- It also recreates the Current Watching heartbeat/read RPCs used by the watch page.
+- It guarantees user_presence exists before the profile snapshot function is created.
+- Then it repairs true member age and creates get_public_profile_live_v134.
+- Realtime publication/index setup runs only after the required relations exist.
+- Safe to re-run if some of the earlier SQL already succeeded.
+- The website bundle includes every client-side change through v135, including smooth transitions.
+
+WHAT TO DO
+1. In Supabase SQL Editor, run: V136-FIX-MISSING-CURRENT-WATCHING.sql
+2. It is not necessary to rerun the broken original v134 SQL afterward.
+3. Deploy this v136 site bundle.
+4. Hard refresh/reopen once so the service-worker cache changes from v135 to v136.

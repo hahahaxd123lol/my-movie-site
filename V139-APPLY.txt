@@ -1,0 +1,11 @@
+Flix2Watch v139 — APPLY THIS
+
+1. Run V139-INSTANT-MEMBER-AGE-LEADERBOARD-FIX.sql in Supabase SQL Editor.
+   - It fixes ERROR 42804 UNION types bigint and text cannot be matched by casting both media_id sources to text before UNION.
+   - It adds a tiny authoritative member-age RPC and repairs profiles.created_at from auth.users.created_at.
+2. Deploy the v139 site bundle.
+3. Hard refresh/reopen once so the v139 service-worker cache replaces v138.
+
+Member age now begins loading from <head>, before the large profile bootstrap/auth/presence/current-watching code. A cached authoritative creation timestamp paints immediately; the tiny RPC verifies it in parallel. Later legacy renderers are prevented from replacing it with stale data.
+
+The leaderboard remains XP-only. Watch time remains the dominant XP source. The titles-watched union is now robust even if older production migrations left one media_id column bigint and the other text.

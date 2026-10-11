@@ -1,0 +1,794 @@
+
+/* ============================================================
+   FLIX2WATCH V13 — THEME / AUTH / CHAT / WATCH / SEARCH FIXES
+   ============================================================ */
+
+:root{
+  --f2w-accent-rgb:229,9,20;
+}
+
+/* ---------- Theme system: the entire approved UI follows the selected accent ---------- */
+html[data-flix2watch-theme="theme-red"],
+body.theme-red{
+  --accent:#e50914 !important;
+  --f2w-red:#e50914 !important;
+  --accent-glow:rgba(229,9,20,.34) !important;
+  --f2w-accent-rgb:229,9,20;
+}
+html[data-flix2watch-theme="theme-blue"],
+body.theme-blue{
+  --accent:#3b82f6 !important;
+  --f2w-red:#3b82f6 !important;
+  --accent-glow:rgba(59,130,246,.34) !important;
+  --f2w-accent-rgb:59,130,246;
+}
+html[data-flix2watch-theme="theme-green"],
+body.theme-green{
+  --accent:#10b981 !important;
+  --f2w-red:#10b981 !important;
+  --accent-glow:rgba(16,185,129,.34) !important;
+  --f2w-accent-rgb:16,185,129;
+}
+html[data-flix2watch-theme="theme-purple"],
+body.theme-purple{
+  --accent:#8b5cf6 !important;
+  --f2w-red:#8b5cf6 !important;
+  --accent-glow:rgba(139,92,246,.34) !important;
+  --f2w-accent-rgb:139,92,246;
+}
+html[data-flix2watch-theme="theme-amber"],
+body.theme-amber{
+  --accent:#f59e0b !important;
+  --f2w-red:#f59e0b !important;
+  --accent-glow:rgba(245,158,11,.34) !important;
+  --f2w-accent-rgb:245,158,11;
+}
+html[data-flix2watch-theme="theme-matrix"],
+body.theme-matrix{
+  --accent:#00ff66 !important;
+  --f2w-red:#00ff66 !important;
+  --accent-glow:rgba(0,255,102,.34) !important;
+  --f2w-accent-rgb:0,255,102;
+}
+
+body{
+  background:
+    radial-gradient(circle at 94% 8%,rgba(var(--f2w-accent-rgb),.095),transparent 25%),
+    radial-gradient(circle at 3% 34%,rgba(var(--f2w-accent-rgb),.035),transparent 32%),
+    linear-gradient(180deg,#020813 0%,#030914 44%,#020712 100%) !important;
+}
+
+body.f2w-main-page > header{
+  border-bottom-color:color-mix(in srgb,var(--accent) 25%,#273950) !important;
+}
+
+.f2w-nav-link.active,
+.f2w-nav-button.active,
+body.f2w-main-page > header #staff-control-nav,
+.site-announcement-icon,
+.site-announcement-label,
+.watch-extra-eyebrow,
+.f2w-ultra-kicker{
+  color:var(--accent) !important;
+}
+
+.f2w-nav-link.active::after,
+.f2w-nav-button.active::after,
+.hero-featured-badge,
+.staff-curated-head h2::after,
+.f2w-auth-top-btn.signup,
+.hero-btn:not(.secondary),
+.account-tab.active,
+.account-primary,
+.chat-send,
+.watch-login-actions .primary,
+.f2w-quick-login-btn,
+body.f2w-staff-page .btn.red,
+body.f2w-staff-page .btn.primary,
+.report-actions .submit,
+.pagination-btn.active{
+  background:var(--accent) !important;
+  border-color:var(--accent) !important;
+}
+
+.f2w-auth-top-btn.signup,
+.hero-btn:not(.secondary),
+.account-primary,
+.f2w-quick-login-btn{
+  box-shadow:0 7px 20px rgba(var(--f2w-accent-rgb),.20) !important;
+}
+
+.movie-card:hover,
+.favorite-card:hover,
+.library-card:hover,
+.profile-card:hover{
+  border-color:color-mix(in srgb,var(--accent) 58%,#61748c) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.search-bar:focus,
+.user-search-bar:focus{
+  border-color:color-mix(in srgb,var(--accent) 55%,#58718b) !important;
+  box-shadow:0 0 0 2px rgba(var(--f2w-accent-rgb),.10) !important;
+}
+
+#staff-control-nav{
+  border-color:color-mix(in srgb,var(--accent) 70%,#263951) !important;
+  color:var(--accent) !important;
+}
+
+.watch-login-card .lock-icon,
+.f2w-guest-check.locked i,
+.f2w-quick-signup-copy button,
+.account-username-change-head strong i{
+  color:var(--accent) !important;
+}
+
+/* Logo now visibly follows the theme. White stays white; colored parts rotate. */
+body.theme-red .logo-image,
+body.theme-red .f2w-guest-brand img,
+body.theme-red .f2w-account-brand img{
+  filter:drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+body.theme-blue .logo-image,
+body.theme-blue .f2w-guest-brand img,
+body.theme-blue .f2w-account-brand img{
+  filter:hue-rotate(210deg) saturate(1.30) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+body.theme-green .logo-image,
+body.theme-green .f2w-guest-brand img,
+body.theme-green .f2w-account-brand img{
+  filter:hue-rotate(105deg) saturate(1.38) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+body.theme-purple .logo-image,
+body.theme-purple .f2w-guest-brand img,
+body.theme-purple .f2w-account-brand img{
+  filter:hue-rotate(265deg) saturate(1.32) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+body.theme-amber .logo-image,
+body.theme-amber .f2w-guest-brand img,
+body.theme-amber .f2w-account-brand img{
+  filter:hue-rotate(42deg) saturate(1.35) brightness(1.04) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+body.theme-matrix .logo-image,
+body.theme-matrix .f2w-guest-brand img,
+body.theme-matrix .f2w-account-brand img{
+  filter:hue-rotate(108deg) saturate(1.70) brightness(1.06) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+
+/* Staff / Support pages read the saved theme through the html attribute. */
+html[data-flix2watch-theme="theme-blue"] body.f2w-staff-page .logo img,
+html[data-flix2watch-theme="theme-blue"] body.f2w-support-page header img{
+  filter:hue-rotate(210deg) saturate(1.30) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+html[data-flix2watch-theme="theme-green"] body.f2w-staff-page .logo img,
+html[data-flix2watch-theme="theme-green"] body.f2w-support-page header img{
+  filter:hue-rotate(105deg) saturate(1.38) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+html[data-flix2watch-theme="theme-purple"] body.f2w-staff-page .logo img,
+html[data-flix2watch-theme="theme-purple"] body.f2w-support-page header img{
+  filter:hue-rotate(265deg) saturate(1.32) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+html[data-flix2watch-theme="theme-amber"] body.f2w-staff-page .logo img,
+html[data-flix2watch-theme="theme-amber"] body.f2w-support-page header img{
+  filter:hue-rotate(42deg) saturate(1.35) brightness(1.04) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+html[data-flix2watch-theme="theme-matrix"] body.f2w-staff-page .logo img,
+html[data-flix2watch-theme="theme-matrix"] body.f2w-support-page header img{
+  filter:hue-rotate(108deg) saturate(1.70) brightness(1.06) drop-shadow(0 4px 16px var(--accent-glow)) !important;
+}
+
+/* ---------- User search: dedicated submit button ---------- */
+body.f2w-main-page > header .user-search-container{
+  padding-right:0 !important;
+}
+body.f2w-main-page > header .user-search-bar{
+  padding-right:42px !important;
+}
+.user-search-submit{
+  position:absolute;
+  right:4px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:5;
+  width:32px;
+  height:31px;
+  min-height:31px !important;
+  display:grid;
+  place-items:center;
+  padding:0 !important;
+  border:1px solid transparent;
+  border-radius:6px;
+  background:transparent;
+  color:#aeb8c7;
+  cursor:pointer;
+}
+.user-search-submit:hover{
+  border-color:color-mix(in srgb,var(--accent) 45%,#2b4059);
+  background:rgba(var(--f2w-accent-rgb),.10);
+  color:var(--accent);
+}
+
+/* ---------- Chat: smaller, never collides with sticky header/announcement ---------- */
+.chat-modal{
+  padding:84px 16px 20px !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+.chat-modal .chat-card{
+  width:min(500px,calc(100vw - 28px)) !important;
+  max-width:500px !important;
+  height:min(610px,calc(100dvh - 120px)) !important;
+  min-height:0 !important;
+  max-height:610px !important;
+  border-radius:11px !important;
+}
+.chat-header{
+  padding:12px 14px !important;
+}
+.chat-title{
+  font-size:.85rem !important;
+}
+.chat-subtitle{
+  font-size:.50rem !important;
+}
+.chat-messages{
+  min-height:0 !important;
+}
+.chat-input-area{
+  padding:9px 10px !important;
+}
+
+/* ---------- Signup/account helper text ---------- */
+.username-rule-note,
+.account-username-change-note,
+.account-username-change-head span{
+  color:#7f8ba0 !important;
+  font-family:Inter,Poppins,ui-sans-serif,system-ui,sans-serif !important;
+  font-size:.58rem !important;
+  font-weight:500 !important;
+  line-height:1.45 !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+}
+.username-rule-note{
+  margin-top:5px !important;
+}
+.account-message{
+  color:#8a97aa !important;
+  font-family:Inter,Poppins,ui-sans-serif,system-ui,sans-serif !important;
+  font-size:.61rem !important;
+  font-weight:500 !important;
+  line-height:1.45 !important;
+  letter-spacing:0 !important;
+}
+
+/* ---------- Watch page: same approved UI, no old cyber/telemetry look ---------- */
+.telemetry-bar{
+  display:none !important;
+}
+
+body.f2w-watch-page main{
+  width:min(100% - 28px,1260px) !important;
+  max-width:none !important;
+  margin:16px auto 44px !important;
+  padding:0 !important;
+}
+
+body.f2w-watch-page .player-wrapper{
+  overflow:hidden;
+  border:1px solid #2b4059 !important;
+  border-radius:10px !important;
+  background:#06101c !important;
+  box-shadow:0 18px 45px rgba(0,0,0,.34) !important;
+}
+
+body.f2w-watch-page .player-header-bar{
+  min-height:48px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  padding:8px 10px 8px 13px !important;
+  border-bottom:1px solid #263a53 !important;
+  background:#07111d !important;
+}
+
+body.f2w-watch-page .player-header-bar > span{
+  font-family:Inter,Poppins,sans-serif !important;
+  color:#dce3ed !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+}
+
+body.f2w-watch-page .player-header-actions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:7px !important;
+  flex-wrap:wrap !important;
+}
+
+body.f2w-watch-page .favorite-current-btn,
+body.f2w-watch-page .fallback-trigger-btn{
+  min-height:34px !important;
+  padding:6px 9px !important;
+  border:1px solid #2b4059 !important;
+  border-radius:7px !important;
+  background:#0a1523 !important;
+  color:#d8dfe9 !important;
+  box-shadow:none !important;
+  font-size:.63rem !important;
+  font-weight:650 !important;
+}
+
+body.f2w-watch-page .favorite-current-btn:hover,
+body.f2w-watch-page .fallback-trigger-btn:hover{
+  border-color:color-mix(in srgb,var(--accent) 46%,#5c718d) !important;
+  background:#0d1a29 !important;
+}
+
+body.f2w-watch-page #flix-player-container{
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  aspect-ratio:16/9 !important;
+}
+
+body.f2w-watch-page .tv-controls{
+  margin:10px 0 0 !important;
+  padding:10px !important;
+  border:1px solid #263a53 !important;
+  border-radius:8px !important;
+  background:#07111d !important;
+}
+
+body.f2w-watch-page .control-group label{
+  color:#8996a8 !important;
+  font-family:Inter,Poppins,sans-serif !important;
+  font-size:.60rem !important;
+  letter-spacing:0 !important;
+}
+
+body.f2w-watch-page .select-dropdown{
+  border-color:#2a3e56 !important;
+  border-radius:7px !important;
+  background:#06101c !important;
+  color:#fff !important;
+}
+
+body.f2w-watch-page .stream-toolbar{
+  margin-top:10px !important;
+  padding:12px !important;
+  border:1px solid #263a53 !important;
+  border-radius:8px !important;
+  background:#07111d !important;
+  box-shadow:none !important;
+}
+
+body.f2w-watch-page .sources-section-title{
+  margin:0 0 8px !important;
+  color:#cfd6e1 !important;
+  font-family:Inter,Poppins,sans-serif !important;
+  font-size:.66rem !important;
+  font-weight:760 !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+}
+
+body.f2w-watch-page .server-groups{
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  flex-wrap:wrap !important;
+}
+
+body.f2w-watch-page .server-btn{
+  min-height:32px !important;
+  padding:5px 8px !important;
+  border:1px solid #2a3d55 !important;
+  border-radius:6px !important;
+  background:#0a1523 !important;
+  color:#aeb9c9 !important;
+  font-size:.59rem !important;
+  font-weight:630 !important;
+}
+
+body.f2w-watch-page .server-btn.active{
+  border-color:var(--accent) !important;
+  background:rgba(var(--f2w-accent-rgb),.12) !important;
+  color:#fff !important;
+}
+
+body.f2w-watch-page .media-details-box{
+  display:grid !important;
+  grid-template-columns:110px minmax(0,1fr) !important;
+  gap:16px !important;
+  align-items:start !important;
+  margin-top:10px !important;
+  padding:14px !important;
+  border:1px solid #263a53 !important;
+  border-radius:9px !important;
+  background:#07111d !important;
+  box-shadow:none !important;
+}
+
+body.f2w-watch-page .media-poster-preview{
+  width:110px !important;
+  min-width:110px !important;
+  border:1px solid #2b4059 !important;
+  border-radius:7px !important;
+  overflow:hidden !important;
+}
+
+body.f2w-watch-page .media-title-heading{
+  margin:0 0 7px !important;
+  color:#fff !important;
+  font-family:Inter,Poppins,sans-serif !important;
+  font-size:1.35rem !important;
+  font-weight:820 !important;
+  letter-spacing:-.4px !important;
+  text-transform:none !important;
+}
+
+body.f2w-watch-page .media-sub-meta{
+  gap:7px !important;
+  color:#8e9bad !important;
+  font-size:.63rem !important;
+}
+
+body.f2w-watch-page .media-overview-text{
+  max-width:850px !important;
+  margin-top:9px !important;
+  color:#c5ccd7 !important;
+  font-size:.71rem !important;
+  line-height:1.58 !important;
+}
+
+body.f2w-watch-page .watch-extra{
+  margin-top:12px !important;
+}
+
+body.f2w-watch-page .watch-extra-section,
+body.f2w-watch-page .watch-surprise-panel,
+body.f2w-watch-page .f2w-ultra-section{
+  padding:13px !important;
+  border:1px solid #263a53 !important;
+  border-radius:9px !important;
+  background:#07111d !important;
+  box-shadow:none !important;
+}
+
+body.f2w-watch-page .watch-extra-head h2{
+  font-size:1.02rem !important;
+}
+
+body.f2w-watch-page .watch-extra-subtitle,
+body.f2w-watch-page .f2w-ultra-sub{
+  color:#8491a4 !important;
+  font-size:.62rem !important;
+}
+
+body.f2w-watch-page .watch-media-strip{
+  gap:9px !important;
+}
+
+body.f2w-watch-page .watch-genre-tile{
+  border-color:#2a3d55 !important;
+  background:#0a1523 !important;
+  box-shadow:none !important;
+}
+
+body.f2w-watch-page .watch-genre-tile:hover{
+  border-color:color-mix(in srgb,var(--accent) 48%,#5c718d) !important;
+  background:#0d1a29 !important;
+}
+
+/* Playback report dialog */
+.report-modal{
+  z-index:25000 !important;
+  background:rgba(0,5,12,.82) !important;
+  backdrop-filter:blur(12px) !important;
+}
+.report-card{
+  width:min(470px,calc(100vw - 26px)) !important;
+  padding:16px !important;
+  border:1px solid #2b4059 !important;
+  border-radius:10px !important;
+  background:#07111d !important;
+  box-shadow:0 24px 70px rgba(0,0,0,.60) !important;
+}
+.report-context-copy{
+  margin:0 0 11px;
+  padding:9px 10px;
+  border:1px solid #23364e;
+  border-radius:7px;
+  background:#06101c;
+  color:#9ca8b9;
+  font-size:.63rem;
+  line-height:1.5;
+}
+.report-card label{
+  color:#8794a7 !important;
+  font-family:Inter,Poppins,sans-serif !important;
+  font-size:.59rem !important;
+  letter-spacing:.2px !important;
+}
+.report-card select,
+.report-card textarea{
+  border-color:#2a3e56 !important;
+  border-radius:7px !important;
+  background:#06101c !important;
+  color:#fff !important;
+}
+.report-card textarea{
+  min-height:105px !important;
+}
+.report-actions button{
+  min-height:36px !important;
+  border-color:#2a3e56 !important;
+  border-radius:7px !important;
+  background:#0a1523 !important;
+  color:#fff !important;
+}
+.report-actions .submit{
+  color:#fff !important;
+}
+
+/* ---------- Directory page ---------- */
+.f2w-users-main{
+  width:min(100% - 28px,1240px);
+  margin:20px auto 50px;
+}
+.f2w-users-hero{
+  padding:18px;
+  border:1px solid #2a3d55;
+  border-radius:10px;
+  background:#07111d;
+}
+.f2w-users-hero h1{
+  margin:0;
+  color:#fff;
+  font-size:1.45rem;
+  font-weight:820;
+}
+.f2w-users-hero p{
+  margin:5px 0 0;
+  color:#8f9caf;
+  font-size:.70rem;
+  line-height:1.5;
+}
+.f2w-users-summary{
+  margin:13px 0 9px;
+  color:#9ca8b9;
+  font-size:.67rem;
+}
+.f2w-users-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+}
+.f2w-user-card{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:12px;
+  border:1px solid #263a53;
+  border-radius:9px;
+  background:#07111d;
+  color:#fff;
+  text-decoration:none;
+  transition:.16s ease;
+}
+.f2w-user-card:hover{
+  transform:translateY(-2px);
+  border-color:color-mix(in srgb,var(--accent) 52%,#61748c);
+  background:#0a1523;
+}
+.f2w-user-avatar{
+  width:48px;
+  height:48px;
+  flex:0 0 48px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid #344b67;
+  border-radius:50%;
+  background:#0b1725;
+  color:#cfd7e2;
+  font-size:.72rem;
+  font-weight:800;
+}
+.f2w-user-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.f2w-user-copy{
+  min-width:0;
+}
+.f2w-user-display{
+  overflow:hidden;
+  color:#fff;
+  font-size:.75rem;
+  font-weight:760;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.f2w-user-handle{
+  overflow:hidden;
+  margin-top:2px;
+  color:#8d99aa;
+  font-size:.62rem;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.f2w-user-bio{
+  display:-webkit-box;
+  overflow:hidden;
+  margin-top:5px;
+  color:#6f7d91;
+  font-size:.56rem;
+  line-height:1.35;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+.f2w-users-empty{
+  grid-column:1/-1;
+  padding:32px;
+  border:1px solid #263a53;
+  border-radius:9px;
+  background:#07111d;
+  color:#8996a8;
+  text-align:center;
+  font-size:.72rem;
+}
+.f2w-users-pagination{
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.f2w-users-pagination button{
+  min-width:36px;
+  min-height:34px;
+  padding:5px 9px;
+  border:1px solid #2a3d55;
+  border-radius:6px;
+  background:#0a1523;
+  color:#c6ced9;
+  font-size:.62rem;
+  cursor:pointer;
+}
+.f2w-users-pagination button.active{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+.f2w-users-pagination button:disabled{
+  opacity:.38;
+  cursor:not-allowed;
+}
+
+@media(max-width:900px){
+  .f2w-users-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:820px){
+  .chat-modal{
+    padding:74px 10px 14px !important;
+  }
+  .chat-modal .chat-card{
+    width:min(470px,calc(100vw - 20px)) !important;
+    height:min(570px,calc(100svh - 100px)) !important;
+    max-height:570px !important;
+    min-height:0 !important;
+    border-radius:10px !important;
+  }
+  body.f2w-watch-page main{
+    width:calc(100% - 20px) !important;
+  }
+  body.f2w-watch-page .player-header-bar{
+    align-items:flex-start !important;
+    flex-direction:column !important;
+  }
+  body.f2w-watch-page .player-header-actions{
+    width:100% !important;
+    justify-content:flex-start !important;
+  }
+  body.f2w-watch-page .media-details-box{
+    grid-template-columns:78px minmax(0,1fr) !important;
+    gap:11px !important;
+  }
+  body.f2w-watch-page .media-poster-preview{
+    width:78px !important;
+    min-width:78px !important;
+  }
+  body.f2w-watch-page .media-title-heading{
+    font-size:1.02rem !important;
+  }
+  .f2w-users-main{
+    width:calc(100% - 20px);
+    margin-top:12px;
+  }
+}
+
+@media(max-width:520px){
+  .f2w-users-grid{grid-template-columns:1fr}
+}
+
+
+/* Make the selected theme obvious across the approved shell, not only buttons. */
+body{
+  --f2w-red-soft:rgba(var(--f2w-accent-rgb),.10) !important;
+  --f2w-pink:var(--accent) !important;
+}
+
+::selection{
+  background:rgba(var(--f2w-accent-rgb),.72) !important;
+}
+
+.f2w-guest-card,
+.account-card,
+.chat-card,
+.profile-hero,
+.media-details-box,
+.stream-toolbar,
+body.f2w-staff-page .hero,
+body.f2w-staff-page .card,
+body.f2w-support-page .card{
+  border-color:color-mix(in srgb,var(--accent) 18%,#2b4059) !important;
+}
+
+.f2w-guest-card{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(var(--f2w-accent-rgb),.065),transparent 40%),
+    linear-gradient(180deg,#081321,#06101c) !important;
+}
+
+.account-tabs{
+  border-color:color-mix(in srgb,var(--accent) 20%,#263951) !important;
+}
+
+.filter-tabs .tab-btn.active,
+body.f2w-staff-page .tab-btn.active{
+  border-color:color-mix(in srgb,var(--accent) 58%,#263951) !important;
+  background:rgba(var(--f2w-accent-rgb),.10) !important;
+}
+
+.staff-curated-head h2::after,
+.hero-featured-badge{
+  color:#fff !important;
+}
+
+.server-btn.active{
+  box-shadow:0 0 0 1px rgba(var(--f2w-accent-rgb),.08) inset !important;
+}
+
+.site-announcement{
+  border-color:color-mix(in srgb,var(--accent) 26%,#263a53) !important;
+}
+
+.f2w-progress-bar,
+.scroll-progress,
+#scroll-progress{
+  background:var(--accent) !important;
+}
+
+
+/* Session state always wins over any older inline header display code. */
+body.f2w-authenticated #header-login-btn,
+body.f2w-authenticated #header-signup-btn{
+  display:none !important;
+}
+
+
+/* Remove remaining old "system/telemetry" visual labels from Watch sections. */
+body.f2w-watch-page .watch-extra-eyebrow,
+body.f2w-watch-page .f2w-ultra-kicker{
+  display:none !important;
+}
