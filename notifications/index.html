@@ -146,12 +146,41 @@ function normalizeNotificationLink(value){
     return u.pathname+u.search+u.hash;
   }catch{return '#'}
 }
+function notificationProfileLink(x,type,title,message,rawLink){
+  const direct=normalizeNotificationLink(rawLink);
+  if(direct!=='#')return direct;
+  if(!['follow','follower','new_follower','followed_you'].includes(String(type||'').toLowerCase()))return '#';
+  let meta=x?.metadata??x?.data??x?.payload??x?.extra_data??null;
+  if(typeof meta==='string'){try{meta=JSON.parse(meta)}catch{meta=null}}
+  const sources=[x,meta,meta?.actor,meta?.follower,meta?.user,meta?.profile];
+  const keys=['actor_username','follower_username','from_username','sender_username','profile_username','followed_by_username','username','user_name','actorUsername','followerUsername','handle','slug'];
+  for(const source of sources){
+    if(!source||typeof source!=='object')continue;
+    for(const key of keys){
+      const candidate=String(source[key]??'').trim().replace(/^@+/,'');
+      if(/^[A-Za-z0-9]+$/.test(candidate))return '/profile/@'+encodeURIComponent(candidate);
+    }
+    for(const key of ['profile_url','profile_link','actor_url','user_url']){
+      const candidate=normalizeNotificationLink(source[key]);
+      if(candidate!=='#'&&/^\/profile\/@[A-Za-z0-9]+\/?$/.test(candidate))return candidate;
+    }
+  }
+  const text=String(title||'')+' '+String(message||'');
+  const atName=text.match(/@([A-Za-z0-9]+)/);
+  if(atName)return '/profile/@'+encodeURIComponent(atName[1]);
+  const linkedPath=text.match(/(?:https?:\/\/[^\s]+)?(\/profile\/@?[A-Za-z0-9]+\/?)/i);
+  if(linkedPath)return normalizeNotificationLink(linkedPath[1]);
+  return '#';
+}
 function normalizeRow(x,source){
+  const type=x?.notification_type||x?.type||x?.kind||'system';
+  const title=x?.title||'Notification';
+  const message=x?.message??x?.body??x?.text??'';
   return {
     id:String(x?.id??''),source,
-    notification_type:x?.notification_type||x?.type||x?.kind||'system',
-    title:x?.title||'Notification',message:x?.message??x?.body??x?.text??'',
-    link:normalizeNotificationLink(x?.link||x?.url||x?.href||'#'),
+    notification_type:type,
+    title,message,
+    link:notificationProfileLink(x,type,title,message,x?.link||x?.url||x?.href||x?.profile_url||x?.profile_link||'#'),
     read_at:x?.read_at||((x?.is_read===true)?new Date().toISOString():null),
     created_at:x?.created_at||x?.inserted_at||x?.updated_at||new Date().toISOString()
   };
@@ -314,7 +343,7 @@ mark.addEventListener('click',async()=>{
 });
 boot();
 })();
-</script><script src="/v165-enforcement.js?v=183-20260902"></script><script src="/v172-sitewide.js?v=172"></script><link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=190-20260902-auth-authority"></script><script src="/v176-sitewide.js?v=205-live-sports-sitewide" defer></script><!-- f2w-force-save:v181-notifications-page:20260902 --><!-- f2w-force-save:v183-notifications-low-egress:20260902 --><script src="/page-transitions-v135.js?v=183-20260902" defer></script>
+</script><script src="/v165-enforcement.js?v=183-20260902"></script><script src="/v172-sitewide.js?v=172"></script><link rel="stylesheet" href="/v174-viewport-popups.css?v=175"><script src="/v174-viewport-popups.js?v=190-20260902-auth-authority"></script><script src="/v176-sitewide.js?v=205-live-sports-sitewide" defer></script><!-- f2w-force-save:v181-notifications-page:20260902 --><!-- f2w-force-save:v184-follow-notification-profile-links:20261012 --><script src="/page-transitions-v135.js?v=183-20260902" defer></script>
 </body></html>
 
 <!-- f2w-force-save:v183-sitewide-cache-bust:20260902 -->
