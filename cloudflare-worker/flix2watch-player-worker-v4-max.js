@@ -595,9 +595,16 @@ function buildGuardJS() {
   const f2wAudioContexts = [];
   const f2wBoostMedia = media => {
     if (!media || media.__f2wBoost150Attempted) return;
-    media.__f2wBoost150Attempted = true;
     const sourceURL = String(media.currentSrc || media.src || '');
-    const sameOrigin = !sourceURL || sourceURL.startsWith('blob:') || (() => {
+    if (!sourceURL) {
+      media.addEventListener('loadedmetadata', () => {
+        media.__f2wBoost150Attempted = false;
+        f2wBoostMedia(media);
+      }, { once: true, passive: true });
+      return;
+    }
+    media.__f2wBoost150Attempted = true;
+    const sameOrigin = sourceURL.startsWith('blob:') || (() => {
       try { return new URL(sourceURL, location.href).origin === location.origin; } catch (_) { return false; }
     })();
     if (!sameOrigin && !media.crossOrigin) return;
