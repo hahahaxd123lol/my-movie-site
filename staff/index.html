@@ -1072,8 +1072,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
 <style id="f2w-auth-card-visibility-guard-v1">
 /* Keep the Auth management card visible in its existing Account Moderation position. */
-#panel-users #auth-management-card{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;overflow:visible!important;content-visibility:visible!important}
-#panel-users #auth-management-card[hidden]{display:block!important;visibility:visible!important}
+#panel-account-reset-tools #auth-management-card{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;overflow:visible!important;content-visibility:visible!important}
+#panel-account-reset-tools #auth-management-card[hidden]{display:block!important;visibility:visible!important}
 </style>
 </head>
 <body class="f2w-main-page f2w-staff-page">
@@ -1256,6 +1256,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     <button class="tab-btn" data-tab="reports"><i class="fa-solid fa-flag"></i> Reports</button>
     <button class="tab-btn" data-tab="users"><i class="fa-solid fa-shield-halved"></i> Account Moderation</button>
     <div class="staff-nav-title">People</div>
+    <button class="tab-btn" data-tab="account-reset-tools"><i class="fa-solid fa-key"></i> Account reset tools</button>
     <button class="tab-btn" data-tab="profiles"><i class="fa-solid fa-address-card"></i> Profiles</button>
     <button class="tab-btn" data-tab="chat"><i class="fa-solid fa-comments"></i> Chat</button>
     <button class="tab-btn" data-tab="announcements"><i class="fa-solid fa-bullhorn"></i> Announcements</button>
@@ -1365,6 +1366,17 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         </div>
       </div>
 
+      <div class="card" id="user-snapshot" hidden></div>
+      
+      <div class="card" id="permission-card" hidden>
+        <div class="card-head"><strong>Staff permission overrides</strong><span>Owner-only backend overrides.</span></div>
+        <div id="permission-grid" class="perm-grid"></div>
+        
+      </div>
+    </section>
+
+    <section class="panel" id="panel-account-reset-tools">
+      <div class="help-inline"><strong>Account reset tools:</strong> Review Supabase Auth details, send password reset links, and manage account email or password. Server-side staff permissions still apply.</div>
       <div class="card" id="auth-management-card" style="display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2!important;">
         <div class="card-head"><strong><i class="fa-solid fa-key"></i> Account email & password</strong><span>Staff permission required</span></div>
         <div class="notice">These actions use the authenticated server-side admin API. Password reset sends a link to the account's current email.</div>
@@ -1390,14 +1402,6 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <div class="field" style="margin-top:8px"><label for="staff-target-confirm-password">CONFIRM NEW PASSWORD</label><input id="staff-target-confirm-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required aria-describedby="staff-password-confirm-help" placeholder="Re-enter the new password"><small id="staff-password-confirm-help" class="muted">Both password entries must match before the change can be applied.</small></div>
         <div class="row" style="margin-top:8px"><button class="btn danger" type="button" onclick="runStaffAuthAction('change_password')"><i class="fa-solid fa-lock"></i> Set new password</button></div>
         <div class="moderation-status" id="staff-auth-management-status" role="status" aria-live="polite">Load an account to manage its login details.</div>
-      </div>
-      
-      <div class="card" id="user-snapshot" hidden></div>
-      
-      <div class="card" id="permission-card" hidden>
-        <div class="card-head"><strong>Staff permission overrides</strong><span>Owner-only backend overrides.</span></div>
-        <div id="permission-grid" class="perm-grid"></div>
-        
       </div>
     </section>
 
@@ -2298,6 +2302,7 @@ function applyPermissionUI(){
     reports:'reports_manage',
     operations:null,
     users:null,
+    'account-reset-tools':null,
     profiles:null,
     chat:'chat_moderate',
     announcements:'announcements_manage',
@@ -2320,6 +2325,8 @@ function applyPermissionUI(){
       allowed=[
         'users_ban','users_mute','users_warn','users_notes'
       ].some(pageRoleCan)||staffContext?.role==='owner';
+    }else if(tab==='account-reset-tools'){
+      allowed=['users_ban','users_mute','users_warn','users_notes'].some(pageRoleCan)||staffContext?.role==='owner';
     }else if(tab==='profiles'){
       allowed=pageRoleCan('profiles_manage')||pageRoleCan('profile_roles_manage');
     }else if(tab==='homepage'){
