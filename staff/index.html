@@ -2419,8 +2419,8 @@ async function inspectUser(){
     }
 
     renderUserSnapshot();
-    showAuthManagementCard(staffContext?.role === 'owner');
-    if(staffContext?.role==='owner') await loadStaffAuthDetails();
+    showAuthManagementCard(true);
+    await loadStaffAuthDetails();
     await loadQuickModerationState();
 
     if(staffContext.role==='owner'){
