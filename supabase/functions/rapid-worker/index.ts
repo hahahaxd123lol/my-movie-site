@@ -2252,14 +2252,24 @@ Deno.serve(async (request: Request) => {
       const authorization = request.headers.get("authorization") ?? "";
       const accessToken = authorization.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() ?? "";
       if (!accessToken) {
-        return json({ success: false, error: "Sign in as the site owner first." }, 401);
+        return json({ success: false, error: "Sign in with an authorized staff account first." }, 401);
       }
       const { data: callerResult, error: callerError } = await supabase.auth.getUser(accessToken);
       if (callerError || !callerResult?.user) {
         return json({ success: false, error: "Your session is invalid or expired." }, 401);
       }
-      if (callerResult.user.id !== OWNER_UUID) {
-        return json({ success: false, error: "Only the site owner can change another account's email or password." }, 403);
+
+      const callerIsOwner = callerResult.user.id === OWNER_UUID;
+      if (!callerIsOwner) {
+        const { data: callerProfile, error: callerProfileError } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("user_id", callerResult.user.id)
+          .maybeSingle();
+        const callerStaffAlias = String(callerProfile?.username ?? "").trim();
+        if (callerProfileError || !callerStaffAlias || !await staffHasPermission(callerStaffAlias, "users_ban")) {
+          return json({ success: false, error: "Staff permission to manage account login details is required." }, 403);
+        }
       }
 
       const targetUserId = String(body.target_user_id ?? "").trim();
