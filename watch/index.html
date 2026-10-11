@@ -829,7 +829,19 @@ html{overflow-y:scroll}
       box.style.cssText='position:fixed;left:50%;top:88px;transform:translateX(-50%);z-index:2147483000;background:#071321;color:#fff;border:1px solid #d51b32;border-radius:12px;padding:12px 14px;box-shadow:0 15px 50px #000a;display:flex;gap:10px;align-items:center;font:700 12px Arial,sans-serif;max-width:calc(100vw - 24px)';
       box.innerHTML=`<span>Continue where you left off at <b>${f2wFmtResume(seconds)}</b>?</span><button id="f2w-resume-continue" style="border:0;border-radius:8px;padding:8px 11px;background:#d51b32;color:white;font-weight:800;cursor:pointer">Continue</button><button id="f2w-resume-startover" style="border:1px solid #35506a;border-radius:8px;padding:8px 11px;background:#0a1928;color:#b8c8d8;font-weight:800;cursor:pointer">Start over</button>`;
       document.body.appendChild(box);
-      box.querySelector('#f2w-resume-continue')?.addEventListener('click',()=>box.remove());
+      box.querySelector('#f2w-resume-continue')?.addEventListener('click',()=>{
+        // Cloud progress is episode-scoped; write it to this exact key before
+        // restarting the embed so Continue really seeks to the saved position.
+        try{
+          const s=Number(urlParams.get('season')||document.getElementById('season-select')?.value||1);
+          const e=Number(urlParams.get('episode')||document.getElementById('episode-select')?.value||1);
+          localStorage.setItem(f2wResumeKey(mediaType,s,e),String(Math.floor(Number(seconds)||0)));
+        }catch(_){}
+        box.remove();
+        lastLoadedPlaybackKey='';
+        lastLoadedEmbedUrl='';
+        loadPlayer();
+      });
       box.querySelector('#f2w-resume-startover')?.addEventListener('click',async()=>{
         window.__f2wStartOverRequested=true;window.__f2wCloudResumeSeconds=0;
         try{localStorage.removeItem(f2wResumeKey(mediaType,document.getElementById('season-select')?.value||1,document.getElementById('episode-select')?.value||1));}catch{}
@@ -7119,7 +7131,9 @@ if(currentUser){
             // between TMDB and IMDb depending on metadata timing, which made saved
             // positions appear to vanish on a later visit.
             const progressKey = `f2w_resume_${mediaType}_${mediaId}${mediaType === 'tv' ? `_s${seasonNum}e${episodeNum}` : ''}`;
-            const saved = Math.max(Number(localStorage.getItem(progressKey) || 0), Number(window.__f2wCloudResumeSeconds || 0));
+            // Only use the timestamp for this exact movie/season/episode.
+            // A global cloud-resume number can belong to a different episode.
+            const saved = Number(localStorage.getItem(progressKey) || 0);
             if (Number.isFinite(saved) && saved > 10 && !window.__f2wStartOverRequested) embedUrl += `&startAt=${Math.floor(saved)}`;
           } catch (_) {}
           break;
