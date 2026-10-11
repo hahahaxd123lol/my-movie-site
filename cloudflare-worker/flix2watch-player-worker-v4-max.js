@@ -28,7 +28,7 @@
  * - no iframe sandbox attribute and no CSP sandbox directive
  */
 
-const VERSION = 'v4-max-final-volume-boost-150-republished';
+const VERSION = 'v4-max-final-volume-boost-150';
 
 const AD_HOST_FRAGMENTS = [
   'doubleclick.net',
@@ -589,25 +589,32 @@ function buildGuardJS() {
     scrubNode(document.documentElement || document);
   }, 3000);
 
-  // Audio boost for this player origin only. Gain is applied after the media
-  // element's own volume control, so viewers can still turn the player down.
-  // Only route media through Web Audio when same-origin/blob/CORS mode makes it safe.
+  // Re-applied 150% gain for the Flix2Watch player only.
+  // The media element's own volume slider remains in the signal path.
+  // Never route known cross-origin media through Web Audio without CORS.
+  const F2W_AUDIO_GAIN = 1.5;
   const f2wAudioContexts = [];
   const f2wBoostMedia = media => {
-    if (!media || media.__f2wBoost150Attempted) return;
+    if (!media || media.__f2wBoost150Attempted || media.__f2wBoost150Waiting) return;
     const sourceURL = String(media.currentSrc || media.src || '');
     if (!sourceURL) {
-      media.addEventListener('loadedmetadata', () => {
-        media.__f2wBoost150Attempted = false;
+      media.__f2wBoost150Waiting = true;
+      const retry = () => {
+        media.__f2wBoost150Waiting = false;
         f2wBoostMedia(media);
-      }, { once: true, passive: true });
+      };
+      media.addEventListener('loadedmetadata', retry, { once: true, passive: true });
+      media.addEventListener('emptied', retry, { once: true, passive: true });
       return;
     }
-    media.__f2wBoost150Attempted = true;
     const sameOrigin = sourceURL.startsWith('blob:') || (() => {
       try { return new URL(sourceURL, location.href).origin === location.origin; } catch (_) { return false; }
     })();
-    if (!sameOrigin && !media.crossOrigin) return;
+    if (!sameOrigin && !media.crossOrigin) {
+      media.__f2wBoost150Attempted = true;
+      return;
+    }
+    media.__f2wBoost150Attempted = true;
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
@@ -615,12 +622,15 @@ function buildGuardJS() {
       if (!f2wAudioContexts.length) f2wAudioContexts.push(ctx);
       const source = ctx.createMediaElementSource(media);
       const gain = ctx.createGain();
-      gain.gain.value = 1.5;
+      gain.gain.setValueAtTime(F2W_AUDIO_GAIN, ctx.currentTime);
       source.connect(gain);
       gain.connect(ctx.destination);
       media.__f2wBoost150Context = ctx;
-      media.addEventListener('play', () => { if (ctx.state === 'suspended') ctx.resume().catch(() => {}); }, { passive: true });
-      if (ctx.state === 'suspended') media.addEventListener('playing', () => ctx.resume().catch(() => {}), { once: true, passive: true });
+      const resumeAudio = () => {
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+      };
+      media.addEventListener('play', resumeAudio, { passive: true });
+      media.addEventListener('playing', resumeAudio, { passive: true });
       try { console.info('[Flix2Watch] 150% audio gain enabled'); } catch (_) {}
     } catch (_) {
       // Unsupported or CORS-restricted media remains on its native audio path.
@@ -634,8 +644,9 @@ function buildGuardJS() {
   };
   f2wScanMedia(document);
   try {
-    new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(f2wScanMedia)))
-      .observe(document.documentElement || document, { childList: true, subtree: true });
+    new MutationObserver(records => {
+      records.forEach(record => record.addedNodes.forEach(f2wScanMedia));
+    }).observe(document.documentElement || document, { childList: true, subtree: true });
   } catch (_) {}
 
   try { console.info('[Flix2Watch] player popup guard ' + VERSION + ' active'); } catch (_) {}
