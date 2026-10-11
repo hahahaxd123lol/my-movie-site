@@ -2458,46 +2458,78 @@ async function updateReport(id,status){
 }
 
 async function inspectUser(){
-  const username=document.getElementById('user-target')?.value.trim();
+  const username=String(document.getElementById('user-target')?.value||'').trim().replace(/^@/,'');
   if(!username)return;
-
   const sync=document.getElementById('moderation-sync-label');
   const status=document.getElementById('moderation-status');
   if(sync)sync.textContent='Loading account…';
-  if(status)status.innerHTML='<strong>Loading live state…</strong> Reading current restrictions for this account.';
+  if(status)status.innerHTML='<strong>Loading account…</strong> Resolving Supabase Auth and moderation records.';
   setQuickControlsEnabled(false);
 
-  try{
-    currentSnapshot=await rpc('get_staff_user_snapshot',{p_username:username});
-
-    if(!currentSnapshot?.profile?.user_id){
-      currentSnapshot=null;
-      document.getElementById('moderation-target-profile').innerHTML='';
-      document.getElementById('user-snapshot').innerHTML='<div class="notice">User not found.</div>';
-      if(status)status.innerHTML='<strong>User not found.</strong> Check the username and try again.';
-      if(sync)sync.textContent='No target';
-      return;
+  let authAccount=null, authError=null, snapshot=null, snapshotError=null;
+  if(['owner','staff'].includes(String(staffContext?.role||'').toLowerCase())){
+    try{
+      const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_account_admin',operation:'lookup',identifier:username}});
+      if(error)throw error;
+      if(!data?.success)throw new Error(data?.error||'Supabase Auth lookup failed.');
+      authAccount=data.account||null;
+    }catch(e){
+      authError=e;
+      try{
+        const response=e?.context;
+        if(response&&typeof response.clone==='function'){
+          const payload=await response.clone().json();
+          if(payload?.error||payload?.message)authError=new Error(payload.error||payload.message);
+        }
+      }catch{}
     }
+  }
 
-    renderUserSnapshot();
+  try{
+    snapshot=await rpc('get_staff_user_snapshot',{p_username:String(authAccount?.username||username)});
+    if(!snapshot?.profile?.user_id||(authAccount&&String(snapshot.profile.user_id)!==String(authAccount.user_id)))snapshot=null;
+  }catch(e){snapshotError=e}
+
+  if(!snapshot&&authAccount?.user_id){
+    currentSnapshot={profile:{
+      user_id:String(authAccount.user_id),
+      username:String(authAccount.username||username),
+      username_history:Array.isArray(authAccount.username_history)?authAccount.username_history:[],
+      created_at:authAccount.created_at||null
+    },role:'member',warnings:[],notes:[]};
+    document.getElementById('moderation-target-profile').innerHTML='';
+    document.getElementById('user-snapshot').innerHTML='<div class="card"><div class="card-head"><strong>Supabase Auth account</strong><span>Auth-only lookup</span></div><div class="notice">Found @'+esc(currentSnapshot.profile.username)+' by Supabase Auth metadata. No moderation profile exists, so moderation controls remain disabled.</div></div>';
     showAuthManagementCard(true);
     await loadStaffAuthDetails();
-    await loadQuickModerationState();
+    if(status)status.innerHTML='<strong>Supabase Auth account found.</strong> Login details are available; profile-based moderation controls remain disabled.';
+    if(sync)sync.textContent='Auth account found';
+    return;
+  }
 
-    if(staffContext.role==='owner'){
-      await renderPermissions();
-    }
-
-    if(sync)sync.textContent='Realtime / autosave';
-  }catch(e){
-    console.error('Account enforcement load failed:',e);
+  if(!snapshot){
     currentSnapshot=null;
+    document.getElementById('moderation-target-profile').innerHTML='';
+    document.getElementById('user-snapshot').innerHTML='<div class="notice">User not found.</div>';
     showAuthManagementCard(false);
     setQuickControlsEnabled(false);
-    if(status)status.innerHTML=`<strong>Could not load account state.</strong> ${esc(e?.message||'Unknown error')}`;
-    if(sync)sync.textContent='Load failed';
-    toast(e?.message||'Could not load account');
+    const message=authError?.message||snapshotError?.message||'No account matched that username.';
+    if(status)status.innerHTML='<strong>User lookup failed.</strong> '+esc(message);
+    if(sync)sync.textContent='No target';
+    return;
   }
+
+  currentSnapshot=snapshot;
+  if(authAccount?.user_id){
+    currentSnapshot.profile.user_id=String(authAccount.user_id);
+    currentSnapshot.profile.username=String(authAccount.username||currentSnapshot.profile.username||username);
+    currentSnapshot.profile.username_history=Array.isArray(authAccount.username_history)?authAccount.username_history:currentSnapshot.profile.username_history||[];
+  }
+  renderUserSnapshot();
+  showAuthManagementCard(true);
+  await loadStaffAuthDetails();
+  await loadQuickModerationState();
+  if(staffContext.role==='owner')await renderPermissions();
+  if(sync)sync.textContent='Realtime / autosave';
 }
 async function lookupAccountToolsTarget(){
   const input=document.getElementById("account-tools-username");
@@ -2534,26 +2566,25 @@ async function loadStaffAuthDetails(){
   if(!targetId)return;
   if(status)status.textContent='Loading current account record from Supabase Auth…';
   try{
-    const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_auth_manage',operation:'get_account_details',target_user_id:targetId}});
+    const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_account_admin',operation:'lookup',identifier:targetId}});
     if(error)throw error;
-    if(!data?.success)throw new Error(data?.error||'Could not load Auth record.');
+    if(!data?.success||!data?.account?.user_id)throw new Error(data?.error||'Could not load Auth record.');
+    const account=data.account;
     const put=(id,value)=>{const el=document.getElementById(id);if(el)el.value=value==null?'':String(value)};
-    put('staff-auth-user-id',data.target_user_id||targetId);
-    put('staff-auth-current-email',data.email||'(no email address)');
-    put('staff-auth-email-confirmed',data.email_confirmed_at?'Yes':'No');
-    put('staff-auth-created-at',data.created_at?fmt(data.created_at):'—');
-    put('staff-auth-last-sign-in',data.last_sign_in_at?fmt(data.last_sign_in_at):'—');
-    put('staff-auth-provider',data.provider||'—');
-    put('staff-auth-username',data.auth_username||'—');
-    put('staff-auth-chat-alias',data.chat_alias||'—');
-    put('staff-auth-user-metadata',JSON.stringify(data.user_metadata??{},null,2));
-    put('staff-auth-app-metadata',JSON.stringify(data.app_metadata??{},null,2));
-    put('staff-auth-raw-record',JSON.stringify(data,null,2));
+    put('staff-auth-user-id',account.user_id||targetId);
+    put('staff-auth-current-email',account.email||'(no email address)');
+    put('staff-auth-email-confirmed',account.email_confirmed||account.email_confirmed_at?'Yes':'No');
+    put('staff-auth-created-at',account.created_at?fmt(account.created_at):'—');
+    put('staff-auth-last-sign-in',account.last_sign_in_at?fmt(account.last_sign_in_at):'—');
+    put('staff-auth-provider',account.provider||'—');
+    put('staff-auth-username',account.auth_username||account.username||'—');
+    put('staff-auth-chat-alias',account.chat_alias||'—');
+    put('staff-auth-user-metadata',JSON.stringify({username:account.auth_username||account.username||null,chat_alias:account.chat_alias||null},null,2));
+    put('staff-auth-app-metadata',JSON.stringify(account.app_metadata??{},null,2));
+    put('staff-auth-raw-record',JSON.stringify(account,null,2));
     if(status)status.textContent='Current Auth email and account details loaded.';
   }catch(e){
     let detail=e?.message||'Unknown error';
-    // Supabase FunctionsHttpError often hides the JSON body behind context;
-    // surface the server's actual permission/deployment error for staff.
     try{
       const response=e?.context;
       if(response&&typeof response.clone==='function'){
