@@ -4214,7 +4214,7 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
            
             class="search-bar"
             type="search"
-            placeholder="Search movies..."
+            placeholder="Type a movie or TV series..."
             autocomplete="off"
             inputmode="search"
             enterkeyhint="search"
@@ -4229,9 +4229,9 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
             data-bwignore="true"
             data-protonpass-ignore="true"
             data-keeper-ignore="true"
-            readonly
-            oninput="v18HeaderMovieSearch(this.value)"
-            onfocus="protectMovieSearchField(this)" role="searchbox">
+            oninput="searchMediaWatch(this.value)"
+            onfocus="this.removeAttribute('readonly')" role="searchbox">
+          <div id="watch-search-results" class="watch-search-results" role="listbox" aria-label="Movie and TV search results"></div>
         </div>
 
         <div class="user-search-container" role="search">
