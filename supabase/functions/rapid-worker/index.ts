@@ -2276,11 +2276,18 @@ Deno.serve(async (request: Request) => {
       }
       const targetEmail = String(targetData.user.email ?? "").trim();
       if (operation === "get_account_details") {
+        const authUser = targetData.user;
+        const authMetadata = authUser.user_metadata ?? {};
         return json({
           success: true,
           target_user_id: targetUserId,
           email: targetEmail,
-          email_confirmed_at: targetData.user.email_confirmed_at ?? null,
+          email_confirmed_at: authUser.email_confirmed_at ?? null,
+          created_at: authUser.created_at ?? null,
+          last_sign_in_at: authUser.last_sign_in_at ?? null,
+          auth_username: typeof authMetadata.username === "string" ? authMetadata.username : "",
+          chat_alias: typeof authMetadata.chat_alias === "string" ? authMetadata.chat_alias : "",
+          provider: typeof authUser.app_metadata?.provider === "string" ? authUser.app_metadata.provider : "",
         });
       }
       if (operation === "send_password_reset") {
