@@ -589,7 +589,7 @@ function buildGuardJS() {
     scrubNode(document.documentElement || document);
   }, 3000);
 
-  // Re-applied 200% gain for the Flix2Watch player only.
+  // Dialogue/loudness enhancement for the Flix2Watch player only.
   // The media element's own volume slider remains in the signal path.
   // Never route known cross-origin media through Web Audio without CORS.
   const F2W_AUDIO_GAIN = 2.0;
@@ -622,17 +622,31 @@ function buildGuardJS() {
       const ctx = f2wAudioContexts[0] || new AudioCtx();
       if (!f2wAudioContexts.length) f2wAudioContexts.push(ctx);
       const source = ctx.createMediaElementSource(media);
+
+      // Loudness-focused chain: compress quieter dialogue/dynamics before adding
+      // gain, rather than relying on a gain multiplier alone. Keep this inside
+      // the media document and only attach to media that passed the CORS guard.
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.setValueAtTime(-24, ctx.currentTime);
+      compressor.knee.setValueAtTime(24, ctx.currentTime);
+      compressor.ratio.setValueAtTime(8, ctx.currentTime);
+      compressor.attack.setValueAtTime(0.004, ctx.currentTime);
+      compressor.release.setValueAtTime(0.22, ctx.currentTime);
+
       const gain = ctx.createGain();
       gain.gain.setValueAtTime(F2W_AUDIO_GAIN, ctx.currentTime);
-      source.connect(gain);
+      source.connect(compressor);
+      compressor.connect(gain);
       gain.connect(ctx.destination);
       media.__f2wBoost150Context = ctx;
+      media.__f2wLoudnessCompressor = compressor;
+      media.__f2wLoudnessGain = gain;
       const resumeAudio = () => {
         if (ctx.state === 'suspended') ctx.resume().catch(() => {});
       };
       media.addEventListener('play', resumeAudio, { passive: true });
       media.addEventListener('playing', resumeAudio, { passive: true });
-      try { console.info('[Flix2Watch] 200% audio gain enabled', { sourceURL, gain: F2W_AUDIO_GAIN }); } catch (_) {}
+      try { console.info('[Flix2Watch] loudness enhancement enabled', { sourceURL, gain: F2W_AUDIO_GAIN, compressor: true }); } catch (_) {}
     } catch (error) {
       try { console.warn('[Flix2Watch] audio boost failed to attach', error); } catch (_) {}
       // Unsupported or CORS-restricted media remains on its native audio path.
