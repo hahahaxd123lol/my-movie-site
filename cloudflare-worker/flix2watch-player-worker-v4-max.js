@@ -367,7 +367,39 @@ function buildGuardJS() {
     return false;
   };
 
+  // Do not let the popup/navigation guard consume interactions inside the
+  // player's caption/subtitle settings UI. Some player builds implement these
+  // controls with link-like elements, so stopping their activation can make the
+  // Font / Text Size / Text Opacity menus close immediately.
+  const isSubtitleSettingsInteraction = event => {
+    let path = [];
+    try { path = event.composedPath?.() || []; } catch (_) {}
+    const elements = path.filter(n => n && n.nodeType === 1);
+    const markers = elements.map(el => {
+      let cls = '';
+      try { cls = typeof el.className === 'string' ? el.className : ''; } catch (_) {}
+      const attrs = ['id', 'aria-label', 'title', 'data-testid', 'role']
+        .map(name => { try { return el.getAttribute(name) || ''; } catch (_) { return ''; } });
+      return [cls, ...attrs].join(' ');
+    }).join(' ');
+    if (/(?:subtitle|caption|closed[-_ ]?caption|cc[-_ ]?(?:menu|settings|options)|(?:menu|settings|options)[-_ ]?(?:subtitle|caption))/i.test(markers)) {
+      return true;
+    }
+
+    // Inspect only reasonably small UI containers; never use the whole body
+    // text, which could accidentally exempt unrelated clicks on the player.
+    const uiText = elements.map(el => {
+      try {
+        const value = String(el.innerText || el.textContent || '').trim();
+        return value.length > 0 && value.length <= 1200 ? value : '';
+      } catch (_) { return ''; }
+    }).join(' ').toLowerCase();
+    return /\b(?:subtitle|subtitles|caption|captions|closed captions|cc)\b/.test(uiText) &&
+      /\b(?:font|font size|font family|text size|text opacity|opacity)\b/.test(uiText);
+  };
+
   const interceptActivation = event => {
+    if (isSubtitleSettingsInteraction(event)) return;
     const el = findNavigable(event);
     if (!el) return;
     const [url, target] = destinationOf(el);
