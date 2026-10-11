@@ -30,3 +30,7 @@ document.addEventListener('paste',e=>setTimeout(()=>scrubInput(e.target),0),true
 document.addEventListener('focusin',e=>scrubInput(e.target),true);
 window.f2wCleanDisplayName=clean;
 })();
+
+
+/* F2W staff account credentials panel v1 */
+(()=>{if(!/^\/staff(?:\/|$)/i.test(location.pathname))return;if(document.querySelector('script[data-f2w-staff-credentials-v1]'))return;const s=document.createElement('script');s.src='/staff-account-credentials-v1.js?v=1';s.dataset.f2wStaffCredentialsV1='1';s.defer=true;(document.head||document.documentElement).appendChild(s);})();
