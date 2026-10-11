@@ -2509,8 +2509,20 @@ async function lookupAccountToolsTarget(){
   if(moderationInput)moderationInput.value=username;
   await inspectUser();
   if(currentSnapshot?.profile?.user_id){
-    if(status)status.textContent="Loaded @"+String(currentSnapshot.profile.username||username)+"; Supabase Auth details are shown below.";
     showTab("account-tools");
+    const panel=document.getElementById("panel-account-tools");
+    const card=document.getElementById("auth-management-card");
+    if(panel&&card){
+      // Reattach and explicitly reveal the card after the async account lookup.
+      panel.appendChild(card);
+      card.hidden=false;
+      card.removeAttribute("hidden");
+      for(const [property,value] of Object.entries({display:"block",visibility:"visible",opacity:"1",height:"auto","max-height":"none",overflow:"visible","content-visibility":"visible"})){
+        card.style.setProperty(property,value,"important");
+      }
+    }
+    if(status)status.textContent="Loaded @"+String(currentSnapshot.profile.username||username)+"; loading Supabase Auth details below.";
+    await loadStaffAuthDetails();
   }else if(status){
     status.textContent="Could not load that account. Check the username and your staff permissions.";
   }
