@@ -410,6 +410,8 @@ html{overflow-y:scroll}
     }
 
     .tv-controls.active { display: flex; }
+    /* Keep the TV navigator visible even when the markup starts with the HTML hidden attribute. */
+    #tv-controls.active:not([hidden]) { display: flex !important; visibility: visible !important; opacity: 1 !important; }
 
     .control-group {
       display: flex;
@@ -6994,14 +6996,19 @@ if(currentUser){
           if (mediaType === 'tv' && data.seasons) {
             tvSeasonsData = data.seasons.filter(s => s.season_number >= 1 && s.episode_count > 0);
             const tvControls=document.getElementById('tv-controls');
-            tvControls.hidden=false;
+            tvControls.removeAttribute('hidden');
             tvControls.setAttribute('aria-hidden','false');
-            populateSeasons();
             tvControls.classList.add('active');
+            tvControls.style.setProperty('display','flex','important');
+            tvControls.style.setProperty('visibility','visible','important');
+            populateSeasons();
           } else {
             const tvControls=document.getElementById('tv-controls');
-            tvControls.hidden=true;
+            tvControls.setAttribute('hidden','');
             tvControls.setAttribute('aria-hidden','true');
+            tvControls.classList.remove('active');
+            tvControls.style.removeProperty('display');
+            tvControls.style.removeProperty('visibility');
             loadPlayer();
           }
 
