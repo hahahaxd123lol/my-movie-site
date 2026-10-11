@@ -291,8 +291,8 @@
       const type = (info.mediaType === 'tv' || info.media_type === 'tv' || params.get('type') === 'tv') ? 'tv' : 'movie';
       let id = String(params.get('id') || '').trim();
       const providerId = info.tmdb || info.tmdbId || info.mediaId || info.media_id;
-      if (providerId) id = String(providerId).replace(/\\D/g, '') || id;
-      id = String(id).replace(/\\D/g, '') || id;
+      if (providerId) id = String(providerId).replace(/\D/g, '') || id;
+      id = String(id).replace(/\D/g, '') || id;
       if (!id) return;
       const season = Number(info.season || params.get('season') || document.getElementById('season-select')?.value || 1);
       const episode = Number(info.episode || params.get('episode') || document.getElementById('episode-select')?.value || 1);
@@ -300,7 +300,7 @@
       if (!title || /watch|flix2/i.test(title)) title = document.title.split('|')[0].trim();
       let poster_path = '';
       const og = document.querySelector('meta[property="og:image"]')?.content || '';
-      const pm = og.match(/\\/t\\/p\\/\\w+(\\/[^?\\s]+)/);
+      const pm = og.match(/\/t\/p\/\w+(\/[^?\s]+)/);
       if (pm) poster_path = pm[1];
       upsertItem({ id, type, season, episode, seconds: progress, duration, title, poster_path });
     } catch {}
