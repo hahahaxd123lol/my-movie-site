@@ -28,7 +28,7 @@
  * - no iframe sandbox attribute and no CSP sandbox directive
  */
 
-const VERSION = 'v4-max-final-settings-fix3';
+const VERSION = 'v4-max-final-settings-fix4-diagnostic';
 
 const AD_HOST_FRAGMENTS = [
   'doubleclick.net',
@@ -596,9 +596,9 @@ function buildGuardJS() {
 const GUARD_JS = buildGuardJS();
 
 class GuardInjector {
-  constructor() { this.injected = false; }
+  constructor(enabled = true) { this.injected = false; this.enabled = enabled; }
   element(el) {
-    if (this.injected) return;
+    if (!this.enabled || this.injected) return;
     this.injected = true;
     const safe = GUARD_JS.replace(/<\/script/gi, '<\\/script');
     el.prepend(`<script data-f2w-popup-guard="${VERSION}">${safe}</script>`, { html: true });
@@ -718,7 +718,8 @@ export default {
     }
 
     const base = responseWithHeaders(response, hardenedHeaders(response.headers));
-    const injector = new GuardInjector();
+    const guardEnabled = url.searchParams.get('__f2w_guard') !== 'off';
+    const injector = new GuardInjector(guardEnabled);
     const resourceBlocker = new StaticResourceBlocker(request.url);
 
     return new HTMLRewriter()
