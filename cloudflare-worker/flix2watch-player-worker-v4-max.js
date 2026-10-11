@@ -28,7 +28,7 @@
  * - no iframe sandbox attribute and no CSP sandbox directive
  */
 
-const VERSION = 'v4-max-final-volume-boost-150';
+const VERSION = 'v4-max-final-volume-boost-150-republished';
 
 const AD_HOST_FRAGMENTS = [
   'doubleclick.net',
