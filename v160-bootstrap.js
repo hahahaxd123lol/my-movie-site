@@ -379,3 +379,34 @@ if(!install()){
     start();
 })();
 // f2w-force-save:v250-discord-every-page:20260904
+
+
+/* F2W v261 — restore the existing auth recovery, Halloween, and UUID-based continue-watching add-ons. */
+(() => {
+  'use strict';
+  if (!document.getElementById('f2w-v261-restored-features-css')) {
+    const style = document.createElement('style');
+    style.id = 'f2w-v261-restored-features-css';
+    style.textContent = `
+      #f2w-live-sports-nav-v205,
+      [data-f2w-live-sports],
+      .f2w-live-sports-link,
+      body .f2w-primary-nav a[href^="/live"],
+      #f2w-live-sports-card,
+      .f2w-live-sports-card,
+      [data-f2w-live-sports-card] {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+  }
+  if (!document.querySelector('script[data-f2w-v261-restored-features]')) {
+    const script = document.createElement('script');
+    script.src = '/v260-password-reset.js?v=261';
+    script.defer = true;
+    script.dataset.f2wV261RestoredFeatures = '1';
+    (document.head || document.documentElement).appendChild(script);
+  }
+})();

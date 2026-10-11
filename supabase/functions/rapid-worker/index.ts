@@ -2025,6 +2025,67 @@ Deno.serve(async (request: Request) => {
 
     const action = String(body.action ?? "").trim();
 
+    if (action === "staff_auth_manage") {
+      const authorization = request.headers.get("authorization") ?? "";
+      const accessToken = authorization.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() ?? "";
+      if (!accessToken) {
+        return json({ success: false, error: "Sign in as the site owner first." }, 401);
+      }
+      const { data: callerResult, error: callerError } = await supabase.auth.getUser(accessToken);
+      if (callerError || !callerResult?.user) {
+        return json({ success: false, error: "Your session is invalid or expired." }, 401);
+      }
+      if (callerResult.user.id !== OWNER_UUID) {
+        return json({ success: false, error: "Only the site owner can change another account's email or password." }, 403);
+      }
+
+      const targetUserId = String(body.target_user_id ?? "").trim();
+      const operation = String(body.operation ?? "").trim();
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(targetUserId)) {
+        return json({ success: false, error: "Invalid target account ID." }, 400);
+      }
+      if (targetUserId === OWNER_UUID) {
+        return json({ success: false, error: "The owner account cannot be changed from this panel." }, 403);
+      }
+      const { data: targetData, error: targetError } = await supabase.auth.admin.getUserById(targetUserId);
+      if (targetError || !targetData?.user) {
+        return json({ success: false, error: "Target account not found." }, 404);
+      }
+      const targetEmail = String(targetData.user.email ?? "").trim();
+      if (operation === "send_password_reset") {
+        if (!targetEmail) return json({ success: false, error: "The target account has no email address." }, 400);
+        const { error } = await supabase.auth.resetPasswordForEmail(targetEmail, {
+          redirectTo: "https://flix2watch.com/update-password/",
+        });
+        if (error) return json({ success: false, error: error.message }, 400);
+        return json({ success: true, message: "Password reset link sent to the account's current email." });
+      }
+      if (operation === "change_email") {
+        const newEmail = String(body.new_email ?? "").trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+          return json({ success: false, error: "Enter a valid new email address." }, 400);
+        }
+        if (newEmail.toLowerCase() === targetEmail.toLowerCase()) {
+          return json({ success: false, error: "That is already the account email." }, 400);
+        }
+        const { error } = await supabase.auth.admin.updateUserById(targetUserId, { email: newEmail, email_confirm: true });
+        if (error) return json({ success: false, error: error.message }, 400);
+        return json({ success: true, message: "Email address updated and confirmed by the site owner." });
+      }
+      if (operation === "change_password") {
+        const newPassword = String(body.new_password ?? "");
+        if (newPassword.length < 12) {
+          return json({ success: false, error: "Use a password with at least 12 characters." }, 400);
+        }
+        const { error } = await supabase.auth.admin.updateUserById(targetUserId, { password: newPassword });
+        if (error) return json({ success: false, error: error.message }, 400);
+        return json({ success: true, message: "Password updated. Give the new password to the user securely and ask them to change it after signing in." });
+      }
+      return json({ success: false, error: "Unknown account-management action." }, 400);
+    }
+
+
+
     if (action === "list") {
       const [messages, announcement, config, pinnedMessage] = await Promise.all([
         getMessages(), getActiveAnnouncement(), getChatConfig(), getPinnedMessage(),

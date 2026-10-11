@@ -1351,6 +1351,18 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       </div>
       
       <div class="card" id="user-snapshot" hidden></div>
+      <div class="card" id="auth-management-card" hidden style="display:none">
+        <div class="card-head"><strong><i class="fa-solid fa-key"></i> Account email & password</strong><span>Owner-only</span></div>
+        <div class="notice">These actions use the authenticated server-side admin API. Password reset sends a link to the account's current email.</div>
+        <div class="field"><label for="staff-target-new-email">NEW EMAIL ADDRESS</label><input id="staff-target-new-email" type="email" autocomplete="off" placeholder="new-address@example.com"></div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" type="button" onclick="runStaffAuthAction('send_password_reset')"><i class="fa-solid fa-envelope"></i> Email password reset link</button>
+          <button class="btn primary" type="button" onclick="runStaffAuthAction('change_email')"><i class="fa-solid fa-at"></i> Change email</button>
+        </div>
+        <div class="field" style="margin-top:12px"><label for="staff-target-new-password">NEW PASSWORD (12+ CHARACTERS)</label><input id="staff-target-new-password" type="password" autocomplete="new-password" minlength="12" placeholder="Enter a temporary password"></div>
+        <div class="row" style="margin-top:8px"><button class="btn danger" type="button" onclick="runStaffAuthAction('change_password')"><i class="fa-solid fa-lock"></i> Set new password</button></div>
+        <div class="moderation-status" id="staff-auth-management-status" role="status" aria-live="polite">Load an account to manage its login details.</div>
+      </div>
       <div class="card" id="permission-card" hidden>
         <div class="card-head"><strong>Staff permission overrides</strong><span>Owner-only backend overrides.</span></div>
         <div id="permission-grid" class="perm-grid"></div>
@@ -1978,6 +1990,7 @@ function initUserAutofind(){
   document.addEventListener('click',e=>{if(!e.target.closest('.user-autofind-wrap'))hideUserAutofind()});
 }
 function clearModerationTarget(){
+  showAuthManagementCard(false);
   currentSnapshot=null;
   document.getElementById('user-target').value='';
   document.getElementById('moderation-target-profile').innerHTML='';
@@ -2372,6 +2385,7 @@ async function inspectUser(){
     }
 
     renderUserSnapshot();
+    showAuthManagementCard(staffContext?.role === 'owner');
     await loadQuickModerationState();
 
     if(staffContext.role==='owner'){
@@ -2382,12 +2396,53 @@ async function inspectUser(){
   }catch(e){
     console.error('Account enforcement load failed:',e);
     currentSnapshot=null;
+    showAuthManagementCard(false);
     setQuickControlsEnabled(false);
     if(status)status.innerHTML=`<strong>Could not load account state.</strong> ${esc(e?.message||'Unknown error')}`;
     if(sync)sync.textContent='Load failed';
     toast(e?.message||'Could not load account');
   }
 }
+function showAuthManagementCard(show){
+  const card=document.getElementById('auth-management-card');
+  if(!card)return;
+  const visible=!!show && !!currentSnapshot?.profile?.user_id;
+  card.hidden=!visible;
+  if(visible)card.style.removeProperty('display');
+  else card.style.setProperty('display','none','important');
+}
+async function runStaffAuthAction(operation){
+  const targetId=String(currentSnapshot?.profile?.user_id||'');
+  const status=document.getElementById('staff-auth-management-status');
+  const targetName=String(currentSnapshot?.profile?.username||'this account');
+  if(staffContext?.role!=='owner'||!targetId){if(status)status.textContent='Owner access and a loaded target account are required.';return;}
+  let newEmail='',newPassword='';
+  if(operation==='change_email'){
+    newEmail=String(document.getElementById('staff-target-new-email')?.value||'').trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){if(status)status.textContent='Enter a valid new email address.';return;}
+  }else if(operation==='change_password'){
+    newPassword=String(document.getElementById('staff-target-new-password')?.value||'');
+    if(newPassword.length<12){if(status)status.textContent='Use a password with at least 12 characters.';return;}
+  }
+  const labels={send_password_reset:'Send password reset link',change_email:'Change email address',change_password:'Set new password'};
+  const confirmed=await staffConfirm({title:labels[operation]||'Confirm account action',copy:'Apply this login change to @'+targetName+'? This action affects the target account.',confirmText:'Confirm'});
+  if(!confirmed)return;
+  if(status)status.textContent='Applying action…';
+  try{
+    const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_auth_manage',operation,target_user_id:targetId,new_email:newEmail,new_password:newPassword}});
+    if(error)throw error;
+    if(!data?.success)throw new Error(data?.error||'The server could not complete the action.');
+    if(operation==='change_password'){const input=document.getElementById('staff-target-new-password');if(input)input.value='';}
+    if(operation==='change_email'){const input=document.getElementById('staff-target-new-email');if(input)input.value='';}
+    if(status)status.textContent=data.message||'Account action completed.';
+    toast(data.message||'Account action completed.');
+  }catch(e){
+    const message=e?.message||'Account action failed.';
+    if(status)status.textContent=message;
+    toast(message);
+  }
+}
+
 function renderUserSnapshot(){
   const s=currentSnapshot,p=s.profile;
   document.getElementById('user-snapshot').innerHTML=`
