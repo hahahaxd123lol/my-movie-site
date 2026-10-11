@@ -841,6 +841,8 @@ html{overflow-y:scroll}
     async function f2wLoadCloudResume(){
       if(f2wCloudResumeLoaded||!mediaId)return;
       f2wCloudResumeLoaded=true;
+      const routeResume=Number(new URLSearchParams(window.location.search).get('resume')||0);
+      if(Number.isFinite(routeResume)&&routeResume>10){window.__f2wCloudResumeSeconds=routeResume;return;}
       try{
         const {data:{session}}=await chatSupabase.auth.getSession();if(!session?.user)return;
         const s=Number(document.getElementById('season-select')?.value||1),e=Number(document.getElementById('episode-select')?.value||1);
@@ -6969,7 +6971,10 @@ if(currentUser){
       });
 
       if (tvSeasonsData.length > 0) {
-        fetchEpisodes(tvSeasonsData[0].season_number);
+        const requestedSeason = Number(urlParams.get('season') || 0);
+        const initialSeason = tvSeasonsData.find(season => Number(season.season_number) === requestedSeason) || tvSeasonsData[0];
+        seasonSelect.value = String(initialSeason.season_number);
+        fetchEpisodes(initialSeason.season_number);
       }
     }
 
@@ -6999,6 +7004,15 @@ if(currentUser){
             opt.value = 1;
             opt.textContent = 'Episode 1';
             episodeSelect.appendChild(opt);
+          }
+          if (!window.__f2wContinueWatchingEpisodeApplied) {
+            const requestedSeason = Number(urlParams.get('season') || 0);
+            const requestedEpisode = Number(urlParams.get('episode') || 0);
+            if (requestedSeason > 0 && requestedEpisode > 0 && Number(seasonNumber) === requestedSeason &&
+                [...episodeSelect.options].some(opt => Number(opt.value) === requestedEpisode)) {
+              episodeSelect.value = String(requestedEpisode);
+              window.__f2wContinueWatchingEpisodeApplied = true;
+            }
           }
           loadPlayer();
         })
@@ -7089,7 +7103,14 @@ if(currentUser){
             // between TMDB and IMDb depending on metadata timing, which made saved
             // positions appear to vanish on a later visit.
             const progressKey = `f2w_resume_${mediaType}_${mediaId}${mediaType === 'tv' ? `_s${seasonNum}e${episodeNum}` : ''}`;
-            const saved = Math.max(Number(localStorage.getItem(progressKey) || 0), Number(window.__f2wCloudResumeSeconds || 0));
+            const routeResume = !window.__f2wContinueWatchingResumeConsumed ? Number(urlParams.get('resume') || 0) : 0;
+            const useRouteResume = Number.isFinite(routeResume) && routeResume > 10;
+            const saved = useRouteResume ? routeResume : Math.max(Number(localStorage.getItem(progressKey) || 0), Number(window.__f2wCloudResumeSeconds || 0));
+            if (useRouteResume) {
+              window.__f2wContinueWatchingResumeConsumed = true;
+              window.__f2wCloudResumeSeconds = routeResume;
+              try { localStorage.setItem(progressKey, String(Math.floor(routeResume))); } catch (_) {}
+            }
             if (Number.isFinite(saved) && saved > 10 && !window.__f2wStartOverRequested) embedUrl += `&startAt=${Math.floor(saved)}`;
           } catch (_) {}
           break;

@@ -498,7 +498,25 @@
     strip.querySelectorAll('.f2w-cw-card').forEach(card => {
       card.addEventListener('click', () => {
         const url = card.getAttribute('data-cw-url');
-        if (url) location.href = url;
+        if (!url) return;
+        try {
+          const destination = new URL(url, location.origin);
+          const params = destination.searchParams;
+          const id = String(params.get('id') || '').replace(/\D/g, '');
+          const type = params.get('type') === 'tv' ? 'tv' : 'movie';
+          const seconds = Math.max(0, Math.floor(Number(params.get('resume') || 0)));
+          const season = Math.max(1, Number(params.get('season') || 1));
+          const episode = Math.max(1, Number(params.get('episode') || 1));
+          if (id && seconds > 10) {
+            const key = type === 'tv'
+              ? 'f2w_resume_tv_' + id + '_s' + season + 'e' + episode
+              : 'f2w_resume_movie_' + id;
+            localStorage.setItem(key, String(seconds));
+          }
+          location.href = destination.pathname + destination.search + destination.hash;
+        } catch {
+          location.href = url;
+        }
       });
     });
   }

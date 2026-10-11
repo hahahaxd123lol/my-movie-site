@@ -2052,6 +2052,14 @@ Deno.serve(async (request: Request) => {
         return json({ success: false, error: "Target account not found." }, 404);
       }
       const targetEmail = String(targetData.user.email ?? "").trim();
+      if (operation === "get_account_details") {
+        return json({
+          success: true,
+          target_user_id: targetUserId,
+          email: targetEmail,
+          email_confirmed_at: targetData.user.email_confirmed_at ?? null,
+        });
+      }
       if (operation === "send_password_reset") {
         if (!targetEmail) return json({ success: false, error: "The target account has no email address." }, 400);
         const { error } = await supabase.auth.resetPasswordForEmail(targetEmail, {
@@ -2060,7 +2068,31 @@ Deno.serve(async (request: Request) => {
         if (error) return json({ success: false, error: error.message }, 400);
         return json({ success: true, message: "Password reset link sent to the account's current email." });
       }
-      if (operation === "change_email") {
+      if (operation === "generate_email_change_link") {
+        const newEmail = String(body.new_email ?? "").trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+          return json({ success: false, error: "Enter a valid new email address." }, 400);
+        }
+        if (!targetEmail) return json({ success: false, error: "The target account has no current email address." }, 400);
+        if (newEmail.toLowerCase() === targetEmail.toLowerCase()) {
+          return json({ success: false, error: "That is already the account email." }, 400);
+        }
+        const { data, error } = await supabase.auth.admin.generateLink({
+          type: "email_change_new",
+          email: targetEmail,
+          newEmail,
+          options: { redirectTo: "https://flix2watch.com/account/" },
+        });
+        if (error) return json({ success: false, error: error.message }, 400);
+        const actionLink = String(data?.properties?.action_link ?? "");
+        if (!actionLink) return json({ success: false, error: "Supabase did not return an email confirmation link." }, 500);
+        return json({
+          success: true,
+          action_link: actionLink,
+          message: "Email confirmation link generated. Copy it and send it to the user at the new email address; generating a link does not send an email automatically.",
+        });
+      }
+      if (operation === "change_email_manual") {
         const newEmail = String(body.new_email ?? "").trim();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
           return json({ success: false, error: "Enter a valid new email address." }, 400);
@@ -2070,7 +2102,7 @@ Deno.serve(async (request: Request) => {
         }
         const { error } = await supabase.auth.admin.updateUserById(targetUserId, { email: newEmail, email_confirm: true });
         if (error) return json({ success: false, error: error.message }, 400);
-        return json({ success: true, message: "Email address updated and confirmed by the site owner." });
+        return json({ success: true, email: newEmail, message: "Email address changed immediately and marked confirmed by the site owner." });
       }
       if (operation === "change_password") {
         const newPassword = String(body.new_password ?? "");
