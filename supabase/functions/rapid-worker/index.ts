@@ -2336,8 +2336,12 @@ Deno.serve(async (request: Request) => {
       }
       if (operation === "change_password") {
         const newPassword = String(body.new_password ?? "");
-        if (newPassword.length < 12) {
-          return json({ success: false, error: "Use a password with at least 12 characters." }, 400);
+        const confirmPassword = String(body.confirm_password ?? "");
+        if (newPassword.length < 12 || newPassword.length > 128) {
+          return json({ success: false, error: "Use a password with 12–128 characters." }, 400);
+        }
+        if (!confirmPassword || newPassword !== confirmPassword) {
+          return json({ success: false, error: "The new password and confirmation do not match." }, 400);
         }
         const { error } = await supabase.auth.admin.updateUserById(targetUserId, { password: newPassword });
         if (error) return json({ success: false, error: error.message }, 400);
