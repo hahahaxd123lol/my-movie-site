@@ -382,20 +382,23 @@ function buildGuardJS() {
         .map(name => { try { return el.getAttribute(name) || ''; } catch (_) { return ''; } });
       return [cls, ...attrs].join(' ');
     }).join(' ');
-    if (/(?:subtitle|caption|closed[-_ ]?caption|cc[-_ ]?(?:menu|settings|options)|(?:menu|settings|options)[-_ ]?(?:subtitle|caption))/i.test(markers)) {
+
+    // Player builds use different class names for their menus. Exempt common
+    // menu/settings/options containers from navigation interception only.
+    // Popup blocking and ad-resource filtering remain active.
+    if (/(?:subtitle|caption|closed[-_ ]?caption|cc[-_ ]?(?:menu|settings|options)|(?:menu|settings|options)[-_ ]?(?:subtitle|caption)|(?:^|[\s_-])(?:settings|options|menu)(?:$|[\s_-]))/i.test(markers)) {
       return true;
     }
 
-    // Inspect only reasonably small UI containers; never use the whole body
-    // text, which could accidentally exempt unrelated clicks on the player.
+    // Some player builds render menu options as links, and the option's own
+    // text may not mention "subtitle". Recognize these small menu labels too.
     const uiText = elements.map(el => {
       try {
         const value = String(el.innerText || el.textContent || '').trim();
         return value.length > 0 && value.length <= 1200 ? value : '';
       } catch (_) { return ''; }
     }).join(' ').toLowerCase();
-    return /\b(?:subtitle|subtitles|caption|captions|closed captions|cc)\b/.test(uiText) &&
-      /\b(?:font|font size|font family|text size|text opacity|opacity)\b/.test(uiText);
+    return /\b(?:font|font size|font family|text size|text opacity|opacity|subtitle options|closed captions)\b/.test(uiText);
   };
 
   const interceptActivation = event => {
