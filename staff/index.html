@@ -1075,6 +1075,37 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 #panel-account-tools #auth-management-card{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;overflow:visible!important;content-visibility:visible!important}
 #panel-account-tools #auth-management-card[hidden]{display:block!important;visibility:visible!important}
 </style>
+<style id="f2w-staff-layout-compact-v1">
+/* Compact the staff dashboard after the oversized V2 spacing/type scale. */
+#staff-app-shell.shell{max-width:1600px!important;padding:18px 20px 30px!important;grid-template-columns:230px minmax(0,1fr)!important;gap:18px!important}
+#staff-app-shell aside{top:88px!important;padding:8px!important}
+#staff-app-shell .tab-btn{padding:10px!important;font-size:.76rem!important;line-height:1.2!important;gap:8px!important}
+#staff-app-shell .tab-btn i{width:18px!important}
+#staff-app-shell .hero{padding:22px!important;margin-bottom:14px!important;gap:14px!important}
+#staff-app-shell .kicker{font-size:.62rem!important}
+#staff-app-shell h1{font-size:clamp(1.8rem,3vw,2.8rem)!important;margin:6px 0 8px!important}
+#staff-app-shell .hero p{font-size:.82rem!important;line-height:1.55!important}
+#staff-app-shell .grid{gap:12px!important}
+#staff-app-shell .stat{padding:15px!important}
+#staff-app-shell .stat strong{font-size:1.45rem!important}
+#staff-app-shell .stat span{font-size:.65rem!important}
+#staff-app-shell .card{padding:16px!important;margin-top:12px!important}
+#staff-app-shell .card-head{margin-bottom:11px!important;gap:9px!important}
+#staff-app-shell .card-head strong{font-size:.88rem!important}
+#staff-app-shell .card-head span{font-size:.68rem!important}
+#staff-app-shell .field{min-width:150px!important;gap:5px!important}
+#staff-app-shell label{font-size:.64rem!important}
+#staff-app-shell input,#staff-app-shell textarea,#staff-app-shell select{padding:9px 10px!important;font-size:.78rem!important;line-height:1.3!important}
+#staff-app-shell textarea{min-height:90px}
+#staff-app-shell .btn{padding:8px 10px!important;font-size:.72rem!important;gap:7px!important}
+#staff-app-shell .notice{padding:10px!important;font-size:.72rem!important;line-height:1.5!important}
+#staff-app-shell .help-inline{font-size:.72rem!important;line-height:1.5!important;padding:9px 11px!important}
+#staff-app-shell th,#staff-app-shell td{padding:9px 10px!important;font-size:.68rem!important;line-height:1.4!important}
+#staff-app-shell th{font-size:.6rem!important}
+@media(max-width:950px){#staff-app-shell.shell{padding:14px!important;grid-template-columns:1fr!important}#staff-app-shell .tab-btn{padding:9px 11px!important}}
+@media(max-width:650px){#staff-app-shell.shell{padding:10px!important}#staff-app-shell .hero{padding:16px!important}#staff-app-shell h1{font-size:1.8rem!important}#staff-app-shell .card{padding:12px!important}}
+</style>
+
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
