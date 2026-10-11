@@ -1350,22 +1350,30 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         </div>
       </div>
       
-      <div class="card" id="user-snapshot" hidden></div>
-      <div class="card" id="auth-management-card" hidden style="display:none">
-        <div class="card-head"><strong><i class="fa-solid fa-key"></i> Account email & password</strong><span>Owner-only</span></div>
-        <div class="notice">Owner-only account actions. The username search above resolves to the account UUID; the current authentication email is loaded from Supabase Auth.</div>
-        <div class="notice" id="staff-auth-target-identity">Load an account by username to see its UUID and email.</div>
-        <div class="field"><label for="staff-target-new-email">NEW EMAIL ADDRESS</label><input id="staff-target-new-email" type="email" autocomplete="off" placeholder="new-address@example.com"></div>
-        <div class="row" style="margin-top:8px">
-          <button class="btn" type="button" onclick="runStaffAuthAction('send_password_reset')"><i class="fa-solid fa-envelope"></i> Email password reset link</button>
-          <button class="btn primary" type="button" onclick="runStaffAuthAction('generate_email_change_link')"><i class="fa-solid fa-envelope-open-text"></i> Generate email confirmation link</button>
-          <button class="btn danger" type="button" onclick="runStaffAuthAction('change_email_manual')"><i class="fa-solid fa-at"></i> Change email immediately</button>
+<div class="card" id="staff-account-credentials">
+        <div class="card-head"><div><strong><i class="fa-solid fa-key"></i> Account password &amp; email</strong><span style="display:block;text-align:left;margin-top:4px">Owner / Staff only · Uses the Supabase Auth account ID</span></div></div>
+        <div class="notice">Enter a username saved in Profiles or the account UUID. If the username is missing, use the UUID. Passwords are never logged or displayed after saving. Email changes are applied immediately by authorized Staff.</div>
+        <div class="row" style="margin-top:12px;align-items:flex-end">
+          <div class="field"><label for="staff-credential-identifier">USERNAME OR ACCOUNT UUID</label><input id="staff-credential-identifier" autocomplete="off" oninput="clearStaffCredentialSelection()" placeholder="username or account UUID"></div>
+          <button class="btn primary" id="staff-credential-lookup" type="button" onclick="loadStaffCredentialAccount()"><i class="fa-solid fa-magnifying-glass"></i> Find account</button>
         </div>
-        <div class="field" style="margin-top:10px"><label for="staff-generated-email-change-link">GENERATED EMAIL CONFIRMATION LINK (COPY AND SEND TO USER)</label><input id="staff-generated-email-change-link" type="url" readonly autocomplete="off" placeholder="Generate a link above"><button class="btn" style="margin-top:6px" type="button" onclick="copyStaffEmailChangeLink()"><i class="fa-solid fa-copy"></i> Copy confirmation link</button></div>
-        <div class="field" style="margin-top:12px"><label for="staff-target-new-password">NEW PASSWORD (12+ CHARACTERS)</label><input id="staff-target-new-password" type="password" autocomplete="new-password" minlength="12" placeholder="Enter a temporary password"></div>
-        <div class="row" style="margin-top:8px"><button class="btn danger" type="button" onclick="runStaffAuthAction('change_password')"><i class="fa-solid fa-lock"></i> Set new password</button></div>
-        <div class="moderation-status" id="staff-auth-management-status" role="status" aria-live="polite">Load an account to manage its login details.</div>
+        <div id="staff-credential-account-summary" class="notice" hidden></div>
+        <div class="field" style="margin-top:10px"><label for="staff-credential-current-email">CURRENT SUPABASE EMAIL</label><input id="staff-credential-current-email" type="email" readonly placeholder="Find an account to load its email"></div>
+        <div class="staff-credential-actions" style="margin-top:14px">
+          <div class="field"><label for="staff-credential-new-password">NEW PASSWORD (MINIMUM 12 CHARACTERS)</label><input id="staff-credential-new-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="New password"></div>
+          <div class="field"><label for="staff-credential-confirm-password">CONFIRM NEW PASSWORD</label><input id="staff-credential-confirm-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="Confirm new password"></div>
+        </div>
+        <div class="row" style="margin-top:12px;flex-wrap:wrap">
+          <button class="btn purple" id="staff-credential-set-password" type="button" onclick="setStaffCredentialPassword()" disabled><i class="fa-solid fa-lock"></i> Set new password</button>
+          <button class="btn" id="staff-credential-send-reset" type="button" onclick="sendStaffCredentialReset()" disabled><i class="fa-solid fa-envelope"></i> Email reset link</button>
+        </div>
+        <div class="row" style="margin-top:14px;align-items:flex-end">
+          <div class="field"><label for="staff-credential-new-email">CHANGE ACCOUNT EMAIL</label><input id="staff-credential-new-email" type="email" autocomplete="off" maxlength="254" placeholder="new-address@example.com"></div>
+          <button class="btn primary" id="staff-credential-update-email" type="button" onclick="updateStaffCredentialEmail()" disabled><i class="fa-solid fa-at"></i> Update email</button>
+        </div>
+        <div id="staff-credential-status" class="moderation-status" aria-live="polite" style="margin-top:10px"></div>
       </div>
+      <div class="card" id="user-snapshot" hidden></div>
       <div class="card" id="permission-card" hidden>
         <div class="card-head"><strong>Staff permission overrides</strong><span>Owner-only backend overrides.</span></div>
         <div id="permission-grid" class="perm-grid"></div>
@@ -1602,12 +1610,14 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </div>
 
 <script>
+window.__f2wStaffBootStage="inline-script-entered";
 const SUPABASE_URL="https://viqufxlcxwgboyxbdhjb.supabase.co";
 const SUPABASE_KEY="sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge";
 const API_KEY="925c48dd6e24fd5e975fe224238bbb45";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let staffContext=null;
 let currentSnapshot=null;
+let staffCredentialAccount=null;
 const allPermissions=[
   'chat_moderate','users_ban','users_mute','users_warn','users_notes',
   'reports_manage','announcements_manage','homepage_manage','streams_manage',
@@ -1887,19 +1897,29 @@ const PAGE_ROLE_TABS={
 };
 async function resolveStaffPageContext(){
   let core={role:'member',username:'',permissions:[]};
-  try{core=await rpc('get_staff_context_v160')||await rpc('get_staff_context')||core}catch(_e){}
-  if(['owner','staff'].includes(core.role))return core;
+  // Supabase RPCs that return SETOF/table rows produce arrays; JSON RPCs
+  // produce objects. Normalize both forms before checking the role.
+  try{
+    const result=await rpc('get_staff_context_v160').catch(()=>null)
+      ?? await rpc('get_staff_context').catch(()=>null);
+    const row=Array.isArray(result)?(result[0]||null):result;
+    if(row&&typeof row==='object'){
+      const role=String(row.role||row.staff_role||row.role_key||row.access_role||'member').trim().toLowerCase();
+      core={...row,role,username:String(row.username||''),permissions:Array.isArray(row.permissions)?row.permissions:[]};
+    }
+  }catch(_e){}
+  if(['owner','staff'].includes(String(core.role||'').toLowerCase()))return core;
   const {data:{session}}=await db.auth.getSession();
   if(!session?.user)return core;
-  let username='';
+  let username=core.username||'';
   try{
     const {data:p}=await db.from('profiles').select('username').eq('user_id',session.user.id).maybeSingle();
-    username=p?.username||'';
+    username=p?.username||username;
   }catch(_e){}
   try{
     const {data:roles}=await db.from('profile_role_assignments').select('role_key').eq('user_id',session.user.id);
-    const set=new Set((roles||[]).map(r=>String(r.role_key||'').toLowerCase()));
-    const role=set.has('moderator')?'moderator':set.has('support')?'support':set.has('developer')?'developer':'member';
+    const set=new Set((roles||[]).map(r=>String(r.role_key||'').trim().toLowerCase()));
+    const role=set.has('owner')?'owner':set.has('staff')?'staff':set.has('moderator')?'moderator':set.has('support')?'support':set.has('developer')?'developer':'member';
     return {role,username,permissions:PAGE_ROLE_PERMISSIONS[role]||[]};
   }catch(_e){return {role:'member',username,permissions:[]}}
 }
@@ -1993,11 +2013,8 @@ function initUserAutofind(){
   document.addEventListener('click',e=>{if(!e.target.closest('.user-autofind-wrap'))hideUserAutofind()});
 }
 function clearModerationTarget(){
-  showAuthManagementCard(false);
   currentSnapshot=null;
   document.getElementById('user-target').value='';
-  const authIdentity=document.getElementById('staff-auth-target-identity');if(authIdentity)authIdentity.textContent='Load an account by username to see its UUID and email.';
-  const generatedLink=document.getElementById('staff-generated-email-change-link');if(generatedLink)generatedLink.value='';
   document.getElementById('moderation-target-profile').innerHTML='';
   document.getElementById('user-snapshot').innerHTML='';
   document.getElementById('moderation-status').innerHTML='<strong>No account selected.</strong> Search a username to load live restriction state.';
@@ -2168,8 +2185,8 @@ async function resolveStaffAccessV123(){
     const {data,error}=await db.rpc('get_staff_page_access_v123');
     if(!error){
       const row=Array.isArray(data)?data[0]:data;
-      const role=String(row?.role||'member').toLowerCase();
-      if(Boolean(row?.allowed)&&['owner','staff','moderator','support','developer'].includes(role)){
+      const role=String(row?.role||row?.staff_role||row?.role_key||row?.access_role||'member').trim().toLowerCase();
+      if((row?.allowed===true||row?.allowed==='true'||row?.has_access===true||row?.has_access==='true')&&['owner','staff','moderator','support','developer'].includes(role)){
         return {
           role,
           username:String(row?.username||''),
@@ -2185,6 +2202,7 @@ async function resolveStaffAccessV123(){
 }
 
 async function boot(){
+  window.__f2wStaffBootStage='auth.getUser';
   const {data,error}=await db.auth.getUser();
 
   if(error||!data?.user){
@@ -2203,6 +2221,7 @@ async function boot(){
     return;
   }
 
+  window.__f2wStaffBootStage='resolve-staff-role';
   staffContext=await resolveStaffAccessV123();
 
   if(!['owner','staff','moderator','support','developer'].includes(staffContext?.role)){
@@ -2211,6 +2230,8 @@ async function boot(){
   }
 
   openStaffAppV123();
+  window.__f2wStaffBootStage='authorized-ui-open';
+  window.dispatchEvent(new Event('f2w-staff-boot-complete'));
 
   const chip=document.getElementById('role-chip');
   chip.classList.add(staffContext.role);
@@ -2222,6 +2243,42 @@ async function boot(){
   }
 
   applyPermissionUI();
+
+  // Reassert Staff hub visibility after authorization, including against
+  // site-wide !important rules. This block runs only after the role gate passes.
+  if(['owner','staff'].includes(String(staffContext?.role||'').toLowerCase())){
+    const shell=document.getElementById('staff-app-shell');
+    const header=document.getElementById('staff-app-header');
+    if(shell){
+      shell.hidden=false;
+      shell.removeAttribute('hidden');
+      shell.style.setProperty('display','grid','important');
+      shell.style.setProperty('visibility','visible','important');
+      shell.style.setProperty('opacity','1','important');
+    }
+    if(header){
+      header.hidden=false;
+      header.removeAttribute('hidden');
+      header.style.setProperty('display','block','important');
+      header.style.setProperty('visibility','visible','important');
+      header.style.setProperty('opacity','1','important');
+    }
+    const tabs=document.getElementById('staff-tabs');
+    if(tabs)tabs.style.setProperty('display','block','important');
+    document.querySelectorAll('#staff-tabs .tab-btn[data-tab]').forEach(btn=>{
+      btn.hidden=false;
+      btn.removeAttribute('hidden');
+      btn.style.setProperty('display','block','important');
+      btn.style.setProperty('visibility','visible','important');
+    });
+    const overview=document.getElementById('panel-overview');
+    if(overview){
+      overview.classList.add('active');
+      overview.style.setProperty('display','block','important');
+      overview.style.setProperty('visibility','visible','important');
+      overview.style.setProperty('opacity','1','important');
+    }
+  }
 
   const startupLoads=[
     ['stats',loadStats],
@@ -2248,6 +2305,8 @@ async function boot(){
 
 
 function applyPermissionUI(){
+  const credentialCard=document.getElementById('staff-account-credentials');
+  if(credentialCard)credentialCard.hidden=!['owner','staff'].includes(staffContext?.role);
   const requirements={
     reports:'reports_manage',
     operations:null,
@@ -2287,9 +2346,38 @@ function applyPermissionUI(){
 }
 
 document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>showTab(btn.dataset.tab)));
+// Capture Staff navigation clicks early so site-wide delegated handlers cannot swallow them.
+window.addEventListener('click',event=>{
+  const btn=event.target?.closest?.('#staff-tabs .tab-btn[data-tab]');
+  if(!btn||btn.disabled||btn.hidden)return;
+  const tab=String(btn.dataset.tab||'');
+  if(!tab||!document.getElementById(`panel-${tab}`))return;
+  showTab(tab);
+},true);
 function showTab(tab){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${tab}`));
+  const target=document.getElementById(`panel-${tab}`);
+  if(!target)return false;
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.tab===tab);
+    if(b.dataset.tab===tab)b.setAttribute('aria-current','page');
+    else b.removeAttribute('aria-current');
+  });
+  // Startup recovery may pin Overview with inline !important styles.
+  // Clear those overrides before applying the selected panel state.
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.classList.toggle('active',p.id===`panel-${tab}`);
+    p.style.removeProperty('display');
+    p.style.removeProperty('visibility');
+    p.style.removeProperty('opacity');
+    if(p.id===`panel-${tab}`){
+      p.style.setProperty('display','block','important');
+      p.style.setProperty('visibility','visible','important');
+      p.style.setProperty('opacity','1','important');
+    }else{
+      p.style.setProperty('display','none','important');
+    }
+  });
+  return true;
 }
 
 async function loadStats(){
@@ -2382,8 +2470,6 @@ async function inspectUser(){
 
     if(!currentSnapshot?.profile?.user_id){
       currentSnapshot=null;
-      showAuthManagementCard(false);
-      const identity=document.getElementById('staff-auth-target-identity');if(identity)identity.textContent='No matching account. Check the username.';
       document.getElementById('moderation-target-profile').innerHTML='';
       document.getElementById('user-snapshot').innerHTML='<div class="notice">User not found.</div>';
       if(status)status.innerHTML='<strong>User not found.</strong> Check the username and try again.';
@@ -2392,8 +2478,6 @@ async function inspectUser(){
     }
 
     renderUserSnapshot();
-    showAuthManagementCard(staffContext?.role === 'owner');
-    if(staffContext?.role === 'owner') await loadStaffAuthDetails();
     await loadQuickModerationState();
 
     if(staffContext.role==='owner'){
@@ -2404,85 +2488,187 @@ async function inspectUser(){
   }catch(e){
     console.error('Account enforcement load failed:',e);
     currentSnapshot=null;
-    showAuthManagementCard(false);
     setQuickControlsEnabled(false);
     if(status)status.innerHTML=`<strong>Could not load account state.</strong> ${esc(e?.message||'Unknown error')}`;
     if(sync)sync.textContent='Load failed';
     toast(e?.message||'Could not load account');
   }
 }
-function showAuthManagementCard(show){
-  const card=document.getElementById('auth-management-card');
-  if(!card)return;
-  const visible=!!show && !!currentSnapshot?.profile?.user_id;
-  card.hidden=!visible;
-  if(visible)card.style.removeProperty('display');
-  else card.style.setProperty('display','none','important');
+async function staffCredentialRequest(operation, extras={}) {
+  const {data:{session}}=await db.auth.getSession();
+  if(!session?.access_token)throw new Error('Your staff session has expired. Sign in again.');
+  const response=await fetch(SUPABASE_URL+'/functions/v1/rapid-worker',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},
+    body:JSON.stringify({action:'staff_account_admin',operation,identifier:staffCredentialAccount?.user_id||document.getElementById('staff-credential-identifier')?.value.trim(),...extras})
+  });
+  let result={};
+  try{result=await response.json()}catch{}
+  if(!response.ok||result.success!==true)throw new Error(result.error||'Account credential request failed.');
+  return result;
 }
-async function loadStaffAuthDetails(){
-  const targetId=String(currentSnapshot?.profile?.user_id||'');
-  const username=String(currentSnapshot?.profile?.username||'');
-  const identity=document.getElementById('staff-auth-target-identity');
-  if(!targetId){if(identity)identity.textContent='No account selected.';return;}
-  if(identity)identity.textContent='Username: @'+username+' · UUID: '+targetId+' · Loading current email…';
+function clearStaffCredentialSelection(){
+  staffCredentialAccount=null;
+  setStaffCredentialButtonsEnabled(false);
+  const email=document.getElementById('staff-credential-current-email');
+  if(email)email.value='';
+  const nextEmail=document.getElementById('staff-credential-new-email');
+  if(nextEmail)nextEmail.value='';
+  const summary=document.getElementById('staff-credential-account-summary');
+  if(summary){summary.hidden=true;summary.textContent=''}
+  const status=document.getElementById('staff-credential-status');
+  if(status)status.textContent='Find the intended account before making changes.';
+}
+function setStaffCredentialButtonsEnabled(enabled){
+  ['staff-credential-set-password','staff-credential-send-reset','staff-credential-update-email'].forEach(id=>{
+    const button=document.getElementById(id);
+    if(button)button.disabled=!enabled;
+  });
+}
+async function loadStaffCredentialAccount(){
+  const identifier=document.getElementById('staff-credential-identifier')?.value.trim();
+  const status=document.getElementById('staff-credential-status');
+  const summary=document.getElementById('staff-credential-account-summary');
+  if(!identifier){toast('Enter a username or account UUID');return}
+  staffCredentialAccount=null;
+  setStaffCredentialButtonsEnabled(false);
+  if(status)status.textContent='Looking up Supabase Auth account…';
+  if(summary){summary.hidden=true;summary.textContent=''}
+  const email=document.getElementById('staff-credential-current-email');
+  if(email)email.value='';
   try{
-    const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_auth_manage',operation:'get_account_details',target_user_id:targetId}});
-    if(error)throw error;
-    if(!data?.success)throw new Error(data?.error||'Could not load account email.');
-    const email=String(data.email||'').trim()||'(no email address)';
-    if(identity)identity.textContent='Username: @'+username+' · UUID: '+targetId+' · Current email: '+email+(data.email_confirmed_at?' · Email confirmed':' · Email not confirmed');
-  }catch(e){
-    if(identity)identity.textContent='Username: @'+username+' · UUID: '+targetId+' · Could not load current email: '+(e?.message||'server function unavailable');
+    const result=await staffCredentialRequest('lookup',{identifier});
+    staffCredentialAccount=result.account;
+    document.getElementById('staff-credential-identifier').value=result.account.username||result.account.user_id;
+    if(email)email.value=result.account.email||'';
+    const newEmail=document.getElementById('staff-credential-new-email');
+    if(newEmail)newEmail.value='';
+    if(summary){
+      summary.hidden=false;
+      summary.textContent='Selected account: '+(result.account.username?'@'+result.account.username:'No saved username')+' · UUID '+result.account.user_id+' · '+(result.account.email_confirmed?'Email confirmed':'Email not confirmed');
+    }
+    setStaffCredentialButtonsEnabled(true);
+    if(status)status.textContent='Account loaded. Choose a password or email action below.';
+  }catch(error){
+    if(status)status.textContent=error?.message||'Account lookup failed.';
+    toast(error?.message||'Account lookup failed');
   }
 }
-async function copyStaffEmailChangeLink(){
-  const input=document.getElementById('staff-generated-email-change-link');
-  const status=document.getElementById('staff-auth-management-status');
-  const value=String(input?.value||'').trim();
-  if(!value){if(status)status.textContent='Generate an email confirmation link first.';return;}
+async function setStaffCredentialPassword(){
+  if(!staffCredentialAccount?.user_id){toast('Find an account first');return}
+  const first=document.getElementById('staff-credential-new-password')?.value||'';
+  const second=document.getElementById('staff-credential-confirm-password')?.value||'';
+  if(first.length<12||first.length>128){toast('Password must be between 12 and 128 characters');return}
+  if(first!==second){toast('Passwords do not match');return}
+  const ok=await staffConfirm({title:'Change account password?',copy:'This immediately changes the password for UUID '+staffCredentialAccount.user_id+'. The password is not stored in the Staff audit log.',confirmText:'Change password'});
+  if(!ok)return;
+  const status=document.getElementById('staff-credential-status');
+  if(status)status.textContent='Changing password…';
   try{
-    if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(value);
-    else {input.focus();input.select();if(!document.execCommand('copy'))throw new Error('Copy is blocked; select and copy the link manually.');}
-    if(status)status.textContent='Confirmation link copied. Send it to the user at the new email address.';
-    toast('Confirmation link copied');
-  }catch(e){if(status)status.textContent=e?.message||'Could not copy the link. Select the link and copy it manually.';}
-}
-async function runStaffAuthAction(operation){
-  const targetId=String(currentSnapshot?.profile?.user_id||'');
-  const status=document.getElementById('staff-auth-management-status');
-  const targetName=String(currentSnapshot?.profile?.username||'this account');
-  if(staffContext?.role!=='owner'||!targetId){if(status)status.textContent='Owner access and a loaded target account are required.';return;}
-  let newEmail='',newPassword='';
-  if(operation==='change_email'||operation==='change_email_manual'||operation==='generate_email_change_link'){
-    newEmail=String(document.getElementById('staff-target-new-email')?.value||'').trim();
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){if(status)status.textContent='Enter a valid new email address.';return;}
-  }else if(operation==='change_password'){
-    newPassword=String(document.getElementById('staff-target-new-password')?.value||'');
-    if(newPassword.length<12){if(status)status.textContent='Use a password with at least 12 characters.';return;}
+    await staffCredentialRequest('set_password',{password:first});
+    document.getElementById('staff-credential-new-password').value='';
+    document.getElementById('staff-credential-confirm-password').value='';
+    if(status)status.textContent='Password changed successfully.';
+    toast('Account password changed');
+  }catch(error){
+    if(status)status.textContent=error?.message||'Password change failed.';
+    toast(error?.message||'Password change failed');
   }
-  const labels={send_password_reset:'Send password reset link',generate_email_change_link:'Generate email confirmation link',change_email_manual:'Change email immediately',change_password:'Set new password'};
-  const confirmed=await staffConfirm({title:labels[operation]||'Confirm account action',copy:'Apply this login change to @'+targetName+'? This action affects the target account.',confirmText:'Confirm'});
-  if(!confirmed)return;
-  if(status)status.textContent='Applying action…';
+}
+async function sendStaffCredentialReset(){
+  if(!staffCredentialAccount?.user_id){toast('Find an account first');return}
+  if(!staffCredentialAccount.email){toast('This account has no email. Update its email first.');return}
+  const ok=await staffConfirm({title:'Send password-reset email?',copy:'A secure reset link will be sent to '+staffCredentialAccount.email+'.',confirmText:'Send reset email'});
+  if(!ok)return;
+  const status=document.getElementById('staff-credential-status');
+  if(status)status.textContent='Requesting password-reset email…';
   try{
-    const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_auth_manage',operation,target_user_id:targetId,new_email:newEmail,new_password:newPassword}});
-    if(error)throw error;
-    if(!data?.success)throw new Error(data?.error||'The server could not complete the action.');
-    if(operation==='change_password'){const input=document.getElementById('staff-target-new-password');if(input)input.value='';}
-    if(operation==='generate_email_change_link'){const link=document.getElementById('staff-generated-email-change-link');if(link)link.value=String(data.action_link||'');}
-    if(operation==='change_email_manual'){const input=document.getElementById('staff-target-new-email');if(input)input.value='';if(data.email)await loadStaffAuthDetails();}
-    if(status)status.textContent=data.message||'Account action completed.';
-    toast(data.message||'Account action completed.');
-  }catch(e){
-    const message=e?.message||'Account action failed.';
-    if(status)status.textContent=message;
-    toast(message);
+    await staffCredentialRequest('send_reset');
+    if(status)status.textContent='Reset email request accepted for '+staffCredentialAccount.email+'. Check the configured Supabase email delivery.';
+    toast('Password-reset email requested');
+  }catch(error){
+    if(status)status.textContent=error?.message||'Reset email failed.';
+    toast(error?.message||'Reset email failed');
+  }
+}
+async function updateStaffCredentialEmail(){
+  if(!staffCredentialAccount?.user_id){toast('Find an account first');return}
+  const email=document.getElementById('staff-credential-new-email')?.value.trim().toLowerCase()||'';
+  if(!email){toast('Enter the new email address');return}
+  const ok=await staffConfirm({title:'Change this account email?',copy:'The Supabase Auth email for UUID '+staffCredentialAccount.user_id+' will be changed to '+email+'. Staff changes this immediately without a verification email.',confirmText:'Update email'});
+  if(!ok)return;
+  const status=document.getElementById('staff-credential-status');
+  if(status)status.textContent='Updating account email…';
+  try{
+    await staffCredentialRequest('update_email',{email});
+    const result=await staffCredentialRequest('lookup');
+    staffCredentialAccount=result.account;
+    const current=document.getElementById('staff-credential-current-email');
+    if(current)current.value=result.account.email||email;
+    document.getElementById('staff-credential-new-email').value='';
+    const summary=document.getElementById('staff-credential-account-summary');
+    if(summary){
+      summary.hidden=false;
+      summary.textContent='Selected account: '+(result.account.username?'@'+result.account.username:'No saved username')+' · UUID '+result.account.user_id+' · '+(result.account.email_confirmed?'Email confirmed':'Email not confirmed');
+    }
+    if(status)status.textContent='Account email updated successfully.';
+    toast('Account email updated');
+  }catch(error){
+    if(status)status.textContent=error?.message||'Email update failed.';
+    toast(error?.message||'Email update failed');
   }
 }
 
+async function staffResetPassword(mode){
+  const target=currentSnapshot?.profile;
+  if(!target?.user_id){toast('Search for a user first');return}
+  if(!['owner','staff'].includes(staffContext?.role)){toast('Only Owner or Staff can reset passwords');return}
+  if(!['set','email'].includes(mode))return;
+  let password='';
+  if(mode==='set'){
+    const first=document.getElementById('staff-new-password')?.value||'';
+    const second=document.getElementById('staff-confirm-password')?.value||'';
+    if(first.length<12){toast('Password must be at least 12 characters');return}
+    if(first.length>128){toast('Password must be 128 characters or fewer');return}
+    if(first!==second){toast('Passwords do not match');return}
+    password=first;
+  }
+  const ok=await staffConfirm({
+    title:mode==='set'?`Set a new password for @${target.username}?`:`Email a password-reset link to @${target.username}?`,
+    copy:mode==='set'?'This immediately changes the account password. The user will need the new password to sign in.':'A secure reset link will be sent to the email address on this account.',
+    confirmText:mode==='set'?'Change password':'Send email'
+  });
+  if(!ok)return;
+  const status=document.getElementById('staff-password-reset-status');
+  if(status)status.textContent=mode==='set'?'Changing password…':'Sending reset email…';
+  try{
+    const {data:{session}}=await db.auth.getSession();
+    if(!session?.access_token)throw new Error('Your staff session has expired. Sign in again.');
+    const response=await fetch(`${SUPABASE_URL}/functions/v1/rapid-worker`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${session.access_token}`},
+      body:JSON.stringify({action:'staff_password_reset',target_user_id:target.user_id,mode,password})
+    });
+    let result={};
+    try{result=await response.json()}catch{}
+    if(!response.ok||result.success!==true)throw new Error(result.error||'Password reset request failed.');
+    if(mode==='set'){
+      const a=document.getElementById('staff-new-password');const b=document.getElementById('staff-confirm-password');
+      if(a)a.value='';if(b)b.value='';
+    }
+    if(status)status.textContent=mode==='set'?'Password changed successfully.':'Password-reset email requested successfully.';
+    toast(mode==='set'?'Password changed':'Reset email sent');
+  }catch(error){
+    if(status)status.textContent=error?.message||'Password reset failed.';
+    toast(error?.message||'Password reset failed');
+  }
+}
 function renderUserSnapshot(){
   const s=currentSnapshot,p=s.profile;
-  document.getElementById('user-snapshot').innerHTML=`
+  const snapshotHost=document.getElementById('user-snapshot');
+  snapshotHost.hidden=false;
+  snapshotHost.removeAttribute('hidden');
+  snapshotHost.innerHTML=`
     <div class="card">
       <div class="card-head"><strong><i class="fa-solid fa-clock-rotate-left"></i> Account records</strong><span>History & staff notes only</span></div>
       <div class="notice"><strong>@${esc(p.username)}</strong> · ${esc(s.role)} · joined ${esc(fmt(p.created_at))}
@@ -3187,6 +3373,7 @@ async function signOut(){await db.auth.signOut();window.location.href='/home/'}
 setQuickControlsEnabled(false);
 
 initUserAutofind();
+window.__f2wStaffBootStage="about-to-call-boot";
 boot().catch(error=>{
   console.error('Staff boot failed:',error);
   showStaffLockV123('staff-required');
@@ -3257,7 +3444,7 @@ window.addEventListener('flix2watch:account-state',event=>{
   window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
   </script>
-  <script src="/final-v35.js?v=183-20260902" defer></script>
+  <script src="/final-v35.js?v=186-20261011" defer></script>
 
 <div class="staff-ticket-modal" id="staff-ticket-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="staff-ticket-modal-title">
   <div class="staff-ticket-chat">
@@ -4831,3 +5018,68 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 <!-- f2w-force-save:v234-v160-cache-bust:20260904 -->
 
 <!-- f2w-force-save:v250-discord-every-site-page:20260904 -->
+
+
+<!-- Independent Staff startup fallback: never grants access; it only makes failures visible. -->
+<script id="f2w-staff-startup-fallback">
+(function(){
+  let bootFinished=false;
+  function keepStaffLocked(){
+    const screen=document.getElementById('staff-access-screen');
+    const shell=document.getElementById('staff-app-shell');
+    const header=document.getElementById('staff-app-header');
+    if(shell)shell.setAttribute('hidden','');
+    if(header)header.setAttribute('hidden','');
+    if(screen){
+      screen.hidden=false;
+      screen.style.setProperty('display','flex','important');
+      screen.style.setProperty('visibility','visible','important');
+      screen.style.setProperty('opacity','1','important');
+    }
+  }
+  window.addEventListener('f2w-staff-boot-complete',function(){bootFinished=true;});
+  window.addEventListener('error',function(event){
+    if(bootFinished)return;
+    const title=document.getElementById('f2w-staff-lock-title');
+    const copy=document.getElementById('f2w-staff-lock-copy');
+    const message=String(event?.message||event?.error?.message||'Unknown script error');
+    const file=String(event?.filename||'').replace(/https?:\/\/[^/]+/gi,'[host').replace(/\?[^\s]*/g,'').slice(-100);
+    const line=event?.lineno?':'+event.lineno+(event?.colno?':'+event.colno:''):'';
+    const stack=String(event?.error?.stack||'').split('\n').slice(1,4).join(' | ').replace(/https?:\/\/[^/\s]+/gi,'[host]').replace(/[?#][^\s|]*/g,'').slice(0,280);
+    const detail=(message+(file?' | File: '+file+line:'')+(stack?' | Stack: '+stack:'')).slice(0,520);
+    console.error('Staff page script error:',event?.error||event);
+    if(title&&copy){
+      title.textContent='Staff page failed to start';
+      copy.textContent='Access remains locked. Diagnostic: '+detail+'. Refresh once; if this repeats, send the diagnostic text to the developer.';
+      keepStaffLocked();
+    }
+  });
+  window.addEventListener('unhandledrejection',function(event){
+    if(bootFinished)return;
+    const title=document.getElementById('f2w-staff-lock-title');
+    const copy=document.getElementById('f2w-staff-lock-copy');
+    const reason=event?.reason;
+    const message=String(reason?.message||reason||'Unknown promise rejection');
+  const stack=String(reason?.stack||'').split('\n').slice(1,4).join(' | ').replace(/https?:\/\/[^/\s]+/gi,'[host]').replace(/[?#][^\s|]*/g,'').slice(0,360);
+  const detail=(message+(stack?' | Stack: '+stack:'')).replace(/https?:\/\/\S+/gi,'[URL]').slice(0,520);
+    console.error('Staff page unhandled promise rejection:',reason);
+    if(title&&copy){
+      title.textContent='Staff access check failed';
+      copy.textContent='Access remains locked. Diagnostic: '+detail+'. Refresh once; if this repeats, send the diagnostic text to the developer.';
+      keepStaffLocked();
+    }
+  });
+  window.setTimeout(function(){
+    if(bootFinished)return;
+    const title=document.getElementById('f2w-staff-lock-title');
+    const copy=document.getElementById('f2w-staff-lock-copy');
+    const screen=document.getElementById('staff-access-screen');
+    if(title&&copy&&screen&&!screen.hidden&&title.textContent.indexOf('Checking Staff access')!==-1){
+      const stage=String(window.__f2wStaffBootStage||'boot-not-entered');
+      title.textContent='Staff page did not finish starting';
+      copy.textContent='The Staff interface did not complete initialization (stage: '+stage+'). Access remains locked. Send this exact message to the developer.';
+      keepStaffLocked();
+    }
+  },10000);
+})();
+</script>

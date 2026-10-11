@@ -2034,6 +2034,212 @@ Deno.serve(async (request: Request) => {
 
     const action = String(body.action ?? "").trim();
 
+    if (action === "staff_account_admin") {
+          const authHeader = request.headers.get("Authorization") || "";
+          // Keep this as a real whitespace matcher; a double-escaped \\s would reject normal Bearer headers.
+          const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() || "";
+          if (!bearer) return json({ success: false, error: "Staff sign-in is required." }, 401);
+    
+          const { data: actorData, error: actorError } = await supabase.auth.getUser(bearer);
+          const actor = actorData?.user;
+          if (actorError || !actor?.id) {
+            return json({ success: false, error: "Your staff session is invalid or expired." }, 401);
+          }
+    
+          let staffRole: string | null = null;
+          for (const rpcName of ["get_staff_context_v160", "get_staff_context"]) {
+            try {
+              const roleResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${rpcName}`, {
+                method: "POST",
+                headers: {
+                  "apikey": SUPABASE_SERVICE_ROLE_KEY,
+                  "Authorization": `Bearer ${bearer}`,
+                  "Content-Type": "application/json",
+                },
+                body: "{}",
+              });
+              if (!roleResponse.ok) continue;
+              const roleData = await roleResponse.json();
+              const row = Array.isArray(roleData) ? roleData[0] : roleData;
+              if (row?.role) {
+                staffRole = String(row.role).toLowerCase();
+                break;
+              }
+            } catch { /* try the legacy context RPC */ }
+          }
+          if (!["owner", "staff"].includes(staffRole || "")) {
+            return json({ success: false, error: "Only Owner or Staff can manage account credentials." }, 403);
+          }
+    
+          const operation = String(body.operation ?? "").trim();
+          const identifier = String(body.identifier ?? body.target_user_id ?? "").trim().replace(/^@/, "");
+          const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+          let targetUserId = "";
+    
+          if (uuidPattern.test(identifier)) {
+            targetUserId = identifier;
+          } else if (identifier && /^[A-Za-z0-9_.-]{1,64}$/.test(identifier)) {
+            // Resolve the current profile username first. Some legacy accounts only
+            // have username/chat_alias in Supabase Auth user_metadata, so do not
+            // make the profiles table a hard dependency for account lookup.
+            const { data: currentProfiles, error: profileError } = await supabase
+              .from("profiles")
+              .select("user_id")
+              .ilike("username", identifier)
+              .limit(2);
+            if (profileError) {
+              console.warn("Staff credential profile lookup unavailable; falling back to Auth metadata:", profileError.message);
+            } else {
+              if ((currentProfiles || []).length > 1) {
+                return json({ success: false, error: "More than one profile matches that username. Use the account UUID instead." }, 409);
+              }
+              targetUserId = String(currentProfiles?.[0]?.user_id ?? "");
+            }
+    
+            // Keep support for previously recorded names when the profile history
+            // column exists, but continue to Auth metadata if it does not.
+            if (!targetUserId) {
+              const historyMatches = new Map<string, { user_id: string }>();
+              for (const candidate of [identifier, identifier.toLowerCase()]) {
+                const { data: historicalProfiles, error: historyError } = await supabase
+                  .from("profiles")
+                  .select("user_id,username_history")
+                  .contains("username_history", [candidate])
+                  .limit(3);
+                if (historyError) {
+                  console.warn("Username history lookup unavailable:", historyError.message);
+                  break;
+                }
+                for (const profile of historicalProfiles || []) {
+                  if (profile?.user_id) historyMatches.set(String(profile.user_id), { user_id: String(profile.user_id) });
+                }
+              }
+              if (historyMatches.size > 1) {
+                return json({ success: false, error: "That previous username belongs to more than one account. Use the account UUID instead." }, 409);
+              }
+              targetUserId = historyMatches.keys().next().value || "";
+            }
+    
+            // Auth metadata is the source of truth for accounts whose profile row
+            // is missing or whose username was never copied into public.profiles.
+            if (!targetUserId) {
+              const metadataMatches = new Map<string, { user_id: string }>();
+              const wanted = identifier.toLowerCase();
+              for (let page = 1; page <= 50; page++) {
+                const { data: usersPage, error: usersError } = await supabase.auth.admin.listUsers({
+                  page,
+                  perPage: 1000,
+                });
+                if (usersError) {
+                  console.error("Staff Auth metadata username lookup failed:", usersError.message);
+                  return json({ success: false, error: "Could not search Supabase Auth usernames. Try the account UUID or check the Auth service configuration." }, 500);
+                }
+                const users = usersPage?.users || [];
+                for (const user of users) {
+                  const metadata = user.user_metadata || {};
+                  const names = [metadata.username, metadata.chat_alias]
+                    .filter((name): name is string => typeof name === "string")
+                    .map(name => name.trim().replace(/^@/, "").toLowerCase());
+                  if (names.includes(wanted)) {
+                    metadataMatches.set(user.id, { user_id: user.id });
+                  }
+                }
+                if (metadataMatches.size > 1 || users.length < 1000) break;
+              }
+              if (metadataMatches.size > 1) {
+                return json({ success: false, error: "More than one Auth account matches that username. Use the account UUID instead." }, 409);
+              }
+              targetUserId = metadataMatches.keys().next().value || "";
+            }
+          }
+    
+          if (!targetUserId || !uuidPattern.test(targetUserId)) {
+            return json({ success: false, error: "Account not found. Enter a current username, a recorded previous username, or the account UUID." }, 404);
+          }
+    
+          const { data: targetData, error: targetError } = await supabase.auth.admin.getUserById(targetUserId);
+          const target = targetData?.user;
+          if (targetError || !target?.id) {
+            console.error("Staff credential Auth lookup failed:", targetError?.message || "User not found", targetUserId);
+            return json({ success: false, error: "The Supabase Auth account could not be found for the resolved UUID." }, 404);
+          }
+    
+          const { data: targetProfile } = await supabase
+            .from("profiles")
+            .select("username,username_history,created_at")
+            .eq("user_id", targetUserId)
+            .maybeSingle();
+    
+          if (operation === "lookup") {
+            return json({
+              success: true,
+              account: {
+                user_id: targetUserId,
+                username: targetProfile?.username
+                  ?? (typeof target.user_metadata?.username === "string" ? target.user_metadata.username : null)
+                  ?? (typeof target.user_metadata?.chat_alias === "string" ? target.user_metadata.chat_alias : null),
+                username_history: Array.isArray(targetProfile?.username_history) ? targetProfile.username_history : [],
+                email: target.email ?? "",
+                email_confirmed: Boolean(target.email_confirmed_at),
+                created_at: target.created_at ?? targetProfile?.created_at ?? null,
+              },
+            });
+          }
+    
+          if (operation === "set_password") {
+            const password = String(body.password ?? "");
+            if (password.length < 12 || password.length > 128) {
+              return json({ success: false, error: "Password must be between 12 and 128 characters." }, 400);
+            }
+            const { error } = await supabase.auth.admin.updateUserById(targetUserId, { password });
+            if (error) return json({ success: false, error: error.message || "Could not change password." }, 400);
+          } else if (operation === "send_reset") {
+            if (!target.email) {
+              return json({ success: false, error: "This account has no email address. Update its email first." }, 400);
+            }
+            const { error } = await supabase.auth.resetPasswordForEmail(target.email, {
+              redirectTo: "https://flix2watch.com/update-password/",
+            });
+            if (error) return json({ success: false, error: error.message || "Could not send reset email." }, 400);
+          } else if (operation === "update_email") {
+            const email = String(body.email ?? "").trim().toLowerCase();
+            if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+              return json({ success: false, error: "Enter a valid email address." }, 400);
+            }
+            if (email === String(target.email ?? "").toLowerCase()) {
+              return json({ success: false, error: "That is already the account email address." }, 400);
+            }
+            const { error } = await supabase.auth.admin.updateUserById(targetUserId, {
+              email,
+              email_confirm: true,
+            });
+            if (error) return json({ success: false, error: error.message || "Could not update the account email." }, 400);
+          } else {
+            return json({ success: false, error: "Choose a valid account action." }, 400);
+          }
+    
+          const auditAction = operation === "set_password"
+            ? "staff_password_set"
+            : operation === "send_reset"
+            ? "staff_password_reset_email"
+            : "staff_account_email_changed";
+          await supabase.from("staff_audit_log").insert({
+            actor_user_id: actor.id,
+            actor_username: String(staffRole),
+            action: auditAction,
+            target_type: "user",
+            target_id: targetUserId,
+            details: {
+              operation,
+              email: operation === "update_email" ? String(body.email ?? "").trim().toLowerCase() : (target.email ?? null),
+            },
+          }).then(() => null).catch(() => null);
+    
+          return json({ success: true, operation, target_user_id: targetUserId });
+        }
+
+
+
     if (action === "staff_auth_manage") {
       const authorization = request.headers.get("authorization") ?? "";
       const accessToken = authorization.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() ?? "";
