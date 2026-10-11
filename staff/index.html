@@ -1354,6 +1354,15 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
       <div class="card" id="auth-management-card" hidden style="display:none">
         <div class="card-head"><strong><i class="fa-solid fa-key"></i> Account email & password</strong><span>Owner-only</span></div>
         <div class="notice">These actions use the authenticated server-side admin API. Password reset sends a link to the account's current email.</div>
+        <div class="staff-profile-edit-grid" style="margin-top:10px">
+          <div><label>ACCOUNT UUID</label><input id="staff-auth-user-id" readonly></div>
+          <div><label>CURRENT SUPABASE EMAIL</label><input id="staff-auth-current-email" readonly placeholder="Loading Auth record…"></div>
+          <div><label>EMAIL CONFIRMED</label><input id="staff-auth-email-confirmed" readonly></div>
+          <div><label>LAST SIGN-IN</label><input id="staff-auth-last-sign-in" readonly></div>
+          <div><label>AUTH USERNAME</label><input id="staff-auth-username" readonly></div>
+          <div><label>CHAT ALIAS</label><input id="staff-auth-chat-alias" readonly></div>
+        </div>
+        <div class="row" style="margin-top:8px"><button class="btn" type="button" onclick="loadStaffAuthDetails()">Refresh Supabase Auth details</button><button class="btn" type="button" onclick="openModerationProfileEditor()">Open username / profile editor</button></div>
         <div class="field"><label for="staff-target-new-email">NEW EMAIL ADDRESS</label><input id="staff-target-new-email" type="email" autocomplete="off" placeholder="new-address@example.com"></div>
         <div class="row" style="margin-top:8px">
           <button class="btn" type="button" onclick="runStaffAuthAction('send_password_reset')"><i class="fa-solid fa-envelope"></i> Email password reset link</button>
@@ -2406,6 +2415,7 @@ async function inspectUser(){
 
     renderUserSnapshot();
     showAuthManagementCard(staffContext?.role === 'owner');
+    if(staffContext?.role==='owner') await loadStaffAuthDetails();
     await loadQuickModerationState();
 
     if(staffContext.role==='owner'){
@@ -2422,6 +2432,34 @@ async function inspectUser(){
     if(sync)sync.textContent='Load failed';
     toast(e?.message||'Could not load account');
   }
+}
+async function loadStaffAuthDetails(){
+  const targetId=String(currentSnapshot?.profile?.user_id||'');
+  const status=document.getElementById('staff-auth-management-status');
+  if(staffContext?.role!=='owner'||!targetId)return;
+  if(status)status.textContent='Loading current account record from Supabase Auth…';
+  try{
+    const {data,error}=await db.functions.invoke('rapid-worker',{body:{action:'staff_auth_manage',operation:'get_account_details',target_user_id:targetId}});
+    if(error)throw error;
+    if(!data?.success)throw new Error(data?.error||'Could not load Auth record.');
+    const put=(id,value)=>{const el=document.getElementById(id);if(el)el.value=value==null?'':String(value)};
+    put('staff-auth-user-id',data.target_user_id||targetId);
+    put('staff-auth-current-email',data.email||'(no email address)');
+    put('staff-auth-email-confirmed',data.email_confirmed_at?'Yes':'No');
+    put('staff-auth-last-sign-in',data.last_sign_in_at?fmt(data.last_sign_in_at):'—');
+    put('staff-auth-username',data.auth_username||'—');
+    put('staff-auth-chat-alias',data.chat_alias||'—');
+    if(status)status.textContent='Current Auth email and account details loaded.';
+  }catch(e){if(status)status.textContent='Could not load Auth details: '+(e?.message||'Unknown error')}
+}
+function openModerationProfileEditor(){
+  const username=String(currentSnapshot?.profile?.username||'');
+  if(!username)return;
+  const target=document.getElementById('profile-manager-target');
+  if(target)target.value=username;
+  const tab=document.querySelector('[data-panel="profiles"],[data-tab="profiles"],[href="#panel-profiles"]');
+  if(tab)tab.click();
+  loadManagedProfile();
 }
 function showAuthManagementCard(show){
   const card=document.getElementById('auth-management-card');
