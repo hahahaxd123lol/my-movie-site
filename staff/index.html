@@ -1326,32 +1326,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
     <section class="panel" id="panel-users">
       <div class="permission-banner" id="role-backend-note"><strong>Role access note:</strong> this page can scope the interface for Moderator / Support / Developer accounts, but your current Supabase Staff RPC layer still decides whether an action is authorized.</div>
-      <div class="card" style="margin-top:0">
-        <div class="card-head"><div><strong><i class="fa-solid fa-user-shield"></i> Realtime Account Enforcement</strong><span style="display:block;text-align:left;margin-top:4px">Select a user once, then every switch below applies immediately — no Save button.</span></div><span id="moderation-sync-label">Waiting for target</span></div>
-        <div class="moderation-shell">
-          <div class="card moderation-target-card">
-            <div class="card-head"><strong>Target account</strong><span>Username lookup</span></div>
-            <div class="field user-autofind-wrap"><label>USERNAME</label><input id="user-target" placeholder="Start typing a username…" autocomplete="off" aria-autocomplete="list" aria-controls="user-autofind-results"><div id="user-autofind-results" class="user-autofind-results" hidden></div></div>
-        <div id="moderation-target-profile"></div>
-            <div class="row" style="margin-top:9px"><button class="btn primary" onclick="inspectUser()"><i class="fa-solid fa-magnifying-glass"></i> Load account</button><button class="btn" onclick="clearModerationTarget()"><i class="fa-solid fa-xmark"></i> Clear</button></div>
-            
-            
-          </div>
-          <div class="card moderation-action-card">
-            <div class="card-head"><strong>Instant restrictions</strong><span>Realtime / autosave</span></div>
-            <div class="instant-controls">
-              <div class="instant-row"><div class="instant-copy"><strong>Public chat ban</strong><span>Blocks public chat sending only.</span></div><label class="staff-switch"><input id="quick-public-chat-ban" type="checkbox" data-action="public-chat-ban" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
-              <div class="instant-row"><div class="instant-copy"><strong>Chat mute</strong><span>Temporarily stops chat messages.</span></div><label class="staff-switch"><input id="quick-chat-mute" type="checkbox" data-action="chat-mute" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
-              <div class="instant-row danger"><div class="instant-copy"><strong>Site suspension</strong><span>Locks the website immediately while the user remains signed in.</span></div><label class="staff-switch"><input id="quick-site-suspension" type="checkbox" data-action="site-suspension" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
-              <div class="instant-row danger"><div class="instant-copy"><strong>Account login ban</strong><span>Signs the account out and blocks future password login.</span></div><label class="staff-switch"><input id="quick-account-ban" type="checkbox" data-action="account-ban" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
-            </div>
-            <div class="moderation-meta"><div class="field"><label>REASON SHOWN TO USER / AUDIT</label><input id="quick-restriction-reason" maxlength="500" placeholder="Optional reason"></div><div class="field"><label>EXPIRY</label><select id="quick-restriction-expiry"><option value="0">No expiry</option><option value="10">10 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option></select></div></div>
-            <div class="moderation-status" id="moderation-status"><strong>No account selected.</strong> Search a username to load live restriction state.</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="card" id="auth-management-card">
+      <div class="card" id="auth-management-card" style="display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2!important;">
         <div class="card-head"><strong><i class="fa-solid fa-key"></i> Account email & password</strong><span>Staff permission required</span></div>
         <div class="notice">These actions use the authenticated server-side admin API. Password reset sends a link to the account's current email.</div>
         <div class="staff-profile-edit-grid" style="margin-top:10px">
@@ -1377,6 +1352,31 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         <div class="row" style="margin-top:8px"><button class="btn danger" type="button" onclick="runStaffAuthAction('change_password')"><i class="fa-solid fa-lock"></i> Set new password</button></div>
         <div class="moderation-status" id="staff-auth-management-status" role="status" aria-live="polite">Load an account to manage its login details.</div>
       </div>
+      <div class="card" style="margin-top:0">
+        <div class="card-head"><div><strong><i class="fa-solid fa-user-shield"></i> Realtime Account Enforcement</strong><span style="display:block;text-align:left;margin-top:4px">Select a user once, then every switch below applies immediately — no Save button.</span></div><span id="moderation-sync-label">Waiting for target</span></div>
+        <div class="moderation-shell">
+          <div class="card moderation-target-card">
+            <div class="card-head"><strong>Target account</strong><span>Username lookup</span></div>
+            <div class="field user-autofind-wrap"><label>USERNAME</label><input id="user-target" placeholder="Start typing a username…" autocomplete="off" aria-autocomplete="list" aria-controls="user-autofind-results"><div id="user-autofind-results" class="user-autofind-results" hidden></div></div>
+        <div id="moderation-target-profile"></div>
+            <div class="row" style="margin-top:9px"><button class="btn primary" onclick="inspectUser()"><i class="fa-solid fa-magnifying-glass"></i> Load account</button><button class="btn" onclick="clearModerationTarget()"><i class="fa-solid fa-xmark"></i> Clear</button></div>
+            
+            
+          </div>
+          <div class="card moderation-action-card">
+            <div class="card-head"><strong>Instant restrictions</strong><span>Realtime / autosave</span></div>
+            <div class="instant-controls">
+              <div class="instant-row"><div class="instant-copy"><strong>Public chat ban</strong><span>Blocks public chat sending only.</span></div><label class="staff-switch"><input id="quick-public-chat-ban" type="checkbox" data-action="public-chat-ban" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
+              <div class="instant-row"><div class="instant-copy"><strong>Chat mute</strong><span>Temporarily stops chat messages.</span></div><label class="staff-switch"><input id="quick-chat-mute" type="checkbox" data-action="chat-mute" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
+              <div class="instant-row danger"><div class="instant-copy"><strong>Site suspension</strong><span>Locks the website immediately while the user remains signed in.</span></div><label class="staff-switch"><input id="quick-site-suspension" type="checkbox" data-action="site-suspension" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
+              <div class="instant-row danger"><div class="instant-copy"><strong>Account login ban</strong><span>Signs the account out and blocks future password login.</span></div><label class="staff-switch"><input id="quick-account-ban" type="checkbox" data-action="account-ban" onchange="applyInstantRestriction(this)"><span aria-hidden="true"></span></label></div>
+            </div>
+            <div class="moderation-meta"><div class="field"><label>REASON SHOWN TO USER / AUDIT</label><input id="quick-restriction-reason" maxlength="500" placeholder="Optional reason"></div><div class="field"><label>EXPIRY</label><select id="quick-restriction-expiry"><option value="0">No expiry</option><option value="10">10 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option></select></div></div>
+            <div class="moderation-status" id="moderation-status"><strong>No account selected.</strong> Search a username to load live restriction state.</div>
+          </div>
+        </div>
+      </div>
+      
       <div class="card" id="user-snapshot" hidden></div>
       
       <div class="card" id="permission-card" hidden>
