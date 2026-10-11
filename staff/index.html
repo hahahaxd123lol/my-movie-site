@@ -2438,7 +2438,7 @@ async function inspectUser(){
     toast(e?.message||'Could not load account');
   }
 }
-async async function loadStaffAuthDetails(){
+async function loadStaffAuthDetails(){
   const targetId=String(currentSnapshot?.profile?.user_id||'');
   const status=document.getElementById('staff-auth-management-status');
   if(staffContext?.role!=='owner'||!targetId)return;
