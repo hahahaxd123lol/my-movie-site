@@ -1407,7 +1407,12 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     </section>
 
     <section class="panel" id="panel-account-tools">
-      <div class="help-inline"><strong>Account Tools:</strong> Review Supabase Auth details, send password reset links, and manage account email or password. Server-side staff permissions still apply.</div>
+      <div class="help-inline"><strong>Account Tools:</strong> Look up a username, inspect its Supabase Auth record, send password reset links, and manage account email or password. Server-side staff permissions still apply.</div>
+      <div class="card" id="account-tools-lookup-card">
+        <div class="card-head"><strong><i class="fa-solid fa-user-magnifying-glass"></i> Find account</strong><span>Search by site username</span></div>
+        <div class="row"><div class="field"><label for="account-tools-username">USERNAME</label><input id="account-tools-username" autocomplete="off" placeholder="Enter username to inspect" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupAccountToolsTarget()}"></div><button class="btn primary" type="button" onclick="lookupAccountToolsTarget()">Load account</button></div>
+        <div class="moderation-status" id="account-tools-lookup-status" role="status" aria-live="polite">Load a username to inspect its Supabase Auth record.</div>
+      </div>
       <div class="card" id="auth-management-card" style="display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2!important;">
         <div class="card-head"><strong><i class="fa-solid fa-key"></i> Account email & password</strong><span>Staff permission required</span></div>
         <div class="notice">These actions use the authenticated server-side admin API. Password reset sends a link to the account's current email.</div>
@@ -1423,6 +1428,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
         </div>
         <div class="field" style="margin-top:10px"><label for="staff-auth-user-metadata">AUTH USER METADATA</label><textarea id="staff-auth-user-metadata" rows="3" readonly placeholder="No user metadata loaded"></textarea></div>
         <div class="field" style="margin-top:8px"><label for="staff-auth-app-metadata">AUTH APP METADATA</label><textarea id="staff-auth-app-metadata" rows="3" readonly placeholder="No app metadata loaded"></textarea></div>
+        <details class="field" style="margin-top:10px"><summary style="cursor:pointer;font-weight:800">Raw Supabase Auth record (JSON)</summary><textarea id="staff-auth-raw-record" rows="12" readonly spellcheck="false" placeholder="Load an account to view the raw Auth response"></textarea></details>
         <div class="row" style="margin-top:8px"><button class="btn" type="button" onclick="loadStaffAuthDetails()">Refresh Supabase Auth details</button><button class="btn" type="button" onclick="openModerationProfileEditor()">Open username / profile editor</button></div>
         <div class="field"><label for="staff-target-new-email">NEW EMAIL ADDRESS</label><input id="staff-target-new-email" type="email" autocomplete="off" placeholder="new-address@example.com"></div>
         <div class="row" style="margin-top:8px">
@@ -2493,6 +2499,23 @@ async function inspectUser(){
     toast(e?.message||'Could not load account');
   }
 }
+async function lookupAccountToolsTarget(){
+  const input=document.getElementById("account-tools-username");
+  const status=document.getElementById("account-tools-lookup-status");
+  const username=String(input?.value||"").trim();
+  if(!username){if(status)status.textContent="Enter a username first.";return;}
+  if(status)status.textContent="Looking up account…";
+  const moderationInput=document.getElementById("user-target");
+  if(moderationInput)moderationInput.value=username;
+  await inspectUser();
+  if(currentSnapshot?.profile?.user_id){
+    if(status)status.textContent="Loaded @"+String(currentSnapshot.profile.username||username)+"; Supabase Auth details are shown below.";
+    showTab("account-tools");
+  }else if(status){
+    status.textContent="Could not load that account. Check the username and your staff permissions.";
+  }
+}
+
 async function loadStaffAuthDetails(){
   const targetId=String(currentSnapshot?.profile?.user_id||'');
   const status=document.getElementById('staff-auth-management-status');
@@ -2513,6 +2536,7 @@ async function loadStaffAuthDetails(){
     put('staff-auth-chat-alias',data.chat_alias||'—');
     put('staff-auth-user-metadata',JSON.stringify(data.user_metadata??{},null,2));
     put('staff-auth-app-metadata',JSON.stringify(data.app_metadata??{},null,2));
+    put('staff-auth-raw-record',JSON.stringify(data,null,2));
     if(status)status.textContent='Current Auth email and account details loaded.';
   }catch(e){
     let detail=e?.message||'Unknown error';
