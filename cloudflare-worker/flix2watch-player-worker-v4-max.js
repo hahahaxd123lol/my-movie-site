@@ -28,7 +28,7 @@
  * - no iframe sandbox attribute and no CSP sandbox directive
  */
 
-const VERSION = 'v4-max-final-volume-boost-10000';
+const VERSION = 'v4-max-final-volume-boost-200';
 
 const AD_HOST_FRAGMENTS = [
   'doubleclick.net',
@@ -589,10 +589,10 @@ function buildGuardJS() {
     scrubNode(document.documentElement || document);
   }, 3000);
 
-  // Re-applied 10000% gain for the Flix2Watch player only.
+  // Re-applied 200% gain for the Flix2Watch player only.
   // The media element's own volume slider remains in the signal path.
   // Never route known cross-origin media through Web Audio without CORS.
-  const F2W_AUDIO_GAIN = 100.0;
+  const F2W_AUDIO_GAIN = 2.0;
   const f2wAudioContexts = [];
   const f2wBoostMedia = media => {
     if (!media || media.__f2wBoost150Attempted || media.__f2wBoost150Waiting) return;
@@ -612,6 +612,7 @@ function buildGuardJS() {
     })();
     if (!sameOrigin && !media.crossOrigin) {
       media.__f2wBoost150Attempted = true;
+      try { console.warn('[Flix2Watch] audio boost skipped: cross-origin media has no CORS mode', sourceURL); } catch (_) {}
       return;
     }
     media.__f2wBoost150Attempted = true;
@@ -631,8 +632,9 @@ function buildGuardJS() {
       };
       media.addEventListener('play', resumeAudio, { passive: true });
       media.addEventListener('playing', resumeAudio, { passive: true });
-      try { console.info('[Flix2Watch] 10000% audio gain enabled'); } catch (_) {}
-    } catch (_) {
+      try { console.info('[Flix2Watch] 200% audio gain enabled', { sourceURL, gain: F2W_AUDIO_GAIN }); } catch (_) {}
+    } catch (error) {
+      try { console.warn('[Flix2Watch] audio boost failed to attach', error); } catch (_) {}
       // Unsupported or CORS-restricted media remains on its native audio path.
     }
   };
