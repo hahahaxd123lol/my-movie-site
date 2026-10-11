@@ -28,7 +28,7 @@
  * - no iframe sandbox attribute and no CSP sandbox directive
  */
 
-const VERSION = 'v4-max-final-settings-fix2';
+const VERSION = 'v4-max-final-settings-fix3';
 
 const AD_HOST_FRAGMENTS = [
   'doubleclick.net',
@@ -409,7 +409,12 @@ function buildGuardJS() {
     if (shouldBlockNavigation(url, target)) return kill(event, 'trusted-activation', url);
   };
 
-  for (const type of ['pointerdown','pointerup','mousedown','mouseup','touchstart','touchend','click','auxclick','dblclick','contextmenu','keydown','keyup']) {
+  // Only inspect completed activation events. Intercepting pointer/touch
+  // down/up in capture phase can disrupt custom player menus that open on
+  // pointerdown and immediately dismiss on a cancelled or altered sequence.
+  // Popup creation is still blocked by window.open; link navigation is checked
+  // on click/auxclick, while target/href/form guards remain active.
+  for (const type of ['click','auxclick']) {
     try { addEventListener(type, interceptActivation, { capture: true, passive: false }); } catch (_) {}
   }
 
