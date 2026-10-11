@@ -897,6 +897,21 @@ html{overflow-y:scroll}
     // Fetch cloud state in parallel; never block initial playback on Supabase.
     setTimeout(f2wLoadCloudResume,0);
 
+    // Persist the most recently reported position every 30 seconds, independently
+    // of provider event frequency. Cross-origin providers must report progress to us
+    // at least once; browsers do not expose their internal currentTime to the parent.
+    setInterval(()=>{
+      const p=window.__f2wLatestProgress;
+      if(!p||p.mediaType!==mediaType||!mediaId)return;
+      const s=Number(document.getElementById('season-select')?.value||1);
+      const e=Number(document.getElementById('episode-select')?.value||1);
+      if(mediaType==='tv'&&(s!==p.season||e!==p.episode))return;
+      const key=f2wResumeKey(mediaType,s,e);
+      try{localStorage.setItem(key,String(Math.floor(p.seconds)));}catch{}
+      f2wRememberTvEpisode(s,e);
+      f2wQueueCloudResumeSave(p.seconds,p.duration,'playing',s,e);
+    },30000);
+
     // Source-agnostic player progress integration. Only accept messages from
     // the currently loaded iframe, then normalize common provider progress
     // payloads. This supports sources that expose postMessage progress without
@@ -935,8 +950,10 @@ html{overflow-y:scroll}
         if (status === 'playing' || status === 'paused' || status === 'seeked') {
           try { localStorage.setItem(key, String(Math.floor(progress))); } catch (_) {}
           f2wRememberTvEpisode(s,e);
+          window.__f2wLatestProgress={mediaType:eventType,season:s,episode:e,seconds:progress,duration,updatedAt:Date.now()};
           window.__f2wCloudResumeSeconds = progress;
         } else if (status === 'completed') {
+          window.__f2wLatestProgress=null;
           try { localStorage.removeItem(key); } catch (_) {}
           window.__f2wCloudResumeSeconds = 0;
         }
@@ -7050,56 +7067,59 @@ if(currentUser){
       fetchEpisodes(seasonNum);
     }
 
-    function fetchEpisodes(seasonNumber) {
+    async function fetchEpisodes(seasonNumber) {
       const requestId=++f2wEpisodeFetchRequest;
       const requestedSeason=Number(seasonNumber||1);
       logTerminal(`Querying episodes for Season ${requestedSeason}...`);
       const episodeSelect=document.getElementById('episode-select');
       if(episodeSelect){episodeSelect.disabled=true;episodeSelect.innerHTML='<option value="">Loading episodes…</option>';}
-      fetch(`https://api.themoviedb.org/3/tv/${mediaId}/season/${requestedSeason}?api_key=${API_KEY}`)
-        .then(res=>{if(!res.ok)throw new Error(`TMDB returned ${res.status}`);return res.json();})
-        .then(data=>{
-          // Rapid season changes can finish out of order; only the latest selection may update the UI.
-          if(requestId!==f2wEpisodeFetchRequest||Number(document.getElementById('season-select')?.value)!==requestedSeason)return;
-          const select=document.getElementById('episode-select');
-          select.innerHTML='';
-          if(data.episodes&&data.episodes.length){
-            data.episodes.forEach(ep=>{
-              const opt=document.createElement('option');
-              opt.value=String(ep.episode_number);
-              opt.textContent=`Ep ${ep.episode_number}: ${ep.name}`;
-              select.appendChild(opt);
-            });
-            logTerminal(`Loaded ${data.episodes.length} episodes for Season ${requestedSeason}.`,'success');
-          }else{
-            const opt=document.createElement('option');opt.value='1';opt.textContent='Episode 1';select.appendChild(opt);
-          }
-          const requestedSeasonFromUrl=Number(urlParams.get('season')||0);
-          const requestedEpisode=Number(urlParams.get('episode')||0);
-          const lastEpisode=f2wReadLastTvEpisode();
-          // Apply URL/last-watched selection only during initial setup, never over a user's later choice.
-          if(!window.__f2wInitialTvEpisodeSelectionDone){
-            let preferredEpisode=0;
-            if(requestedSeasonFromUrl===requestedSeason&&requestedEpisode>0)preferredEpisode=requestedEpisode;
-            else if(!requestedSeasonFromUrl&&!requestedEpisode&&lastEpisode&&Number(lastEpisode.season)===requestedSeason)preferredEpisode=Number(lastEpisode.episode);
-            if(preferredEpisode>0&&[...select.options].some(opt=>Number(opt.value)===preferredEpisode))select.value=String(preferredEpisode);
-            window.__f2wInitialTvEpisodeSelectionDone=true;
-          }
-          select.disabled=false;
-          f2wCloudResumeLoadedKey='';
-          window.__f2wCloudResumeSeconds=0;
-          f2wLoadCloudResume().finally(()=>{if(requestId===f2wEpisodeFetchRequest)loadPlayer();});
-        })
-        .catch(err=>{
-          if(requestId!==f2wEpisodeFetchRequest)return;
-          console.error('Error fetching episodes:',err);
-          const select=document.getElementById('episode-select');
-          if(select){select.disabled=false;if(!select.options.length){const opt=document.createElement('option');opt.value='1';opt.textContent='Episode 1';select.appendChild(opt);}}
-          logTerminal('Failed to fetch episodes list.','info');
-          f2wCloudResumeLoadedKey='';
-          window.__f2wCloudResumeSeconds=0;
-          loadPlayer();
+      let data=null,lastError=null;
+      // Retry transient TMDB/network failures once; never leave the selector stuck on “Loading”.
+      for(let attempt=0;attempt<2;attempt++){
+        try{
+          const res=await fetch(`https://api.themoviedb.org/3/tv/${mediaId}/season/${requestedSeason}?api_key=${API_KEY}`,{cache:'no-store'});
+          if(!res.ok)throw new Error(`TMDB returned ${res.status}`);
+          data=await res.json();
+          if(!Array.isArray(data.episodes))throw new Error('TMDB response did not contain an episodes list');
+          lastError=null;break;
+        }catch(err){lastError=err;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,500));}
+      }
+      if(requestId!==f2wEpisodeFetchRequest||Number(document.getElementById('season-select')?.value)!==requestedSeason)return;
+      const select=document.getElementById('episode-select');
+      if(!select)return;
+      select.innerHTML='';
+      if(lastError||!data){
+        console.error('Error fetching episodes:',lastError);
+        select.disabled=false;
+        const opt=document.createElement('option');opt.value='';opt.textContent='Episodes unavailable — reselect season to retry';select.appendChild(opt);
+        logTerminal('Could not fetch episodes for this season. Select the season again to retry.','info');
+        return;
+      }
+      if(data.episodes.length){
+        data.episodes.forEach(ep=>{
+          const opt=document.createElement('option');
+          opt.value=String(ep.episode_number);
+          opt.textContent=`Ep ${ep.episode_number}: ${ep.name||'Untitled episode'}`;
+          select.appendChild(opt);
         });
+        logTerminal(`Loaded ${data.episodes.length} episodes for Season ${requestedSeason}.`,'success');
+      }else{
+        const opt=document.createElement('option');opt.value='';opt.textContent='No episodes listed for this season';select.appendChild(opt);
+      }
+      const requestedSeasonFromUrl=Number(urlParams.get('season')||0);
+      const requestedEpisode=Number(urlParams.get('episode')||0);
+      const lastEpisode=f2wReadLastTvEpisode();
+      if(!window.__f2wInitialTvEpisodeSelectionDone){
+        let preferredEpisode=0;
+        if(requestedSeasonFromUrl===requestedSeason&&requestedEpisode>0)preferredEpisode=requestedEpisode;
+        else if(!requestedSeasonFromUrl&&!requestedEpisode&&lastEpisode&&Number(lastEpisode.season)===requestedSeason)preferredEpisode=Number(lastEpisode.episode);
+        if(preferredEpisode>0&&[...select.options].some(opt=>Number(opt.value)===preferredEpisode))select.value=String(preferredEpisode);
+        window.__f2wInitialTvEpisodeSelectionDone=true;
+      }
+      select.disabled=false;
+      f2wCloudResumeLoadedKey='';
+      window.__f2wCloudResumeSeconds=0;
+      f2wLoadCloudResume().finally(()=>{if(requestId===f2wEpisodeFetchRequest)loadPlayer();});
     }
 
     function onEpisodeChange() {
