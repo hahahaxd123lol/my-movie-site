@@ -1770,3 +1770,30 @@ body.f2w-support-page .ticket{
   font:inherit;
   cursor:pointer;
 }
+
+
+/* v13: keep catalogue genre tabs directly on the site canvas; remove the strip behind them. */
+.filter-tabs,
+body.f2w-main-page .filter-tabs{
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  border-bottom:0!important;
+  box-shadow:none!important;
+  outline:0!important;
+  padding-bottom:0!important;
+}
+.filter-tabs::before,
+.filter-tabs::after,
+body.f2w-main-page .filter-tabs::before,
+body.f2w-main-page .filter-tabs::after{
+  content:none!important;
+  display:none!important;
+  background:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+.filter-tabs .tab-btn.active{
+  box-shadow:none!important;
+}
