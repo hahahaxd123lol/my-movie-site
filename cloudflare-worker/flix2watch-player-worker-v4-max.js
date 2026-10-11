@@ -28,7 +28,7 @@
  * - no iframe sandbox attribute and no CSP sandbox directive
  */
 
-const VERSION = 'v4-max-final-settings-fix4-diagnostic';
+const VERSION = 'v4-max-final-volume-boost-150';
 
 const AD_HOST_FRAGMENTS = [
   'doubleclick.net',
@@ -588,6 +588,48 @@ function buildGuardJS() {
     installOpenGuard();
     scrubNode(document.documentElement || document);
   }, 3000);
+
+  // Audio boost for this player origin only. Gain is applied after the media
+  // element's own volume control, so viewers can still turn the player down.
+  // Only route media through Web Audio when same-origin/blob/CORS mode makes it safe.
+  const f2wAudioContexts = [];
+  const f2wBoostMedia = media => {
+    if (!media || media.__f2wBoost150Attempted) return;
+    media.__f2wBoost150Attempted = true;
+    const sourceURL = String(media.currentSrc || media.src || '');
+    const sameOrigin = !sourceURL || sourceURL.startsWith('blob:') || (() => {
+      try { return new URL(sourceURL, location.href).origin === location.origin; } catch (_) { return false; }
+    })();
+    if (!sameOrigin && !media.crossOrigin) return;
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = f2wAudioContexts[0] || new AudioCtx();
+      if (!f2wAudioContexts.length) f2wAudioContexts.push(ctx);
+      const source = ctx.createMediaElementSource(media);
+      const gain = ctx.createGain();
+      gain.gain.value = 1.5;
+      source.connect(gain);
+      gain.connect(ctx.destination);
+      media.__f2wBoost150Context = ctx;
+      media.addEventListener('play', () => { if (ctx.state === 'suspended') ctx.resume().catch(() => {}); }, { passive: true });
+      if (ctx.state === 'suspended') media.addEventListener('playing', () => ctx.resume().catch(() => {}), { once: true, passive: true });
+      try { console.info('[Flix2Watch] 150% audio gain enabled'); } catch (_) {}
+    } catch (_) {
+      // Unsupported or CORS-restricted media remains on its native audio path.
+    }
+  };
+  const f2wScanMedia = root => {
+    try {
+      if (root?.matches?.('video,audio')) f2wBoostMedia(root);
+      root?.querySelectorAll?.('video,audio').forEach(f2wBoostMedia);
+    } catch (_) {}
+  };
+  f2wScanMedia(document);
+  try {
+    new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(f2wScanMedia)))
+      .observe(document.documentElement || document, { childList: true, subtree: true });
+  } catch (_) {}
 
   try { console.info('[Flix2Watch] player popup guard ' + VERSION + ' active'); } catch (_) {}
 })();`;
