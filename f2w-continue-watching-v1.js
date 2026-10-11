@@ -257,21 +257,42 @@
     writeIndex([...map.values()].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)));
   }
 
+  // Accept progress events from the active embedded source, not just the
+  // Flix2Watch API. Providers use different origins and several common payload
+  // shapes; cross-origin safety is preserved by requiring the active iframe as
+  // event.source and validating the progress fields before saving.
   window.addEventListener('message', (event) => {
     try {
-      if (event.origin !== 'https://player.flix2watch.com') return;
-      const payload = event.data;
-      if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
-      const info = payload.data.player_info || {};
-      const status = String(payload.data.player_status || '');
-      const progress = Number(payload.data.player_progress || 0);
-      const duration = Number(payload.data.player_duration || payload.data.duration || info.duration || 0);
-      if (!(status === 'playing' || status === 'paused' || status === 'seeked' || status === 'completed')) return;
+      const frame = document.getElementById('video-frame');
+      if (!frame || event.source !== frame.contentWindow) return;
+      let payload = event.data;
+      if (typeof payload === 'string') {
+        try { payload = JSON.parse(payload); } catch { return; }
+      }
+      if (!payload || typeof payload !== 'object') return;
+      const data = payload.data && typeof payload.data === 'object' ? payload.data
+        : payload.detail && typeof payload.detail === 'object' ? payload.detail : payload;
+      const info = data.player_info || data.playerInfo || data.info || {};
+      const rawStatus = data.player_status ?? data.status ?? data.event ?? data.action ?? payload.type ?? '';
+      let status = String(rawStatus).toLowerCase();
+      const progressValue = data.player_progress ?? data.currentTime ?? data.current_time ??
+        data.position_seconds ?? data.position ?? data.time ?? info.currentTime ?? info.current_time;
+      const durationValue = data.player_duration ?? data.duration ?? data.duration_seconds ??
+        info.duration ?? info.duration_seconds;
+      const progress = Number(progressValue);
+      const duration = Number(durationValue || 0);
+      if (!Number.isFinite(progress) || progress < 0) return;
+      if (!status || /timeupdate|time_update|progress|playing|playback|player_event/i.test(status)) status = 'playing';
+      if (/pause/.test(status)) status = 'paused';
+      else if (/seek/.test(status)) status = 'seeked';
+      else if (/ended|complete|finished/.test(status)) status = 'completed';
+      else if (!/^(playing|paused|seeked|completed)$/.test(status)) return;
       const params = new URLSearchParams(location.search);
-      const type = (info.mediaType === 'tv' || params.get('type') === 'tv') ? 'tv' : 'movie';
+      const type = (info.mediaType === 'tv' || info.media_type === 'tv' || params.get('type') === 'tv') ? 'tv' : 'movie';
       let id = String(params.get('id') || '').trim();
-      if (info.tmdb) id = String(info.tmdb).replace(/\D/g, '') || id;
-      id = String(id).replace(/\D/g, '') || id;
+      const providerId = info.tmdb || info.tmdbId || info.mediaId || info.media_id;
+      if (providerId) id = String(providerId).replace(/\\D/g, '') || id;
+      id = String(id).replace(/\\D/g, '') || id;
       if (!id) return;
       const season = Number(info.season || params.get('season') || document.getElementById('season-select')?.value || 1);
       const episode = Number(info.episode || params.get('episode') || document.getElementById('episode-select')?.value || 1);
@@ -279,7 +300,7 @@
       if (!title || /watch|flix2/i.test(title)) title = document.title.split('|')[0].trim();
       let poster_path = '';
       const og = document.querySelector('meta[property="og:image"]')?.content || '';
-      const pm = og.match(/\/t\/p\/\w+(\/[^?\s]+)/);
+      const pm = og.match(/\\/t\\/p\\/\\w+(\\/[^?\\s]+)/);
       if (pm) poster_path = pm[1];
       upsertItem({ id, type, season, episode, seconds: progress, duration, title, poster_path });
     } catch {}
