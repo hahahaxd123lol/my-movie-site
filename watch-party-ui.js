@@ -15,6 +15,10 @@
   let lastSentEpisode = '';
   let lastSentSource = '';
   let observedPlaybackStatus = '';
+  // The provider emits "playing" progress telemetry roughly every five seconds.
+  // Track actual transitions so those heartbeats do not become repeated commands.
+  let lastPlayerCommandStatus = '';
+  let lastPlayerCommandSeconds = null;
   let pendingRemoteStatus = '';
   let pendingRemoteStatusUntil = 0;
   let pendingRemoteStatusRetryAt = 0;
@@ -938,6 +942,11 @@
       // then reloaded Flix2Watch and could break playback.
       const isSeek = /seek/.test(status + ' ' + type);
       if (!isPlaying && !isPaused && !isSeek && !hasProgress) return;
+      const previousCommandStatus = lastPlayerCommandStatus;
+      const previousCommandSeconds = lastPlayerCommandSeconds;
+      if (isPlaying) lastPlayerCommandStatus = 'playing';
+      else if (isPaused) lastPlayerCommandStatus = 'paused';
+      if (isSeek && hasProgress) lastPlayerCommandSeconds = progress;
       if (hasProgress) {
         observedPlaybackSeconds = progress;
         lastPlayerReportedSeconds = progress;
@@ -981,9 +990,18 @@
       // event locally. Do not echo that event back to the room as a new command.
       if (now < suppressPlaybackBroadcastUntil || now < playerLoadingUntil) return;
       if (isPlaying || isPaused) {
-        connection.send({ type: 'playback-command', action: isPlaying ? 'play' : 'pause', seconds }).catch(() => {});
+        // Do not treat the provider's recurring "playing" heartbeat as a new
+        // user action. Only send play/pause when the reported state transitions.
+        const nextStatus = isPlaying ? 'playing' : 'paused';
+        if (previousCommandStatus !== nextStatus) {
+          connection.send({ type: 'playback-command', action: isPlaying ? 'play' : 'pause', seconds }).catch(() => {});
+        }
       } else if (isSeek && hasProgress) {
-        connection.send({ type: 'playback-command', action: 'seek', seconds }).catch(() => {});
+        // Seek telemetry is a one-shot action; ignore duplicate reports of the
+        // same position while allowing later seeks to pass through.
+        if (previousCommandSeconds == null || Math.abs(previousCommandSeconds - progress) > 2.5) {
+          connection.send({ type: 'playback-command', action: 'seek', seconds }).catch(() => {});
+        }
       } else if (now - lastPlaybackBroadcastAt < 1000) return;
       lastPlaybackBroadcastAt = now;
       // Only the host publishes the periodic clock. Guest-initiated play/pause/seek
