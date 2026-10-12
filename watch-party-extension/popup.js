@@ -57,5 +57,9 @@ chrome.runtime.onMessage.addListener(message => {
   else if (message.status === "reconnecting") status("Connection lost; reconnecting to room " + message.detail + "…");
   else if (message.status === "error") status(message.detail || "Connection error.", "error");
   else if (message.status === "disconnected") status("Disconnected from the room.");
+  else if (message.status === "player-bridge") status(message.detail || "Checking preview player…", "ok");
+  else if (message.status === "player-command") status("Player bridge received " + message.detail + ".", "ok");
+  else if (message.status === "command-relay") status(message.detail || "Playback command relayed.", "ok");
+  else if (message.status === "opening-movie") status("Opening " + message.detail + " on the Render preview…", "ok");
 });
 refresh();
