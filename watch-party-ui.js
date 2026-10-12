@@ -540,6 +540,7 @@
       if (!window.F2WWatchPartyRealtime) { setStatus('Party service is unavailable. Refresh and try again.'); return; }
       if (!/^[a-f0-9]{24}$/i.test(String(roomId || ''))) { setStatus('That room could not be found.'); return; }
       if (connection) await connection.close();
+      hasAnnouncedPlayerReady = false;
       participants.clear(); renderPeople();
       setStatus('Connecting to your room…', false);
       try {
@@ -578,7 +579,7 @@
               if (Array.isArray(message.participants)) {
                 participants.clear();
                 message.participants.forEach(person => {
-                  if (person?.id) participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host) });
+                  if (person?.id) participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host), playerReady: Boolean(person.playerReady) });
                 });
                 renderPeople();
               }
@@ -598,7 +599,7 @@
               // The transport normally consumes this event; keep this defensive fallback.
               if (Array.isArray(message.participants)) {
                 participants.clear();
-                message.participants.forEach(person => { if (person?.id) participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host) }); });
+                message.participants.forEach(person => { if (person?.id) participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host), playerReady: Boolean(person.playerReady) }); });
                 renderPeople();
               }
             } else if (message.type === 'player-readiness') {
