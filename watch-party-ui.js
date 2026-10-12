@@ -367,7 +367,8 @@
     return panel;
   }
   function init() {
-    if (!document.querySelector('.player-wrapper') || document.getElementById('f2w-watch-party')) return;
+    const onHome = location.pathname === '/' || /^\/home\/?$/.test(location.pathname);
+    if ((!document.querySelector('.player-wrapper') && !onHome) || document.getElementById('f2w-watch-party')) return;
     const panel = buildPanel();
     if (!panel) return;
     const $ = selector => panel.querySelector(selector);
@@ -487,6 +488,10 @@
     const codeInput = $('#f2w-party-code');
     const joinCodeButton = $('#f2w-party-join-code');
     async function createRoom() {
+      if (!document.querySelector('.player-wrapper')) {
+        setStatus('To create a party, open a movie first. You can join an existing room right here.', false);
+        return;
+      }
       try {
         setStatus('Creating your room…', false);
         const media = currentMedia();
