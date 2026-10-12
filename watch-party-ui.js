@@ -475,14 +475,25 @@
       }
       throw new Error('The party service is taking too long to wake. Please try again in a moment. ' + (lastError?.message || ''));
     }
-    function navigateToMedia(media, roomId) {
+    function navigateToMedia(media, roomId, roomState) {
       const id = String(media?.id || '');
       const type = media?.type === 'tv' ? 'tv' : 'movie';
-      if (!/^[0-9]+$/.test(id)) return;
-      const url = new URL(location.href);
+      if (!/^[0-9]+$/.test(id)) {
+        setStatus('This party has no valid movie attached. Ask the host to reopen the movie and recreate the party.', false);
+        return;
+      }
+      // A guest may join from /home/. Always take them to the actual player,
+      // not back to the page where they entered the room code.
+      const url = new URL('/watch/', location.origin);
       url.searchParams.set('id', id);
       url.searchParams.set('type', type);
       if (roomId) url.searchParams.set(PARAM, roomId);
+      if (type === 'tv') {
+        const season = Number(roomState?.season || media?.season || 0);
+        const episode = Number(roomState?.episode || media?.episode || 0);
+        if (season > 0) url.searchParams.set('season', String(season));
+        if (episode > 0) url.searchParams.set('episode', String(episode));
+      }
       location.assign(url.href);
     }
     const codeInput = $('#f2w-party-code');
@@ -551,7 +562,7 @@
           onMessage: function (message) {
             if (message.type === 'room-state') {
               if (message.media && (String(message.media.id) !== currentMedia().mediaId || message.media.type !== currentMedia().mediaType)) {
-                navigateToMedia(message.media, roomId);
+                navigateToMedia(message.media, roomId, message);
                 return;
               }
               if (Array.isArray(message.participants)) {
@@ -584,7 +595,7 @@
               participants.delete(String(message.participantId || '')); renderPeople();
             } else if (message.type === 'media-change' && message.media) {
               const activeRoom = new URLSearchParams(location.search).get(PARAM) || roomId;
-              navigateToMedia(message.media, activeRoom);
+              navigateToMedia(message.media, activeRoom, message);
             } else if (message.type === 'season-change') {
               applyRemoteSeason(message);
             } else if (message.type === 'episode-change') {
