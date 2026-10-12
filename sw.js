@@ -1,10 +1,10 @@
 /* Flix2Watch v252 — unified sitewide service worker */
-const CACHE='f2w-v252-unified-worker-cleanup-20261012';
+const CACHE='f2w-v253-sitewide-rate-limit-20261012';
 const CORE=[
   '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
   '/v159-core.js','/v160-bootstrap.js','/v174-viewport-popups.js','/v176-sitewide.js','/v176-sitewide.css','/final-v35.js',
   '/page-transitions-v135.css','/page-transitions-v135.js',
-  '/v177-watch-realtime.js','/v177-profile-playback.js'
+  '/v177-watch-realtime.js','/v177-profile-playback.js','/sitewide-rate-limit-v1.js'
 ];
 self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
@@ -32,19 +32,36 @@ async function networkFirst(request){
 }
 async function imageSWR(request){
   const cache=await caches.open(CACHE),cached=await cache.match(request,{ignoreSearch:false});
-  const fresh=fetch(request).then(r=>{if(r&&r.ok)cache.put(request,r.clone()).catch(()=>{});return r}).catch(()=>null);
+  const fresh=fetch(request).then(r=>{if(r&&r.ok)cache.put(request,r.clone()).catch(()=>{});return injectSitewideRateLimiter(r)}).catch(()=>null);
   return cached||fresh;
 }
+
+async function injectSitewideRateLimiter(response){
+  if(!response||!response.ok||! /text\\/html/i.test(response.headers.get('content-type')||''))return response;
+  const html=await response.clone().text();
+  if(html.includes('/sitewide-rate-limit-v1.js'))return response;
+  const tag='<script defer src="/sitewide-rate-limit-v1.js?v=1"></script>';
+  let updated=html;
+  if(/<\\/head\\s*>/i.test(updated))updated=updated.replace(/<\\/head\\s*>/i,tag+'\\n</head>');
+  else if(/<\\/body\\s*>/i.test(updated))updated=updated.replace(/<\\/body\\s*>/i,tag+'\\n</body>');
+  if(updated===html)return response;
+  const headers=new Headers(response.headers);
+  headers.delete('content-length');
+  headers.delete('content-encoding');
+  headers.delete('etag');
+  return new Response(updated,{status:response.status,statusText:response.statusText,headers});
+}
+
 async function navigation(request){
   const cache=await caches.open(CACHE),u=new URL(request.url),path=u.pathname;
   if(/^\/profile\/@[A-Za-z0-9]+\/?$/.test(path)){
-    try{const r=await fetch('/profile/index.html',{cache:'no-store'});if(r.ok){cache.put('/profile/index.html',r.clone()).catch(()=>{});return r}}catch{}
-    return (await cache.match('/profile/index.html')) || fetch('/profile/index.html',{cache:'reload'});
+    try{const r=await fetch('/profile/index.html',{cache:'no-store'});if(r.ok){cache.put('/profile/index.html',r.clone()).catch(()=>{});return injectSitewideRateLimiter(r)}}catch{}
+    return injectSitewideRateLimiter((await cache.match('/profile/index.html')) || (await fetch('/profile/index.html',{cache:'reload'})));
   }
   try{
     const r=await fetch(request,{cache:'no-cache'});if(r&&r.ok){cache.put(request,r.clone()).catch(()=>{});return r}
   }catch{}
-  return (await cache.match(request,{ignoreSearch:false})) || (await cache.match('/home/')) || fetch('/home/index.html',{cache:'reload'});
+  return injectSitewideRateLimiter((await cache.match(request,{ignoreSearch:false})) || (await cache.match('/home/')) || (await fetch('/home/index.html',{cache:'reload'})));
 }
 self.addEventListener('fetch',event=>{
   const request=event.request;if(request.method!=='GET')return;

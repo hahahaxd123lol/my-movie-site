@@ -39,7 +39,28 @@ export default {
       }
     });
 
+    let responseBody = response.body;
+    let htmlModified = false;
+    if (method === 'GET' && isHtml && response.ok) {
+      const html = await response.clone().text();
+      if (!html.includes('/sitewide-rate-limit-v1.js')) {
+        const tag = '<script defer src="/sitewide-rate-limit-v1.js?v=1"></script>';
+        let updated = html;
+        if (/<\\/head\\s*>/i.test(updated)) updated = updated.replace(/<\\/head\\s*>/i, tag + '\\n</head>');
+        else if (/<\\/body\\s*>/i.test(updated)) updated = updated.replace(/<\\/body\\s*>/i, tag + '\\n</body>');
+        if (updated !== html) {
+          responseBody = updated;
+          htmlModified = true;
+        }
+      }
+    }
+
     const headers = new Headers(response.headers);
+    if (htmlModified) {
+      headers.delete('Content-Length');
+      headers.delete('Content-Encoding');
+      headers.delete('ETag');
+    }
 
     // Never let HTML get stuck behind a stale edge copy.
     if (isHtml) {
@@ -56,7 +77,7 @@ export default {
     headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
     headers.set('Strict-Transport-Security', 'max-age=31536000');
 
-    return new Response(response.body, {
+    return new Response(responseBody, {
       status: response.status,
       statusText: response.statusText,
       headers
