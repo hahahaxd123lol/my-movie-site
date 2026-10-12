@@ -110,10 +110,11 @@
       lastRemoteCommandAt = now;
     }
     const remoteSeconds = Number(state.seconds);
+    const isExplicitSeek = /seek/.test(targetStatus);
     if (Number.isFinite(remoteSeconds) && remoteSeconds >= 0 &&
-        (observedPlaybackSeconds == null || Math.abs(observedPlaybackSeconds - remoteSeconds) > 6) &&
-        now - lastRemoteSeekAt > 6000) {
-      suppressPlaybackBroadcastUntil = now + 1800;
+        (observedPlaybackSeconds == null || Math.abs(observedPlaybackSeconds - remoteSeconds) > (isExplicitSeek ? 1.5 : 3)) &&
+        now - lastRemoteSeekAt > (isExplicitSeek ? 900 : 2500)) {
+      suppressPlaybackBroadcastUntil = now + 1200;
       sendPlayerCommand('seek', remoteSeconds);
       observedPlaybackSeconds = remoteSeconds;
       lastRemoteSeekAt = now;
@@ -154,6 +155,11 @@
         #f2w-watch-party input{min-width:0;width:100%;background:#08080d;border:1px solid #ffffff20;border-radius:10px;padding:11px 12px;color:white;font:inherit;font-size:13px;outline:none}
         #f2w-watch-party input:focus{border-color:var(--wp-accent)}
         #f2w-watch-party .wp-status{font-size:12px;color:#c5c5d0;margin-top:10px;min-height:18px}
+        #f2w-watch-party .wp-password-box{padding:14px 20px 18px;border-top:1px solid #ffffff12;border-bottom:1px solid #ffffff12;background:#0003}
+        #f2w-watch-party .wp-password-box label{display:block;font-size:12px;font-weight:700;margin-bottom:8px}
+        #f2w-watch-party .wp-password-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+        #f2w-watch-party .wp-password-actions button{flex:0 1 auto}
+
         #f2w-watch-party .wp-status:before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#747482;margin-right:8px}
         #f2w-watch-party .wp-status[data-connected="true"]:before{background:#4ade80;box-shadow:0 0 10px #4ade8088}
         #f2w-watch-party .wp-people{display:flex;flex-direction:column;gap:9px;max-height:190px;overflow:auto}
@@ -212,6 +218,11 @@
       <div class="wp-top">
         <div><div class="wp-kicker">FLIX2WATCH · WATCH TOGETHER</div><div class="wp-title">Watch Party <span style="font-size:13px;color:#8f8f9d;font-weight:500">/ your room</span></div><div class="wp-sub">Bring your people. Watch the same stream together.</div></div>
         <div class="wp-actions"><button type="button" id="f2w-party-copy" hidden>↗ Copy invite</button><button type="button" id="f2w-party-create" class="wp-primary">＋ Create party</button><button type="button" id="f2w-party-leave" hidden>Leave room</button></div>
+      </div>
+      <div id="f2w-party-password-box" class="wp-password-box" hidden>
+        <label id="f2w-party-password-label" for="f2w-party-password">Room password (optional)</label>
+        <input id="f2w-party-password" type="password" maxlength="64" autocomplete="new-password" placeholder="Set a password or leave blank">
+        <div class="wp-password-actions"><button type="button" id="f2w-party-password-cancel">Cancel</button><button type="button" id="f2w-party-password-submit" class="wp-primary">Create room</button></div>
       </div>
       <div class="wp-grid">
         <div class="wp-main">
@@ -357,13 +368,35 @@
       if (roomId) url.searchParams.set(PARAM, roomId);
       location.assign(url.href);
     }
-    async function createRoom() {
-      const password = window.prompt('Optional room password (leave blank for an open invite room):', '');
-      if (password === null) return;
+    const passwordBox = $('#f2w-party-password-box');
+    const passwordInput = $('#f2w-party-password');
+    const passwordLabel = $('#f2w-party-password-label');
+    const passwordSubmit = $('#f2w-party-password-submit');
+    let passwordFlow = null;
+    function showPasswordForm(flow) {
+      passwordFlow = flow;
+      passwordBox.hidden = false;
+      passwordInput.value = '';
+      const creating = flow.mode === 'create';
+      passwordLabel.textContent = creating ? 'Room password (optional)' : 'Enter the room password (if required)';
+      passwordInput.placeholder = creating ? 'Set a password or leave blank' : 'Room password';
+      passwordInput.autocomplete = creating ? 'new-password' : 'current-password';
+      passwordSubmit.textContent = creating ? 'Create room' : 'Join room';
+      passwordInput.setAttribute('aria-label', creating ? 'Optional room password' : 'Party room password');
+      setStatus(creating ? 'Add a password to protect your room, or leave it blank.' : 'Enter the room password, or leave blank if it has none.', false);
+      passwordInput.focus();
+    }
+    function hidePasswordForm() {
+      passwordBox.hidden = true;
+      passwordFlow = null;
+      passwordInput.value = '';
+    }
+    async function createRoom(password) {
+      if (password === undefined) { showPasswordForm({ mode: 'create' }); return; }
       if (password && (password.length < 4 || password.length > 64)) {
-        setStatus('Room passwords must be 4–64 characters.');
-        return;
+        setStatus('Room passwords must be 4–64 characters.'); passwordInput.focus(); return;
       }
+      hidePasswordForm();
       try {
         setStatus('Creating your room…', false);
         const media = currentMedia();
@@ -376,7 +409,7 @@
         setStatus(error.message || 'Could not create a party.');
       }
     }
-    async function join(roomId, issuedToken, passwordProtected) {
+    async function join(roomId, issuedToken, passwordProtected, suppliedPassword) {
       if (!window.F2WWatchPartyRealtime) { setStatus('Party service is unavailable. Refresh and try again.'); return; }
       if (!/^[a-f0-9]{24}$/i.test(String(roomId || ''))) { setStatus('That invite link is invalid.'); return; }
       if (connection) await connection.close();
@@ -385,9 +418,11 @@
       try {
         let token = issuedToken || sessionStorage.getItem('f2w_party_token_' + roomId) || '';
         if (!token) {
-          const password = window.prompt('Enter the party password if the host set one. Leave blank for an open room:', '');
-          if (password === null) { setStatus('Join cancelled.'); return; }
-          const result = await apiRequest('/api/rooms/' + encodeURIComponent(roomId) + '/join', { name: displayName, password });
+          if (suppliedPassword === undefined) {
+            showPasswordForm({ mode: 'join', roomId });
+            return;
+          }
+          const result = await apiRequest('/api/rooms/' + encodeURIComponent(roomId) + '/join', { name: displayName, password: suppliedPassword });
           token = result.token;
           passwordProtected = result.passwordProtected;
         }
@@ -548,7 +583,25 @@
         toggleButton.innerHTML = '<span class="wp-tab-dot"></span><span>WATCH PARTY</span>';
       }
     });
-    createButton.addEventListener('click', createRoom);
+    createButton.addEventListener('click', () => createRoom());
+    passwordSubmit.addEventListener('click', async () => {
+      if (!passwordFlow) return;
+      const flow = passwordFlow;
+      const password = passwordInput.value;
+      if (flow.mode === 'create') await createRoom(password);
+      else {
+        if (password.length > 64) { setStatus('Room passwords must be 64 characters or fewer.'); return; }
+        hidePasswordForm();
+        await join(flow.roomId, null, null, password);
+      }
+    });
+    passwordInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter') { event.preventDefault(); passwordSubmit.click(); }
+      if (event.key === 'Escape') hidePasswordForm();
+    });
+    $('#f2w-party-password-cancel').addEventListener('click', () => {
+      hidePasswordForm(); setStatus('Cancelled.', Boolean(connection));
+    });
     $('#f2w-party-save').addEventListener('click', () => {
       const name = cleanName(nameInput.value);
       if (!name) { setStatus('Choose a name first.'); return; }
