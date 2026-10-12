@@ -184,6 +184,26 @@
     if(event.target===seasonSelect()||event.target===episodeSelect())scheduleRender();
   });
   window.addEventListener('message',onPlayerEvent);
+
+  // The shared watch-page bridge normalizes progress messages from whichever
+  // provider is active into #f2w-premid-state. Avoid tying watched state to
+  // Flix2Watch API's PLAYER_EVENT payload only.
+  function onUnifiedTelemetry(){
+    const node=document.getElementById('f2w-premid-state');
+    const state=node?.dataset;
+    if(!state||Number(state.mediaId)!==mediaId)return;
+    const stateType=String(state.mediaType||'').toLowerCase();
+    if((stateType==='tv'?'tv':'movie')!==mediaType)return;
+    const updatedAt=Number(state.updatedAt||0);
+    if(updatedAt&&Date.now()-updatedAt>15000)return;
+    const position=Number(state.position),duration=Number(state.duration);
+    if(!thresholdReached(position,duration))return;
+    const season=mediaType==='tv'?Number(state.season||seasonSelect()?.value||params.get('season')||1):0;
+    const episode=mediaType==='tv'?Number(state.episode||episodeSelect()?.value||params.get('episode')||1):0;
+    void markWatched(season,episode,position,duration);
+  }
+  setInterval(onUnifiedTelemetry,1000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')onUnifiedTelemetry()});
   const observer=new MutationObserver(scheduleRender);
   const attachObserver=()=>{
     const ss=seasonSelect(),es=episodeSelect();
@@ -200,4 +220,4 @@
   void initialiseAuth();
   if(mediaType==='tv')void loadSeasonCounts();
 })();
-// f2w-force-save: watched threshold five-minute republish 2026-10-12
+// f2w-force-save: watched all-source telemetry 2026-10-12
