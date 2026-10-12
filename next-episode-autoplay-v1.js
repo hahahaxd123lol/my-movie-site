@@ -396,7 +396,7 @@
       for (const k of childKeys) {
         const child = item.value[k];
         if (child && typeof child === 'object') queue.push({value:child,depth:item.depth+1});
-        else if (typeof child === 'string' && /^[\s]*[\[{]/.test(child)) {
+        else if (typeof child === 'string' && (child.trimStart().startsWith('{') || child.trimStart().startsWith('['))) {
           try { queue.push({value:JSON.parse(child),depth:item.depth+1}); } catch (_) {}
         }
       }
@@ -413,7 +413,7 @@
       for (const key of ['player_status','playback_status','status','state','event','eventType','event_type','action','name','method','command','type']) {
         const value = root[key];
         if (typeof value !== 'string') continue;
-        const normalized = value.trim().toLowerCase().replace(/[\\s_-]+/g,'');
+        const normalized = value.trim().toLowerCase().replaceAll(' ','').replaceAll('_','').replaceAll('-','');
         if (['ended','end','completed','complete','finished','finish','playbackended','videoended','movieended','playbackcompleted','videocompleted'].includes(normalized) ||
             /^(on|video|movie|playback)(ended|completed|finished)$/.test(normalized)) return true;
       }
