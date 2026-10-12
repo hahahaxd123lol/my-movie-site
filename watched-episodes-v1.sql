@@ -151,73 +151,196 @@ revoke all on function public.mark_my_watched_episode_v1(bigint,integer,integer,
 grant execute on function public.mark_my_watched_episode_v1(bigint,integer,integer,integer,integer) to authenticated;
 
 
--- Best-effort historical backfill from the legacy resume table.
--- Completed titles were deleted by the legacy save RPC, so only rows that still
--- exist and are already at the watched threshold can be recovered automatically.
--- Every inserted row keeps its original user_id; no account IDs are inferred.
-do $f2w_resume_backfill$
+-- Best-effort historical backfill across existing public playback/history tables.
+-- Completed records in the v132 resume table may already have been deleted. Search
+-- for other retained account-linked tables as well, without guessing or transferring UIDs.
+-- A record is imported only when it has a real user_id + media identity and either:
+-- (a) progress is at the watched threshold, or (b) its data explicitly says completed/watched.
+do $f2w_historical_backfill$
 declare
-  v_missing text[];
-  v_rows bigint := 0;
+  t record;
+  cols text[];
+  season_col text;
+  episode_col text;
+  position_col text;
+  duration_col text;
+  position_expr text;
+  duration_expr text;
+  season_expr text;
+  episode_expr text;
+  completion_expr text;
+  progress_expr text;
+  inserted bigint;
+  total_inserted bigint := 0;
 begin
-  if to_regclass('public.user_playback_progress_v132') is null then
-    raise notice 'Historical watched backfill skipped: public.user_playback_progress_v132 does not exist.';
-    return;
-  end if;
-
-  select array_agg(required.column_name order by required.column_name)
-    into v_missing
-  from unnest(array[
-    'user_id','media_id','media_type','season','episode',
-    'position_seconds','duration_seconds'
-  ]) as required(column_name)
-  where not exists (
-    select 1
+  for t in
+    select n.nspname as schema_name, c.relname as table_name,
+           c.oid as relation_id
+    from pg_class c
+    join pg_namespace n on n.oid = c.relnamespace
+    where n.nspname = 'public'
+      and c.relkind in ('r','p')
+      and c.relname <> 'user_watched_episodes_v1'
+    order by c.relname
+  loop
+    select coalesce(array_agg(a.attname), array[]::text[])
+      into cols
     from pg_attribute a
-    where a.attrelid = to_regclass('public.user_playback_progress_v132')
-      and a.attname = required.column_name
-      and a.attnum > 0
-      and not a.attisdropped
-  );
+    where a.attrelid = t.relation_id and a.attnum > 0 and not a.attisdropped;
 
-  if coalesce(array_length(v_missing, 1), 0) > 0 then
-    raise notice 'Historical watched backfill skipped: expected legacy columns are missing: %', array_to_string(v_missing, ', ');
-    return;
-  end if;
+    -- Ignore unrelated tables, including ordinary favorites.
+    if not ('user_id' = any(cols)
+      and 'media_id' = any(cols)
+      and 'media_type' = any(cols)) then
+      continue;
+    end if;
 
-  execute $backfill$
-    insert into public.user_watched_episodes_v1
-      (user_id, media_id, media_type, season, episode)
-    select
-      p.user_id,
-      p.media_id,
-      lower(trim(p.media_type)),
-      case when lower(trim(p.media_type)) = 'movie' then 0 else p.season end,
-      case when lower(trim(p.media_type)) = 'movie' then 0 else p.episode end
-    from public.user_playback_progress_v132 p
-    where p.user_id is not null
-      and p.media_id > 0
-      and lower(trim(p.media_type)) in ('movie','tv')
-      and p.position_seconds is not null
-      and p.duration_seconds is not null
-      and p.duration_seconds > 0
-      and (
-        p.position_seconds >= case
-          when p.duration_seconds > 600 then p.duration_seconds - 600
-          else ceil(p.duration_seconds * 0.5)
+    season_col := case
+      when 'season' = any(cols) then 'season'
+      when 'season_number' = any(cols) then 'season_number'
+      else null
+    end;
+    episode_col := case
+      when 'episode' = any(cols) then 'episode'
+      when 'episode_number' = any(cols) then 'episode_number'
+      else null
+    end;
+    position_col := case
+      when 'position_seconds' = any(cols) then 'position_seconds'
+      when 'player_position_seconds' = any(cols) then 'player_position_seconds'
+      when 'progress_seconds' = any(cols) then 'progress_seconds'
+      when 'current_time_seconds' = any(cols) then 'current_time_seconds'
+      else null
+    end;
+    duration_col := case
+      when 'duration_seconds' = any(cols) then 'duration_seconds'
+      when 'player_duration_seconds' = any(cols) then 'player_duration_seconds'
+      else null
+    end;
+
+    -- Need either a progress/duration pair or an explicit watched/completed signal.
+    if not (
+      (position_col is not null and duration_col is not null)
+      or 'completed' = any(cols)
+      or 'is_completed' = any(cols)
+      or 'watched' = any(cols)
+      or 'is_watched' = any(cols)
+      or 'playback_status' = any(cols)
+      or 'status' = any(cols)
+      or 'completed_at' = any(cols)
+      or 'finished_at' = any(cols)
+      or 'watched_at' = any(cols)
+    ) then
+      continue;
+    end if;
+
+    if position_col is null then
+      position_expr := 'null::numeric';
+    else
+      position_expr := format(
+        'case when (to_jsonb(p)->>%L) ~ ''^-?[0-9]+([.][0-9]+)?$'' then (to_jsonb(p)->>%L)::numeric end',
+        position_col, position_col
+      );
+    end if;
+
+    if duration_col is null then
+      duration_expr := 'null::numeric';
+    else
+      duration_expr := format(
+        'case when (to_jsonb(p)->>%L) ~ ''^[0-9]+([.][0-9]+)?$'' then (to_jsonb(p)->>%L)::numeric end',
+        duration_col, duration_col
+      );
+    end if;
+
+    if season_col is null then
+      season_expr := 'null::integer';
+    else
+      season_expr := format(
+        'case when (to_jsonb(p)->>%L) ~ ''^[0-9]+$'' then (to_jsonb(p)->>%L)::integer end',
+        season_col, season_col
+      );
+    end if;
+
+    if episode_col is null then
+      episode_expr := 'null::integer';
+    else
+      episode_expr := format(
+        'case when (to_jsonb(p)->>%L) ~ ''^[0-9]+$'' then (to_jsonb(p)->>%L)::integer end',
+        episode_col, episode_col
+      );
+    end if;
+
+    completion_expr := $completion$
+      (
+        lower(coalesce(to_jsonb(p)->>'playback_status', '')) in
+          ('complete','completed','ended','finished','watched')
+        or lower(coalesce(to_jsonb(p)->>'status', '')) in
+          ('complete','completed','ended','finished','watched')
+        or lower(coalesce(to_jsonb(p)->>'completed', '')) in ('true','t','1','yes','completed')
+        or lower(coalesce(to_jsonb(p)->>'is_completed', '')) in ('true','t','1','yes','completed')
+        or lower(coalesce(to_jsonb(p)->>'watched', '')) in ('true','t','1','yes','watched')
+        or lower(coalesce(to_jsonb(p)->>'is_watched', '')) in ('true','t','1','yes','watched')
+        or nullif(to_jsonb(p)->>'completed_at', '') is not null
+        or nullif(to_jsonb(p)->>'finished_at', '') is not null
+        or nullif(to_jsonb(p)->>'watched_at', '') is not null
+      )
+    $completion$;
+
+    progress_expr := format(
+      '(%1$s is not null and %2$s is not null and %2$s > 0 and %1$s >= case when %2$s > 600 then %2$s - 600 else ceil(%2$s * 0.5) end)',
+      position_expr, duration_expr
+    );
+
+    execute format($sql$
+      insert into public.user_watched_episodes_v1
+        (user_id, media_id, media_type, season, episode)
+      select
+        (to_jsonb(p)->>'user_id')::uuid,
+        (to_jsonb(p)->>'media_id')::bigint,
+        case
+          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 'movie'
+          when lower(trim(to_jsonb(p)->>'media_type')) in ('tv','series','show') then 'tv'
+          else null
+        end,
+        case
+          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
+          else %s
+        end,
+        case
+          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
+          else %s
         end
-      )
-      and (
-        lower(trim(p.media_type)) = 'movie'
-        or (p.season > 0 and p.episode > 0)
-      )
-    on conflict (user_id, media_id, season, episode) do nothing
-  $backfill$;
+      from %I.%I p
+      where (to_jsonb(p)->>'user_id') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+        and (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}$'
+        and (to_jsonb(p)->>'media_id')::numeric > 0
+        and lower(trim(coalesce(to_jsonb(p)->>'media_type',''))) in ('movie','film','tv','series','show')
+        and (
+          %s
+          or %s
+        )
+        and (
+          lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film')
+          or (%s is not null and %s is not null and %s > 0 and %s > 0)
+        )
+      on conflict (user_id, media_id, season, episode) do nothing
+    $sql$,
+      season_expr, episode_expr, t.schema_name, t.table_name,
+      completion_expr, progress_expr,
+      season_expr, episode_expr, season_expr, episode_expr
+    );
 
-  get diagnostics v_rows = row_count;
-  raise notice 'Historical watched backfill inserted % recoverable movie/episode records.', v_rows;
+    get diagnostics inserted = row_count;
+    total_inserted := total_inserted + inserted;
+
+    if inserted > 0 then
+      raise notice 'Recovered % watched records from %.%', inserted, t.schema_name, t.table_name;
+    end if;
+  end loop;
+
+  raise notice 'Historical watched backfill complete. Total new records recovered: %.', total_inserted;
 end;
-$f2w_resume_backfill$;
+$f2w_historical_backfill$;
 
 notify pgrst, 'reload schema';
 commit;
