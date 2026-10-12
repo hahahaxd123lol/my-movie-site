@@ -17,6 +17,7 @@
 
   let card = null;
   let countdownNode = null;
+  let kickerNode = null;
   let titleNode = null;
   let seasonNode = null;
   let progressNode = null;
@@ -49,11 +50,9 @@
     const style = document.createElement('style');
     style.id = 'f2w-next-episode-style-v1';
     style.textContent = `
-      #flix-player-container.f2w-next-ep-host { position:relative!important; }
       #f2w-next-episode-card {
-        box-sizing:border-box; display:block; position:absolute;
-        right:clamp(12px,2vw,24px); bottom:clamp(12px,2vw,24px);
-        width:min(370px,calc(100% - 24px)); max-width:calc(100vw - 24px);
+        box-sizing:border-box; display:block; position:relative;
+        width:100%; max-width:100%; margin:14px 0 18px;
         margin:0; padding:17px 17px 15px; border:1px solid rgba(255,255,255,.17);
         border-radius:17px; color:#f8fafc;
         background:linear-gradient(145deg,rgba(9,18,31,.96),rgba(3,8,16,.94));
@@ -67,11 +66,6 @@
       }
       #f2w-next-episode-card[hidden] { display:none!important; }
       #f2w-next-episode-card.f2w-visible { opacity:1; visibility:visible; pointer-events:auto; transform:translate3d(0,0,0) scale(1); }
-      #f2w-next-episode-card.f2w-is-popover {
-        position:fixed!important; inset:auto max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) auto!important;
-        width:min(370px,calc(100vw - 28px))!important; max-width:calc(100vw - 28px)!important;
-        margin:0!important; max-height:calc(100dvh - 28px); overflow:auto;
-      }
       #f2w-next-episode-card .f2w-next-top { display:flex; align-items:flex-start; gap:13px; }
       #f2w-next-episode-card .f2w-next-copy { flex:1 1 auto; min-width:0; }
       #f2w-next-episode-card .f2w-next-kicker {
@@ -136,7 +130,9 @@
     kicker.className = 'f2w-next-kicker';
     const dot = document.createElement('span');
     dot.className = 'f2w-next-dot';
-    kicker.append(dot,document.createTextNode('UP NEXT'));
+    kickerNode = document.createElement('span');
+    kickerNode.textContent = 'UP NEXT EPISODE';
+    kicker.append(dot,kickerNode);
     titleNode = document.createElement('h3');
     titleNode.className = 'f2w-next-title';
     seasonNode = document.createElement('div');
@@ -177,7 +173,7 @@
     actions.append(play,cancel);
 
     card.append(top,note,track,actions);
-    container.appendChild(card);
+    container.insertAdjacentElement('afterend',card);
     return card;
   }
 
@@ -227,24 +223,10 @@
 
   function prepareLayering() {
     if (!card) return;
-    const shouldPopover = isPlayerFullscreen() && typeof card.showPopover === 'function';
-    if (shouldPopover) {
-      card.classList.add('f2w-is-popover');
-      card.setAttribute('popover','manual');
-      if (!isPopoverOpen()) {
-        try { card.showPopover(); } catch (error) {
-          card.removeAttribute('popover');
-          card.classList.remove('f2w-is-popover');
-          console.warn('Next episode fullscreen overlay fallback:',error?.message || error);
-        }
-      }
-    } else {
-      if (isPopoverOpen()) {
-        try { card.hidePopover(); } catch (_) {}
-      }
-      card.removeAttribute('popover');
-      card.classList.remove('f2w-is-popover');
-    }
+    // Keep the prompt in normal page flow under the player, never in a fullscreen overlay.
+    if (isPopoverOpen()) { try { card.hidePopover(); } catch (_) {} }
+    card.removeAttribute('popover');
+    card.classList.remove('f2w-is-popover');
   }
 
   function makeVisible() {
@@ -276,8 +258,6 @@
   function syncLayerForFullscreen() {
     if (active && card) prepareLayering();
   }
-  document.addEventListener('fullscreenchange',syncLayerForFullscreen);
-  document.addEventListener('webkitfullscreenchange',syncLayerForFullscreen);
 
   function formatClock(totalSeconds) {
     const seconds = Math.max(0,Math.ceil(totalSeconds));
@@ -340,7 +320,8 @@
     if (!el) { active = false; return; }
     titleNode.textContent = next.title;
     seasonNode.textContent = next.subtitle;
-    const display = waitForEpisodeEnd ? formatClock(Math.ceil(remainingMs/1000)) : String(Math.ceil(remainingMs/1000));
+    if (kickerNode) kickerNode.textContent = next.kind === 'season' ? 'UP NEXT SEASON' : 'UP NEXT EPISODE';
+    const display = String(Math.ceil(remainingMs/1000));
     countdownNode.textContent = display;
     const pct = String(Math.max(0,Math.min(100,remainingMs/countdownTotalMs*100)))+'%';
     progressNode.style.width = pct;
@@ -510,7 +491,7 @@
       const next = nextEpisodeTarget();
       if (next) handleCompletion({
         mediaType:'tv',mediaId,season,episode,
-        countdownMs:Math.max(1000,(duration-position)*1000),waitForEpisodeEnd:true
+        countdownMs:10000,waitForEpisodeEnd:false
       });
     }
   }
@@ -546,13 +527,7 @@
 
   // Reposition the card if fullscreen begins or ends while the countdown is visible.
   document.addEventListener('visibilitychange',() => { previousTick = Date.now(); });
-  document.addEventListener('fullscreenchange',() => {
-    if (active) {
-      clearTimeout(window.__f2wNextEpisodeLayerTimer);
-      window.__f2wNextEpisodeLayerTimer = setTimeout(syncLayerForFullscreen,0);
-    }
-  });
 })();
-// f2w-force-save: next episode final-five-minutes countdown 2026-10-12
+// f2w-force-save: inline-under-player-next-season-10-second-autoplay 2026-10-12
 
 // f2w-force-save: next episode final-five-minute re-push 2026-10-12
