@@ -60,7 +60,7 @@ async function navigation(request){
     return injectSitewideRateLimiter((await cache.match('/profile/index.html')) || (await fetch('/profile/index.html',{cache:'reload'})));
   }
   try{
-    const r=await fetch(request,{cache:'no-cache'});if(r&&r.ok){cache.put(request,r.clone()).catch(()=>{});return r}
+    const r=await fetch(request,{cache:'no-cache'});if(r&&r.ok){cache.put(request,r.clone()).catch(()=>{});return injectSitewideRateLimiter(r)}
   }catch{}
   return injectSitewideRateLimiter((await cache.match(request,{ignoreSearch:false})) || (await cache.match('/home/')) || (await fetch('/home/index.html',{cache:'reload'})));
 }
