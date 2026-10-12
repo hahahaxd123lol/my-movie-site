@@ -546,12 +546,15 @@
       setStatus('Preparing the Flix2Watch API player…', false);
       // Never let a party inherit a different server. Switch once on entry;
       // playback sync itself must not rebuild the iframe or switch providers.
+      const isPlayerPage = Boolean(document.querySelector('.player-wrapper'));
       const partyPlayerButton = [...document.querySelectorAll('.server-btn')].find(item => item.dataset.server === PARTY_PLAYER_SOURCE);
-      if (!partyPlayerButton) {
+      if (isPlayerPage && !partyPlayerButton) {
         setStatus('Watch Party requires the Flix2Watch API player, but that source is unavailable on this page.', false);
         return;
       }
-      if (!partyPlayerButton.classList.contains('active')) {
+      // Joining from /home is supported: the room state navigates to the
+      // movie page first, where the source lock is applied before playback.
+      if (partyPlayerButton && !partyPlayerButton.classList.contains('active')) {
         applyingRemoteSource = true;
         partyPlayerButton.click();
         await new Promise(resolve => setTimeout(resolve, 300));
