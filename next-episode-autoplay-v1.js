@@ -51,14 +51,14 @@
     style.id = 'f2w-next-episode-style-v1';
     style.textContent = `
       #f2w-next-episode-card {
-        box-sizing:border-box; display:block; position:relative;
-        width:100%; max-width:100%; margin:14px 0 18px;
-        margin:0; padding:17px 17px 15px; border:1px solid rgba(255,255,255,.17);
+        box-sizing:border-box; display:block; position:relative!important; inset:auto!important;
+        width:100%!important; max-width:100%!important; margin:14px 0 18px!important;
+        padding:17px 17px 15px; border:1px solid rgba(255,255,255,.17);
         border-radius:17px; color:#f8fafc;
         background:linear-gradient(145deg,rgba(9,18,31,.96),rgba(3,8,16,.94));
         box-shadow:0 22px 70px rgba(0,0,0,.58),0 0 0 1px rgba(255,255,255,.035) inset;
         backdrop-filter:blur(20px) saturate(135%); -webkit-backdrop-filter:blur(20px) saturate(135%);
-        z-index:2147483647; font:500 13px/1.45 Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+        z-index:auto!important; font:500 13px/1.45 Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
         text-align:left; opacity:0; visibility:hidden; pointer-events:none;
         transform:translate3d(0,12px,0) scale(.985);
         transition:opacity .24s ease,transform .28s cubic-bezier(.2,.8,.2,1),visibility .24s;
@@ -98,7 +98,7 @@
       #f2w-next-episode-card .f2w-next-cancel { color:#d9e2ee; background:rgba(255,255,255,.055); }
       #f2w-next-episode-card .f2w-next-cancel:hover { background:rgba(255,255,255,.11); border-color:rgba(255,255,255,.24); }
       @media(max-width:480px) {
-        #f2w-next-episode-card { right:10px;bottom:10px;width:min(350px,calc(100% - 20px));padding:14px;border-radius:14px; }
+        #f2w-next-episode-card { position:relative!important; inset:auto!important; width:100%!important; max-width:100%!important; margin:14px 0 18px!important; padding:14px;border-radius:14px; }
         #f2w-next-episode-card .f2w-next-title { font-size:14px; }
       }
       @media(prefers-reduced-motion:reduce) {
@@ -236,8 +236,7 @@
     el.setAttribute('aria-hidden','false');
     el.classList.add('f2w-visible');
     prepareLayering();
-    // showPopover() changes rendering in the top layer. Re-apply the visible
-    // state in the next frame so both the first entrance and transitions are smooth.
+    // Keep the card in ordinary document flow; never promote it to the top layer.
     requestAnimationFrame(() => {
       if (active && card) card.classList.add('f2w-visible');
     });
@@ -256,7 +255,22 @@
   }
 
   function syncLayerForFullscreen() {
-    if (active && card) prepareLayering();
+    if (!card) return;
+    prepareLayering();
+    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement || null;
+    const container = host();
+    const iframe = frame();
+    const playerIsFullscreen = Boolean(fullscreenElement && (
+      fullscreenElement === iframe || fullscreenElement === container ||
+      (container && container.contains(fullscreenElement))
+    ));
+    if (playerIsFullscreen) {
+      card.hidden = true;
+      card.classList.remove('f2w-visible');
+    } else if (active) {
+      card.hidden = false;
+      card.classList.add('f2w-visible');
+    }
   }
 
   function formatClock(totalSeconds) {
@@ -525,7 +539,9 @@
   },true);
   window.addEventListener('pagehide',() => dismiss(false),{once:true});
 
-  // Reposition the card if fullscreen begins or ends while the countdown is visible.
+  // Never let the next-episode card appear over the video/fullscreen layer.
+  document.addEventListener('fullscreenchange', syncLayerForFullscreen);
+  document.addEventListener('webkitfullscreenchange', syncLayerForFullscreen);
   document.addEventListener('visibilitychange',() => { previousTick = Date.now(); });
 })();
 // f2w-force-save: inline-under-player-next-season-10-second-autoplay 2026-10-12
@@ -533,3 +549,5 @@
 // f2w-force-save: next episode final-five-minute re-push 2026-10-12
 
 // f2w-force-save: repush-request-2026-10-12
+
+// f2w-force-save: harden-under-player-no-fullscreen-overlay 2026-10-12
