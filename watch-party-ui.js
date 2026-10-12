@@ -113,7 +113,17 @@
     panel.setAttribute('aria-label', 'Watch Party');
     panel.innerHTML = `
       <style>
-        #f2w-watch-party{--wp-accent:var(--accent,#e50914);margin:22px 0 28px;border:1px solid rgba(255,255,255,.12);border-radius:20px;overflow:hidden;background:radial-gradient(ellipse at 8% 0%,color-mix(in srgb,var(--wp-accent) 20%,transparent),transparent 42%),linear-gradient(135deg,#15151d,#09090d 75%);color:#f7f7fb;box-shadow:0 18px 50px #0005;font-family:var(--font-body,Arial,sans-serif)}
+        #f2w-watch-party{--wp-accent:var(--accent,#e50914);position:fixed;z-index:2147483000;right:0;top:12px;bottom:12px;width:min(430px,calc(100vw - 48px));height:auto;margin:0;border:1px solid rgba(255,255,255,.14);border-right:0;border-radius:20px 0 0 20px;overflow:hidden;transform:translateX(calc(100% - 48px));transition:transform .28s cubic-bezier(.2,.8,.2,1);background:radial-gradient(ellipse at 8% 0%,color-mix(in srgb,var(--wp-accent) 20%,transparent),transparent 42%),linear-gradient(135deg,#15151d,#09090d 75%);color:#f7f7fb;box-shadow:0 18px 50px #0008;font-family:var(--font-body,Arial,sans-serif);display:flex;flex-direction:column} 
+        #f2w-watch-party.is-open{transform:translateX(0)}
+        #f2w-watch-party .wp-drawer-tab{position:absolute;left:0;top:28%;width:47px;height:164px;border-radius:0 12px 12px 0;border-left:0;background:linear-gradient(180deg,var(--wp-accent),#9b1020);display:flex;align-items:center;justify-content:center;gap:10px;writing-mode:vertical-rl;transform:none;letter-spacing:.12em;font-size:11px;font-weight:900;box-shadow:8px 8px 24px #0005;z-index:5}
+        #f2w-watch-party .wp-drawer-tab .wp-tab-dot{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff9}
+        #f2w-watch-party .wp-drawer-content{height:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin-left:47px;display:flex;flex-direction:column}
+        #f2w-watch-party .wp-top{padding:20px 18px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+        #f2w-watch-party .wp-grid{display:grid;grid-template-columns:minmax(0,1fr);border-top:1px solid #ffffff12}
+        #f2w-watch-party .wp-main{padding:17px;border-right:0;border-bottom:1px solid #ffffff12;min-width:0}
+        #f2w-watch-party .wp-side{padding:17px;min-width:0;background:#0002}
+        #f2w-watch-party .wp-foot{border-top:1px solid #ffffff12;padding:12px 17px;color:#898997;font-size:11px;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+        #f2w-watch-party .wp-title{font-size:22px;font-weight:800;letter-spacing:-.04em;margin:4px 0}
         #f2w-watch-party *{box-sizing:border-box}
         #f2w-watch-party .wp-top{padding:22px 24px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
         #f2w-watch-party .wp-kicker{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#ffb3b7;font-weight:700}
@@ -149,8 +159,10 @@
         #f2w-watch-party [hidden]{display:none!important}
         @media(max-width:650px){#f2w-watch-party .wp-grid{grid-template-columns:1fr}#f2w-watch-party .wp-main{border-right:0;border-bottom:1px solid #ffffff12;padding:18px}#f2w-watch-party .wp-side{padding:18px}#f2w-watch-party .wp-top{padding:18px}#f2w-watch-party .wp-title{font-size:21px}}
       </style>
+      <button class="wp-drawer-tab" id="f2w-party-toggle" type="button" aria-expanded="false" aria-controls="f2w-watch-party"><span class="wp-tab-dot"></span><span>WATCH PARTY</span></button>
+      <div class="wp-drawer-content">
       <div class="wp-top">
-        <div><div class="wp-kicker">Flix2Watch · Watch together</div><div class="wp-title">Watch Party <span style="font-size:13px;color:#8f8f9d;font-weight:500">/ your room</span></div><div class="wp-sub">Bring your people. Watch the same stream together.</div></div>
+        <div><div class="wp-kicker">FLIX2WATCH · WATCH TOGETHER</div><div class="wp-title">Watch Party <span style="font-size:13px;color:#8f8f9d;font-weight:500">/ your room</span></div><div class="wp-sub">Bring your people. Watch the same stream together.</div></div>
         <div class="wp-actions"><button type="button" id="f2w-party-copy" hidden>↗ Copy invite</button><button type="button" id="f2w-party-create" class="wp-primary">＋ Create party</button><button type="button" id="f2w-party-leave" hidden>Leave room</button></div>
       </div>
       <div class="wp-grid">
@@ -164,11 +176,9 @@
         </div>
         <aside class="wp-side"><div class="wp-label">In this room <span id="f2w-party-count" style="color:#f7f7fb">· 0</span></div><div class="wp-people" id="f2w-party-people"><div class="wp-empty">No one here yet. Invite your friends.</div></div><div style="margin-top:20px"><div class="wp-label">Shared playback</div><div class="wp-sub">Source, season, episode and playback controls are shared with your party. Player commands depend on provider support.</div></div></aside>
       </div>
-      <div class="wp-foot"><span>🔒 Private invite link · Only people with the link can join</span><span id="f2w-party-room-label">No room created</span></div>`;
-    const ratingCard = document.getElementById('f2w-v34-rating-card');
-    const player = document.querySelector('.player-wrapper');
-    if (ratingCard?.parentNode) ratingCard.parentNode.insertBefore(panel, ratingCard);
-    else if (player?.parentNode) player.parentNode.insertBefore(panel, player.nextSibling);
+      <div class="wp-foot"><span>🔒 Invite-only room</span><span id="f2w-party-room-label">No room created</span></div>
+      </div>`;
+    document.body.appendChild(panel);
     return panel;
   }
   function init() {
@@ -184,8 +194,10 @@
     const peopleEl = $('#f2w-party-people');
     const chatEl = $('#f2w-party-chat');
     const roomLabel = $('#f2w-party-room-label');
-    participantId = sessionStorage.getItem('f2w_party_participant_id') || makeId();
-    sessionStorage.setItem('f2w_party_participant_id', participantId);
+    const chatSendTimes = [];
+    let chatCooldownUntil = 0;
+    // Every tab gets its own identity; sessionStorage can be cloned when a tab is duplicated.
+    participantId = makeId();
     displayName = defaultName();
     nameInput.value = displayName;
     // Prefer the signed-in Flix2Watch account name; guests can still choose their own.
@@ -240,10 +252,19 @@
       if (!window.F2WWatchPartyRealtime || !window.f2wSupabase) { setStatus('Party service is unavailable. Refresh and try again.'); return; }
       if (!ROOM_PATTERN.test(roomId)) { setStatus('That invite link is invalid.'); return; }
       if (connection) await connection.close();
+      participants.clear(); renderPeople();
       setStatus('Connecting to your room…', false);
       try {
         connection = window.F2WWatchPartyRealtime.connect({
-          supabase: window.f2wSupabase, roomId,
+          supabase: window.f2wSupabase, roomId, participantId,
+          onPresence: function (state) {
+            participants.clear();
+            Object.values(state || {}).flat().forEach(person => {
+              if (!person || !person.id) return;
+              participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest' });
+            });
+            renderPeople();
+          },
           onMessage: function (message) {
             if (message.type === 'hello' && message.participant) {
               const person = message.participant;
@@ -256,6 +277,8 @@
               if (message.episode) applyEpisode(message.episode);
             } else if (message.type === 'participant-left') {
               participants.delete(String(message.participantId || '')); renderPeople();
+            } else if (message.type === 'season-change') {
+              applyRemoteSeason(message);
             } else if (message.type === 'episode-change') {
               applyEpisode(message.episode);
             } else if (message.type === 'source-change') {
@@ -270,16 +293,34 @@
           }
         });
         await connection.ready;
+        await connection.trackPresence(myHello());
         const url = new URL(location.href); url.searchParams.set(PARAM, roomId); history.replaceState(null, '', url);
         createButton.hidden = true; copyButton.hidden = false; leaveButton.hidden = false;
         roomLabel.textContent = 'ROOM ' + roomId.slice(0, 8).toUpperCase();
         participants.set(participantId, myHello()); renderPeople();
         setStatus('Connected · invite your friends to join.', true);
-        await connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode() });
+        await connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode(), source: currentSource() });
       } catch (error) {
         console.error('[Watch Party] connection failed', error);
         setStatus('Could not connect. Check the connection and try again.', false);
       }
+    }
+    function applyRemoteSeason(message) {
+      const media = currentMedia();
+      const season = document.getElementById('season-select');
+      const episodeSelect = document.getElementById('episode-select');
+      const target = String(Number(message?.season));
+      if (media.mediaType !== 'tv' || media.mediaId !== String(message?.mediaId || '') ||
+          !Number.isFinite(Number(message?.season)) || !season || season.value === target ||
+          ![...season.options].some(option => option.value === target)) return;
+      applyingRemoteEpisode = true;
+      let finished = false;
+      const finish = () => { if (finished) return; finished = true; observer.disconnect(); applyingRemoteEpisode = false; };
+      const observer = new MutationObserver(() => finish());
+      if (episodeSelect) observer.observe(episodeSelect, { childList: true, subtree: true });
+      season.value = target;
+      if (typeof window.onSeasonChange === 'function') window.onSeasonChange();
+      setTimeout(finish, 6000);
     }
     function applyEpisode(episode) {
       if (!episode || episode.mediaType !== 'tv') return;
@@ -320,6 +361,19 @@
         finish();
       }, 6000);
     }
+    const toggleButton = $('#f2w-party-toggle');
+    toggleButton.addEventListener('click', () => {
+      const open = panel.classList.toggle('is-open');
+      toggleButton.setAttribute('aria-expanded', String(open));
+      toggleButton.innerHTML = '<span class="wp-tab-dot"></span><span>' + (open ? 'CLOSE PARTY' : 'WATCH PARTY') + '</span>';
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && panel.classList.contains('is-open')) {
+        panel.classList.remove('is-open');
+        toggleButton.setAttribute('aria-expanded', 'false');
+        toggleButton.innerHTML = '<span class="wp-tab-dot"></span><span>WATCH PARTY</span>';
+      }
+    });
     createButton.addEventListener('click', () => join(makeId()));
     $('#f2w-party-save').addEventListener('click', () => {
       const name = cleanName(nameInput.value);
@@ -352,6 +406,19 @@
       const text = String(input.value || '').trim().slice(0, 500);
       if (!text) return;
       if (!connection) { setStatus('Join a party before chatting.'); return; }
+      const now = Date.now();
+      if (now < chatCooldownUntil) {
+        setStatus('Spam protection: chat unlocks in ' + Math.ceil((chatCooldownUntil - now) / 1000) + 's.', true);
+        return;
+      }
+      while (chatSendTimes.length && now - chatSendTimes[0] > 3000) chatSendTimes.shift();
+      chatSendTimes.push(now);
+      if (chatSendTimes.length >= 5) {
+        chatCooldownUntil = now + 30000;
+        chatSendTimes.length = 0;
+        setStatus('Too many messages too quickly. Chat is paused for 30 seconds.', true);
+        return;
+      }
       const messageId = makeId();
       const message = { type: 'chat-message', participantId, name: displayName, text, messageId };
       try {
@@ -361,8 +428,16 @@
       } catch (_) { setStatus('Message could not be sent. Try again.'); }
     });
     document.addEventListener('change', async event => {
-      if (applyingRemoteEpisode || !connection || !event.target || event.target.id !== 'episode-select') return;
-      const episode = currentEpisode(); const key = episodeKey(episode);
+      if (applyingRemoteEpisode || !connection || !event.target) return;
+      const episode = currentEpisode();
+      if (event.target.id === 'season-select') {
+        if (!episode) return;
+        try { await connection.send({ type: 'season-change', mediaId: episode.mediaId, season: episode.season }); }
+        catch (error) { console.warn('[Watch Party] season sync failed', error); }
+        return;
+      }
+      if (event.target.id !== 'episode-select') return;
+      const key = episodeKey(episode);
       if (!episode || !key || key === lastSentEpisode) return;
       lastSentEpisode = key;
       try { await connection.send({ type: 'episode-change', episode }); } catch (error) { console.warn('[Watch Party] episode sync failed', error); }
