@@ -41,7 +41,7 @@
       playerLoadingUntil = 0;
       const pending = pendingRemotePlaybackState;
       pendingRemotePlaybackState = null;
-      if (pending && connection) applyRemotePlayback(pending);
+      if (pending && connection) applyRemotePlayback(pending, Boolean(pending.__forceSync));
     }, PLAYER_STARTUP_GRACE_MS);
   }
   const participants = new Map();
@@ -158,12 +158,12 @@
       return true;
     } catch (_) { return false; }
   }
-  function applyRemotePlayback(state) {
+  function applyRemotePlayback(state, forceSync = false) {
     if (!state || state.mediaId == null) return;
     if (Date.now() < playerLoadingUntil) {
       // Keep only the newest state while the iframe is booting; replaying a
       // backlog of stale play/pause/seek messages is a common source of loops.
-      pendingRemotePlaybackState = state;
+      pendingRemotePlaybackState = { ...state, __forceSync: Boolean(forceSync) };
       return;
     }
     const media = currentMedia();
@@ -172,7 +172,7 @@
     const targetStatus = String(state.status || '').toLowerCase();
     const isPlaying = /play|resume|start/.test(targetStatus);
     const isPaused = /pause|stop/.test(targetStatus);
-    if ((isPlaying || isPaused) && now - lastRemoteCommandAt > 1800 && observedPlaybackStatus !== (isPlaying ? 'playing' : 'paused')) {
+    if ((isPlaying || isPaused) && now - lastRemoteCommandAt > 700 && (forceSync || observedPlaybackStatus !== (isPlaying ? 'playing' : 'paused'))) {
       suppressPlaybackBroadcastUntil = now + 1800;
       sendPlayerCommand(isPlaying ? 'play' : 'pause');
       observedPlaybackStatus = isPlaying ? 'playing' : 'paused';
@@ -180,11 +180,12 @@
     }
     const remoteSeconds = state.seconds == null ? NaN : Number(state.seconds);
     const isExplicitSeek = /seek/.test(targetStatus);
-    if (isExplicitSeek && Number.isFinite(remoteSeconds) && remoteSeconds >= 0) {
+    if (Number.isFinite(remoteSeconds) && remoteSeconds >= 0) {
       const actualSeconds = Number.isFinite(lastPlayerReportedSeconds) ? lastPlayerReportedSeconds : observedPlaybackSeconds;
       const drift = Number.isFinite(actualSeconds) ? Math.abs(actualSeconds - remoteSeconds) : Infinity;
-      const threshold = 0.8;
-      if (drift > threshold && now - lastRemoteSeekAt > 700) {
+      const threshold = forceSync || isExplicitSeek ? 0.8 : 2.5;
+      const minSeekInterval = forceSync || isExplicitSeek ? 700 : 5000;
+      if (drift > threshold && now - lastRemoteSeekAt > minSeekInterval) {
         // The default Flix2Watch API embed reports PLAYER_EVENT telemetry and
         // accepts startAt on its embed URL, but its inbound seek postMessage
         // contract is not documented. For an explicit seek, use the URL-based
@@ -196,7 +197,10 @@
           flix2watchEmbed = url.hostname === 'player.flix2watch.com' &&
             /^\/embed\/(tv|movie)(\/|$)/.test(url.pathname);
         } catch (_) {}
-        if (isExplicitSeek && flix2watchEmbed) {
+        if (flix2watchEmbed && (forceSync || isExplicitSeek)) {
+          // Reload once at the host's authoritative position, then replay its
+          // play/pause state after the embedded player has booted.
+          pendingRemotePlaybackState = { ...state, __forceSync: false };
           suppressPlaybackBroadcastUntil = now + 1100;
           fallbackSeekTarget = remoteSeconds;
           lastRemoteSeekAt = now;
@@ -575,7 +579,7 @@
               if (message.source) applySource(message.source);
               if (message.season) applyRemoteSeason(message.season);
               if (message.episode) applyEpisode(message.episode);
-              if (message.playbackState) applyRemotePlayback(message.playbackState);
+              if (message.playbackState) applyRemotePlayback(message.playbackState, true);
               setStatus('Connected · share the room code with friends.', true);
             } else if (message.type === 'hello' && message.participant) {
               const person = message.participant;
