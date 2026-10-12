@@ -1,3 +1,4 @@
+-- Re-published on 2026-10-12 to ensure the updated movie + TV migration is pushed to main.
 -- Flix2Watch watched media v1 — UID-linked movies and TV episodes.
 -- Run this updated migration in the Supabase SQL Editor. Safe to re-run and upgrades
 -- the earlier TV-only watched-episodes-v1.sql schema if that was already applied.
