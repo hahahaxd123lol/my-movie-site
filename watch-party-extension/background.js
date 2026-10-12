@@ -91,14 +91,24 @@ function connectSocket() {
 
 function relayCommand(action, seconds) {
   if (!["play", "pause", "seek"].includes(String(action))) return;
-  chrome.tabs.query({ url: "https://player.flix2watch.com/*" }, tabs => {
+  const payload = {
+    type: "F2W_EXTENSION_APPLY",
+    action: String(action),
+    seconds: Number.isFinite(Number(seconds)) ? Math.max(0, Number(seconds)) : null
+  };
+  // The watch page is the top-level tab, while the video controller is commonly
+  // inside a cross-origin player iframe. Enumerate frames and target only the
+  // Flix2Watch player origin; tabs.sendMessage without frameId reaches only the top frame.
+  chrome.tabs.query({}, tabs => {
     for (const tab of tabs) {
       if (tab.id == null) continue;
-      chrome.tabs.sendMessage(tab.id, {
-        type: "F2W_EXTENSION_APPLY",
-        action: String(action),
-        seconds: Number.isFinite(Number(seconds)) ? Math.max(0, Number(seconds)) : null
-      }).catch(() => {});
+      chrome.webNavigation.getAllFrames({ tabId: tab.id }, frames => {
+        if (chrome.runtime.lastError || !Array.isArray(frames)) return;
+        for (const frame of frames) {
+          if (frame.frameId === 0 || !String(frame.url || "").startsWith("https://player.flix2watch.com/")) continue;
+          chrome.tabs.sendMessage(tab.id, payload, { frameId: frame.frameId }).catch(() => {});
+        }
+      });
     }
   });
 }
