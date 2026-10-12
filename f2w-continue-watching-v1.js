@@ -12,7 +12,6 @@
   const TMDB_KEY = '925c48dd6e24fd5e975fe224238bbb45';
   const MAX_ITEMS = 18;
   const MIN_SECONDS = 30;
-  const DONE_RATIO = 0.92;
   const ACCOUNT_TABLE = 'continue_watching_v260';
   let accountSyncUserId = '';
   let accountSyncPromise = null;
@@ -87,7 +86,9 @@
       // Never let a slow response for an old session overwrite the local view.
       if ((await activeAccountId()) !== userId) return false;
       const merged = new Map();
-      (data || []).map(fromRemoteRow).forEach(item => merged.set(itemKey(item), item));
+      (data || []).map(fromRemoteRow)
+        .filter(item => !window.__f2wCwManager?.isItemDismissed?.(item))
+        .forEach(item => merged.set(itemKey(item), item));
       // The authenticated account's database rows are authoritative.
       const items = [...merged.values()]
         .filter(item => Number(item.seconds || 0) >= MIN_SECONDS)
@@ -117,7 +118,7 @@
   async function saveItemToAccount(item) {
     const client = supabaseClient();
     const userId = await activeAccountId();
-    if (!userId || !client?.from) return;
+    if (!userId || !client?.from || window.__f2wCwManager?.isItemDismissed?.(item)) return;
     const row = toRemoteRow(item, userId);
     if (!row) return;
     const { error } = await client.from(ACCOUNT_TABLE).upsert(row, { onConflict: 'user_id,media_type,media_id' });
@@ -189,11 +190,16 @@
     if (!partial || !partial.id || !partial.type) return;
     const seconds = Math.max(0, Math.floor(Number(partial.seconds || 0)));
     const duration = Math.max(0, Math.floor(Number(partial.duration || 0)));
+    const normalized = {
+      id: String(partial.id).replace(/\D/g, '') || String(partial.id),
+      type: partial.type === 'tv' ? 'tv' : 'movie',
+      season: partial.type === 'tv' ? Number(partial.season || 1) : null,
+      episode: partial.type === 'tv' ? Number(partial.episode || 1) : null,
+      seconds, duration, title: partial.title || '', poster_path: partial.poster_path || ''
+    };
+    if (window.__f2wCwManager?.isItemDismissed?.(normalized)) return;
+    if (window.__f2wCwManager?.onProgress?.(normalized)) return;
     if (seconds < MIN_SECONDS) return;
-    if (duration > 0 && seconds / duration >= DONE_RATIO) {
-      writeIndex(readIndex().filter(x => itemKey(x) !== itemKey(partial)));
-      return;
-    }
     const recent = readRecent();
     const match = recent.find(r => String(r.id) === String(partial.id) && (!r.type || r.type === partial.type))
       || recent.find(r => String(r.id) === String(partial.id));
@@ -304,6 +310,10 @@
       if (pm) poster_path = pm[1];
       upsertItem({ id, type, season, episode, seconds: progress, duration, title, poster_path });
     } catch {}
+  });
+
+  window.addEventListener('f2w:cw-progress', event => {
+    try { if (event.detail) upsertItem(event.detail); } catch {}
   });
 
   function snapshotWatchPage() {
@@ -493,11 +503,15 @@
     }
     ensureStyles();
 
-    let items = readIndex().filter(it => Number(it.seconds || 0) >= MIN_SECONDS);
+    let items = readIndex().filter(it =>
+      Number(it.seconds || 0) >= MIN_SECONDS && !window.__f2wCwManager?.isItemDismissed?.(it)
+    );
     items = [...new Map(items.map(it => [itemKey(it), it])).values()].slice(0, MAX_ITEMS);
     if (items.length) {
       items = await ensureMeta(items);
-      items = [...new Map(readIndex().filter(it => Number(it.seconds || 0) >= MIN_SECONDS).map(it => [itemKey(it), it])).values()].slice(0, MAX_ITEMS);
+      items = [...new Map(readIndex().filter(it =>
+        Number(it.seconds || 0) >= MIN_SECONDS && !window.__f2wCwManager?.isItemDismissed?.(it)
+      ).map(it => [itemKey(it), it])).values()].slice(0, MAX_ITEMS);
     }
 
     let section = document.getElementById('f2w-continue-watching-section');
@@ -609,3 +623,218 @@
   });
   cwMountObserver.observe(document.documentElement, { childList: true, subtree: true });
 })();
+
+
+(() => {
+  'use strict';
+  if (window.__f2wCwNetflixV1) return;
+  window.__f2wCwNetflixV1 = true;
+  const INDEX_KEY = 'f2w_continue_watching_v1';
+  const ACCOUNT_TABLE = 'continue_watching_v260';
+  const DISMISSED_PREFIX = 'f2w_continue_watching_dismissed_v1:';
+  const TMDB_KEY = '925c48dd6e24fd5e975fe224238bbb45';
+  let activeUid = '', lastBridgeKey = '', lastBridgePos = null, lastBridgeStatus = '';
+  const seriesCache = new Map(), seriesChecks = new Set(), removingKeys = new Set();
+  function client() { return window.f2wSupabase || window.chatSupabase || window.supabaseClient || null; }
+  async function refreshUser() {
+    try { const c = client(); const { data } = await c?.auth?.getSession?.(); activeUid = String(data?.session?.user?.id || ''); }
+    catch { activeUid = ''; }
+    return activeUid;
+  }
+  function itemKey(item) {
+    const id = String(item?.id || '').replace(/\D/g, '');
+    return id ? ((item.type === 'tv' ? 'tv:' : 'movie:') + id) : '';
+  }
+  function readDismissed(uid = activeUid) {
+    if (!uid) return {};
+    try { const value = JSON.parse(localStorage.getItem(DISMISSED_PREFIX + uid) || '{}'); return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }
+    catch { return {}; }
+  }
+  function isItemDismissed(item) {
+    const key = itemKey(item);
+    return Boolean(key && (removingKeys.has(key) || readDismissed()[key]));
+  }
+  function rememberDismissal(item, reason, uid) {
+    const key = itemKey(item); if (!key || !uid) return;
+    const entries = readDismissed(uid); entries[key] = { reason: String(reason || 'manual'), at: Date.now() };
+    try { localStorage.setItem(DISMISSED_PREFIX + uid, JSON.stringify(entries)); } catch {}
+  }
+  function clearDismissal(item, uid) {
+    const key = itemKey(item); if (!key || !uid) return;
+    const entries = readDismissed(uid); if (!entries[key]) return;
+    delete entries[key]; try { localStorage.setItem(DISMISSED_PREFIX + uid, JSON.stringify(entries)); } catch {}
+  }
+  function readIndex() {
+    try { const items = JSON.parse(localStorage.getItem(INDEX_KEY) || '[]'); return Array.isArray(items) ? items : []; }
+    catch { return []; }
+  }
+  function writeIndex(items) { try { localStorage.setItem(INDEX_KEY, JSON.stringify(items)); } catch {} }
+  function clearResumeKeys(item) {
+    const id = String(item?.id || '').replace(/\D/g, ''); if (!id) return;
+    try {
+      const remove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i); if (!key) continue;
+        if (item.type === 'movie' && key === 'f2w_resume_movie_' + id) remove.push(key);
+        if (item.type === 'tv' && key.startsWith('f2w_resume_tv_' + id + '_s')) remove.push(key);
+      }
+      remove.forEach(key => localStorage.removeItem(key));
+    } catch {}
+  }
+  function cardItem(card) {
+    try {
+      const url = new URL(card.getAttribute('data-cw-url') || '', location.origin), p = url.searchParams;
+      const id = String(p.get('id') || '').replace(/\D/g, ''), type = p.get('type') === 'tv' ? 'tv' : 'movie';
+      if (!id) return null;
+      return { id, type, season: Number(p.get('season') || 1), episode: Number(p.get('episode') || 1),
+        seconds: Number(p.get('resume') || 0), title: card.querySelector('.f2w-cw-title')?.textContent?.trim() || '', poster_path: '' };
+    } catch { return null; }
+  }
+  async function deleteRemote(item, uid) {
+    const c = client(), id = Number(String(item?.id || '').replace(/\D/g, ''));
+    if (!uid || !c?.from || !Number.isSafeInteger(id) || id <= 0) return;
+    const { error } = await c.from(ACCOUNT_TABLE).delete().eq('user_id', uid)
+      .eq('media_type', item.type === 'tv' ? 'tv' : 'movie').eq('media_id', id);
+    if (error) throw error;
+  }
+  async function removeItem(item, card, reason = 'manual') {
+    const key = itemKey(item); if (!key || removingKeys.has(key)) return;
+    removingKeys.add(key);
+    try {
+      const uid = activeUid || await refreshUser();
+      if (uid) rememberDismissal(item, reason, uid);
+      writeIndex(readIndex().filter(entry => itemKey(entry) !== key));
+      clearResumeKeys(item);
+      if (card) {
+        card.classList.add('f2w-cw-removing');
+        setTimeout(() => {
+          card.remove();
+          const strip = document.getElementById('f2w-continue-watching-strip');
+          if (strip && !strip.querySelector('.f2w-cw-card')) {
+            strip.innerHTML = '<div class="f2w-cw-empty">Your Continue Watching list is clear. Start a movie or series to add something here.</div>';
+          }
+        }, 230);
+      }
+      try { await deleteRemote(item, uid); }
+      catch (error) { console.warn('Continue Watching removal sync failed:', error?.message || error); }
+    } finally { setTimeout(() => removingKeys.delete(key), 1500); }
+  }
+  function atWatchedThreshold(position, duration) {
+    if (!Number.isFinite(position) || !Number.isFinite(duration) || duration <= 0 || position < 0) return false;
+    return position >= (duration > 300 ? duration - 300 : duration * 0.5);
+  }
+  async function seriesMetadata(id) {
+    const key = String(id); if (seriesCache.has(key)) return seriesCache.get(key);
+    const promise = (async () => {
+      const response = await fetch('https://api.themoviedb.org/3/tv/' + encodeURIComponent(key) +
+        '?api_key=' + encodeURIComponent(TMDB_KEY) + '&language=en-US', { cache: 'force-cache' });
+      if (!response.ok) throw new Error('Series metadata request failed');
+      const data = await response.json();
+      return { status: String(data?.status || '').trim().toLowerCase(),
+        seasons: (Array.isArray(data?.seasons) ? data.seasons : [])
+          .map(s => ({ number: Number(s.season_number), count: Number(s.episode_count) }))
+          .filter(s => s.number > 0 && s.count > 0 && Number.isFinite(s.count)) };
+    })();
+    seriesCache.set(key, promise);
+    try { return await promise; } catch (error) { seriesCache.delete(key); throw error; }
+  }
+  async function checkFullyWatchedSeries(item) {
+    const id = Number(String(item?.id || '').replace(/\D/g, ''));
+    const season = Number(item?.season || 0), episode = Number(item?.episode || 0);
+    const position = Math.floor(Number(item?.seconds || 0)), duration = Math.floor(Number(item?.duration || 0));
+    if (!id || season <= 0 || episode <= 0 || !atWatchedThreshold(position, duration)) return;
+    const key = [id, season, episode].join(':'); if (seriesChecks.has(key)) return;
+    seriesChecks.add(key);
+    try {
+      const uid = activeUid || await refreshUser(), c = client();
+      if (!uid || !c?.rpc) return;
+      const meta = await seriesMetadata(id);
+      if (!['ended', 'canceled', 'cancelled'].includes(meta.status) || !meta.seasons.length) return;
+      const { error: markError } = await c.rpc('mark_my_watched_media_v1', {
+        p_media_id: id, p_media_type: 'tv', p_season: season, p_episode: episode,
+        p_position_seconds: position, p_duration_seconds: duration
+      });
+      if (markError) throw markError;
+      const { data, error } = await c.rpc('get_my_watched_media_v1', { p_media_id: id, p_media_type: 'tv' });
+      if (error) throw error;
+      const watched = new Set((Array.isArray(data) ? data : []).map(row => Number(row.season) + ':' + Number(row.episode)));
+      const complete = meta.seasons.every(s => {
+        for (let ep = 1; ep <= s.count; ep++) if (!watched.has(s.number + ':' + ep)) return false;
+        return true;
+      });
+      if (complete) await removeItem({ id: String(id), type: 'tv', season, episode }, null, 'series-watched');
+    } catch (error) { console.warn('Full-series Continue Watching cleanup unavailable:', error?.message || error); }
+    finally { setTimeout(() => seriesChecks.delete(key), 60000); }
+  }
+  function onProgress(item) {
+    if (!item?.id || !item?.type) return false;
+    if (isItemDismissed(item)) return true;
+    if (item.type === 'movie' && atWatchedThreshold(Number(item.seconds), Number(item.duration))) {
+      void removeItem(item, null, 'movie-watched'); return true;
+    }
+    if (item.type === 'tv' && atWatchedThreshold(Number(item.seconds), Number(item.duration))) void checkFullyWatchedSeries(item);
+    return false;
+  }
+  function attachDismissButtons() {
+    document.querySelectorAll('.f2w-cw-card').forEach(card => {
+      if (card.querySelector('.f2w-cw-dismiss') || card.dataset.f2wCwDismissBound === '1') return;
+      card.dataset.f2wCwDismissBound = '1'; card.style.position = 'relative';
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'f2w-cw-dismiss'; button.textContent = '×';
+      button.title = 'Remove from Continue Watching';
+      button.setAttribute('aria-label', 'Remove ' + (card.querySelector('.f2w-cw-title')?.textContent?.trim() || 'title') + ' from Continue Watching');
+      button.addEventListener('click', event => {
+        event.preventDefault(); event.stopPropagation();
+        if (button.disabled) return; button.disabled = true;
+        const item = cardItem(card); if (item) void removeItem(item, card, 'manual');
+      });
+      card.appendChild(button);
+    });
+  }
+  function installStyles() {
+    if (document.getElementById('f2w-cw-dismiss-v1-style')) return;
+    const style = document.createElement('style'); style.id = 'f2w-cw-dismiss-v1-style';
+    style.textContent = '.f2w-cw-card{position:relative;transition:opacity .22s ease,transform .22s ease}.f2w-cw-card.f2w-cw-removing{opacity:0;transform:translateY(7px) scale(.965);pointer-events:none}.f2w-cw-dismiss{position:absolute;top:8px;right:8px;z-index:8;width:30px;height:30px;display:grid;place-items:center;padding:0;border:1px solid rgba(255,255,255,.2);border-radius:50%;background:rgba(8,11,17,.84);color:#fff;font:700 21px/1 system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.36);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer;opacity:0;pointer-events:none;transform:translateY(-3px) scale(.94);transition:opacity .16s ease,transform .16s ease,background .16s ease}.f2w-cw-card:hover .f2w-cw-dismiss,.f2w-cw-card:focus-within .f2w-cw-dismiss,.f2w-cw-dismiss:focus-visible{opacity:1;pointer-events:auto;transform:none}.f2w-cw-dismiss:hover{background:rgba(229,9,20,.96)}.f2w-cw-dismiss:focus-visible{outline:2px solid #fff;outline-offset:3px}@media(hover:none){.f2w-cw-dismiss{opacity:1;pointer-events:auto;transform:none}}@media(prefers-reduced-motion:reduce){.f2w-cw-card,.f2w-cw-dismiss{transition:none!important}}';
+    (document.head || document.documentElement).appendChild(style);
+  }
+  function currentMediaOnWatch() {
+    if (!location.pathname.toLowerCase().startsWith('/watch')) return null;
+    const p = new URLSearchParams(location.search), id = String(p.get('id') || '').replace(/\D/g, '');
+    return id ? { id, type: p.get('type') === 'tv' ? 'tv' : 'movie' } : null;
+  }
+  function sampleSharedTelemetry() {
+    const current = currentMediaOnWatch(); if (!current) return;
+    const state = document.getElementById('f2w-premid-state')?.dataset;
+    if (!state || Number(state.mediaId) !== Number(current.id) ||
+        (String(state.mediaType || '').toLowerCase() === 'tv' ? 'tv' : 'movie') !== current.type) return;
+    const seconds = Number(state.position), duration = Number(state.duration);
+    if (!Number.isFinite(seconds) || seconds < 0) return;
+    const season = current.type === 'tv' ? Number(state.season || 1) : null;
+    const episode = current.type === 'tv' ? Number(state.episode || 1) : null;
+    const status = String(state.status || '').toLowerCase();
+    const key = [current.id, current.type, season || 0, episode || 0].join(':');
+    if (key === lastBridgeKey && lastBridgePos !== null && Math.abs(seconds - lastBridgePos) < 4 && status === lastBridgeStatus) return;
+    lastBridgeKey = key; lastBridgePos = seconds; lastBridgeStatus = status;
+    let title = document.getElementById('detail-title')?.textContent?.trim() || document.title.split('|')[0].trim();
+    let poster_path = '';
+    const poster = String(document.querySelector('#detail-poster img,.detail-poster img,#detail-poster,.poster img')?.currentSrc || '');
+    const chunks = poster.split('/t/p/');
+    if (chunks.length > 1) { const tail = chunks[1].split('?')[0], slash = tail.indexOf('/'); if (slash >= 0) poster_path = tail.slice(slash); }
+    window.dispatchEvent(new CustomEvent('f2w:cw-progress', { detail: { id: current.id, type: current.type, season, episode, seconds, duration, title, poster_path } }));
+  }
+  window.__f2wCwManager = { isItemDismissed, onProgress, removeItem: (item, reason) => removeItem(item, null, reason || 'manual') };
+  installStyles(); attachDismissButtons();
+  const observer = new MutationObserver(() => attachDismissButtons());
+  function observe() {
+    if (document.documentElement) observer.observe(document.documentElement, { childList: true, subtree: true });
+    attachDismissButtons();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observe, { once: true }); else observe();
+  void refreshUser();
+  client()?.auth?.onAuthStateChange?.((_event, session) => { activeUid = String(session?.user?.id || ''); attachDismissButtons(); });
+  const current = currentMediaOnWatch();
+  if (current) refreshUser().then(uid => { if (uid) clearDismissal(current, uid); });
+  setInterval(sampleSharedTelemetry, 1500);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') sampleSharedTelemetry(); });
+})();
+// f2w-force-save: Netflix-style Continue Watching removal and completion 2026-10-12
