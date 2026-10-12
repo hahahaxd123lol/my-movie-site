@@ -150,5 +150,74 @@ $$;
 revoke all on function public.mark_my_watched_episode_v1(bigint,integer,integer,integer,integer) from public, anon;
 grant execute on function public.mark_my_watched_episode_v1(bigint,integer,integer,integer,integer) to authenticated;
 
+
+-- Best-effort historical backfill from the legacy resume table.
+-- Completed titles were deleted by the legacy save RPC, so only rows that still
+-- exist and are already at the watched threshold can be recovered automatically.
+-- Every inserted row keeps its original user_id; no account IDs are inferred.
+do $f2w_resume_backfill$
+declare
+  v_missing text[];
+  v_rows bigint := 0;
+begin
+  if to_regclass('public.user_playback_progress_v132') is null then
+    raise notice 'Historical watched backfill skipped: public.user_playback_progress_v132 does not exist.';
+    return;
+  end if;
+
+  select array_agg(required.column_name order by required.column_name)
+    into v_missing
+  from unnest(array[
+    'user_id','media_id','media_type','season','episode',
+    'position_seconds','duration_seconds'
+  ]) as required(column_name)
+  where not exists (
+    select 1
+    from pg_attribute a
+    where a.attrelid = to_regclass('public.user_playback_progress_v132')
+      and a.attname = required.column_name
+      and a.attnum > 0
+      and not a.attisdropped
+  );
+
+  if coalesce(array_length(v_missing, 1), 0) > 0 then
+    raise notice 'Historical watched backfill skipped: expected legacy columns are missing: %', array_to_string(v_missing, ', ');
+    return;
+  end if;
+
+  execute $backfill$
+    insert into public.user_watched_episodes_v1
+      (user_id, media_id, media_type, season, episode)
+    select
+      p.user_id,
+      p.media_id,
+      lower(trim(p.media_type)),
+      case when lower(trim(p.media_type)) = 'movie' then 0 else p.season end,
+      case when lower(trim(p.media_type)) = 'movie' then 0 else p.episode end
+    from public.user_playback_progress_v132 p
+    where p.user_id is not null
+      and p.media_id > 0
+      and lower(trim(p.media_type)) in ('movie','tv')
+      and p.position_seconds is not null
+      and p.duration_seconds is not null
+      and p.duration_seconds > 0
+      and (
+        p.position_seconds >= case
+          when p.duration_seconds > 600 then p.duration_seconds - 600
+          else ceil(p.duration_seconds * 0.5)
+        end
+      )
+      and (
+        lower(trim(p.media_type)) = 'movie'
+        or (p.season > 0 and p.episode > 0)
+      )
+    on conflict (user_id, media_id, season, episode) do nothing
+  $backfill$;
+
+  get diagnostics v_rows = row_count;
+  raise notice 'Historical watched backfill inserted % recoverable movie/episode records.', v_rows;
+end
+$f2w_resume_backfill$;
+
 notify pgrst, 'reload schema';
 commit;
