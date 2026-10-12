@@ -129,16 +129,20 @@
     // messages at the player, which can execute duplicate commands and fight.
     if (partyIsActive() && currentSource() !== PARTY_PLAYER_SOURCE) return false;
     const position = Math.max(0, Number(seconds) || 0);
-    const payload = {
-      type: 'PLAYER_COMMAND',
+    // PLAYER_EVENT uses a { type, data } envelope. Mirror that envelope for
+    // commands while retaining top-level aliases for compatible player builds.
+    // This is still one postMessage, so a provider that reads either shape sees
+    // exactly one command rather than competing play/pause messages.
+    const commandData = {
       action,
       command: action,
-      method: action,
+      method: action === 'seek' ? 'seekTo' : action,
       value: action === 'seek' ? position : undefined,
       seconds: action === 'seek' ? position : undefined,
       position: action === 'seek' ? position : undefined,
       time: action === 'seek' ? position : undefined
     };
+    const payload = { type: 'PLAYER_COMMAND', data: commandData, ...commandData };
     try {
       frame.contentWindow.postMessage(payload, target);
       return true;
