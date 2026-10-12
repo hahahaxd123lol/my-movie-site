@@ -157,9 +157,9 @@
         #f2w-watch-party input{min-width:0;width:100%;background:#08080d;border:1px solid #ffffff20;border-radius:10px;padding:11px 12px;color:white;font:inherit;font-size:13px;outline:none}
         #f2w-watch-party input:focus{border-color:var(--wp-accent)}
         #f2w-watch-party .wp-status{font-size:12px;color:#c5c5d0;margin-top:10px;min-height:18px}
-        #f2w-watch-party .wp-password-box{padding:14px 20px 18px;border-top:1px solid #ffffff12;border-bottom:1px solid #ffffff12;background:#0003}
+        #f2w-watch-party .wp-code-box{padding:14px 20px 18px;border-top:1px solid #ffffff12;border-bottom:1px solid #ffffff12;background:#0003}
         #f2w-watch-party .wp-password-box label{display:block;font-size:12px;font-weight:700;margin-bottom:8px}
-        #f2w-watch-party .wp-password-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+        #f2w-watch-party  .wp-code-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
         #f2w-watch-party .wp-password-actions button{flex:0 1 auto}
 
         #f2w-watch-party .wp-status:before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#747482;margin-right:8px}
@@ -219,7 +219,7 @@
       <div class="wp-drawer-content">
       <div class="wp-top">
         <div><div class="wp-kicker">FLIX2WATCH · WATCH TOGETHER</div><div class="wp-title">Watch Party <span style="font-size:13px;color:#8f8f9d;font-weight:500">/ your room</span></div><div class="wp-sub">Create a room, share its code, and watch together.</div></div>
-        <div class="wp-actions"><button type="button" id="f2w-party-create" class="wp-primary">＋ Create party</button><button type="button" id="f2w-party-leave" hidden>Leave room</button></div>
+        <div class="wp-actions"><button type="button" id="f2w-party-copy" hidden>Copy code</button><button type="button" id="f2w-party-create" class="wp-primary">＋ Create party</button><button type="button" id="f2w-party-leave" hidden>Leave room</button></div>
       </div>
       <div id="f2w-party-join-box" class="wp-password-box">
         <label for="f2w-party-code">Have a room code?</label>
@@ -236,7 +236,7 @@
         </div>
         <aside class="wp-side"><div class="wp-label">In this room <span id="f2w-party-count" style="color:#f7f7fb">· 0</span></div><div class="wp-people" id="f2w-party-people"><div class="wp-empty">No one else has joined yet.</div></div><div style="margin-top:20px"><div class="wp-label">Shared playback</div><div class="wp-sub">Source, season, episode and playback controls are shared with your party. Player commands depend on provider support.</div></div></aside>
       </div>
-      <div class="wp-foot"><span>🔒 Invite-only room</span><span id="f2w-party-room-label">No room created</span></div>
+      <div class="wp-foot"><span>Join with a room code</span><span id="f2w-party-room-label">No room created</span></div>
       </div>`;
     document.body.appendChild(panel);
     // Align the visible edge tab and drawer with the actual top of the player.
@@ -297,7 +297,7 @@
       peopleEl.replaceChildren();
       $('#f2w-party-count').textContent = '· ' + participants.size;
       if (!participants.size) {
-        const empty = document.createElement('div'); empty.className = 'wp-empty'; empty.textContent = 'No one here yet. Invite your friends.'; peopleEl.append(empty); return;
+        const empty = document.createElement('div'); empty.className = 'wp-empty'; empty.textContent = 'No one else has joined yet.'; peopleEl.append(empty); return;
       }
       participants.forEach(person => {
         const item = document.createElement('div'); item.className = 'wp-person';
@@ -398,7 +398,7 @@
     }
     async function join(roomId, issuedToken, passwordProtected, suppliedPassword, roomCode) {
       if (!window.F2WWatchPartyRealtime) { setStatus('Party service is unavailable. Refresh and try again.'); return; }
-      if (!/^[a-f0-9]{24}$/i.test(String(roomId || ''))) { setStatus('That invite link is invalid.'); return; }
+      if (!/^[a-f0-9]{24}$/i.test(String(roomId || ''))) { setStatus('That room could not be found.'); return; }
       if (connection) await connection.close();
       participants.clear(); renderPeople();
       setStatus('Connecting to your room…', false);
@@ -443,7 +443,7 @@
               if (message.episode) applyEpisode(message.episode);
               if (message.playbackState) applyRemotePlayback(message.playbackState);
               passwordProtected = Boolean(message.passwordProtected);
-              setStatus('Connected · invite your friends to join.', true);
+              setStatus('Connected · share the room code with friends.', true);
             } else if (message.type === 'hello' && message.participant) {
               const person = message.participant;
               if (!person.id || person.id === participantId) return;
