@@ -1,4 +1,4 @@
-/* Re-published to main on 2026-10-12 to ensure existing page references receive this file. */
+/* Staff/owner bypass for the sitewide 30-second interaction lock. */
 /* Flix2Watch sitewide interaction rate limiter.
  * Client-side deterrence only; enforce sensitive-operation limits on the server too.
  */
@@ -11,6 +11,27 @@
   const LIMIT=5, WINDOW_MS=10000, LOCK_MS=30000;
   let memory={events:[],until:0};
   let notice=null, ticker=null;
+  let staffStatus='checking';
+  let staffBypass=false;
+
+  async function resolveStaffBypass(){
+    try{
+      const client=window.f2wSupabase||window.chatSupabase||window.supabaseClient;
+      if(!client?.auth?.getSession||!client?.rpc){staffStatus='ready';return;}
+      const {data}=await client.auth.getSession();
+      const user=data?.session?.user;
+      if(!user){staffStatus='ready';return;}
+      const {data:access,error}=await client.rpc('get_staff_page_access_v123');
+      if(!error&&access&&['owner','staff'].includes(String(access.role||'').toLowerCase()))staffBypass=true;
+    }catch{}
+    staffStatus='ready';
+    if(staffBypass){
+      writeState({events:[],until:0});
+      if(notice)notice.style.display='none';
+      if(ticker){clearInterval(ticker);ticker=null;}
+    }else render();
+  }
+  function bypassActive(){return staffStatus!=='ready'||staffBypass;}
 
   function readState(){
     try{
@@ -50,12 +71,13 @@
     },1000);
     if(left<=0&&ticker){clearInterval(ticker);ticker=null;}
   }
-  function locked(){return secondsLeft()>0}
+  function locked(){return !bypassActive()&&secondsLeft()>0}
   function startLock(){
     writeState({events:[],until:Date.now()+LOCK_MS});
     render();
   }
   function recordAction(){
+    if(bypassActive())return true;
     const now=Date.now(),state=readState();
     if(state.until>now){render();return false}
     const events=state.events.filter(t=>now-t>=0&&now-t<WINDOW_MS);
@@ -101,7 +123,8 @@
       stop(event);
     }
   },true);
-  window.addEventListener('storage',event=>{if(event.key===KEY)render()});
+  window.addEventListener('storage',event=>{if(event.key===KEY&&!bypassActive())render()});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});
   else render();
+  void resolveStaffBypass();
 })();
