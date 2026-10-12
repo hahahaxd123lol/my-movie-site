@@ -6,6 +6,7 @@
   const ROOM_CODE_PATTERN = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/;
   let connection = null;
   let activeRoomCode = '';
+  let isPartyHost = false;
   let participantId = '';
   let displayName = '';
   let applyingRemoteEpisode = false;
@@ -568,6 +569,7 @@
           },
           onMessage: function (message) {
             if (message.type === 'room-state') {
+              isPartyHost = Boolean(message.isHost);
               if (message.media && (String(message.media.id) !== currentMedia().mediaId || message.media.type !== currentMedia().mediaType)) {
                 navigateToMedia(message.media, roomId, message);
                 return;
@@ -755,7 +757,7 @@
         try { await connection.send({ type: 'participant-left', participantId }); } catch (_) {}
         await connection.close();
       }
-      connection = null; participants.clear(); renderPeople();
+      connection = null; isPartyHost = false; participants.clear(); renderPeople();
       try { const leftId = new URLSearchParams(location.search).get(PARAM); sessionStorage.removeItem('f2w_party_token_' + leftId); sessionStorage.removeItem('f2w_party_code_' + leftId); } catch (_) {}
       const url = new URL(location.href); url.searchParams.delete(PARAM); history.replaceState(null, '', url);
       createButton.hidden = false; copyButton.hidden = true; leaveButton.hidden = true; roomLabel.textContent = 'No room created';
@@ -916,7 +918,10 @@
         connection.send({ type: 'playback-command', action: 'seek', seconds }).catch(() => {});
       } else if (now - lastPlaybackBroadcastAt < 1000) return;
       lastPlaybackBroadcastAt = now;
-      connection.send({ type: 'playback-state', state }).catch(() => {});
+      // Only the host publishes the periodic clock. Guest-initiated play/pause/seek
+      // actions still go to the server as commands; guests must never overwrite the
+      // shared timeline with their own independent playback progress.
+      if (isPartyHost) connection.send({ type: 'playback-state', state }).catch(() => {});
     });
     // Reuse the watch page's established telemetry bridge. It already normalizes
     // provider-specific player messages into playback status and timeline updates.
@@ -969,7 +974,7 @@
         }
         if (now - lastPlaybackBroadcastAt >= 900 && (status === 'playing' || status === 'paused' || hasPosition)) {
           lastPlaybackBroadcastAt = now;
-          connection.send({ type: 'playback-state', state: {
+          if (isPartyHost) connection.send({ type: 'playback-state', state: {
             mediaId: media.mediaId, mediaType: media.mediaType,
             status: status || observedPlaybackStatus || 'unknown',
             seconds: hasPosition ? position : null,
