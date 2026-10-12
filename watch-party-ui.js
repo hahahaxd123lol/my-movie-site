@@ -389,6 +389,7 @@
       } catch (error) {
         console.error('[Watch Party] connection failed', error);
         connection = null;
+        try { sessionStorage.removeItem('f2w_party_token_' + roomId); } catch (_) {}
         setStatus(error.message || 'Could not connect. Check the connection and try again.', false);
       }
     }
