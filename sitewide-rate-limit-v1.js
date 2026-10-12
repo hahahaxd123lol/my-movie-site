@@ -180,3 +180,5 @@
   else render();
   void resolveStaffBypass();
 })();
+
+/* Recommit of fix #1: preserve the sitewide staff/owner bypass. */
