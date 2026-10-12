@@ -3179,7 +3179,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
     if (!form || !input || !button || !status) return;
     const api = 'https://flix2watch-watch-party-api.onrender.com';
     const codePattern = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/;
-    const cleanName = value => String(value || '').replace(/[<>\\u0000-\\u001f]/g, '').trim().slice(0, 28);
+    const cleanName = value => String(value || '').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, 28);
     function showStatus(message, error) {
       status.textContent = message;
       status.dataset.error = String(Boolean(error));
