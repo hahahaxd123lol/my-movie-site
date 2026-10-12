@@ -21,11 +21,15 @@
   }
 
   function currentEpisode() {
-    const type = String(window.mediaType || document.body.dataset.mediaType || '');
+    // The watch page keeps mediaId/mediaType in its inline-script lexical scope,
+    // so read the same public route parameters instead of relying on window globals.
+    const params = new URLSearchParams(window.location.search);
+    const type = String(params.get('type') || params.get('mediaType') || params.get('media_type') || document.body.dataset.mediaType || '').toLowerCase();
+    const id = String(params.get('id') || params.get('mediaId') || params.get('tmdb') || '');
     const season = document.getElementById('season-select');
     const episode = document.getElementById('episode-select');
-    if (type !== 'tv' || !season || !episode || !season.value || !episode.value) return null;
-    return { mediaType: 'tv', mediaId: String(window.mediaId || ''), season: Number(season.value), episode: Number(episode.value) };
+    if (type !== 'tv' || !id || !season || !episode || !season.value || !episode.value) return null;
+    return { mediaType: 'tv', mediaId: id, season: Number(season.value), episode: Number(episode.value) };
   }
 
   function episodeKey(value) {
