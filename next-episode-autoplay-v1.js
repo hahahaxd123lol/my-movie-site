@@ -51,7 +51,7 @@
     style.id = 'f2w-next-episode-style-v1';
     style.textContent = `
       #f2w-next-episode-card {
-        box-sizing:border-box; display:block; position:relative!important; inset:auto!important;
+        box-sizing:border-box!important; display:block!important; position:relative!important; inset:auto!important;
         width:100%!important; max-width:100%!important; margin:14px 0 18px!important;
         padding:17px 17px 15px; border:1px solid rgba(255,255,255,.17);
         border-radius:17px; color:#f8fafc;
@@ -551,3 +551,5 @@
 // f2w-force-save: repush-request-2026-10-12
 
 // f2w-force-save: harden-under-player-no-fullscreen-overlay 2026-10-12
+
+// f2w-force-save: repush-under-player-fix-one-file 2026-10-12
