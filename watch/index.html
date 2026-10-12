@@ -7358,12 +7358,18 @@ if(currentUser){
 
       // Keep Flix2Watch's own episode selectors in sync after VidSrcMe finishes
       // and auto-advances. We do not force any source switch.
-      if (status === 'completed' && eventType === 'tv' && currentServer === 'flix2watchapi') {
-        const episodeSelect = document.getElementById('episode-select');
-        const nextEpisode = e + 1;
-        if (episodeSelect && [...episodeSelect.options].some(opt => Number(opt.value) === nextEpisode)) {
-          episodeSelect.value = String(nextEpisode);
-        }
+      if (status === 'completed' && eventType === 'tv') {
+        // Let the shared next-episode overlay own the countdown; do not
+        // silently change the selector or let the provider skip the countdown.
+        window.dispatchEvent(new CustomEvent('f2w:player-completed', {
+          detail: {
+            mediaType: 'tv',
+            mediaId: Number(mediaId),
+            season: s,
+            episode: e,
+            source: currentServer
+          }
+        }));
       }
     });
 
