@@ -330,12 +330,15 @@
           const data = await response.json().catch(() => ({}));
           if (response.ok) return data;
           const error = new Error(data.error || 'The Watch Party API request failed.');
+          error.statusCode = response.status;
           if (![502, 503, 504, 522, 524].includes(response.status) || attempt === 2) throw error;
           lastError = error;
         } catch (error) {
           lastError = error;
-          if (attempt === 2 || (error.name !== 'AbortError' && error instanceof TypeError === false &&
-              !/fetch|network|temporar|timeout/i.test(String(error.message || '')))) throw error;
+          const transient = error.name === 'AbortError' || error instanceof TypeError ||
+            [502, 503, 504, 522, 524].includes(error.statusCode) ||
+            /fetch|network|temporar|timeout|gateway|unavailable/i.test(String(error.message || ''));
+          if (attempt === 2 || !transient) throw error;
         } finally {
           clearTimeout(timer);
         }
