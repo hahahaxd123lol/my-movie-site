@@ -36,6 +36,10 @@
   let pendingRemotePlaybackState = null;
   let playerStartupTimer = null;
   function startPlayerStartupWindow() {
+    if (hasAnnouncedPlayerReady && connection) connection.send({ type: 'player-ready', ready: false }).catch(() => {});
+    hasAnnouncedPlayerReady = false;
+    const self = participants.get(participantId);
+    if (self) { self.playerReady = false; }
     playerLoadingUntil = Date.now() + PLAYER_STARTUP_GRACE_MS;
     if (playerStartupTimer) clearTimeout(playerStartupTimer);
     playerStartupTimer = setTimeout(() => {
@@ -953,6 +957,12 @@
         const rawPosition = data.position_seconds;
         const position = rawPosition == null ? null : Number(rawPosition);
         const hasPosition = Number.isFinite(position) && position >= 0;
+        if (!hasAnnouncedPlayerReady && (hasPosition || status === 'playing' || status === 'paused')) {
+          hasAnnouncedPlayerReady = true;
+          connection.send({ type: 'player-ready', ready: true }).catch(() => {});
+          const self = participants.get(participantId);
+          if (self) { self.playerReady = true; renderPeople(); }
+        }
         const now = Date.now();
         if (now < playerLoadingUntil) {
           if (hasPosition) lastTelemetryPosition = position;
