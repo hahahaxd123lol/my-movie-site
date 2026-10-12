@@ -1,96 +1,65 @@
-/* Flix2Watch Watch Party realtime transport.
- * This module deliberately does not issue player commands: the external
- * cross-origin player control API must be verified before playback is driven.
- * Load after the Supabase client is available, then call
- * F2WWatchPartyRealtime.connect({ supabase, roomId, onMessage }).
- */
+/* Flix2Watch Watch Party transport. Room access and password checks live on the API. */
 (function (global) {
   'use strict';
-
-  const ROOM_ID_PATTERN = /^[a-zA-Z0-9_-]{12,96}$/;
-  const EVENT_NAME = 'party-message';
-  const MAX_MESSAGE_BYTES = 4096;
-  const ALLOWED_TYPES = new Set([
-    'hello',
-    'participant-left',
-    'playback-state',
-    'episode-change',
-    'season-change',
-    'source-change',
-    'playback-command',
-    'chat-message'
-  ]);
-
-  function validMessage(message) {
-    if (!message || typeof message !== 'object' || Array.isArray(message)) return false;
-    if (!ALLOWED_TYPES.has(message.type)) return false;
-    try {
-      return new TextEncoder().encode(JSON.stringify(message)).length <= MAX_MESSAGE_BYTES;
-    } catch (_) {
-      return false;
-    }
-  }
+  const API_BASE = 'https://flix2watch-watch-party-api.onrender.com';
+  const ROOM_ID_PATTERN = /^[a-f0-9]{24}$/i;
 
   function connect(options) {
     const config = options || {};
-    if (!config.supabase || typeof config.supabase.channel !== 'function') {
-      throw new TypeError('A configured Supabase client is required.');
+    if (!ROOM_ID_PATTERN.test(String(config.roomId || '')) ||
+        !String(config.token || '') || !String(config.participantId || '')) {
+      throw new TypeError('A valid room and API-issued membership token are required.');
     }
-    if (typeof config.roomId !== 'string' || !ROOM_ID_PATTERN.test(config.roomId)) {
-      throw new TypeError('Invalid Watch Party room ID.');
-    }
-
-    const onMessage = typeof config.onMessage === 'function' ? config.onMessage : function () {};
-    const channel = config.supabase.channel('watch-party:' + config.roomId, {
-      config: {
-        broadcast: { self: false },
-        presence: { key: String(config.participantId || '') }
-      }
-    });
+    const url = new URL('/ws', API_BASE);
+    url.protocol = 'wss:';
+    url.searchParams.set('room', config.roomId);
+    url.searchParams.set('token', config.token);
+    url.searchParams.set('participantId', config.participantId);
+    url.searchParams.set('name', String(config.name || 'Guest').slice(0, 28));
+    const socket = new WebSocket(url.toString());
     let closed = false;
-
-    channel.on('broadcast', { event: EVENT_NAME }, function (event) {
-      const message = event && event.payload;
-      if (!closed && validMessage(message)) onMessage(message);
+    let opened = false;
+    let resolveReady, rejectReady;
+    const ready = new Promise((resolve, reject) => { resolveReady = resolve; rejectReady = reject; });
+    socket.addEventListener('open', () => { opened = true; resolveReady(); });
+    socket.addEventListener('message', event => {
+      let message;
+      try { message = JSON.parse(String(event.data)); } catch (_) { return; }
+      if (!message || typeof message !== 'object') return;
+      if (message.type === 'presence-sync') {
+        if (typeof config.onPresence === 'function') {
+          try { config.onPresence(message.participants || []); } catch (_) {}
+        }
+        return;
+      }
+      if (!closed && typeof config.onMessage === 'function') config.onMessage(message);
     });
-    channel.on('presence', { event: 'sync' }, function () {
-      if (!closed && typeof config.onPresence === 'function') {
-        try { config.onPresence(channel.presenceState()); } catch (_) {}
+    socket.addEventListener('error', () => {
+      if (!opened) rejectReady(new Error('Watch Party API connection failed.'));
+    });
+    socket.addEventListener('close', () => {
+      if (!opened) rejectReady(new Error('Watch Party API refused the room connection.'));
+      if (!closed && typeof config.onDisconnect === 'function') {
+        try { config.onDisconnect(); } catch (_) {}
       }
     });
-
-    const ready = new Promise(function (resolve, reject) {
-      channel.subscribe(function (status) {
-        if (status === 'SUBSCRIBED') resolve();
-        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-          reject(new Error('Watch Party realtime channel status: ' + status));
-        }
-      });
-    });
-
     return {
-      ready: ready,
+      ready,
       send: async function (message) {
-        if (closed) throw new Error('Watch Party channel is closed.');
-        if (!validMessage(message)) throw new TypeError('Invalid Watch Party message.');
         await ready;
-        if (closed) throw new Error('Watch Party channel is closed.');
-        const result = await channel.send({ type: 'broadcast', event: EVENT_NAME, payload: message });
-        if (result !== 'ok') throw new Error('Watch Party message was not accepted.');
+        if (closed || socket.readyState !== WebSocket.OPEN) throw new Error('Watch Party connection is closed.');
+        socket.send(JSON.stringify(message));
       },
-      trackPresence: async function (payload) {
-        if (closed) throw new Error('Watch Party channel is closed.');
-        await ready;
-        if (closed) throw new Error('Watch Party channel is closed.');
-        return channel.track(payload);
-      },
+      trackPresence: async function () { return 'ok'; },
       close: async function () {
         if (closed) return;
         closed = true;
-        await config.supabase.removeChannel(channel);
+        if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+          socket.close(1000, 'left room');
+        }
       }
     };
   }
 
-  global.F2WWatchPartyRealtime = Object.freeze({ connect: connect });
+  global.F2WWatchPartyRealtime = Object.freeze({ connect, API_BASE });
 })(window);
