@@ -1,16 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Flix2Watch Watch Party Controls",
-  "version": "0.1.0",
-  "description": "Synchronize play, pause, and seeking for the Flix2Watch API player in a Watch Party room.",
+  "version": "0.2.0",
+  "description": "Experimental Watch Party play, pause, and seek bridge for the isolated Flix2Watch Render preview.",
   "permissions": [
     "storage",
-    "tabs",
-    "webNavigation"
+    "tabs"
   ],
   "host_permissions": [
     "https://flix2watch-watch-party-api.onrender.com/*",
-    "https://player.flix2watch.com/*"
+    "https://flix2watch-watch-party-preview.onrender.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -22,12 +21,12 @@
   "content_scripts": [
     {
       "matches": [
-        "https://player.flix2watch.com/*"
+        "https://flix2watch-watch-party-preview.onrender.com/watch/*"
       ],
       "js": [
-        "content.js"
+        "watch-page.js"
       ],
-      "all_frames": true,
+      "all_frames": false,
       "run_at": "document_idle"
     }
   ]
