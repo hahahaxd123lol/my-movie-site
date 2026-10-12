@@ -7,7 +7,9 @@
   let participantId = '';
   let displayName = '';
   let applyingRemoteEpisode = false;
+  let applyingRemoteSource = false;
   let lastSentEpisode = '';
+  let lastSentSource = '';
   let observedPlaybackStatus = '';
   let observedPlaybackSeconds = null;
   let lastPlaybackBroadcastAt = 0;
@@ -41,6 +43,25 @@
   }
   function episodeKey(value) {
     return value ? [value.mediaType, value.mediaId, value.season, value.episode].join(':') : '';
+  }
+  function currentSource() {
+    const active = document.querySelector('.server-btn.active');
+    return active?.dataset?.server ? String(active.dataset.server) : '';
+  }
+  function applySource(source) {
+    if (!source || typeof source !== 'string' || source.length > 80) return;
+    const button = [...document.querySelectorAll('.server-btn')].find(item => item.dataset.server === source);
+    if (!button || button.classList.contains('active')) return;
+    applyingRemoteSource = true;
+    button.click();
+    setTimeout(() => { applyingRemoteSource = false; }, 800);
+  }
+  function broadcastSource() {
+    if (!connection || applyingRemoteSource) return;
+    const source = currentSource();
+    if (!source || source === lastSentSource) return;
+    lastSentSource = source;
+    connection.send({ type: 'source-change', source }).catch(error => console.warn('[Watch Party] source sync failed', error));
   }
   function currentMedia() {
     const params = new URLSearchParams(location.search);
@@ -129,7 +150,7 @@
         @media(max-width:650px){#f2w-watch-party .wp-grid{grid-template-columns:1fr}#f2w-watch-party .wp-main{border-right:0;border-bottom:1px solid #ffffff12;padding:18px}#f2w-watch-party .wp-side{padding:18px}#f2w-watch-party .wp-top{padding:18px}#f2w-watch-party .wp-title{font-size:21px}}
       </style>
       <div class="wp-top">
-        <div><div class="wp-kicker">Flix2Watch · Watch together</div><div class="wp-title">Watch Party <span style="font-size:13px;color:#8f8f9d;font-weight:500">/ your room</span></div><div class="wp-sub">Bring your people. Keep the episode in sync.</div></div>
+        <div><div class="wp-kicker">Flix2Watch · Watch together</div><div class="wp-title">Watch Party <span style="font-size:13px;color:#8f8f9d;font-weight:500">/ your room</span></div><div class="wp-sub">Bring your people. Watch the same stream together.</div></div>
         <div class="wp-actions"><button type="button" id="f2w-party-copy" hidden>↗ Copy invite</button><button type="button" id="f2w-party-create" class="wp-primary">＋ Create party</button><button type="button" id="f2w-party-leave" hidden>Leave room</button></div>
       </div>
       <div class="wp-grid">
@@ -141,7 +162,7 @@
           <form class="wp-chat-row" id="f2w-party-chat-form"><input id="f2w-party-chat-input" maxlength="500" placeholder="Say something to the party…" aria-label="Party message" autocomplete="off"><button class="wp-primary" type="submit">Send</button></form>
           <div class="wp-status" id="f2w-party-status" role="status">Create a room or open a friend's invite link.</div>
         </div>
-        <aside class="wp-side"><div class="wp-label">In this room <span id="f2w-party-count" style="color:#f7f7fb">· 0</span></div><div class="wp-people" id="f2w-party-people"><div class="wp-empty">No one here yet. Invite your friends.</div></div><div style="margin-top:20px"><div class="wp-label">Shared playback</div><div class="wp-sub">TV episode, play/pause and seek sync between guests when the embedded player accepts remote commands.</div></div></aside>
+        <aside class="wp-side"><div class="wp-label">In this room <span id="f2w-party-count" style="color:#f7f7fb">· 0</span></div><div class="wp-people" id="f2w-party-people"><div class="wp-empty">No one here yet. Invite your friends.</div></div><div style="margin-top:20px"><div class="wp-label">Shared playback</div><div class="wp-sub">Source, season, episode and playback controls are shared with your party. Player commands depend on provider support.</div></div></aside>
       </div>
       <div class="wp-foot"><span>🔒 Private invite link · Only people with the link can join</span><span id="f2w-party-room-label">No room created</span></div>`;
     const player = document.querySelector('.player-wrapper');
@@ -180,7 +201,7 @@
         if (connection) {
           participants.set(participantId, myHello());
           renderPeople();
-          await connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode() });
+          await connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode(), source: currentSource() });
         }
       } catch (_) {}
     })();
@@ -228,12 +249,15 @@
               const isNew = !participants.has(person.id);
               participants.set(person.id, { id: String(person.id), name: cleanName(person.name) || 'Guest' });
               renderPeople();
-              if (isNew && connection) connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode() }).catch(() => {});
+              if (isNew && connection) connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode(), source: currentSource() }).catch(() => {});
+              if (message.source) applySource(message.source);
               if (message.episode) applyEpisode(message.episode);
             } else if (message.type === 'participant-left') {
               participants.delete(String(message.participantId || '')); renderPeople();
             } else if (message.type === 'episode-change') {
               applyEpisode(message.episode);
+            } else if (message.type === 'source-change') {
+              applySource(message.source);
             } else if (message.type === 'playback-state' && message.state) {
               applyRemotePlayback(message.state);
               const label = message.state.status ? String(message.state.status) : 'updated';
@@ -260,24 +284,39 @@
       const current = currentEpisode();
       if (!current || current.mediaId !== String(episode.mediaId) || !Number.isFinite(Number(episode.season)) || !Number.isFinite(Number(episode.episode))) return;
       if (current.season === Number(episode.season) && current.episode === Number(episode.episode)) return;
-      applyingRemoteEpisode = true;
       const season = document.getElementById('season-select');
+      const episodeSelect = document.getElementById('episode-select');
+      if (!season || !episodeSelect) return;
       const targetSeason = String(Number(episode.season));
       const targetEpisode = String(Number(episode.episode));
-      if ([...season.options].some(option => option.value === targetSeason)) {
-        season.value = targetSeason;
-        if (typeof window.onSeasonChange === 'function') window.onSeasonChange();
-        const waitForEpisode = attempt => {
-          const select = document.getElementById('episode-select');
-          if (select && [...select.options].some(option => option.value === targetEpisode)) {
-            select.value = targetEpisode;
-            if (typeof window.onEpisodeChange === 'function') window.onEpisodeChange();
-            applyingRemoteEpisode = false;
-          } else if (attempt < 30) setTimeout(() => waitForEpisode(attempt + 1), 150);
-          else applyingRemoteEpisode = false;
-        };
-        waitForEpisode(0);
-      } else applyingRemoteEpisode = false;
+      if (![...season.options].some(option => option.value === targetSeason)) return;
+      applyingRemoteEpisode = true;
+      const finish = () => { applyingRemoteEpisode = false; };
+      const applyTargetEpisode = () => {
+        if (![...episodeSelect.options].some(option => option.value === targetEpisode)) return false;
+        episodeSelect.value = targetEpisode;
+        if (typeof window.onEpisodeChange === 'function') window.onEpisodeChange();
+        finish();
+        return true;
+      };
+      if (season.value === targetSeason) {
+        if (!applyTargetEpisode()) finish();
+        return;
+      }
+      let done = false;
+      const observer = new MutationObserver(() => {
+        if (done) return;
+        if (applyTargetEpisode()) { done = true; observer.disconnect(); }
+      });
+      observer.observe(episodeSelect, { childList: true, subtree: true });
+      season.value = targetSeason;
+      if (typeof window.onSeasonChange === 'function') window.onSeasonChange();
+      setTimeout(() => {
+        if (done) return;
+        done = true; observer.disconnect();
+        applyTargetEpisode();
+        finish();
+      }, 6000);
     }
     createButton.addEventListener('click', () => join(makeId()));
     $('#f2w-party-save').addEventListener('click', () => {
@@ -287,7 +326,7 @@
       localStorage.setItem('f2w_party_name', name);
       if (connection) {
         participants.set(participantId, myHello()); renderPeople();
-        connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode() }).catch(() => {});
+        connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode(), source: currentSource() }).catch(() => {});
       }
       setStatus('Your party name is saved.', Boolean(connection));
     });
@@ -320,11 +359,30 @@
       } catch (_) { setStatus('Message could not be sent. Try again.'); }
     });
     document.addEventListener('change', async event => {
-      if (applyingRemoteEpisode || !connection || !event.target || !['season-select', 'episode-select'].includes(event.target.id)) return;
+      if (applyingRemoteEpisode || !connection || !event.target || event.target.id !== 'episode-select') return;
       const episode = currentEpisode(); const key = episodeKey(episode);
       if (!episode || !key || key === lastSentEpisode) return;
       lastSentEpisode = key;
       try { await connection.send({ type: 'episode-change', episode }); } catch (error) { console.warn('[Watch Party] episode sync failed', error); }
+    });
+    const episodeSelect = document.getElementById('episode-select');
+    if (episodeSelect) {
+      let optionSignature = [...episodeSelect.options].map(option => option.value).join(',');
+      new MutationObserver(() => {
+        const nextSignature = [...episodeSelect.options].map(option => option.value).join(',');
+        if (nextSignature === optionSignature) return;
+        optionSignature = nextSignature;
+        if (applyingRemoteEpisode || !connection) return;
+        const episode = currentEpisode(); const key = episodeKey(episode);
+        if (!episode || !key || key === lastSentEpisode) return;
+        lastSentEpisode = key;
+        connection.send({ type: 'episode-change', episode }).catch(error => console.warn('[Watch Party] episode sync failed', error));
+      }).observe(episodeSelect, { childList: true, subtree: true });
+    }
+    const sourceObserver = new MutationObserver(broadcastSource);
+    sourceObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    document.addEventListener('click', event => {
+      if (event.target?.closest?.('.server-btn')) setTimeout(broadcastSource, 120);
     });
     window.addEventListener('message', event => {
       if (!connection || event.origin !== 'https://player.flix2watch.com') return;
