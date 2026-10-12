@@ -268,6 +268,10 @@ server.on('upgrade', (req, socket, head) => {
         return;
       }
       if (message.type === 'playback-state') {
+        // The host is the sole publisher of the shared playback clock. Guests
+        // can issue play/pause/seek commands, but their independent progress
+        // telemetry must not overwrite the authoritative timeline.
+        if (!client.member.host) return;
         const state = message.state;
         if (state && String(state.mediaId) === room.state.media.id && state.mediaType === room.state.media.type) {
           room.state.playbackState = {
