@@ -71,5 +71,7 @@ html{scroll-behavior:smooth;scrollbar-gutter:stable}
 }
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto!important}
+  ::view-transition-old(root),
+  ::view-transition-new(root){animation:none!important}
 }
 /* f2w-force-save:v137-long-list-scroll-rendering:20261012 */
