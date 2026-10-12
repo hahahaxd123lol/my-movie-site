@@ -20,6 +20,8 @@
   let remoteSeekRetryUntil = 0;
   let remoteSeekRetryCount = 0;
   let suppressFallbackEcho = null;
+  let lastUrlFallbackSeekAt = 0;
+  let lastUrlFallbackSeekSeconds = null;
   let lastPlaybackBroadcastAt = 0;
   let lastRemoteCommandAt = 0;
   let lastRemoteSeekAt = 0;
@@ -128,8 +130,11 @@
         url.pathname.includes('/embed/');
       if (!isFlix2Watch && !isVidFast) return false;
       const target = String(Math.max(0, Math.floor(Number(seconds) || 0)));
-      if (url.searchParams.get('startAt') === target) return false;
+      const now = Date.now();
+      if (lastUrlFallbackSeekSeconds === Number(target) && now - lastUrlFallbackSeekAt < 1800) return false;
       url.searchParams.set('startAt', target);
+      lastUrlFallbackSeekSeconds = Number(target);
+      lastUrlFallbackSeekAt = now;
       suppressFallbackEcho = { seconds: Number(target), until: Date.now() + 15000 };
       frame.src = url.toString();
       return true;
@@ -156,6 +161,26 @@
       const drift = Number.isFinite(actualSeconds) ? Math.abs(actualSeconds - remoteSeconds) : Infinity;
       const threshold = isExplicitSeek ? 0.8 : 1.8;
       if (drift > threshold && now - lastRemoteSeekAt > (isExplicitSeek ? 700 : 1500)) {
+        // The default Flix2Watch API embed reports PLAYER_EVENT telemetry and
+        // accepts startAt on its embed URL, but its inbound seek postMessage
+        // contract is not documented. For an explicit seek, use the URL-based
+        // resume mechanism directly instead of endlessly sending ignored guesses.
+        let flix2watchEmbed = false;
+        try {
+          const frame = document.getElementById('video-frame');
+          const url = new URL(String(frame?.src || ''), location.href);
+          flix2watchEmbed = url.hostname === 'player.flix2watch.com' &&
+            /^\/embed\/(tv|movie)(\/|$)/.test(url.pathname);
+        } catch (_) {}
+        if (isExplicitSeek && flix2watchEmbed) {
+          suppressPlaybackBroadcastUntil = now + 1100;
+          fallbackSeekTarget = remoteSeconds;
+          lastRemoteSeekAt = now;
+          if (remoteSeekRetryTimer) clearTimeout(remoteSeekRetryTimer);
+          remoteSeekRetryTimer = null;
+          fallbackSeekViaVidFastStartAt(remoteSeconds);
+          return;
+        }
         suppressPlaybackBroadcastUntil = now + 1100;
         sendPlayerCommand('seek', remoteSeconds);
         lastRemoteSeekAt = now;
