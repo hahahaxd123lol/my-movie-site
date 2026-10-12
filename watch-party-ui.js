@@ -115,36 +115,33 @@
     const frame = document.getElementById('video-frame');
     if (!frame?.contentWindow) return false;
     let target = 'https://player.flix2watch.com';
-    try { target = new URL(String(frame.src || ''), location.href).origin; } catch (_) {}
+    try {
+      const url = new URL(String(frame.src || ''), location.href);
+      if (url.hostname !== 'player.flix2watch.com' ||
+          !/^\/embed\/(tv|movie)(\/|$)/.test(url.pathname)) return false;
+      target = url.origin;
+    } catch (_) { return false; }
+    // Keep party commands scoped to the Flix2Watch API embed. Send ONE
+    // message with compatible field aliases instead of blasting many different
+    // messages at the player, which can execute duplicate commands and fight.
+    if (partyIsActive() && currentSource() !== PARTY_PLAYER_SOURCE) return false;
     const position = Math.max(0, Number(seconds) || 0);
-    // Different player builds expose slightly different postMessage command
-    // shapes. Send the documented command form plus compatible legacy aliases.
-    const messages = action === 'seek'
-      ? [
-          { command: 'seek', time: position },
-          { action: 'seek', time: position },
-          { method: 'seek', time: position },
-          { event: 'command', func: 'seek', args: [position] },
-          { type: 'PLAYER_COMMAND', action: 'seek', command: 'seek', value: position, seconds: position, position, time: position },
-          { type: 'PLAYER_COMMAND', data: { action: 'seek', command: 'seek', value: position, seconds: position, position, time: position } },
-          { type: 'PLAYER_COMMAND', action: 'seek', value: position },
-          { type: 'PLAYER_COMMAND', command: 'seek', value: position }
-        ]
-      : [
-          { command: action },
-          { action },
-          { method: action },
-          { event: 'command', func: action, args: [] },
-          { type: 'PLAYER_COMMAND', action, command: action },
-          { type: 'PLAYER_COMMAND', data: { action, command: action } }
-        ];
-    let sent = false;
-    for (const payload of messages) {
-      try { frame.contentWindow.postMessage(payload, target); sent = true; } catch (_) {}
-      // Some provider builds only parse JSON-encoded message bodies.
-      try { frame.contentWindow.postMessage(JSON.stringify(payload), target); sent = true; } catch (_) {}
+    const payload = {
+      type: 'PLAYER_COMMAND',
+      action,
+      command: action,
+      method: action,
+      value: action === 'seek' ? position : undefined,
+      seconds: action === 'seek' ? position : undefined,
+      position: action === 'seek' ? position : undefined,
+      time: action === 'seek' ? position : undefined
+    };
+    try {
+      frame.contentWindow.postMessage(payload, target);
+      return true;
+    } catch (_) {
+      return false;
     }
-    return sent;
   }
   function fallbackSeekViaVidFastStartAt(seconds) {
     // The Flix2Watch API embed already uses startAt for resume positions when
