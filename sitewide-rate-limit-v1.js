@@ -1,3 +1,4 @@
+/* Re-published to main on 2026-10-12 to ensure existing page references receive this file. */
 /* Flix2Watch sitewide interaction rate limiter.
  * Client-side deterrence only; enforce sensitive-operation limits on the server too.
  */
