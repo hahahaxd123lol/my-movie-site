@@ -219,13 +219,17 @@
       Boolean(container && fullscreenElement !== card && container.contains(fullscreenElement));
   }
 
+  function isPopoverOpen() {
+    try { return Boolean(card && isPopoverOpen()); } catch (_) { return false; }
+  }
+
   function prepareLayering() {
     if (!card) return;
     const shouldPopover = isPlayerFullscreen() && typeof card.showPopover === 'function';
     if (shouldPopover) {
       card.classList.add('f2w-is-popover');
       card.setAttribute('popover','manual');
-      if (!card.matches(':popover-open')) {
+      if (!isPopoverOpen()) {
         try { card.showPopover(); } catch (error) {
           card.removeAttribute('popover');
           card.classList.remove('f2w-is-popover');
@@ -233,7 +237,7 @@
         }
       }
     } else {
-      if (card.matches(':popover-open')) {
+      if (isPopoverOpen()) {
         try { card.hidePopover(); } catch (_) {}
       }
       card.removeAttribute('popover');
@@ -259,7 +263,7 @@
     if (!card) return;
     card.classList.remove('f2w-visible');
     card.setAttribute('aria-hidden','true');
-    if (card.matches(':popover-open')) {
+    if (isPopoverOpen()) {
       try { card.hidePopover(); } catch (_) {}
     }
     card.removeAttribute('popover');
@@ -460,6 +464,7 @@
   window.addEventListener('pagehide',() => dismiss(false),{once:true});
 
   // Reposition the card if fullscreen begins or ends while the countdown is visible.
+  document.addEventListener('visibilitychange',() => { previousTick = Date.now(); });
   document.addEventListener('fullscreenchange',() => {
     if (active) {
       clearTimeout(window.__f2wNextEpisodeLayerTimer);
