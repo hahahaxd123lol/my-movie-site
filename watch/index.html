@@ -4661,7 +4661,10 @@ body.f2w-cinema-v125 #f2w-dim-lights-v117{
         <img id="detail-poster" src="" alt="Poster">
       </div>
       <div class="media-info-content">
-        <h1 class="media-title-heading" id="detail-title">Loading title...</h1>
+        <div id="f2w-detail-title-line-v1" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <h1 class="media-title-heading" id="detail-title">Loading title...</h1>
+          <span id="f2w-movie-watched-badge-v1" hidden aria-label="Watched" title="Watched on this account" style="display:inline-flex;align-items:center;white-space:nowrap;padding:7px 11px;border:1px solid rgba(54,211,153,.55);border-radius:999px;background:rgba(16,185,129,.13);color:#6ee7b7;font:800 12px/1.2 system-ui,sans-serif">✓ Watched</span>
+        </div>
         <div class="media-sub-meta">
           <span id="detail-date"><i class="fa-regular fa-calendar"></i> --</span>
           <span class="rating-pill" id="detail-rating"><i class="fa-solid fa-star"></i> --</span>
@@ -10897,7 +10900,7 @@ body.f2w-watch-page #account-modal .account-card {
 })();
 </script>
 
-<script src="/watched-episodes-v1.js?v=2" defer></script>
+<script src="/watched-episodes-v1.js?v=3" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->

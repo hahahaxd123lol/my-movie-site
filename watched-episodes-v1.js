@@ -6,7 +6,8 @@
 
   const params=new URLSearchParams(location.search);
   const mediaId=Number(params.get('id')||0);
-  if(params.get('type')!=='tv'||!Number.isSafeInteger(mediaId)||mediaId<=0)return;
+  const mediaType=params.get('type')==='tv'?'tv':'movie';
+  if(!Number.isSafeInteger(mediaId)||mediaId<=0)return;
 
   const TMDB_KEY='925c48dd6e24fd5e975fe224238bbb45';
   const seasonSelect=()=>document.getElementById('season-select');
@@ -36,13 +37,14 @@
     const c=client||db();
     if(!c?.rpc||!uid)return;
     try{
-      const {data,error}=await c.rpc('get_my_watched_episodes_v1',{p_media_id:mediaId});
+      const {data,error}=await c.rpc('get_my_watched_media_v1',{p_media_id:mediaId,p_media_type:mediaType});
       if(error)throw error;
       if(uid!==activeUid)return;
       watched.clear();
       for(const row of Array.isArray(data)?data:[]){
         const season=Number(row.season),episode=Number(row.episode);
-        if(season>0&&episode>0)watched.add(episodeKey(season,episode));
+        if(mediaType==='movie')watched.add(episodeKey(0,0));
+        else if(season>0&&episode>0)watched.add(episodeKey(season,episode));
       }
       renderLabels();
     }catch(error){
@@ -102,6 +104,13 @@
     return option.dataset.f2wWatchedBase;
   }
   function renderLabels(){
+    if(mediaType==='movie'){
+      const badge=document.getElementById('f2w-movie-watched-badge-v1');
+      if(badge)badge.hidden=!(activeUid&&watched.has(episodeKey(0,0)));
+      return;
+    }
+    const badge=document.getElementById('f2w-movie-watched-badge-v1');
+    if(badge)badge.hidden=true;
     const ss=seasonSelect(),es=episodeSelect();
     if(ss){
       for(const option of ss.options){
@@ -134,13 +143,14 @@
   }
   async function markWatched(season,episode,position,duration){
     const uid=activeUid,c=client||db();
-    if(!uid||!c?.rpc||season<=0||episode<=0)return;
-    const key=episodeKey(season,episode);
+    if(!uid||!c?.rpc||(mediaType==='tv'&&(season<=0||episode<=0)))return;
+    const key=mediaType==='movie'?episodeKey(0,0):episodeKey(season,episode);
     if(watched.has(key)||markInFlight.has(key)||(retryAfter.get(key)||0)>Date.now())return;
     markInFlight.add(key);
     try{
-      const {error}=await c.rpc('mark_my_watched_episode_v1',{
-        p_media_id:mediaId,p_season:season,p_episode:episode,
+      const {error}=await c.rpc('mark_my_watched_media_v1',{
+        p_media_id:mediaId,p_media_type:mediaType,
+        p_season:mediaType==='tv'?season:0,p_episode:mediaType==='tv'?episode:0,
         p_position_seconds:Math.floor(position),p_duration_seconds:Math.floor(duration)
       });
       if(error)throw error;
@@ -160,12 +170,13 @@
     const payload=event.data;
     if(!payload||payload.type!=='PLAYER_EVENT'||!payload.data)return;
     const data=payload.data,info=data.player_info||{};
-    if(info.mediaType&&String(info.mediaType).toLowerCase()!=='tv')return;
+    const reportedType=String(info.mediaType||mediaType).toLowerCase();
+    if((reportedType==='tv'||reportedType==='series'||reportedType==='show'?'tv':'movie')!==mediaType)return;
     const pos=Number(data.player_progress);
     const dur=Number(data.player_duration||data.duration||info.duration||0);
     if(!thresholdReached(pos,dur))return;
-    const season=Number(info.season||seasonSelect()?.value||params.get('season')||1);
-    const episode=Number(info.episode||episodeSelect()?.value||params.get('episode')||1);
+    const season=mediaType==='tv'?Number(info.season||seasonSelect()?.value||params.get('season')||1):0;
+    const episode=mediaType==='tv'?Number(info.episode||episodeSelect()?.value||params.get('episode')||1):0;
     void markWatched(season,episode,pos,dur);
   }
 
@@ -183,6 +194,9 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attachObserver,{once:true});
   else attachObserver();
   window.addEventListener('pageshow',()=>{renderLabels();if(activeUid)void loadWatched(activeUid)},{passive:true});
+  window.addEventListener('flix2watch:media-ready',scheduleRender);
+  const titleObserverTarget=document.getElementById('detail-title');
+  if(titleObserverTarget)new MutationObserver(scheduleRender).observe(titleObserverTarget,{childList:true,characterData:true,subtree:true});
   void initialiseAuth();
-  void loadSeasonCounts();
+  if(mediaType==='tv')void loadSeasonCounts();
 })();
