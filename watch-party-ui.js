@@ -19,6 +19,7 @@
   let remoteSeekRetryTimer = null;
   let remoteSeekRetryUntil = 0;
   let remoteSeekRetryCount = 0;
+  let suppressFallbackEcho = null;
   let lastPlaybackBroadcastAt = 0;
   let lastRemoteCommandAt = 0;
   let lastRemoteSeekAt = 0;
@@ -129,6 +130,7 @@
       const target = String(Math.max(0, Math.floor(Number(seconds) || 0)));
       if (url.searchParams.get('startAt') === target) return false;
       url.searchParams.set('startAt', target);
+      suppressFallbackEcho = { seconds: Number(target), until: Date.now() + 15000 };
       frame.src = url.toString();
       return true;
     } catch (_) { return false; }
@@ -805,6 +807,17 @@
       if (isPlaying) observedPlaybackStatus = 'playing';
       else if (isPaused) observedPlaybackStatus = 'paused';
       const now = Date.now();
+      // A URL-based seek reload causes the embed to report its initial position.
+      // Consume that one matching echo so it cannot bounce back and reload the
+      // host (or another guest) repeatedly.
+      if (hasProgress && suppressFallbackEcho) {
+        if (now > suppressFallbackEcho.until) {
+          suppressFallbackEcho = null;
+        } else if (Math.abs(progress - suppressFallbackEcho.seconds) <= 3) {
+          suppressFallbackEcho = null;
+          return;
+        }
+      }
       if (now < suppressPlaybackBroadcastUntil) return;
       const media = currentMedia();
       const episode = currentEpisode();
