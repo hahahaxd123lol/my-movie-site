@@ -299,7 +299,16 @@ begin
       insert into public.user_watched_episodes_v1
         (user_id, media_id, media_type, season, episode)
       select
-        case when (to_jsonb(p)->>'user_id') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
+        case
+          when (to_jsonb(p)->>'user_id') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+          then (to_jsonb(p)->>'user_id')::uuid
+          else null
+        end,
+        case
+          when (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}$'
+          then (to_jsonb(p)->>'media_id')::bigint
+          else null
+        end,
         case
           when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 'movie'
           when lower(trim(to_jsonb(p)->>'media_type')) in ('tv','series','show') then 'tv'
@@ -316,7 +325,12 @@ begin
       from %I.%I p
       where (to_jsonb(p)->>'user_id') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
         and (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}$'
-        and case when (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}        and lower(trim(coalesce(to_jsonb(p)->>'media_type',''))) in ('movie','film','tv','series','show')
+        and case
+          when (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}$'
+          then (to_jsonb(p)->>'media_id')::numeric > 0
+          else false
+        end
+        and lower(trim(coalesce(to_jsonb(p)->>'media_type',''))) in ('movie','film','tv','series','show')
         and (
           %s
           or %s
@@ -341,231 +355,6 @@ begin
   end loop;
 
   raise notice 'Historical watched backfill checked % candidate tables. Total new records recovered: %.', candidate_tables, total_inserted;
-end;
-$f2w_historical_backfill$;
-
-notify pgrst, 'reload schema';
-commit;
- then (to_jsonb(p)->>'user_id')::uuid end,
-        case when (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 'movie'
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('tv','series','show') then 'tv'
-          else null
-        end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
-          else %s
-        end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
-          else %s
-        end
-      from %I.%I p
-      where (to_jsonb(p)->>'user_id') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-        and (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}$'
-        and (to_jsonb(p)->>'media_id')::numeric > 0
-        and lower(trim(coalesce(to_jsonb(p)->>'media_type',''))) in ('movie','film','tv','series','show')
-        and (
-          %s
-          or %s
-        )
-        and (
-          lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film')
-          or (%s is not null and %s is not null and %s > 0 and %s > 0)
-        )
-      on conflict (user_id, media_id, season, episode) do nothing
-    $sql$,
-      season_expr, episode_expr, t.schema_name, t.table_name,
-      completion_expr, progress_expr,
-      season_expr, episode_expr, season_expr, episode_expr
-    );
-
-    get diagnostics inserted = row_count;
-    total_inserted := total_inserted + inserted;
-
-    if inserted > 0 then
-      raise notice 'Recovered % watched records from %.%', inserted, t.schema_name, t.table_name;
-    end if;
-  end loop;
-
-  raise notice 'Historical watched backfill complete. Total new records recovered: %.', total_inserted;
-end;
-$f2w_historical_backfill$;
-
-notify pgrst, 'reload schema';
-commit;
- then (to_jsonb(p)->>'media_id')::bigint end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 'movie'
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('tv','series','show') then 'tv'
-          else null
-        end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
-          else %s
-        end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
-          else %s
-        end
-      from %I.%I p
-      where (to_jsonb(p)->>'user_id') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-        and (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}$'
-        and (to_jsonb(p)->>'media_id')::numeric > 0
-        and lower(trim(coalesce(to_jsonb(p)->>'media_type',''))) in ('movie','film','tv','series','show')
-        and (
-          %s
-          or %s
-        )
-        and (
-          lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film')
-          or (%s is not null and %s is not null and %s > 0 and %s > 0)
-        )
-      on conflict (user_id, media_id, season, episode) do nothing
-    $sql$,
-      season_expr, episode_expr, t.schema_name, t.table_name,
-      completion_expr, progress_expr,
-      season_expr, episode_expr, season_expr, episode_expr
-    );
-
-    get diagnostics inserted = row_count;
-    total_inserted := total_inserted + inserted;
-
-    if inserted > 0 then
-      raise notice 'Recovered % watched records from %.%', inserted, t.schema_name, t.table_name;
-    end if;
-  end loop;
-
-  raise notice 'Historical watched backfill complete. Total new records recovered: %.', total_inserted;
-end;
-$f2w_historical_backfill$;
-
-notify pgrst, 'reload schema';
-commit;
- then (to_jsonb(p)->>'media_id')::numeric > 0 else false end
-        and lower(trim(coalesce(to_jsonb(p)->>'media_type',''))) in ('movie','film','tv','series','show')
-        and (
-          %s
-          or %s
-        )
-        and (
-          lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film')
-          or (%s is not null and %s is not null and %s > 0 and %s > 0)
-        )
-      on conflict (user_id, media_id, season, episode) do nothing
-    $sql$,
-      season_expr, episode_expr, t.schema_name, t.table_name,
-      completion_expr, progress_expr,
-      season_expr, episode_expr, season_expr, episode_expr
-    );
-
-    get diagnostics inserted = row_count;
-    total_inserted := total_inserted + inserted;
-
-    if inserted > 0 then
-      raise notice 'Recovered % watched records from %.%', inserted, t.schema_name, t.table_name;
-    end if;
-  end loop;
-
-  raise notice 'Historical watched backfill complete. Total new records recovered: %.', total_inserted;
-end;
-$f2w_historical_backfill$;
-
-notify pgrst, 'reload schema';
-commit;
- then (to_jsonb(p)->>'user_id')::uuid end,
-        case when (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 'movie'
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('tv','series','show') then 'tv'
-          else null
-        end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
-          else %s
-        end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
-          else %s
-        end
-      from %I.%I p
-      where (to_jsonb(p)->>'user_id') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-        and (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}$'
-        and (to_jsonb(p)->>'media_id')::numeric > 0
-        and lower(trim(coalesce(to_jsonb(p)->>'media_type',''))) in ('movie','film','tv','series','show')
-        and (
-          %s
-          or %s
-        )
-        and (
-          lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film')
-          or (%s is not null and %s is not null and %s > 0 and %s > 0)
-        )
-      on conflict (user_id, media_id, season, episode) do nothing
-    $sql$,
-      season_expr, episode_expr, t.schema_name, t.table_name,
-      completion_expr, progress_expr,
-      season_expr, episode_expr, season_expr, episode_expr
-    );
-
-    get diagnostics inserted = row_count;
-    total_inserted := total_inserted + inserted;
-
-    if inserted > 0 then
-      raise notice 'Recovered % watched records from %.%', inserted, t.schema_name, t.table_name;
-    end if;
-  end loop;
-
-  raise notice 'Historical watched backfill complete. Total new records recovered: %.', total_inserted;
-end;
-$f2w_historical_backfill$;
-
-notify pgrst, 'reload schema';
-commit;
- then (to_jsonb(p)->>'media_id')::bigint end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 'movie'
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('tv','series','show') then 'tv'
-          else null
-        end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
-          else %s
-        end,
-        case
-          when lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film') then 0
-          else %s
-        end
-      from %I.%I p
-      where (to_jsonb(p)->>'user_id') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-        and (to_jsonb(p)->>'media_id') ~ '^[0-9]{1,18}$'
-        and (to_jsonb(p)->>'media_id')::numeric > 0
-        and lower(trim(coalesce(to_jsonb(p)->>'media_type',''))) in ('movie','film','tv','series','show')
-        and (
-          %s
-          or %s
-        )
-        and (
-          lower(trim(to_jsonb(p)->>'media_type')) in ('movie','film')
-          or (%s is not null and %s is not null and %s > 0 and %s > 0)
-        )
-      on conflict (user_id, media_id, season, episode) do nothing
-    $sql$,
-      season_expr, episode_expr, t.schema_name, t.table_name,
-      completion_expr, progress_expr,
-      season_expr, episode_expr, season_expr, episode_expr
-    );
-
-    get diagnostics inserted = row_count;
-    total_inserted := total_inserted + inserted;
-
-    if inserted > 0 then
-      raise notice 'Recovered % watched records from %.%', inserted, t.schema_name, t.table_name;
-    end if;
-  end loop;
-
-  raise notice 'Historical watched backfill complete. Total new records recovered: %.', total_inserted;
 end;
 $f2w_historical_backfill$;
 
