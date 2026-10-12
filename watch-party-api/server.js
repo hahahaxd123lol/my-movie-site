@@ -199,8 +199,11 @@ server.on('upgrade', (req, socket, head) => {
           room.state.episode = { mediaType: 'tv', mediaId: room.state.media.id, season: Number(episode.season), episode: Number(episode.episode) };
           room.state.season = { mediaId: room.state.media.id, season: Number(episode.season) };
         }
+        // Watch Party has one supported source: the Flix2Watch API player.
+        // Ignore client claims for all other playback providers.
         const source = String(message.source || '').slice(0, 80);
-        if (/^[a-z0-9_-]+$/i.test(source)) room.state.source = source;
+        if (source === 'flix2watchapi') room.state.source = 'flix2watchapi';
+        else if (!room.state.source) room.state.source = 'flix2watchapi';
         broadcast(room, { type: 'hello', participant: { id: client.participantId, name: client.name, host: member.host }, episode: room.state.episode, source: room.state.source }, client);
         return;
       }
@@ -260,10 +263,10 @@ server.on('upgrade', (req, socket, head) => {
         return;
       }
       if (message.type === 'source-change') {
-        const source = String(message.source || '').slice(0, 80);
-        if (/^[a-z0-9_-]+$/i.test(source)) {
-          room.state.source = source;
-          broadcast(room, { type: 'source-change', source }, client);
+        // All rooms use the Flix2Watch API player; reject every other source.
+        if (message.source === 'flix2watchapi') {
+          room.state.source = 'flix2watchapi';
+          broadcast(room, { type: 'source-change', source: 'flix2watchapi' }, client);
         }
         return;
       }
