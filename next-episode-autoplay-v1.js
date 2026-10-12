@@ -477,7 +477,9 @@
   });
 
   document.addEventListener('ended',event => {
-    if (event.target instanceof HTMLVideoElement) handleCompletion({mediaType:'tv'});
+    if (event.target instanceof HTMLVideoElement && host()?.contains(event.target)) {
+      handleCompletion({mediaType:'tv'});
+    }
   },true);
   document.addEventListener('change',event => {
     if (event.target === seasonSelect() || event.target === episodeSelect()) {
