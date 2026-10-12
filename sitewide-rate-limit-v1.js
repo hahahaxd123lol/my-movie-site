@@ -28,6 +28,9 @@
         await new Promise(resolve=>setTimeout(resolve,250));
       }
       if(!client?.auth?.getSession){staffStatus='ready';render();return false;}
+      // Bind auth changes only after the Supabase client has actually appeared.
+      // Without this, signing in after page load never re-checks staff/owner status.
+      bindStaffAuth();
       try{
         const {data,error}=await client.auth.getSession();
         const user=data?.session?.user;
