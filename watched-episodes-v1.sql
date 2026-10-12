@@ -288,6 +288,7 @@ begin
     $completion$;
 
     candidate_tables := candidate_tables + 1;
+    raise notice 'Checking historical playback source %.%', t.schema_name, t.table_name;
 
     progress_expr := format(
       '(%1$s is not null and %2$s is not null and %2$s > 0 and %1$s >= case when %2$s > 600 then %2$s - 600 else ceil(%2$s * 0.5) end)',
