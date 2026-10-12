@@ -22,7 +22,6 @@
   function defaultName() {
     const saved = cleanName(localStorage.getItem('f2w_party_name'));
     if (saved) return saved;
-    const user = window.f2wSupabase?.auth?.getSession;
     return 'Guest ' + Math.floor(100 + Math.random() * 900);
   }
   function currentEpisode() {
@@ -116,6 +115,25 @@
     sessionStorage.setItem('f2w_party_participant_id', participantId);
     displayName = defaultName();
     nameInput.value = displayName;
+    // Prefer the signed-in Flix2Watch account name; guests can still choose their own.
+    (async function loadAccountName() {
+      if (cleanName(localStorage.getItem('f2w_party_name')) || !window.f2wSupabase?.auth?.getSession) return;
+      try {
+        const result = await window.f2wSupabase.auth.getSession();
+        const user = result?.data?.session?.user;
+        if (!user) return;
+        const meta = user.user_metadata || {};
+        const accountName = cleanName(meta.username || meta.user_name || meta.display_name || meta.full_name || meta.name || String(user.email || '').split('@')[0]);
+        if (!accountName) return;
+        displayName = accountName;
+        nameInput.value = accountName;
+        if (connection) {
+          participants.set(participantId, myHello());
+          renderPeople();
+          await connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode() });
+        }
+      } catch (_) {}
+    })();
     function setStatus(message, connected) {
       status.textContent = message;
       if (connected !== undefined) status.dataset.connected = String(connected);
