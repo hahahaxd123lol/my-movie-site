@@ -1,35 +1,36 @@
-/* Flix2Watch v135 — site-wide page transitions */
+/* Flix2Watch v136 — avoid blank-page waits; keep transitions lightweight */
 :root{
-  --f2w-page-enter-ms: 1000ms;
-  --f2w-page-exit-ms: 150ms;
+  --f2w-page-enter-ms: 120ms;
+  --f2w-page-exit-ms: 70ms;
 }
 
-/* Fade each newly loaded document in without delaying navigation itself. */
+/* Never hide the entire document while deferred scripts boot.
+   This prevents blank flashes on slower pages and when shared UI loads late. */
 html.f2w-transition-boot body,
 html:not(.f2w-transition-ready) body{
-  opacity:0;
+  opacity:1;
 }
 html.f2w-transition-ready body{
   opacity:1;
-  animation:f2wPageEnter var(--f2w-page-enter-ms) cubic-bezier(.16,1,.3,1) both;
+  animation:f2wPageEnter var(--f2w-page-enter-ms) ease-out both;
 }
 html.f2w-transition-leaving body{
   pointer-events:none!important;
   animation:f2wPageExit var(--f2w-page-exit-ms) ease-out both!important;
 }
 @keyframes f2wPageEnter{
-  from{opacity:0;transform:translateY(4px)}
-  to{opacity:1;transform:none}
+  from{opacity:.94}
+  to{opacity:1}
 }
 @keyframes f2wPageExit{
   from{opacity:1}
-  to{opacity:.08}
+  to{opacity:.92}
 }
 
 /* Native cross-document view transitions where supported. */
 @view-transition{navigation:auto}
 ::view-transition-old(root){animation:f2wPageExit var(--f2w-page-exit-ms) ease-out both}
-::view-transition-new(root){animation:f2wPageEnter var(--f2w-page-enter-ms) cubic-bezier(.16,1,.3,1) both}
+::view-transition-new(root){animation:f2wPageEnter var(--f2w-page-enter-ms) ease-out both}
 
 @media (prefers-reduced-motion:reduce){
   :root{--f2w-page-enter-ms:1ms;--f2w-page-exit-ms:1ms}
@@ -39,5 +40,4 @@ html.f2w-transition-leaving body{
   ::view-transition-new(root){animation-duration:1ms!important;transform:none!important}
 }
 
-/* f2w-force-save:v182-one-second-page-enter:20260902 */
-/* f2w-force-save:v183-page-fade-1s:20260902 */
+/* f2w-force-save:v136-no-blank-fast-transition:20261012 */
