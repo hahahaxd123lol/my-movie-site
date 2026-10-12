@@ -408,7 +408,10 @@
           const result = await apiRequest('/api/rooms/' + encodeURIComponent(roomId) + '/join', { name: displayName });
           token = result.token;
         }
-        if (roomCode) activeRoomCode = String(roomCode).toUpperCase();
+        activeRoomCode = roomCode
+          ? String(roomCode).toUpperCase()
+          : String(sessionStorage.getItem('f2w_party_code_' + roomId) || '');
+        if (activeRoomCode) sessionStorage.setItem('f2w_party_code_' + roomId, activeRoomCode);
         sessionStorage.setItem('f2w_party_token_' + roomId, token);
         connection = window.F2WWatchPartyRealtime.connect({
           roomId, token, participantId, name: displayName,
@@ -591,7 +594,7 @@
         await connection.close();
       }
       connection = null; participants.clear(); renderPeople();
-      try { sessionStorage.removeItem('f2w_party_token_' + new URLSearchParams(location.search).get(PARAM)); } catch (_) {}
+      try { const leftId = new URLSearchParams(location.search).get(PARAM); sessionStorage.removeItem('f2w_party_token_' + leftId); sessionStorage.removeItem('f2w_party_code_' + leftId); } catch (_) {}
       const url = new URL(location.href); url.searchParams.delete(PARAM); history.replaceState(null, '', url);
       createButton.hidden = false; copyButton.hidden = true; leaveButton.hidden = true; roomLabel.textContent = 'No room created';
       setStatus('You left the room.', false);
