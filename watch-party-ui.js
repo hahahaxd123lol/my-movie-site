@@ -159,7 +159,7 @@
         #f2w-watch-party .wp-foot{border-top:1px solid #ffffff12;padding:12px 24px;color:#898997;font-size:11px;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
         #f2w-watch-party [hidden]{display:none!important}
         /* Compact the right-edge slider tab so it doesn't dominate the page. */
-        #f2w-watch-party .wp-drawer-tab{top:34%;width:40px;height:118px;gap:7px;font-size:10px;letter-spacing:.1em}
+        #f2w-watch-party .wp-drawer-tab{top:0;width:40px;height:118px;gap:7px;font-size:10px;letter-spacing:.1em}
         #f2w-watch-party .wp-drawer-content{margin-left:40px}
         /* Layout polish: keep the narrow drawer readable instead of squeezing two columns together. */
         #f2w-watch-party{width:min(460px,calc(100vw - 20px))}
@@ -215,6 +215,16 @@
       <div class="wp-foot"><span>🔒 Invite-only room</span><span id="f2w-party-room-label">No room created</span></div>
       </div>`;
     document.body.appendChild(panel);
+    // Align the visible edge tab and drawer with the actual top of the player.
+    const alignToPlayer = () => {
+      const player = document.getElementById('flix-player-container');
+      if (!player || !panel.isConnected) return;
+      const playerTop = player.getBoundingClientRect().top;
+      if (Number.isFinite(playerTop)) panel.style.top = Math.max(0, Math.round(playerTop)) + 'px';
+    };
+    requestAnimationFrame(alignToPlayer);
+    window.addEventListener('resize', alignToPlayer, { passive: true });
+
     return panel;
   }
   function init() {
