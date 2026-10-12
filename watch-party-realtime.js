@@ -41,13 +41,21 @@
 
     const onMessage = typeof config.onMessage === 'function' ? config.onMessage : function () {};
     const channel = config.supabase.channel('watch-party:' + config.roomId, {
-      config: { broadcast: { self: false } }
+      config: {
+        broadcast: { self: false },
+        presence: { key: String(config.participantId || '') }
+      }
     });
     let closed = false;
 
     channel.on('broadcast', { event: EVENT_NAME }, function (event) {
       const message = event && event.payload;
       if (!closed && validMessage(message)) onMessage(message);
+    });
+    channel.on('presence', { event: 'sync' }, function () {
+      if (!closed && typeof config.onPresence === 'function') {
+        try { config.onPresence(channel.presenceState()); } catch (_) {}
+      }
     });
 
     const ready = new Promise(function (resolve, reject) {
@@ -68,6 +76,12 @@
         if (closed) throw new Error('Watch Party channel is closed.');
         const result = await channel.send({ type: 'broadcast', event: EVENT_NAME, payload: message });
         if (result !== 'ok') throw new Error('Watch Party message was not accepted.');
+      },
+      trackPresence: async function (payload) {
+        if (closed) throw new Error('Watch Party channel is closed.');
+        await ready;
+        if (closed) throw new Error('Watch Party channel is closed.');
+        return channel.track(payload);
       },
       close: async function () {
         if (closed) return;
