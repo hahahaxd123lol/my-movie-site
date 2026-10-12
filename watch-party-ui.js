@@ -109,7 +109,7 @@
       observedPlaybackStatus = isPlaying ? 'playing' : 'paused';
       lastRemoteCommandAt = now;
     }
-    const remoteSeconds = Number(state.seconds);
+    const remoteSeconds = state.seconds == null ? NaN : Number(state.seconds);
     const isExplicitSeek = /seek/.test(targetStatus);
     if (Number.isFinite(remoteSeconds) && remoteSeconds >= 0 &&
         (observedPlaybackSeconds == null || Math.abs(observedPlaybackSeconds - remoteSeconds) > (isExplicitSeek ? 1.5 : 3)) &&
@@ -713,8 +713,9 @@
     });
     window.addEventListener('message', event => {
       if (!connection) return;
-      const frame = document.getElementById('video-frame');
-      if (!frame?.contentWindow || event.source !== frame.contentWindow) return;
+      // Trust only the first-party embed origin. Some player builds relay events
+      // through a nested frame, so event.source may not be the outer iframe.
+      if (event.origin !== 'https://player.flix2watch.com') return;
       let payload = event.data;
       if (typeof payload === 'string') {
         try { payload = JSON.parse(payload); } catch (_) { return; }
@@ -739,7 +740,7 @@
       if (now < suppressPlaybackBroadcastUntil) return;
       const media = currentMedia();
       const episode = currentEpisode();
-      const seconds = hasProgress ? progress : (observedPlaybackSeconds ?? 0);
+      const seconds = hasProgress ? progress : observedPlaybackSeconds;
       const state = {
         mediaId: media.mediaId, mediaType: media.mediaType,
         status: isPlaying ? 'playing' : isPaused ? 'paused' : isSeek ? 'seeked' : status,
