@@ -418,8 +418,8 @@
         const value = root[key];
         if (typeof value !== 'string') continue;
         const normalized = value.trim().toLowerCase().replaceAll(' ','').replaceAll('_','').replaceAll('-','');
-        if (['ended','end','completed','complete','finished','finish','playbackended','videoended','movieended','playbackcompleted','videocompleted'].includes(normalized) ||
-            /^(on|video|movie|playback)(ended|completed|finished)$/.test(normalized)) return true;
+        if (['ended','end','completed','complete','finished','finish','playbackended','videoended','movieended','playbackcompleted','videocompleted','playbackcomplete','videocomplete','moviecomplete','oncomplete'].includes(normalized) ||
+            /^(on|video|movie|playback)(ended|completed|complete|finished)$/.test(normalized)) return true;
       }
     }
     return false;
@@ -436,6 +436,32 @@
     }
     return {mediaType:reportedType || 'tv',mediaId:reportedMediaId,season,episode};
   }
+
+  // Poll the site's unified telemetry bridge as a fallback. This catches sources
+  // that report a final position but omit a clean "ended" event from postMessage.
+  function pollUnifiedEndState() {
+    if (active || document.visibilityState === 'hidden') return;
+    const node = document.getElementById('f2w-premid-state');
+    if (!node) return;
+    const state = node.dataset || {};
+    if (numberValue(state.mediaId) !== mediaId || String(state.mediaType || '').toLowerCase() !== 'tv') return;
+    const status = String(state.status || '').toLowerCase();
+    const season = numberValue(state.season);
+    const episode = numberValue(state.episode);
+    if (season && season !== numberValue(seasonSelect()?.value || params.get('season') || 1)) return;
+    if (episode && episode !== numberValue(episodeSelect()?.value || params.get('episode') || 1)) return;
+    if (['ended','end','completed','complete','finished','finish'].includes(status)) {
+      handleCompletion({mediaType:'tv',mediaId,season,episode});
+      return;
+    }
+    const position = Number(state.position);
+    const duration = Number(state.duration);
+    if (status === 'playing' && Number.isFinite(position) && Number.isFinite(duration) &&
+        duration > 0 && position >= duration - 1.25) {
+      handleCompletion({mediaType:'tv',mediaId,season,episode});
+    }
+  }
+  setInterval(pollUnifiedEndState,500);
 
   // Shared completion event is also emitted by the existing player bridge for
   // the primary source. The source/window listener below covers other embeds
