@@ -395,4 +395,49 @@ select
         or c.relname ilike '%history%'
         or c.relname ilike '%progress%'
       )
-  ) as possible_history_sources;
+  ) as possible_history_sources,
+  (
+    select jsonb_build_object(
+      'continue_watching_v260', (
+        select jsonb_build_object(
+          'rows', count(*),
+          'near_end_rows', count(*) filter (
+            where duration > 0 and seconds >=
+              case when duration > 600 then duration - 600 else ceil(duration * 0.5) end
+          )
+        ) from public.continue_watching_v260
+      ),
+      'current_watching_v125', (
+        select jsonb_build_object(
+          'rows', count(*),
+          'completed_status_rows', count(*) filter (
+            where lower(coalesce(playback_status,'')) in ('complete','completed','ended','finished','watched')
+          ),
+          'near_end_rows', count(*) filter (
+            where duration_seconds > 0 and position_seconds >=
+              case when duration_seconds > 600 then duration_seconds - 600 else ceil(duration_seconds * 0.5) end
+          )
+        ) from public.current_watching_v125
+      ),
+      'user_playback_progress_v132', (
+        select jsonb_build_object(
+          'rows', count(*),
+          'near_end_rows', count(*) filter (
+            where duration_seconds > 0 and position_seconds >=
+              case when duration_seconds > 600 then duration_seconds - 600 else ceil(duration_seconds * 0.5) end
+          )
+        ) from public.user_playback_progress_v132
+      ),
+      'profile_watch_progress_v9', (
+        select jsonb_build_object('rows', count(*), 'sum_watched_seconds', coalesce(sum(watched_seconds),0))
+        from public.profile_watch_progress_v9
+      ),
+      'profile_watch_time', (
+        select jsonb_build_object('rows', count(*), 'sum_seconds', coalesce(sum(seconds),0))
+        from public.profile_watch_time
+      ),
+      'profile_current_watch', (
+        select jsonb_build_object('rows', count(*)) from public.profile_current_watch
+      )
+    )
+  ) as historical_source_counts;
