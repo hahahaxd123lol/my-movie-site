@@ -304,7 +304,7 @@ server.on('upgrade', (req, socket, head) => {
     });
     ws.on('error', () => {});
     send(client, {
-      type: 'room-state', roomId: room.id, passwordProtected: Boolean(room.passwordHash),
+      type: 'room-state', roomId: room.id,
       isHost: member.host, media: room.state.media, episode: room.state.episode,
       season: room.state.season, source: room.state.source, playbackState: room.state.playbackState,
       participants: publicParticipants(room)
