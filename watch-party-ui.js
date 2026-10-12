@@ -264,6 +264,16 @@
       if (!response.ok) throw new Error(data.error || 'The Watch Party API request failed.');
       return data;
     }
+    function navigateToMedia(media, roomId) {
+      const id = String(media?.id || '');
+      const type = media?.type === 'tv' ? 'tv' : 'movie';
+      if (!/^[0-9]+$/.test(id)) return;
+      const url = new URL(location.href);
+      url.searchParams.set('id', id);
+      url.searchParams.set('type', type);
+      if (roomId) url.searchParams.set(PARAM, roomId);
+      location.assign(url.href);
+    }
     async function createRoom() {
       const password = window.prompt('Optional room password (leave blank for an open invite room):', '');
       if (password === null) return;
@@ -290,7 +300,7 @@
       participants.clear(); renderPeople();
       setStatus('Connecting to your room…', false);
       try {
-        let token = issuedToken || '';
+        let token = issuedToken || sessionStorage.getItem('f2w_party_token_' + roomId) || '';
         if (!token) {
           const password = window.prompt('Enter the party password if the host set one. Leave blank for an open room:', '');
           if (password === null) { setStatus('Join cancelled.'); return; }
@@ -298,6 +308,7 @@
           token = result.token;
           passwordProtected = result.passwordProtected;
         }
+        sessionStorage.setItem('f2w_party_token_' + roomId, token);
         connection = window.F2WWatchPartyRealtime.connect({
           roomId, token, participantId, name: displayName,
           onDisconnect: function () {
@@ -315,6 +326,10 @@
           },
           onMessage: function (message) {
             if (message.type === 'room-state') {
+              if (message.media && (String(message.media.id) !== currentMedia().mediaId || message.media.type !== currentMedia().mediaType)) {
+                navigateToMedia(message.media, roomId);
+                return;
+              }
               if (Array.isArray(message.participants)) {
                 participants.clear();
                 message.participants.forEach(person => {
@@ -344,6 +359,9 @@
               }
             } else if (message.type === 'participant-left') {
               participants.delete(String(message.participantId || '')); renderPeople();
+            } else if (message.type === 'media-change' && message.media) {
+              const activeRoom = new URLSearchParams(location.search).get(PARAM) || roomId;
+              navigateToMedia(message.media, activeRoom);
             } else if (message.type === 'season-change') {
               applyRemoteSeason(message);
             } else if (message.type === 'episode-change') {
@@ -465,6 +483,7 @@
         await connection.close();
       }
       connection = null; participants.clear(); renderPeople();
+      try { sessionStorage.removeItem('f2w_party_token_' + new URLSearchParams(location.search).get(PARAM)); } catch (_) {}
       const url = new URL(location.href); url.searchParams.delete(PARAM); history.replaceState(null, '', url);
       createButton.hidden = false; copyButton.hidden = true; leaveButton.hidden = true; roomLabel.textContent = 'No room created';
       setStatus('You left the room.', false);
@@ -525,6 +544,23 @@
         connection.send({ type: 'episode-change', episode }).catch(error => console.warn('[Watch Party] episode sync failed', error));
       }).observe(episodeSelect, { childList: true, subtree: true });
     }
+    document.addEventListener('click', event => {
+      if (!connection || event.defaultPrevented) return;
+      const link = event.target?.closest?.('a[href]');
+      if (!link || (link.target && link.target !== '_self')) return;
+      let next;
+      try { next = new URL(link.href, location.href); } catch (_) { return; }
+      if (next.origin !== location.origin || !next.pathname.startsWith('/watch')) return;
+      const nextId = String(next.searchParams.get('id') || '');
+      const nextType = next.searchParams.get('type') === 'tv' ? 'tv' : 'movie';
+      const current = currentMedia();
+      if (!/^[0-9]+$/.test(nextId) || (nextId === current.mediaId && nextType === current.mediaType)) return;
+      event.preventDefault();
+      const roomId = new URLSearchParams(location.search).get(PARAM);
+      next.searchParams.set(PARAM, roomId);
+      const media = { id: nextId, type: nextType, title: String(link.textContent || '').trim().slice(0, 160) };
+      connection.send({ type: 'media-change', media }).catch(() => {}).finally(() => location.assign(next.href));
+    }, true);
     const sourceObserver = new MutationObserver(broadcastSource);
     sourceObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
     document.addEventListener('click', event => {
