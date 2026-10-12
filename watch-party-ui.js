@@ -1,9 +1,11 @@
-/* Flix2Watch Watch Party: invite links, visible participants, chat and TV episode sync. */
+/* Flix2Watch Watch Party: join by room code, participants, chat and TV episode sync. */
 (function () {
   'use strict';
   const PARAM = 'party';
   const ROOM_PATTERN = /^[a-zA-Z0-9_-]{12,96}$/;
+  const ROOM_CODE_PATTERN = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/;
   let connection = null;
+  let activeRoomCode = '';
   let participantId = '';
   let displayName = '';
   let applyingRemoteEpisode = false;
@@ -216,13 +218,12 @@
       <button class="wp-drawer-tab" id="f2w-party-toggle" type="button" aria-expanded="false" aria-controls="f2w-watch-party"><span class="wp-tab-dot"></span><span>WATCH PARTY</span></button>
       <div class="wp-drawer-content">
       <div class="wp-top">
-        <div><div class="wp-kicker">FLIX2WATCH · WATCH TOGETHER</div><div class="wp-title">Watch Party <span style="font-size:13px;color:#8f8f9d;font-weight:500">/ your room</span></div><div class="wp-sub">Bring your people. Watch the same stream together.</div></div>
-        <div class="wp-actions"><button type="button" id="f2w-party-copy" hidden>↗ Copy invite</button><button type="button" id="f2w-party-create" class="wp-primary">＋ Create party</button><button type="button" id="f2w-party-leave" hidden>Leave room</button></div>
+        <div><div class="wp-kicker">FLIX2WATCH · WATCH TOGETHER</div><div class="wp-title">Watch Party <span style="font-size:13px;color:#8f8f9d;font-weight:500">/ your room</span></div><div class="wp-sub">Create a room, share its code, and watch together.</div></div>
+        <div class="wp-actions"><button type="button" id="f2w-party-create" class="wp-primary">＋ Create party</button><button type="button" id="f2w-party-leave" hidden>Leave room</button></div>
       </div>
-      <div id="f2w-party-password-box" class="wp-password-box" hidden>
-        <label id="f2w-party-password-label" for="f2w-party-password">Room password (optional)</label>
-        <input id="f2w-party-password" type="password" maxlength="64" autocomplete="new-password" placeholder="Set a password or leave blank">
-        <div class="wp-password-actions"><button type="button" id="f2w-party-password-cancel">Cancel</button><button type="button" id="f2w-party-password-submit" class="wp-primary">Create room</button></div>
+      <div id="f2w-party-join-box" class="wp-password-box">
+        <label for="f2w-party-code">Have a room code?</label>
+        <div class="wp-name-row" style="margin-bottom:0"><input id="f2w-party-code" maxlength="6" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="ENTER CODE" aria-label="Six-character room code"><button type="button" id="f2w-party-join-code" class="wp-primary">Join</button></div>
       </div>
       <div class="wp-grid">
         <div class="wp-main">
@@ -231,9 +232,9 @@
           <div class="wp-label">Party chat</div>
           <div class="wp-chat" id="f2w-party-chat" aria-live="polite"><div class="wp-empty">Your party chat will appear here.</div></div>
           <form class="wp-chat-row" id="f2w-party-chat-form"><input id="f2w-party-chat-input" maxlength="500" placeholder="Say something to the party…" aria-label="Party message" autocomplete="off"><button class="wp-primary" type="submit">Send</button></form>
-          <div class="wp-status" id="f2w-party-status" role="status">Create a room or open a friend's invite link.</div>
+          <div class="wp-status" id="f2w-party-status" role="status">Create a room or enter a room code.</div>
         </div>
-        <aside class="wp-side"><div class="wp-label">In this room <span id="f2w-party-count" style="color:#f7f7fb">· 0</span></div><div class="wp-people" id="f2w-party-people"><div class="wp-empty">No one here yet. Invite your friends.</div></div><div style="margin-top:20px"><div class="wp-label">Shared playback</div><div class="wp-sub">Source, season, episode and playback controls are shared with your party. Player commands depend on provider support.</div></div></aside>
+        <aside class="wp-side"><div class="wp-label">In this room <span id="f2w-party-count" style="color:#f7f7fb">· 0</span></div><div class="wp-people" id="f2w-party-people"><div class="wp-empty">No one else has joined yet.</div></div><div style="margin-top:20px"><div class="wp-label">Shared playback</div><div class="wp-sub">Source, season, episode and playback controls are shared with your party. Player commands depend on provider support.</div></div></aside>
       </div>
       <div class="wp-foot"><span>🔒 Invite-only room</span><span id="f2w-party-room-label">No room created</span></div>
       </div>`;
@@ -368,48 +369,34 @@
       if (roomId) url.searchParams.set(PARAM, roomId);
       location.assign(url.href);
     }
-    const passwordBox = $('#f2w-party-password-box');
-    const passwordInput = $('#f2w-party-password');
-    const passwordLabel = $('#f2w-party-password-label');
-    const passwordSubmit = $('#f2w-party-password-submit');
-    let passwordFlow = null;
-    function showPasswordForm(flow) {
-      passwordFlow = flow;
-      passwordBox.hidden = false;
-      passwordInput.value = '';
-      const creating = flow.mode === 'create';
-      passwordLabel.textContent = creating ? 'Room password (optional)' : 'Enter the room password (if required)';
-      passwordInput.placeholder = creating ? 'Set a password or leave blank' : 'Room password';
-      passwordInput.autocomplete = creating ? 'new-password' : 'current-password';
-      passwordSubmit.textContent = creating ? 'Create room' : 'Join room';
-      passwordInput.setAttribute('aria-label', creating ? 'Optional room password' : 'Party room password');
-      setStatus(creating ? 'Add a password to protect your room, or leave it blank.' : 'Enter the room password, or leave blank if it has none.', false);
-      passwordInput.focus();
-    }
-    function hidePasswordForm() {
-      passwordBox.hidden = true;
-      passwordFlow = null;
-      passwordInput.value = '';
-    }
-    async function createRoom(password) {
-      if (password === undefined) { showPasswordForm({ mode: 'create' }); return; }
-      if (password && (password.length < 4 || password.length > 64)) {
-        setStatus('Room passwords must be 4–64 characters.'); passwordInput.focus(); return;
-      }
-      hidePasswordForm();
+    const codeInput = $('#f2w-party-code');
+    const joinCodeButton = $('#f2w-party-join-code');
+    async function createRoom() {
       try {
         setStatus('Creating your room…', false);
         const media = currentMedia();
         const result = await apiRequest('/api/rooms', {
-          name: displayName, password,
+          name: displayName,
           media: { id: media.mediaId, type: media.mediaType, title: document.getElementById('detail-title')?.textContent || '' }
         });
-        await join(result.roomId, result.token, result.passwordProtected);
+        activeRoomCode = String(result.roomCode || '');
+        await join(result.roomId, result.token, false, undefined, activeRoomCode);
       } catch (error) {
         setStatus(error.message || 'Could not create a party.');
       }
     }
-    async function join(roomId, issuedToken, passwordProtected, suppliedPassword) {
+    async function joinByCode() {
+      const code = String(codeInput.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      codeInput.value = code;
+      if (!ROOM_CODE_PATTERN.test(code)) { setStatus('Enter the 6-character room code.'); codeInput.focus(); return; }
+      try {
+        setStatus('Looking up room…', false);
+        const result = await apiRequest('/api/rooms/code/' + encodeURIComponent(code) + '/join', { name: displayName });
+        activeRoomCode = code;
+        await join(result.roomId, result.token, false, undefined, code);
+      } catch (error) { setStatus(error.message || 'Could not join that room. Check the code.'); }
+    }
+    async function join(roomId, issuedToken, passwordProtected, suppliedPassword, roomCode) {
       if (!window.F2WWatchPartyRealtime) { setStatus('Party service is unavailable. Refresh and try again.'); return; }
       if (!/^[a-f0-9]{24}$/i.test(String(roomId || ''))) { setStatus('That invite link is invalid.'); return; }
       if (connection) await connection.close();
@@ -418,20 +405,16 @@
       try {
         let token = issuedToken || sessionStorage.getItem('f2w_party_token_' + roomId) || '';
         if (!token) {
-          if (suppliedPassword === undefined) {
-            showPasswordForm({ mode: 'join', roomId });
-            return;
-          }
-          const result = await apiRequest('/api/rooms/' + encodeURIComponent(roomId) + '/join', { name: displayName, password: suppliedPassword });
+          const result = await apiRequest('/api/rooms/' + encodeURIComponent(roomId) + '/join', { name: displayName });
           token = result.token;
-          passwordProtected = result.passwordProtected;
         }
+        if (roomCode) activeRoomCode = String(roomCode).toUpperCase();
         sessionStorage.setItem('f2w_party_token_' + roomId, token);
         connection = window.F2WWatchPartyRealtime.connect({
           roomId, token, participantId, name: displayName,
           onDisconnect: function () {
             participants.clear(); renderPeople();
-            createButton.hidden = false; copyButton.hidden = true; leaveButton.hidden = true;
+            createButton.hidden = false; if (copyButton) copyButton.hidden = true; leaveButton.hidden = true;
             setStatus('Connection lost. Rejoin the room to continue.', false);
           },
           onPresence: function (list) {
@@ -503,19 +486,15 @@
         });
         await connection.ready;
         const url = new URL(location.href); url.searchParams.set(PARAM, roomId); history.replaceState(null, '', url);
-        createButton.hidden = true; copyButton.hidden = false; leaveButton.hidden = false;
-        roomLabel.textContent = (passwordProtected ? '🔒 ' : '') + 'ROOM ' + roomId.slice(0, 8).toUpperCase();
+        createButton.hidden = true; if (copyButton) copyButton.hidden = false; leaveButton.hidden = false;
+        roomLabel.textContent = 'ROOM CODE · ' + (activeRoomCode || roomId.slice(0, 6).toUpperCase());
+        codeInput.value = '';
         await connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode(), source: currentSource() });
         setStatus('Connected · invite your friends to join.', true);
       } catch (error) {
         console.error('[Watch Party] connection failed', error);
         connection = null;
         try { sessionStorage.removeItem('f2w_party_token_' + roomId); } catch (_) {}
-        if (suppliedPassword !== undefined && /password|too many/i.test(String(error.message || ''))) {
-          showPasswordForm({ mode: 'join', roomId });
-          setStatus(error.message || 'Could not join with that password.', false);
-          return;
-        }
         setStatus(error.message || 'Could not connect. Check the connection and try again.', false);
       }
     }
@@ -589,24 +568,9 @@
       }
     });
     createButton.addEventListener('click', () => createRoom());
-    passwordSubmit.addEventListener('click', async () => {
-      if (!passwordFlow) return;
-      const flow = passwordFlow;
-      const password = passwordInput.value;
-      if (flow.mode === 'create') await createRoom(password);
-      else {
-        if (password.length > 64) { setStatus('Room passwords must be 64 characters or fewer.'); return; }
-        hidePasswordForm();
-        await join(flow.roomId, null, null, password);
-      }
-    });
-    passwordInput.addEventListener('keydown', event => {
-      if (event.key === 'Enter') { event.preventDefault(); passwordSubmit.click(); }
-      if (event.key === 'Escape') hidePasswordForm();
-    });
-    $('#f2w-party-password-cancel').addEventListener('click', () => {
-      hidePasswordForm(); setStatus('Cancelled.', Boolean(connection));
-    });
+    joinCodeButton.addEventListener('click', () => joinByCode());
+    codeInput.addEventListener('input', () => { codeInput.value = codeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); });
+    codeInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); joinByCode(); } });
     $('#f2w-party-save').addEventListener('click', () => {
       const name = cleanName(nameInput.value);
       if (!name) { setStatus('Choose a name first.'); return; }
@@ -618,9 +582,9 @@
       }
       setStatus('Your party name is saved.', Boolean(connection));
     });
-    copyButton.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(location.href); setStatus('Invite link copied.', true); }
-      catch (_) { setStatus('Copy failed. Copy the URL from your address bar.', true); }
+    if (copyButton) copyButton.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(activeRoomCode); setStatus('Room code copied.', true); }
+      catch (_) { setStatus('Room code: ' + activeRoomCode, true); }
     });
     leaveButton.addEventListener('click', async () => {
       if (connection) {
@@ -798,7 +762,11 @@
       });
     } catch (_) {}
     const initialRoom = new URLSearchParams(location.search).get(PARAM);
-    if (initialRoom) join(initialRoom);
+    if (initialRoom) {
+      const cached = sessionStorage.getItem('f2w_party_token_' + initialRoom);
+      if (cached) join(initialRoom, cached, false, undefined, '');
+      else { const clean = new URL(location.href); clean.searchParams.delete(PARAM); history.replaceState(null, '', clean); setStatus('Enter a room code to join a party.', false); }
+    }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
