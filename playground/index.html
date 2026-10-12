@@ -70,10 +70,98 @@ body{background-attachment:fixed}
 @media(max-width:760px){#lab-atmosphere{opacity:.2}.hero-art{animation-duration:10s}.movie:hover{transform:translateY(-3px) scale(1.01)}}
 @media(hover:none){.movie:after{display:none}.movie:hover{transform:translateY(-2px)}}
 @media(prefers-reduced-motion:reduce){#lab-atmosphere{display:none}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}.movie.f2w-reveal{opacity:1;transform:none}}
+
+/* NIGHTSHIFT // Movie Lab interface rebuild */
+:root{--bg:#05070b;--panel:#0b1018;--line:#25313d;--muted:#8999aa;--red:#ff365d;--cyan:#a6ff00;--acid:#b8ff35}
+html{background:#05070b;scroll-padding-top:90px}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:#05070b;color:#edf3f8;overflow-x:hidden}
+body:after{content:"";position:fixed;inset:0;z-index:10;pointer-events:none;opacity:.09;background:repeating-linear-gradient(0deg,transparent 0 3px,#9aff0010 4px,transparent 5px);mix-blend-mode:screen}
+#lab-atmosphere{opacity:.24;mix-blend-mode:screen}
+.topbar{height:74px;padding:0 34px 0 310px;background:#070a0fe8;border-bottom:1px solid #a6ff0028;backdrop-filter:blur(24px);box-shadow:0 10px 45px #0008}
+.brand{font-size:1.02rem;letter-spacing:.12em;font-weight:950}.brand b{color:var(--acid)}.brand span{font-family:ui-monospace,monospace!important;color:#7e8c9b!important;letter-spacing:.16em!important}
+.back{font:700 .75rem ui-monospace,monospace;text-transform:uppercase;letter-spacing:.1em;color:#a6b4c2}
+.command-rail{position:fixed;inset:0 auto 0 0;width:258px;z-index:30;padding:24px 16px;background:linear-gradient(180deg,#0a0e14 0%,#07090e 100%);border-right:1px solid #a6ff0024;display:flex;flex-direction:column;gap:8px}
+.rail-mark{height:70px;display:flex;align-items:center;gap:12px;padding:0 14px;margin-bottom:30px;border-bottom:1px solid #ffffff12;color:var(--acid);font:900 1.3rem ui-monospace,monospace;letter-spacing:-.08em}.rail-mark span{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--acid);box-shadow:0 0 25px #b8ff3522;transform:skew(-7deg)}.rail-mark i{font-size:.8rem;color:#f5f8fc}
+.rail-label{font:700 .62rem ui-monospace,monospace;letter-spacing:.22em;color:#566474;padding:0 14px 12px}
+.rail-link{display:grid;grid-template-columns:25px 1fr auto;align-items:center;gap:10px;text-align:left;border:1px solid transparent;background:transparent;color:#8e9baa;padding:14px 12px;font:800 .66rem ui-monospace,monospace;letter-spacing:.08em;transition:.2s}
+.rail-link i{font-size:1rem}.rail-link b{font-size:.62rem;color:#4c5966;font-weight:600}
+.rail-link:hover,.rail-link.active{color:#f4f8f2;background:linear-gradient(90deg,#b8ff3515,transparent);border-color:#b8ff3538;border-left:2px solid var(--acid);box-shadow:inset 18px 0 25px #b8ff3505}
+.rail-link.active i{color:var(--acid);filter:drop-shadow(0 0 7px #b8ff3588)}.rail-link.active b{color:var(--acid)}
+.rail-bottom{margin-top:auto;border:1px solid #26323b;background:#0b1117;padding:14px;display:flex;align-items:center;gap:10px;font: .6rem/1.6 ui-monospace,monospace;letter-spacing:.12em;color:#6f7f8d}.rail-bottom strong{color:var(--acid);font-size:.66rem}
+.signal-dot{width:7px;height:7px;flex:none;border-radius:50%;background:var(--acid);box-shadow:0 0 12px var(--acid);animation:signalPulse 1.8s infinite}
+.wrap{width:min(1440px,calc(100% - 310px));margin:0 30px 0 286px;padding:48px 0 64px}
+.hero{grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:40px;margin-bottom:28px;min-height:270px}
+.eyebrow{font:800 .68rem ui-monospace,monospace;letter-spacing:.2em;color:var(--acid);display:flex;align-items:center;gap:10px}
+.eyebrow:before{content:"";display:inline-block;width:24px;height:1px;background:var(--acid);box-shadow:0 0 12px var(--acid)}
+.hero h1{font-size:clamp(3rem,6vw,6rem);font-weight:950;letter-spacing:-.085em;line-height:.88;margin:22px 0 20px;text-transform:uppercase}
+.hero h1 span{color:var(--acid);display:block;text-shadow:0 0 40px #b8ff351f}
+.hero p{max-width:560px;font-size:.95rem;color:#8b9aa8;line-height:1.8;border-left:1px solid #b8ff3566;padding-left:16px}
+.hero-art{min-height:260px;border-radius:2px;border:1px solid #b8ff3544;background:radial-gradient(ellipse at 50% 55%,#b8ff3513,transparent 54%),linear-gradient(135deg,#0e151a,#07090e 65%);box-shadow:inset 0 0 50px #b8ff3508,0 24px 65px #0008;clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,26px 100%,0 calc(100% - 26px));animation:none}
+.hero-art:before,.hero-art:after{width:48%;height:78%;border-radius:2px;box-shadow:0 0 45px #000b;border-color:#b8ff3555;background:linear-gradient(150deg,#283b2b,#0c1512 60%,#07090c)}
+.hero-art:before{left:15%;transform:rotate(-13deg);background:linear-gradient(145deg,#334d22,#0c1410 65%);box-shadow:0 0 50px #b8ff3510}
+.hero-art:after{right:13%;transform:rotate(13deg);background:linear-gradient(145deg,#243c4a,#0c121a 65%);border-color:#ff365d66}
+.hero-art i{font-size:3rem;color:var(--acid);text-shadow:0 0 30px #b8ff3588}
+.tabs{display:flex;gap:0;flex-wrap:wrap;margin:22px 0 0;border-bottom:1px solid #29333d}
+.tab{background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;color:#71808e;padding:16px 22px;font:800 .7rem ui-monospace,monospace;letter-spacing:.09em;text-transform:uppercase}
+.tab.active,.tab:hover{background:linear-gradient(0deg,#b8ff3510,transparent);border-bottom-color:var(--acid);color:#f3f8ee;box-shadow:none}
+.tab.active i{color:var(--acid)}
+.panel{border:1px solid #28343e;border-top:0;border-radius:0;background:linear-gradient(140deg,#0d131b,#080b10 72%);padding:clamp(20px,3vw,36px);box-shadow:0 25px 75px #0005;min-height:360px}
+.panel:before{left:0;right:auto;width:110px;height:2px;background:var(--acid);box-shadow:0 0 18px #b8ff3555}
+.panel-head{align-items:center;margin-bottom:28px}
+.panel h2{font-size:clamp(1.45rem,2.8vw,2.15rem);font-weight:900;letter-spacing:-.055em;text-transform:uppercase}
+.panel h2 i{color:var(--acid)!important}
+.panel-head p{max-width:660px;font-size:.84rem;color:#7e8c9a}
+.pill{border-radius:2px;color:var(--acid);border-color:#b8ff3540;background:#b8ff3509;font:800 .59rem ui-monospace,monospace;letter-spacing:.12em;padding:9px 12px}
+.controls{gap:10px;margin:24px 0}
+.field{background:#060a0e;border:1px solid #2b3843;border-radius:2px;padding:15px 16px;color:#e9f0f6;font: .83rem ui-monospace,monospace}
+.field::placeholder{color:#586675}.field:focus{border-color:var(--acid);box-shadow:0 0 0 1px #b8ff3533,0 0 25px #b8ff350a}
+.btn{border:1px solid var(--acid);background:var(--acid);color:#080b07;border-radius:2px;padding:15px 18px;font:900 .7rem ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 0 24px #b8ff3510}
+.btn:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 8px 28px #b8ff3520}
+.btn.secondary{background:#0a1117;color:#c8d2dc;border-color:#34414b}
+.status{font: .72rem/1.7 ui-monospace,monospace;color:#82929f;min-height:28px;border-left:2px solid #34434c;padding:3px 0 3px 12px;margin:16px 0}
+.grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:16px}
+.movie{border:1px solid #25313a;border-radius:2px;background:#080c11;box-shadow:0 12px 25px #0002}
+.movie:hover{border-color:#b8ff3577;box-shadow:0 24px 55px #0009,0 0 22px #b8ff3510}
+.movie:before{background:radial-gradient(220px circle at var(--lab-x,50%) var(--lab-y,50%),#b8ff3521,transparent 65%)}
+.movie:after{background:linear-gradient(90deg,transparent,#b8ff3520,transparent)}
+.poster{background:linear-gradient(145deg,#18221a,#070a0e);aspect-ratio:2/2.8}
+.movie-info{padding:13px}
+.movie-title{font-size:.78rem;letter-spacing:-.01em;min-height:2.6em}
+.meta{font: .65rem ui-monospace,monospace;color:#83919e}
+.mini{background:#0a1117;border:1px solid #303d47;border-radius:2px;color:#c7d3dc;font:700 .64rem ui-monospace,monospace;padding:10px 5px;text-transform:uppercase}
+.mini:hover{color:var(--acid);border-color:var(--acid);box-shadow:0 0 15px #b8ff3512}
+.mood-grid{grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin:22px 0}
+.mood{border:1px solid #283640;border-radius:2px;background:#080d12;color:#d4dde5;padding:17px 14px;min-height:104px;transition:.2s}
+.mood strong{font:800 .76rem ui-monospace,monospace;text-transform:uppercase;letter-spacing:.025em}.mood span{display:block;font-size:.73rem;line-height:1.5;margin-top:8px;color:#71808c}
+.mood:hover,.mood.selected{border-color:var(--acid);background:linear-gradient(135deg,#b8ff3512,#080d12 75%);box-shadow:inset 3px 0 var(--acid)}
+.roulette-layout{grid-template-columns:minmax(240px,.75fr) 1.25fr;gap:34px}
+.wheel{border:5px solid #151e24;box-shadow:0 0 0 1px #b8ff3566,0 0 55px #b8ff3512,0 25px 55px #000a;background:conic-gradient(#b8ff35 0 45deg,#172522 45deg 90deg,#ff365d 90deg 135deg,#101b23 135deg 180deg,#b8ff35 180deg 225deg,#172522 225deg 270deg,#ff365d 270deg 315deg,#101b23 315deg)}
+.wheel-center{border:2px solid var(--acid);background:#070a0c;color:var(--acid);width:70px;height:70px}
+.pointer{color:var(--acid);filter:drop-shadow(0 0 8px #b8ff3588)}
+.result{border:1px dashed #36444e;border-radius:2px;background:linear-gradient(130deg,#0c1218,#070a0e);padding:22px}
+.result h3{font-size:1rem;text-transform:uppercase;letter-spacing:-.02em}
+.result p{color:#83919f;line-height:1.7}
+.result a{background:var(--acid);color:#080b07;border-radius:2px;font:900 .67rem ui-monospace,monospace;text-transform:uppercase}
+.footnote{border-color:#202b33;color:#5d6b77;font: .64rem/1.8 ui-monospace,monospace;letter-spacing:.015em}
+@keyframes signalPulse{0%,100%{opacity:1}50%{opacity:.35}}
+@media(max-width:980px){.topbar{padding-left:280px}.wrap{width:calc(100% - 300px);margin-left:280px;margin-right:20px}.hero{grid-template-columns:1fr}.hero-art{min-height:180px}.hero-art:before,.hero-art:after{height:75%;width:38%}}
+@media(max-width:680px){.command-rail{position:sticky;top:60px;inset:auto;width:100%;height:auto;padding:7px 10px;display:flex;flex-direction:row;gap:5px;border-right:0;border-bottom:1px solid #b8ff3522;overflow:auto;background:#080c11}.rail-mark,.rail-label,.rail-bottom{display:none}.rail-link{flex:1;min-width:90px;display:flex;justify-content:center;gap:7px;padding:12px 8px;font-size:.58rem;border-bottom:1px solid transparent}.rail-link b{display:none}.rail-link span{white-space:nowrap}.topbar{height:60px;padding:0 16px}.brand{font-size:.82rem}.brand span{font-size:.58rem!important}.back{font-size:.65rem}.wrap{width:calc(100% - 28px);margin:0 14px;padding:32px 0 48px}.hero{gap:20px;min-height:0;margin-bottom:24px}.hero h1{font-size:clamp(2.9rem,13vw,4.7rem)}.hero-art{min-height:155px}.tabs{display:none}.panel{padding:20px 15px}.panel-head{display:block}.pill{margin-top:12px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.roulette-layout{grid-template-columns:1fr}.wheel-wrap{min-height:250px}.pointer{top:calc(50% - 130px)}.controls .btn{width:100%}}
+@media(prefers-reduced-motion:reduce){body:after{display:none}.signal-dot{animation:none}}
+
 </style>
 </head>
 <body>
 <header class="topbar"><a class="brand" href="/home/">FLIX<b>2</b>WATCH <span style="color:#8fa2ba;font-weight:700;font-size:.72rem;letter-spacing:.06em">/ MOVIE LAB</span></a><a class="back" href="/home/"><i class="fa-solid fa-arrow-left"></i> Back to home</a></header>
+
+<aside class="command-rail" aria-label="Movie Lab navigation">
+  <div class="rail-mark"><span>F2</span><i class="fa-solid fa-bolt"></i></div>
+  <div class="rail-label">MODULES</div>
+  <button class="rail-link active" data-tab="universe" title="Universe Explorer"><i class="fa-solid fa-diagram-project"></i><span>UNIVERSES</span><b>01</b></button>
+  <button class="rail-link" data-tab="mood" title="Mood Match"><i class="fa-solid fa-wave-square"></i><span>MOOD ENGINE</span><b>02</b></button>
+  <button class="rail-link" data-tab="roulette" title="Movie Roulette"><i class="fa-solid fa-dharmachakra"></i><span>RANDOMIZER</span><b>03</b></button>
+  <div class="rail-bottom"><span class="signal-dot"></span><span>API LINK<br><strong>OPERATIONAL</strong></span></div>
+</aside>
+
 <main class="wrap">
 <section class="hero"><div><div class="eyebrow">Your next obsession starts here</div><h1>Welcome to the <span>Movie Lab.</span></h1><p>Explore connected universes, find something that fits your exact mood, or let fate pick tonight's film. Three ways to get past the endless scrolling.</p></div><div class="hero-art" aria-hidden="true"><i class="fa-solid fa-wand-magic-sparkles"></i></div></section>
 <div class="tabs" role="tablist" aria-label="Movie Lab features">
@@ -114,7 +202,7 @@ const posterPath=p=>p?'https://image.tmdb.org/t/p/w500'+p:'';
 async function api(path,params={}){const u=new URL('https://api.themoviedb.org/3'+path);u.searchParams.set('api_key',API_KEY);u.searchParams.set('language','en-US');Object.entries(params).forEach(([k,v])=>{if(v!==''&&v!=null)u.searchParams.set(k,v)});const r=await fetch(u,{headers:{Accept:'application/json'},credentials:'omit'});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.status_message||'Movie database request failed');return d}
 function card(m,opts={}){const title=m.title||m.name||'Untitled';const year=(m.release_date||m.first_air_date||'').slice(0,4);const type=m.media_type==='tv'||m.first_air_date?'tv':'movie';const watch='/watch/?id='+encodeURIComponent(m.id)+'&type='+type;return '<article class="movie"><div class="poster">'+(m.poster_path?'<img loading="lazy" src="'+esc(posterPath(m.poster_path))+'" alt="'+esc(title)+' poster">':'<div class="no-poster"><i class="fa-solid fa-film"></i></div>')+'</div><div class="movie-info"><div class="movie-title">'+esc(title)+'</div><div class="meta"><span>'+esc(year||'Year n/a')+'</span><span>★ '+(Number(m.vote_average)?Number(m.vote_average).toFixed(1):'—')+'</span></div><div class="movie-actions"><a class="mini" href="'+watch+'">Open title</a>'+(opts.remove?'<button class="mini" data-remove="'+esc(m.id)+'">Skip</button>':'')+'</div></div></article>'}
 function renderGrid(id,items){$(id).innerHTML=items.length?items.map(m=>card(m)).join(''):'<p class="hint">No results found. Try a different search.</p>'}
-document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(b=>{const active=b===btn;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active))});document.querySelectorAll('[role="tabpanel"]').forEach(p=>p.hidden=p.id!=='panel-'+btn.dataset.tab)}));
+document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(b=>{const active=b.dataset.tab===btn.dataset.tab;b.classList.toggle('active',active);if(b.hasAttribute('aria-selected'))b.setAttribute('aria-selected',String(active))});document.querySelectorAll('[role="tabpanel"]').forEach(p=>p.hidden=p.id!=='panel-'+btn.dataset.tab)}));
 $('universe-form').addEventListener('submit',async e=>{e.preventDefault();const q=$('universe-query').value.trim();if(!q)return;const status=$('universe-status'),grid=$('universe-grid');status.textContent='Searching titles and collections…';grid.innerHTML='';try{const data=await api('/search/multi',{query:q,include_adult:'false'});const hits=(data.results||[]).filter(x=>x.media_type==='movie'&&x.id);if(!hits.length)throw Error('No matching film found. Try another title.');const chosen=hits[0];const detail=await api('/movie/'+chosen.id);let items=[],label='';if(detail.belongs_to_collection?.id){const c=await api('/collection/'+detail.belongs_to_collection.id);items=c.parts||[];label=c.name||'Movie collection'}else{const rec=await api('/movie/'+chosen.id+'/recommendations');items=rec.results||[];label='Films related to '+(chosen.title||chosen.name);items=[chosen,...items]}items=items.filter(x=>x&&x.id).sort((a,b)=>String(a.release_date||'').localeCompare(String(b.release_date||'')));status.textContent=label+' · '+items.length+' films. '+(detail.belongs_to_collection?'Follow the saga from earliest release to latest.':'No official collection was listed, so we found related films instead.');renderGrid('universe-grid',items)}catch(err){status.textContent=err.message||'Could not load this universe. Please try again.'}});
 let selectedMood='mind';document.querySelectorAll('[data-mood]').forEach(b=>b.addEventListener('click',()=>{selectedMood=b.dataset.mood;document.querySelectorAll('[data-mood]').forEach(x=>x.classList.toggle('selected',x===b))}));
 const moodFilters={mind:{genres:'878,9648',sort:'vote_average.desc',min:'6.8'},comfort:{genres:'35,10751,16',sort:'popularity.desc',min:'6.4'},adrenaline:{genres:'28,12',sort:'popularity.desc',min:'6.2'},dark:{genres:'53,80,27',sort:'vote_average.desc',min:'6.5'},laugh:{genres:'35',sort:'popularity.desc',min:'6.2'},epic:{genres:'14,878,12',sort:'popularity.desc',min:'6.4'}};
