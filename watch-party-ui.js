@@ -158,6 +158,9 @@
         #f2w-watch-party .wp-empty{color:#777785;font-size:12px;padding:8px 0}
         #f2w-watch-party .wp-foot{border-top:1px solid #ffffff12;padding:12px 24px;color:#898997;font-size:11px;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
         #f2w-watch-party [hidden]{display:none!important}
+        /* Compact the right-edge slider tab so it doesn't dominate the page. */
+        #f2w-watch-party .wp-drawer-tab{top:34%;width:40px;height:118px;gap:7px;font-size:10px;letter-spacing:.1em}
+        #f2w-watch-party .wp-drawer-content{margin-left:40px}
         /* Layout polish: keep the narrow drawer readable instead of squeezing two columns together. */
         #f2w-watch-party{width:min(460px,calc(100vw - 20px))}
         #f2w-watch-party .wp-drawer-content{min-width:0;margin-left:47px;gap:0}
