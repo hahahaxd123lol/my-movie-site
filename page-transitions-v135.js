@@ -16,8 +16,8 @@
   const prefetched=new Set();
   const isPrefetchable=u=>{
     if(!u||u.origin!==location.origin)return false;
-    if(/\\.(?:pdf|zip|mp4|webm|png|jpe?g|gif|webp|svg|woff2?|ttf|css|js)$/i.test(u.pathname))return false;
-    if(/^\\/(?:watch|logout|signout|api|auth)(?:\\/|$)/i.test(u.pathname))return false;
+    if(/\.(?:pdf|zip|mp4|webm|png|jpe?g|gif|webp|svg|woff2?|ttf|css|js)$/i.test(u.pathname))return false;
+    if(/^\/(?:watch|logout|signout|api|auth)(?:\/|$)/i.test(u.pathname))return false;
     return true;
   };
   function prefetchUrl(u){
