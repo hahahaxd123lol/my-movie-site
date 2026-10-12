@@ -31,6 +31,7 @@
   let suppressFallbackEcho = null;
   let lastUrlFallbackSeekAt = 0;
   let lastUrlFallbackSeekSeconds = null;
+  let lastFallbackPlaybackStatus = '';
   let lastPlaybackBroadcastAt = 0;
   let lastRemoteCommandAt = 0;
   let lastRemoteSeekAt = 0;
@@ -179,6 +180,40 @@
       return true;
     } catch (_) { return false; }
   }
+  function fallbackReloadFlix2WatchAt(seconds, desiredStatus) {
+    // Last-resort compatibility path: the provider documents startAt/autoplay
+    // URL parameters but not a remote-command API. Reopen only after a command
+    // was not confirmed by real PLAYER_EVENT telemetry.
+    const frame = document.getElementById('video-frame');
+    if (!frame) return false;
+    try {
+      const url = new URL(String(frame.src || ''), location.href);
+      if (url.hostname !== 'player.flix2watch.com' ||
+          !(url.pathname.startsWith('/embed/movie') || url.pathname.startsWith('/embed/tv'))) return false;
+      if (partyIsActive() && currentSource() !== PARTY_PLAYER_SOURCE) return false;
+      const position = Math.max(0, Math.floor(Number(seconds) || 0));
+      url.searchParams.set('startAt', String(position));
+      url.searchParams.set('autoplay', desiredStatus === 'playing' ? '1' : '0');
+      suppressFallbackEcho = { seconds: position, until: Date.now() + 15000 };
+      frame.src = url.toString();
+      return true;
+    } catch (_) { return false; }
+  }
+  function schedulePlaybackUrlFallback(state, desiredStatus) {
+    setTimeout(() => {
+      if (!connection || pendingRemoteStatus !== desiredStatus ||
+          observedPlaybackStatus === desiredStatus ||
+          lastFallbackPlaybackStatus === desiredStatus) return;
+      const latestSeconds = Number.isFinite(Number(state.seconds))
+        ? Number(state.seconds)
+        : (Number.isFinite(lastPlayerReportedSeconds) ? lastPlayerReportedSeconds : observedPlaybackSeconds);
+      if (fallbackReloadFlix2WatchAt(latestSeconds, desiredStatus)) {
+        lastFallbackPlaybackStatus = desiredStatus;
+        pendingRemotePlaybackState = { ...state, __forceSync: true };
+        startPlayerStartupWindow();
+      }
+    }, 6500);
+  }
   function applyRemotePlayback(state, forceSync = false) {
     if (!state || state.mediaId == null) return;
     if (Date.now() < playerLoadingUntil) {
@@ -204,6 +239,8 @@
           pendingRemoteStatus = desiredStatus;
           pendingRemoteStatusUntil = now + 7000;
           pendingRemoteStatusRetryAt = now;
+          if (lastFallbackPlaybackStatus !== desiredStatus) lastFallbackPlaybackStatus = '';
+          schedulePlaybackUrlFallback(state, desiredStatus);
         }
         // Retry a command a small number of times while waiting for real
         // player telemetry. Do not optimistically mark it applied: that hid
@@ -258,11 +295,15 @@
             return;
           }
           if (remoteSeekRetryCount++ >= 2) {
-            // Never reload an embed to recover a seek: that restarts playback
-            // for the participant and can create a command/telemetry feedback loop.
-            // Leave the player in place if its provider ignores remote seeking.
+            // startAt is the provider's documented fallback when its inbound
+            // seek command is ignored. Use it once, then wait for fresh telemetry.
+            const didFallback = fallbackSeekViaVidFastStartAt(remoteSeconds);
             fallbackSeekTarget = null;
             remoteSeekRetryTimer = null;
+            if (didFallback) {
+              pendingRemotePlaybackState = { ...state, __forceSync: true };
+              startPlayerStartupWindow();
+            }
             return;
           }
           sendPlayerCommand('seek', remoteSeconds);
