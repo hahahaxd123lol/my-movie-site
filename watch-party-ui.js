@@ -113,16 +113,22 @@
     return sent;
   }
   function fallbackSeekViaVidFastStartAt(seconds) {
-    // VidFast exposes startAt as a URL-based resume fallback. Only use it for
-    // that provider; other embeds have different contracts and must not reload.
-    if (currentSource() !== 'vidfast') return false;
+    // The Flix2Watch API embed already uses startAt for resume positions when
+    // loadPlayer builds its URL. Use that same supported URL contract as a
+    // fallback when its cross-frame seek command is ignored.
     const frame = document.getElementById('video-frame');
     if (!frame) return false;
     try {
       const url = new URL(String(frame.src || ''), location.href);
-      if ((url.hostname !== 'vidfast.pro' && url.hostname !== 'www.vidfast.pro') || !url.pathname.includes('/embed/')) return false;
-      url.searchParams.set('startAt', String(Math.max(0, Math.floor(Number(seconds) || 0))));
-      if (url.toString() === frame.src) return false;
+      const isFlix2Watch = url.hostname === 'player.flix2watch.com' &&
+        /^\/embed\/(tv|movie)(\/|$)/.test(url.pathname);
+      const isVidFast = currentSource() === 'vidfast' &&
+        (url.hostname === 'vidfast.pro' || url.hostname === 'www.vidfast.pro') &&
+        url.pathname.includes('/embed/');
+      if (!isFlix2Watch && !isVidFast) return false;
+      const target = String(Math.max(0, Math.floor(Number(seconds) || 0)));
+      if (url.searchParams.get('startAt') === target) return false;
+      url.searchParams.set('startAt', target);
       frame.src = url.toString();
       return true;
     } catch (_) { return false; }
@@ -154,7 +160,7 @@
         // Do not mark the target as the observed position: the iframe may ignore
         // postMessage. Retry until its own telemetry confirms the requested time.
         fallbackSeekTarget = remoteSeconds;
-        remoteSeekRetryUntil = now + 9000;
+        remoteSeekRetryUntil = now + 3500;
         remoteSeekRetryCount = 0;
         if (remoteSeekRetryTimer) clearTimeout(remoteSeekRetryTimer);
         const retry = () => {
@@ -168,13 +174,13 @@
             remoteSeekRetryTimer = null;
             return;
           }
-          if (remoteSeekRetryCount++ >= 7) {
+          if (remoteSeekRetryCount++ >= 2) {
             fallbackSeekViaVidFastStartAt(remoteSeconds);
             remoteSeekRetryTimer = null;
             return;
           }
           sendPlayerCommand('seek', remoteSeconds);
-          remoteSeekRetryTimer = setTimeout(retry, 850);
+          remoteSeekRetryTimer = setTimeout(retry, 700);
         };
         remoteSeekRetryTimer = setTimeout(retry, 850);
       }
