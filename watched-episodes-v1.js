@@ -106,7 +106,7 @@
   function renderLabels(){
     if(mediaType==='movie'){
       const badge=document.getElementById('f2w-movie-watched-badge-v1');
-      if(badge)badge.hidden=!(activeUid&&watched.has(episodeKey(0,0)));
+      if(badge){const isWatched=Boolean(activeUid&&watched.has(episodeKey(0,0)));badge.hidden=!isWatched;badge.style.display=isWatched?'inline-flex':'none';}
       return;
     }
     const badge=document.getElementById('f2w-movie-watched-badge-v1');
