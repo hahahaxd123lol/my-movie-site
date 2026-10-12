@@ -13,6 +13,7 @@
   const episodeSelect=()=>document.getElementById('episode-select');
   const watched=new Set();
   const markInFlight=new Set();
+  const retryAfter=new Map();
   let client=null, activeUid='', authSubscription=null, seasonCounts={};
   let countsLoaded=false, renderTimer=0, warnedMigration=false;
 
@@ -27,6 +28,7 @@
     activeUid=uid;
     watched.clear();
     markInFlight.clear();
+    retryAfter.clear();
     renderLabels();
     if(uid)void loadWatched(uid);
   }
@@ -134,7 +136,7 @@
     const uid=activeUid,c=client||db();
     if(!uid||!c?.rpc||season<=0||episode<=0)return;
     const key=episodeKey(season,episode);
-    if(watched.has(key)||markInFlight.has(key))return;
+    if(watched.has(key)||markInFlight.has(key)||(retryAfter.get(key)||0)>Date.now())return;
     markInFlight.add(key);
     try{
       const {error}=await c.rpc('mark_my_watched_episode_v1',{
@@ -143,9 +145,11 @@
       });
       if(error)throw error;
       if(uid!==activeUid)return;
+      retryAfter.delete(key);
       watched.add(key);
       renderLabels();
     }catch(error){
+      retryAfter.set(key,Date.now()+30000);
       console.warn('Could not save watched episode:',error?.message||error);
     }finally{
       markInFlight.delete(key);
