@@ -146,7 +146,7 @@
       position: action === 'seek' ? position : undefined,
       time: action === 'seek' ? position : undefined
     };
-    const payload = { type: 'PLAYER_COMMAND', data: commandData, ...commandData };
+    const payload = { type: 'PLAYER_COMMAND', event: 'PLAYER_COMMAND', data: commandData, payload: commandData, ...commandData };
     try {
       frame.contentWindow.postMessage(payload, target);
       return true;
