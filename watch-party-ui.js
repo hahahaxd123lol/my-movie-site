@@ -113,7 +113,7 @@
     panel.setAttribute('aria-label', 'Watch Party');
     panel.innerHTML = `
       <style>
-        #f2w-watch-party{--wp-accent:var(--accent,#e50914);position:fixed;z-index:2147483000;right:0;top:clamp(180px, 22vh, 220px);bottom:12px;width:min(430px,calc(100vw - 48px));height:auto;margin:0;border:1px solid rgba(255,255,255,.14);border-right:0;border-radius:20px 0 0 20px;overflow:hidden;transform:translateX(calc(100% - 48px));transition:transform .28s cubic-bezier(.2,.8,.2,1);background:radial-gradient(ellipse at 8% 0%,color-mix(in srgb,var(--wp-accent) 20%,transparent),transparent 42%),linear-gradient(135deg,#15151d,#09090d 75%);color:#f7f7fb;box-shadow:0 18px 50px #0008;font-family:var(--font-body,Arial,sans-serif);display:flex;flex-direction:column} 
+        #f2w-watch-party{--wp-accent:var(--accent,#e50914);position:fixed;z-index:2147483000;right:0;top:clamp(240px, 28vh, 280px);bottom:12px;width:min(430px,calc(100vw - 48px));height:auto;margin:0;border:1px solid rgba(255,255,255,.14);border-right:0;border-radius:20px 0 0 20px;overflow:hidden;transform:translateX(calc(100% - 48px));transition:transform .28s cubic-bezier(.2,.8,.2,1);background:radial-gradient(ellipse at 8% 0%,color-mix(in srgb,var(--wp-accent) 20%,transparent),transparent 42%),linear-gradient(135deg,#15151d,#09090d 75%);color:#f7f7fb;box-shadow:0 18px 50px #0008;font-family:var(--font-body,Arial,sans-serif);display:flex;flex-direction:column} 
         #f2w-watch-party.is-open{transform:translateX(0)}
         #f2w-watch-party .wp-drawer-tab{position:absolute;left:0;top:28%;width:47px;height:164px;border-radius:0 12px 12px 0;border-left:0;background:linear-gradient(180deg,var(--wp-accent),#9b1020);display:flex;align-items:center;justify-content:center;gap:10px;writing-mode:vertical-rl;transform:none;letter-spacing:.12em;font-size:11px;font-weight:900;box-shadow:8px 8px 24px #0005;z-index:5}
         #f2w-watch-party .wp-drawer-tab .wp-tab-dot{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff9}
@@ -158,7 +158,7 @@
         #f2w-watch-party .wp-empty{color:#777785;font-size:12px;padding:8px 0}
         #f2w-watch-party .wp-foot{border-top:1px solid #ffffff12;padding:12px 24px;color:#898997;font-size:11px;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
         #f2w-watch-party [hidden]{display:none!important}
-        @media(max-width:650px){#f2w-watch-party{top:clamp(150px, 18vh, 180px);bottom:8px;width:calc(100vw - 16px)}#f2w-watch-party .wp-grid{grid-template-columns:1fr}#f2w-watch-party .wp-main{border-right:0;border-bottom:1px solid #ffffff12;padding:18px}#f2w-watch-party .wp-side{padding:18px}#f2w-watch-party .wp-top{padding:18px}#f2w-watch-party .wp-title{font-size:21px}}
+        @media(max-width:650px){#f2w-watch-party{top:clamp(200px, 24vh, 230px);bottom:8px;width:calc(100vw - 16px)}#f2w-watch-party .wp-grid{grid-template-columns:1fr}#f2w-watch-party .wp-main{border-right:0;border-bottom:1px solid #ffffff12;padding:18px}#f2w-watch-party .wp-side{padding:18px}#f2w-watch-party .wp-top{padding:18px}#f2w-watch-party .wp-title{font-size:21px}}
       </style>
       <button class="wp-drawer-tab" id="f2w-party-toggle" type="button" aria-expanded="false" aria-controls="f2w-watch-party"><span class="wp-tab-dot"></span><span>WATCH PARTY</span></button>
       <div class="wp-drawer-content">
