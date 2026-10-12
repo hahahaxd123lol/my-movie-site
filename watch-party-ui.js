@@ -511,6 +511,11 @@
         console.error('[Watch Party] connection failed', error);
         connection = null;
         try { sessionStorage.removeItem('f2w_party_token_' + roomId); } catch (_) {}
+        if (suppliedPassword !== undefined && /password|too many/i.test(String(error.message || ''))) {
+          showPasswordForm({ mode: 'join', roomId });
+          setStatus(error.message || 'Could not join with that password.', false);
+          return;
+        }
         setStatus(error.message || 'Could not connect. Check the connection and try again.', false);
       }
     }
