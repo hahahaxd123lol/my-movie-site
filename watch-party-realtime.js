@@ -15,6 +15,7 @@
     'participant-left',
     'playback-state',
     'episode-change',
+    'source-change',
     'playback-command',
     'chat-message'
   ]);
