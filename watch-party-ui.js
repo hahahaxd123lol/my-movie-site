@@ -707,38 +707,47 @@
       if (event.target?.closest?.('.server-btn')) setTimeout(broadcastSource, 120);
     });
     window.addEventListener('message', event => {
-      if (!connection || event.origin !== 'https://player.flix2watch.com') return;
-      const payload = event.data;
-      if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
-      const data = payload.data;
-      const progress = Number(data.player_progress ?? data.currentTime ?? data.seconds ?? 0);
-      const status = String(data.player_status || data.status || data.event || '').toLowerCase();
-      const isPlaying = /play|resume|start/.test(status);
-      const isPaused = /pause|stop/.test(status);
-      const isSeek = /seek/.test(status);
-      if (Number.isFinite(progress) && progress >= 0) observedPlaybackSeconds = progress;
+      if (!connection) return;
+      const frame = document.getElementById('video-frame');
+      if (!frame?.contentWindow || event.source !== frame.contentWindow) return;
+      let payload = event.data;
+      if (typeof payload === 'string') {
+        try { payload = JSON.parse(payload); } catch (_) { return; }
+      }
+      if (!payload || typeof payload !== 'object') return;
+      const nested = payload.data || payload.payload || payload.detail || payload.state || payload;
+      if (!nested || typeof nested !== 'object') return;
+      const type = String(payload.type || payload.event || payload.action || payload.command || nested.type || nested.event || nested.action || nested.command || '').toLowerCase();
+      const rawStatus = nested.player_status ?? nested.status ?? nested.playbackState ?? nested.state ?? nested.event ?? nested.action ?? type;
+      const status = typeof rawStatus === 'string' ? rawStatus.toLowerCase() : type;
+      const progressRaw = nested.player_progress ?? nested.currentTime ?? nested.current_time ?? nested.seconds ?? nested.position ?? nested.time ?? payload.player_progress ?? payload.currentTime;
+      const progress = Number(progressRaw);
+      const hasProgress = progressRaw !== undefined && progressRaw !== null && Number.isFinite(progress) && progress >= 0;
+      const isPlaying = /(^|[^a-z])(play|playing|resume|resumed|start|started)([^a-z]|$)/.test(status) || /player.?play/.test(type);
+      const isPaused = /(^|[^a-z])(pause|paused|stop|stopped)([^a-z]|$)/.test(status) || /player.?pause/.test(type);
+      const isSeek = /seek|time.?update|progress|timeupdate/.test(status + ' ' + type);
+      if (!isPlaying && !isPaused && !isSeek && !hasProgress) return;
+      if (hasProgress) observedPlaybackSeconds = progress;
       if (isPlaying) observedPlaybackStatus = 'playing';
       else if (isPaused) observedPlaybackStatus = 'paused';
       const now = Date.now();
       if (now < suppressPlaybackBroadcastUntil) return;
       const media = currentMedia();
       const episode = currentEpisode();
+      const seconds = hasProgress ? progress : (observedPlaybackSeconds ?? 0);
       const state = {
         mediaId: media.mediaId, mediaType: media.mediaType,
         status: isPlaying ? 'playing' : isPaused ? 'paused' : isSeek ? 'seeked' : status,
-        seconds: Number.isFinite(progress) && progress >= 0 ? progress : 0,
-        duration: Number(data.player_duration || data.duration || 0),
+        seconds,
+        duration: Number(nested.player_duration || nested.duration || payload.duration || 0),
         season: episode?.season || null, episode: episode?.episode || null
       };
-      // Never drop an explicit play/pause/seek event just because a progress
-      // update was broadcast a fraction of a second earlier.
-      if (!isPlaying && !isPaused && !isSeek && now - lastPlaybackBroadcastAt < 700) return;
-      lastPlaybackBroadcastAt = now;
       if (isPlaying || isPaused) {
-        connection.send({ type: 'playback-command', action: isPlaying ? 'play' : 'pause', seconds: state.seconds }).catch(() => {});
-      } else if (isSeek) {
-        connection.send({ type: 'playback-command', action: 'seek', seconds: state.seconds }).catch(() => {});
-      }
+        connection.send({ type: 'playback-command', action: isPlaying ? 'play' : 'pause', seconds }).catch(() => {});
+      } else if (isSeek && hasProgress) {
+        connection.send({ type: 'playback-command', action: 'seek', seconds }).catch(() => {});
+      } else if (now - lastPlaybackBroadcastAt < 1000) return;
+      lastPlaybackBroadcastAt = now;
       connection.send({ type: 'playback-state', state }).catch(() => {});
     });
     const initialRoom = new URLSearchParams(location.search).get(PARAM);
