@@ -916,6 +916,9 @@
         duration: Number(nested.player_duration || nested.duration || payload.duration || 0),
         season: episode?.season || null, episode: episode?.episode || null
       };
+      // A remote command often makes the iframe emit the same play/pause/seek
+      // event locally. Do not echo that event back to the room as a new command.
+      if (now < suppressPlaybackBroadcastUntil || now < playerLoadingUntil) return;
       if (isPlaying || isPaused) {
         connection.send({ type: 'playback-command', action: isPlaying ? 'play' : 'pause', seconds }).catch(() => {});
       } else if (isSeek && hasProgress) {
