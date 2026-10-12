@@ -75,13 +75,25 @@
     if (!frame?.contentWindow) return false;
     let target = 'https://player.flix2watch.com';
     try { target = new URL(String(frame.src || ''), location.href).origin; } catch (_) {}
-    const payload = { type: 'PLAYER_COMMAND', action: action, command: action };
-    if (action === 'seek') {
-      const position = Math.max(0, Number(seconds) || 0);
-      Object.assign(payload, { value: position, seconds: position, position: position, time: position });
+    const position = Math.max(0, Number(seconds) || 0);
+    // Different player builds expose slightly different postMessage command
+    // shapes. Send the documented command form plus compatible legacy aliases.
+    const messages = action === 'seek'
+      ? [
+          { command: 'seek', time: position },
+          { type: 'PLAYER_COMMAND', action: 'seek', command: 'seek', value: position, seconds: position, position, time: position },
+          { action: 'seek', time: position }
+        ]
+      : [
+          { command: action },
+          { type: 'PLAYER_COMMAND', action, command: action },
+          { action }
+        ];
+    let sent = false;
+    for (const payload of messages) {
+      try { frame.contentWindow.postMessage(payload, target); sent = true; } catch (_) {}
     }
-    try { frame.contentWindow.postMessage(payload, target); return true; }
-    catch (_) { return false; }
+    return sent;
   }
   function applyRemotePlayback(state) {
     if (!state || state.mediaId == null) return;
@@ -300,14 +312,37 @@
     async function apiRequest(path, body) {
       const base = window.F2WWatchPartyRealtime?.API_BASE;
       if (!base) throw new Error('The Watch Party API is not configured.');
-      const response = await fetch(base + path, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body || {})
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || 'The Watch Party API request failed.');
-      return data;
+      let lastError;
+      // Render's free API may need time to wake after inactivity. Allow a long
+      // first request and retry transient gateway/network failures automatically.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        let timer;
+        try {
+          const controller = new AbortController();
+          timer = setTimeout(() => controller.abort(), 90000);
+          const response = await fetch(base + path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body || {}),
+            signal: controller.signal,
+            cache: 'no-store'
+          });
+          const data = await response.json().catch(() => ({}));
+          if (response.ok) return data;
+          const error = new Error(data.error || 'The Watch Party API request failed.');
+          if (![502, 503, 504, 522, 524].includes(response.status) || attempt === 2) throw error;
+          lastError = error;
+        } catch (error) {
+          lastError = error;
+          if (attempt === 2 || (error.name !== 'AbortError' && error instanceof TypeError === false &&
+              !/fetch|network|temporar|timeout/i.test(String(error.message || '')))) throw error;
+        } finally {
+          clearTimeout(timer);
+        }
+        setStatus(attempt === 0 ? 'Waking the party service… retrying automatically.' : 'Still reconnecting to the party service…', false);
+        await new Promise(resolve => setTimeout(resolve, attempt === 0 ? 1800 : 3500));
+      }
+      throw new Error('The party service is taking too long to wake. Please try again in a moment. ' + (lastError?.message || ''));
     }
     function navigateToMedia(media, roomId) {
       const id = String(media?.id || '');
@@ -417,6 +452,9 @@
               applyRemotePlayback(message.state);
               const label = message.state.status ? String(message.state.status) : 'updated';
               setStatus('Room connected · playback sync active (' + label + ').', true);
+            } else if (message.type === 'playback-command') {
+              const media = currentMedia();
+              applyRemotePlayback({ mediaId: media.mediaId, mediaType: media.mediaType, status: message.action, seconds: message.seconds });
             } else if (message.type === 'chat-message' && message.participantId !== participantId) {
               addChatMessage(message.name, message.text, message.messageId);
             } else if (message.type === 'chat-cooldown') {
@@ -616,22 +654,35 @@
       if (!connection || event.origin !== 'https://player.flix2watch.com') return;
       const payload = event.data;
       if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
-      const progress = Number(payload.data.player_progress || 0);
-      const status = String(payload.data.player_status || '').toLowerCase();
+      const data = payload.data;
+      const progress = Number(data.player_progress ?? data.currentTime ?? data.seconds ?? 0);
+      const status = String(data.player_status || data.status || data.event || '').toLowerCase();
+      const isPlaying = /play|resume|start/.test(status);
+      const isPaused = /pause|stop/.test(status);
+      const isSeek = /seek/.test(status);
       if (Number.isFinite(progress) && progress >= 0) observedPlaybackSeconds = progress;
-      if (/play|resume|start/.test(status)) observedPlaybackStatus = 'playing';
-      else if (/pause|stop/.test(status)) observedPlaybackStatus = 'paused';
+      if (isPlaying) observedPlaybackStatus = 'playing';
+      else if (isPaused) observedPlaybackStatus = 'paused';
       const now = Date.now();
-      if (now < suppressPlaybackBroadcastUntil || now - lastPlaybackBroadcastAt < 700) return;
+      if (now < suppressPlaybackBroadcastUntil) return;
       const media = currentMedia();
       const episode = currentEpisode();
       const state = {
         mediaId: media.mediaId, mediaType: media.mediaType,
-        status: status, seconds: Number.isFinite(progress) && progress >= 0 ? progress : 0,
-        duration: Number(payload.data.player_duration || payload.data.duration || 0),
+        status: isPlaying ? 'playing' : isPaused ? 'paused' : isSeek ? 'seeked' : status,
+        seconds: Number.isFinite(progress) && progress >= 0 ? progress : 0,
+        duration: Number(data.player_duration || data.duration || 0),
         season: episode?.season || null, episode: episode?.episode || null
       };
+      // Never drop an explicit play/pause/seek event just because a progress
+      // update was broadcast a fraction of a second earlier.
+      if (!isPlaying && !isPaused && !isSeek && now - lastPlaybackBroadcastAt < 700) return;
       lastPlaybackBroadcastAt = now;
+      if (isPlaying || isPaused) {
+        connection.send({ type: 'playback-command', action: isPlaying ? 'play' : 'pause', seconds: state.seconds }).catch(() => {});
+      } else if (isSeek) {
+        connection.send({ type: 'playback-command', action: 'seek', seconds: state.seconds }).catch(() => {});
+      }
       connection.send({ type: 'playback-state', state }).catch(() => {});
     });
     const initialRoom = new URLSearchParams(location.search).get(PARAM);
