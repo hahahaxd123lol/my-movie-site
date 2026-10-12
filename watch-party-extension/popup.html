@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flix2Watch Watch Party</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;width:310px;padding:18px;background:#101016;color:#f6f6fa;font:13px/1.45 Arial,sans-serif}
+    h1{font-size:17px;margin:0 0 5px}p{color:#a9a9b8;margin:0 0 15px}
+    label{display:block;color:#c8c8d2;font-size:11px;font-weight:700;margin:12px 0 5px}
+    input{width:100%;border:1px solid #343440;border-radius:8px;background:#09090e;color:#fff;padding:10px;font:inherit;outline:none}
+    input:focus{border-color:#e50914}.row{display:flex;gap:8px;margin-top:14px}
+    button{flex:1;border:1px solid #343440;border-radius:8px;background:#20202b;color:white;padding:10px;font-weight:700;cursor:pointer}
+    button.primary{background:#e50914;border-color:#e50914}button:disabled{opacity:.5;cursor:default}
+    #status{margin-top:13px;min-height:34px;color:#c6c6d0;font-size:12px}#status[data-kind=error]{color:#ff8b93}#status[data-kind=ok]{color:#85efac}
+    .hint{font-size:11px;color:#888896;margin-top:12px}
+  </style>
+</head>
+<body>
+  <h1>Flix2Watch Watch Party</h1>
+  <p>Join the same room as your friends to sync player controls.</p>
+  <label for="room">Six-character room code</label>
+  <input id="room" maxlength="6" placeholder="ABC234" autocomplete="off" autocapitalize="characters">
+  <label for="name">Display name</label>
+  <input id="name" maxlength="28" placeholder="Guest" autocomplete="name">
+  <div class="row"><button id="join" class="primary">Join room</button><button id="leave">Leave</button></div>
+  <div id="status" role="status">Checking connection…</div>
+  <div class="hint">Keep the Flix2Watch movie tab open. Install this extension on every participant's browser.</div>
+  <script src="popup.js"></script>
+</body>
+</html>
