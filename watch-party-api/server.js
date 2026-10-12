@@ -56,14 +56,19 @@ function readBody(req) {
 }
 function token() { return crypto.randomBytes(32).toString('base64url'); }
 function roomId() { return crypto.randomBytes(12).toString('hex'); }
-function passwordDigest(password, salt) {
-  return crypto.scryptSync(String(password), salt, 32);
+const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function roomCode() {
+  let code = '';
+  do {
+    code = Array.from(crypto.randomBytes(6), byte => ROOM_CODE_ALPHABET[byte % ROOM_CODE_ALPHABET.length]).join('');
+  } while ([...rooms.values()].some(room => room.code === code));
+  return code;
 }
-function passwordMatches(room, password) {
-  if (!room.passwordHash) return !String(password || '');
-  const candidate = passwordDigest(String(password || ''), room.passwordSalt);
-  return candidate.length === room.passwordHash.length &&
-    crypto.timingSafeEqual(candidate, room.passwordHash);
+function roomByCode(code) {
+  const normalized = String(code || '').toUpperCase();
+  return /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(normalized)
+    ? [...rooms.values()].find(room => room.code === normalized) || null
+    : null;
 }
 function roomById(id) {
   return /^[a-f0-9]{24}$/i.test(String(id || '')) ? rooms.get(String(id)) : null;
@@ -111,23 +116,34 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await readBody(req);
       const name = safeName(body.name);
-      const password = String(body.password || '');
-      if (password && (password.length < 4 || password.length > 64)) {
-        return json(res, 400, { error: 'A room password must be 4–64 characters.' });
-      }
       const id = roomId();
+      const code = roomCode();
       const hostToken = token();
       const room = {
-        id, createdAt: Date.now(), emptySince: Date.now(), state: { media: cleanMedia(body.media), episode: null, source: '', playbackState: null },
-        passwordSalt: password ? crypto.randomBytes(16) : null,
-        passwordHash: null, members: new Map(), clients: new Set(), joinAttempts: new Map()
+        id, code, createdAt: Date.now(), emptySince: Date.now(), state: { media: cleanMedia(body.media), episode: null, source: '', playbackState: null },
+        members: new Map(), clients: new Set(), joinAttempts: new Map()
       };
-      if (password) room.passwordHash = passwordDigest(password, room.passwordSalt);
       room.members.set(hostToken, { host: true, name });
       rooms.set(id, room);
-      return json(res, 201, { roomId: id, token: hostToken, passwordProtected: Boolean(password) });
+      return json(res, 201, { roomId: id, roomCode: code, token: hostToken });
     } catch (error) {
       return json(res, error.statusCode || 400, { error: error.message || 'Could not create room.' });
+    }
+  }
+
+  const codeJoinMatch = url.pathname.match(/^\/api\/rooms\/code\/([ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6})\/join$/i);
+  if (req.method === 'POST' && codeJoinMatch) {
+    try {
+      const room = roomByCode(codeJoinMatch[1]);
+      if (!room) return json(res, 404, { error: 'Room code not found. Check the code and try again.' });
+      const body = await readBody(req);
+      const name = safeName(body.name);
+      if (publicParticipants(room).length >= MAX_ROOM_PEOPLE) return json(res, 409, { error: 'This room is full.' });
+      const memberToken = token();
+      room.members.set(memberToken, { host: false, name });
+      return json(res, 200, { roomId: room.id, roomCode: room.code, token: memberToken });
+    } catch (error) {
+      return json(res, error.statusCode || 400, { error: error.message || 'Could not join room.' });
     }
   }
 
@@ -138,29 +154,10 @@ const server = http.createServer(async (req, res) => {
       if (!room) return json(res, 404, { error: 'Room not found or expired.' });
       const body = await readBody(req);
       const name = safeName(body.name);
-      const password = String(body.password || '');
-      const forwardedFor = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
-      const ip = forwardedFor || req.socket.remoteAddress || 'unknown';
-      const now = Date.now();
-      const attempt = room.joinAttempts.get(ip) || { times: [], cooldownUntil: 0 };
-      if (now < attempt.cooldownUntil) {
-        return json(res, 429, { error: 'Too many password attempts. Try again in ' + Math.ceil((attempt.cooldownUntil - now) / 1000) + ' seconds.' });
-      }
-      attempt.times = attempt.times.filter(at => now - at < 60000);
-      if (!passwordMatches(room, password)) {
-        attempt.times.push(now);
-        if (attempt.times.length >= 8) {
-          attempt.cooldownUntil = now + 30000;
-          attempt.times = [];
-        }
-        room.joinAttempts.set(ip, attempt);
-        return json(res, 403, { error: 'That room password is incorrect.' });
-      }
-      room.joinAttempts.delete(ip);
       if (publicParticipants(room).length >= MAX_ROOM_PEOPLE) return json(res, 409, { error: 'This room is full.' });
       const memberToken = token();
       room.members.set(memberToken, { host: false, name });
-      return json(res, 200, { roomId: room.id, token: memberToken, passwordProtected: Boolean(room.passwordHash) });
+      return json(res, 200, { roomId: room.id, roomCode: room.code, token: memberToken });
     } catch (error) {
       return json(res, error.statusCode || 400, { error: error.message || 'Could not join room.' });
     }
