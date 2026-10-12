@@ -165,8 +165,10 @@
         <aside class="wp-side"><div class="wp-label">In this room <span id="f2w-party-count" style="color:#f7f7fb">· 0</span></div><div class="wp-people" id="f2w-party-people"><div class="wp-empty">No one here yet. Invite your friends.</div></div><div style="margin-top:20px"><div class="wp-label">Shared playback</div><div class="wp-sub">Source, season, episode and playback controls are shared with your party. Player commands depend on provider support.</div></div></aside>
       </div>
       <div class="wp-foot"><span>🔒 Private invite link · Only people with the link can join</span><span id="f2w-party-room-label">No room created</span></div>`;
+    const ratingCard = document.getElementById('f2w-v34-rating-card');
     const player = document.querySelector('.player-wrapper');
-    if (player?.parentNode) player.parentNode.insertBefore(panel, player.nextSibling);
+    if (ratingCard?.parentNode) ratingCard.parentNode.insertBefore(panel, ratingCard);
+    else if (player?.parentNode) player.parentNode.insertBefore(panel, player.nextSibling);
     return panel;
   }
   function init() {
