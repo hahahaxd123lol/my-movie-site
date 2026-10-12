@@ -58,8 +58,10 @@ async function openRoomMedia(media, episode) {
   target.searchParams.set('partytest', '1');
   if (type === 'tv') { target.searchParams.set('season', String(season)); target.searchParams.set('episode', String(ep)); }
   try {
-    const tabs = await chrome.tabs.query({url: 'https://flix2watch-watch-party-preview.onrender.com/watch/*'});
-    const tab = tabs.find(function (item) { return item.id != null; });
+    const tabs = await chrome.tabs.query({});
+    const tab = tabs.find(function (item) {
+      return item.id != null && String(item.url || '').startsWith('https://flix2watch-watch-party-preview.onrender.com/watch/');
+    });
     if (tab && tab.id != null) await chrome.tabs.update(tab.id, {url: target.toString(), active: true});
     else await chrome.tabs.create({url: target.toString(), active: true});
     sendStatus('opening-movie', String(media.title || 'the room movie'));
