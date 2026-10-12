@@ -216,7 +216,7 @@ begin
 
   get diagnostics v_rows = row_count;
   raise notice 'Historical watched backfill inserted % recoverable movie/episode records.', v_rows;
-end
+end;
 $f2w_resume_backfill$;
 
 notify pgrst, 'reload schema';
