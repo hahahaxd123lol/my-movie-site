@@ -152,6 +152,7 @@
         #f2w-watch-party .wp-chat{height:190px;overflow:auto;display:flex;flex-direction:column;gap:10px;margin:0 0 12px}
         #f2w-watch-party .wp-message{font-size:12px;line-height:1.45;overflow-wrap:anywhere;background:#ffffff08;padding:9px 11px;border-radius:4px 12px 12px 12px}
         #f2w-watch-party .wp-message strong{display:block;color:#ffb3b7;font-size:10px;margin-bottom:3px}
+        #f2w-watch-party .wp-message-time{display:block;color:#777785;font-size:9px;text-align:right;margin-top:5px}
         #f2w-watch-party .wp-chat-row{display:flex;gap:7px}
         #f2w-watch-party .wp-chat-row input{flex:1}
         #f2w-watch-party .wp-empty{color:#777785;font-size:12px;padding:8px 0}
@@ -234,7 +235,8 @@
         const avatar = document.createElement('div'); avatar.className = 'wp-avatar'; avatar.textContent = (person.name || '?').slice(0, 1).toUpperCase();
         const meta = document.createElement('div'); meta.style.minWidth = '0';
         const name = document.createElement('div'); name.className = 'wp-person-name'; name.textContent = person.name || 'Guest';
-        const you = document.createElement('div'); you.className = 'wp-you'; you.textContent = person.id === participantId ? 'You · in this room' : 'In this room';
+        const you = document.createElement('div'); you.className = 'wp-you';
+        you.textContent = (person.host ? '★ Host' : 'In this room') + (person.id === participantId ? ' · You' : '');
         meta.append(name, you); item.append(avatar, meta); peopleEl.append(item);
       });
     }
@@ -245,7 +247,9 @@
       const item = document.createElement('div'); item.className = 'wp-message';
       const author = document.createElement('strong'); author.textContent = person || 'Guest';
       const body = document.createElement('div'); body.textContent = String(text || '').slice(0, 500);
-      item.append(author, body); chatEl.append(item); chatEl.scrollTop = chatEl.scrollHeight;
+      const time = document.createElement('time'); time.className = 'wp-message-time';
+      time.dateTime = new Date().toISOString(); time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      item.append(author, body, time); chatEl.append(item); chatEl.scrollTop = chatEl.scrollHeight;
     }
     function myHello() { return { id: participantId, name: displayName }; }
     async function apiRequest(path, body) {
