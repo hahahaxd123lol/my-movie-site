@@ -207,6 +207,17 @@ server.on('upgrade', (req, socket, head) => {
         broadcast(room, { type: 'hello', participant: { id: client.participantId, name: client.name, host: member.host }, episode: room.state.episode, source: room.state.source }, client);
         return;
       }
+      if (message.type === 'media-change') {
+        const media = cleanMedia(message.media);
+        if (!media.id) return;
+        room.state.media = media;
+        room.state.episode = null;
+        room.state.season = null;
+        room.state.source = '';
+        room.state.playbackState = null;
+        broadcast(room, { type: 'media-change', media }, client);
+        return;
+      }
       if (message.type === 'chat-message') {
         const now = Date.now();
         if (now < client.chatCooldownUntil) {
