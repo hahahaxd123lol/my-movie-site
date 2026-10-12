@@ -23,6 +23,8 @@
   let interval = 0;
   let active = false;
   let remainingMs = 10000;
+  let countdownTotalMs = 10000;
+  let waitForEpisodeEnd = false;
   let previousTick = 0;
   let handledKey = '';
   let originKey = '';
@@ -277,31 +279,60 @@
   document.addEventListener('fullscreenchange',syncLayerForFullscreen);
   document.addEventListener('webkitfullscreenchange',syncLayerForFullscreen);
 
+  function formatClock(totalSeconds) {
+    const seconds = Math.max(0,Math.ceil(totalSeconds));
+    const minutes = Math.floor(seconds/60);
+    const rest = seconds%60;
+    return minutes > 0 ? minutes+':'+String(rest).padStart(2,'0') : String(rest);
+  }
+
   function updateCountdown() {
     if (!active || !card) return;
     const now = Date.now();
-    if (document.visibilityState !== 'hidden' && previousTick) {
+    let reportedStatus = '';
+    if (waitForEpisodeEnd) {
+      const node = document.getElementById('f2w-premid-state');
+      const state = node?.dataset || {};
+      const updatedAt = numberValue(state.updatedAt);
+      const validState = numberValue(state.mediaId) === mediaId &&
+        String(state.mediaType || '').toLowerCase() === 'tv' &&
+        (!updatedAt || now-updatedAt < 15000) &&
+        numberValue(state.season || 0) === numberValue(seasonSelect()?.value || params.get('season') || 1) &&
+        numberValue(state.episode || 0) === numberValue(episodeSelect()?.value || params.get('episode') || 1);
+      if (validState) {
+        reportedStatus = String(state.status || '').toLowerCase();
+        const position = Number(state.position), duration = Number(state.duration);
+        if (Number.isFinite(position) && Number.isFinite(duration) && duration > 0) {
+          remainingMs = Math.max(0,(duration-position)*1000);
+        }
+        if (['ended','end','completed','complete','finished','finish'].includes(reportedStatus)) remainingMs = 0;
+      }
+    } else if (document.visibilityState !== 'hidden' && previousTick) {
       remainingMs = Math.max(0,remainingMs - Math.max(0,now-previousTick));
     }
     previousTick = now;
     const seconds = Math.ceil(remainingMs/1000);
-    countdownNode.textContent = String(seconds);
-    card.style.setProperty('--f2w-progress',String(Math.max(0,Math.min(100,remainingMs/10000*100)))+'%');
-    card.querySelector('.f2w-next-clock')?.style.setProperty('--f2w-progress',String(Math.max(0,Math.min(100,remainingMs/10000*100)))+'%');
-    progressNode.style.width = String(Math.max(0,Math.min(100,remainingMs/10000*100))) + '%';
-    if (remainingMs <= 0) {
+    countdownNode.textContent = waitForEpisodeEnd ? formatClock(seconds) : String(seconds);
+    const pct = Math.max(0,Math.min(100,remainingMs/Math.max(1000,countdownTotalMs)*100));
+    card.style.setProperty('--f2w-progress',String(pct)+'%');
+    card.querySelector('.f2w-next-clock')?.style.setProperty('--f2w-progress',String(pct)+'%');
+    progressNode.style.width = String(pct) + '%';
+    if (remainingMs <= 0 && (!waitForEpisodeEnd || !reportedStatus || reportedStatus === 'playing' ||
+        ['ended','end','completed','complete','finished','finish'].includes(reportedStatus))) {
       clearInterval(interval);
       interval = 0;
       playNextNow();
     }
   }
 
-  function beginCountdown(next, key) {
+  function beginCountdown(next, key, durationMs=10000, followsEpisodeEnd=false) {
     if (handledKey === key) return;
     handledKey = key;
     originKey = key;
     target = next;
-    remainingMs = 10000;
+    remainingMs = Math.max(1000,Number(durationMs)||10000);
+    countdownTotalMs = remainingMs;
+    waitForEpisodeEnd = Boolean(followsEpisodeEnd);
     previousTick = Date.now();
     active = true;
 
@@ -309,13 +340,19 @@
     if (!el) { active = false; return; }
     titleNode.textContent = next.title;
     seasonNode.textContent = next.subtitle;
-    countdownNode.textContent = '10';
-    progressNode.style.width = '100%';
-    el.style.setProperty('--f2w-progress','100%');
-    el.querySelector('.f2w-next-clock')?.style.setProperty('--f2w-progress','100%');
+    const display = waitForEpisodeEnd ? formatClock(Math.ceil(remainingMs/1000)) : String(Math.ceil(remainingMs/1000));
+    countdownNode.textContent = display;
+    const pct = String(Math.max(0,Math.min(100,remainingMs/countdownTotalMs*100)))+'%';
+    progressNode.style.width = pct;
+    el.style.setProperty('--f2w-progress',pct);
+    el.querySelector('.f2w-next-clock')?.style.setProperty('--f2w-progress',pct);
+    const note = el.querySelector('.f2w-next-note');
+    if (note) note.textContent = waitForEpisodeEnd
+      ? 'Next episode starts when this episode finishes'
+      : 'Playing automatically in 10 seconds';
     makeVisible();
     clearInterval(interval);
-    interval = setInterval(updateCountdown,100);
+    interval = setInterval(updateCountdown,250);
   }
 
   function dismiss(markHandled=true) {
@@ -379,7 +416,7 @@
     if (active && originKey === key) return;
     const next = nextEpisodeTarget();
     if (!next) return; // Nothing else in the currently listed seasons to play.
-    beginCountdown(next,key);
+    beginCountdown(next,key,numberValue(detail.countdownMs)||10000,detail.waitForEpisodeEnd===true);
   }
 
   function rootsOf(value) {
@@ -440,7 +477,7 @@
   // Poll the site's unified telemetry bridge as a fallback. This catches sources
   // that report a final position but omit a clean "ended" event from postMessage.
   function pollUnifiedEndState() {
-    if (active || document.visibilityState === 'hidden') return;
+    if (document.visibilityState === 'hidden') return;
     const node = document.getElementById('f2w-premid-state');
     if (!node) return;
     const state = node.dataset || {};
@@ -450,15 +487,31 @@
     const episode = numberValue(state.episode);
     if (season && season !== numberValue(seasonSelect()?.value || params.get('season') || 1)) return;
     if (episode && episode !== numberValue(episodeSelect()?.value || params.get('episode') || 1)) return;
-    if (['ended','end','completed','complete','finished','finish'].includes(status)) {
+    const terminal = ['ended','end','completed','complete','finished','finish'].includes(status);
+    const position = Number(state.position);
+    const duration = Number(state.duration);
+
+    if (active) {
+      if (originKey !== playbackKey()) { dismiss(false); return; }
+      if (waitForEpisodeEnd && terminal) {
+        remainingMs = 0;
+        updateCountdown();
+      }
+      return;
+    }
+    if (terminal) {
       handleCompletion({mediaType:'tv',mediaId,season,episode});
       return;
     }
-    const position = Number(state.position);
-    const duration = Number(state.duration);
+    // Show the card during the final five minutes. Its timer follows the shared
+    // playback clock, so pausing or buffering will not skip content.
     if (status === 'playing' && Number.isFinite(position) && Number.isFinite(duration) &&
-        duration > 0 && position >= duration - 1.25) {
-      handleCompletion({mediaType:'tv',mediaId,season,episode});
+        duration > 0 && position > 0 && duration-position <= 300) {
+      const next = nextEpisodeTarget();
+      if (next) handleCompletion({
+        mediaType:'tv',mediaId,season,episode,
+        countdownMs:Math.max(1000,(duration-position)*1000),waitForEpisodeEnd:true
+      });
     }
   }
   setInterval(pollUnifiedEndState,500);
@@ -500,4 +553,4 @@
     }
   });
 })();
-// f2w-force-save: next episode countdown republish 2026-10-12
+// f2w-force-save: next episode final-five-minutes countdown 2026-10-12
