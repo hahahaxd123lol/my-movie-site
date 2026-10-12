@@ -8,6 +8,12 @@
   let displayName = '';
   let applyingRemoteEpisode = false;
   let lastSentEpisode = '';
+  let observedPlaybackStatus = '';
+  let observedPlaybackSeconds = null;
+  let lastPlaybackBroadcastAt = 0;
+  let lastRemoteCommandAt = 0;
+  let lastRemoteSeekAt = 0;
+  let suppressPlaybackBroadcastUntil = 0;
   const participants = new Map();
   const seenChat = new Set();
 
@@ -35,6 +41,50 @@
   }
   function episodeKey(value) {
     return value ? [value.mediaType, value.mediaId, value.season, value.episode].join(':') : '';
+  }
+  function currentMedia() {
+    const params = new URLSearchParams(location.search);
+    return {
+      mediaId: String(params.get('id') || params.get('mediaId') || params.get('tmdb') || ''),
+      mediaType: String(params.get('type') || params.get('mediaType') || 'movie').toLowerCase() === 'tv' ? 'tv' : 'movie'
+    };
+  }
+  function sendPlayerCommand(action, seconds) {
+    const frame = document.getElementById('video-frame');
+    if (!frame?.contentWindow) return false;
+    let target = 'https://player.flix2watch.com';
+    try { target = new URL(String(frame.src || ''), location.href).origin; } catch (_) {}
+    const payload = { type: 'PLAYER_COMMAND', action: action, command: action };
+    if (action === 'seek') {
+      const position = Math.max(0, Number(seconds) || 0);
+      Object.assign(payload, { value: position, seconds: position, position: position, time: position });
+    }
+    try { frame.contentWindow.postMessage(payload, target); return true; }
+    catch (_) { return false; }
+  }
+  function applyRemotePlayback(state) {
+    if (!state || state.mediaId == null) return;
+    const media = currentMedia();
+    if (String(state.mediaId) !== media.mediaId || String(state.mediaType || 'movie') !== media.mediaType) return;
+    const now = Date.now();
+    const targetStatus = String(state.status || '').toLowerCase();
+    const isPlaying = /play|resume|start/.test(targetStatus);
+    const isPaused = /pause|stop/.test(targetStatus);
+    if ((isPlaying || isPaused) && now - lastRemoteCommandAt > 1800 && observedPlaybackStatus !== (isPlaying ? 'playing' : 'paused')) {
+      suppressPlaybackBroadcastUntil = now + 1800;
+      sendPlayerCommand(isPlaying ? 'play' : 'pause');
+      observedPlaybackStatus = isPlaying ? 'playing' : 'paused';
+      lastRemoteCommandAt = now;
+    }
+    const remoteSeconds = Number(state.seconds);
+    if (Number.isFinite(remoteSeconds) && remoteSeconds >= 0 &&
+        (observedPlaybackSeconds == null || Math.abs(observedPlaybackSeconds - remoteSeconds) > 6) &&
+        now - lastRemoteSeekAt > 6000) {
+      suppressPlaybackBroadcastUntil = now + 1800;
+      sendPlayerCommand('seek', remoteSeconds);
+      observedPlaybackSeconds = remoteSeconds;
+      lastRemoteSeekAt = now;
+    }
   }
   function buildPanel() {
     const panel = document.createElement('section');
@@ -91,7 +141,7 @@
           <form class="wp-chat-row" id="f2w-party-chat-form"><input id="f2w-party-chat-input" maxlength="500" placeholder="Say something to the party…" aria-label="Party message" autocomplete="off"><button class="wp-primary" type="submit">Send</button></form>
           <div class="wp-status" id="f2w-party-status" role="status">Create a room or open a friend's invite link.</div>
         </div>
-        <aside class="wp-side"><div class="wp-label">In this room <span id="f2w-party-count" style="color:#f7f7fb">· 0</span></div><div class="wp-people" id="f2w-party-people"><div class="wp-empty">No one here yet. Invite your friends.</div></div><div style="margin-top:20px"><div class="wp-label">Shared playback</div><div class="wp-sub">TV episode selection syncs between guests. Play/pause and seek need player-provider control support; that part is still being wired up.</div></div></aside>
+        <aside class="wp-side"><div class="wp-label">In this room <span id="f2w-party-count" style="color:#f7f7fb">· 0</span></div><div class="wp-people" id="f2w-party-people"><div class="wp-empty">No one here yet. Invite your friends.</div></div><div style="margin-top:20px"><div class="wp-label">Shared playback</div><div class="wp-sub">TV episode, play/pause and seek sync between guests when the embedded player accepts remote commands.</div></div></aside>
       </div>
       <div class="wp-foot"><span>🔒 Private invite link · Only people with the link can join</span><span id="f2w-party-room-label">No room created</span></div>`;
     const player = document.querySelector('.player-wrapper');
@@ -185,8 +235,9 @@
             } else if (message.type === 'episode-change') {
               applyEpisode(message.episode);
             } else if (message.type === 'playback-state' && message.state) {
+              applyRemotePlayback(message.state);
               const label = message.state.status ? String(message.state.status) : 'updated';
-              setStatus('Room connected · playback status: ' + label, true);
+              setStatus('Room connected · playback sync active (' + label + ').', true);
             } else if (message.type === 'chat-message' && message.participantId !== participantId) {
               addChatMessage(message.name, message.text, message.messageId);
             }
@@ -280,7 +331,21 @@
       const payload = event.data;
       if (!payload || payload.type !== 'PLAYER_EVENT' || !payload.data) return;
       const progress = Number(payload.data.player_progress || 0);
-      const state = { status: String(payload.data.player_status || ''), seconds: Number.isFinite(progress) && progress >= 0 ? progress : 0, duration: Number(payload.data.player_duration || payload.data.duration || 0) };
+      const status = String(payload.data.player_status || '').toLowerCase();
+      if (Number.isFinite(progress) && progress >= 0) observedPlaybackSeconds = progress;
+      if (/play|resume|start/.test(status)) observedPlaybackStatus = 'playing';
+      else if (/pause|stop/.test(status)) observedPlaybackStatus = 'paused';
+      const now = Date.now();
+      if (now < suppressPlaybackBroadcastUntil || now - lastPlaybackBroadcastAt < 700) return;
+      const media = currentMedia();
+      const episode = currentEpisode();
+      const state = {
+        mediaId: media.mediaId, mediaType: media.mediaType,
+        status: status, seconds: Number.isFinite(progress) && progress >= 0 ? progress : 0,
+        duration: Number(payload.data.player_duration || payload.data.duration || 0),
+        season: episode?.season || null, episode: episode?.episode || null
+      };
+      lastPlaybackBroadcastAt = now;
       connection.send({ type: 'playback-state', state }).catch(() => {});
     });
     const initialRoom = new URLSearchParams(location.search).get(PARAM);
