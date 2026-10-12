@@ -14,6 +14,8 @@
   let lastSentSource = '';
   let observedPlaybackStatus = '';
   let observedPlaybackSeconds = null;
+  let lastPlayerReportedSeconds = null;
+  let fallbackSeekTarget = null;
   let lastPlaybackBroadcastAt = 0;
   let lastRemoteCommandAt = 0;
   let lastRemoteSeekAt = 0;
@@ -97,6 +99,21 @@
     }
     return sent;
   }
+  function fallbackSeekViaVidFastStartAt(seconds) {
+    // VidFast exposes startAt as a URL-based resume fallback. Only use it for
+    // that provider; other embeds have different contracts and must not reload.
+    if (currentSource() !== 'vidfast') return false;
+    const frame = document.getElementById('video-frame');
+    if (!frame) return false;
+    try {
+      const url = new URL(String(frame.src || ''), location.href);
+      if ((url.hostname !== 'vidfast.pro' && url.hostname !== 'www.vidfast.pro') || !url.pathname.includes('/embed/')) return false;
+      url.searchParams.set('startAt', String(Math.max(0, Math.floor(Number(seconds) || 0))));
+      if (url.toString() === frame.src) return false;
+      frame.src = url.toString();
+      return true;
+    } catch (_) { return false; }
+  }
   function applyRemotePlayback(state) {
     if (!state || state.mediaId == null) return;
     const media = currentMedia();
@@ -120,6 +137,16 @@
       sendPlayerCommand('seek', remoteSeconds);
       observedPlaybackSeconds = remoteSeconds;
       lastRemoteSeekAt = now;
+      if (isExplicitSeek && fallbackSeekTarget !== remoteSeconds) {
+        fallbackSeekTarget = remoteSeconds;
+        const expectedTarget = remoteSeconds;
+        setTimeout(() => {
+          if (!connection || fallbackSeekTarget !== expectedTarget) return;
+          const reported = lastPlayerReportedSeconds;
+          if (Number.isFinite(reported) && Math.abs(reported - expectedTarget) <= 2.5) return;
+          fallbackSeekViaVidFastStartAt(expectedTarget);
+        }, 1400);
+      }
     }
   }
   function buildPanel() {
@@ -729,7 +756,11 @@
       const isPaused = /(^|[^a-z])(pause|paused|stop|stopped)([^a-z]|$)/.test(status) || /player.?pause/.test(type);
       const isSeek = /seek|time.?update|progress|timeupdate/.test(status + ' ' + type);
       if (!isPlaying && !isPaused && !isSeek && !hasProgress) return;
-      if (hasProgress) observedPlaybackSeconds = progress;
+      if (hasProgress) {
+        observedPlaybackSeconds = progress;
+        lastPlayerReportedSeconds = progress;
+        if (fallbackSeekTarget != null && Math.abs(progress - fallbackSeekTarget) <= 2.5) fallbackSeekTarget = null;
+      }
       if (isPlaying) observedPlaybackStatus = 'playing';
       else if (isPaused) observedPlaybackStatus = 'paused';
       const now = Date.now();
@@ -782,7 +813,11 @@
           lastTelemetryCommandAt = now;
         }
         if (status === 'playing' || status === 'paused') lastTelemetryStatus = status;
-        if (hasPosition) lastTelemetryPosition = position;
+        if (hasPosition) {
+          lastTelemetryPosition = position;
+          lastPlayerReportedSeconds = position;
+          if (fallbackSeekTarget != null && Math.abs(position - fallbackSeekTarget) <= 2.5) fallbackSeekTarget = null;
+        }
         if (now - lastPlaybackBroadcastAt >= 900 && (status === 'playing' || status === 'paused' || hasPosition)) {
           lastPlaybackBroadcastAt = now;
           connection.send({ type: 'playback-state', state: {
