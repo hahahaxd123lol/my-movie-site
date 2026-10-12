@@ -44,7 +44,7 @@ html.f2w-transition-leaving body{
 
 
 /* v137 — keep long catalog pages cheaper to paint while scrolling */
-html{scrollbar-gutter:stable}
+html{scroll-behavior:smooth;scrollbar-gutter:stable}
 @supports (content-visibility:auto){
   .movie-card,
   .movie-grid>.movie-card,
