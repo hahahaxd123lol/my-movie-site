@@ -26,7 +26,7 @@ function json(res, status, data) {
   res.end(body);
 }
 function originAllowed(origin) {
-  return !origin || allowedOrigins.has(origin);
+  return Boolean(origin && allowedOrigins.has(origin));
 }
 function cors(req, res) {
   const origin = req.headers.origin;
