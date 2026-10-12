@@ -276,7 +276,7 @@ server.on('upgrade', (req, socket, head) => {
           room.state.playbackState = {
             mediaId: room.state.media.id, mediaType: room.state.media.type,
             status: String(state.status || '').slice(0, 24),
-            seconds: Math.max(0, Math.min(864000, Number(state.seconds) || 0)),
+            seconds: state.seconds == null || !Number.isFinite(Number(state.seconds)) ? null : Math.max(0, Math.min(864000, Number(state.seconds))),
             duration: Math.max(0, Math.min(864000, Number(state.duration) || 0))
           };
           broadcast(room, { type: 'playback-state', state: room.state.playbackState }, client);
@@ -285,7 +285,7 @@ server.on('upgrade', (req, socket, head) => {
       }
       if (message.type === 'playback-command') {
         if (['play', 'pause', 'seek'].includes(message.action)) {
-          const seconds = Math.max(0, Math.min(864000, Number(message.seconds) || 0));
+          const seconds = message.seconds == null || !Number.isFinite(Number(message.seconds)) ? null : Math.max(0, Math.min(864000, Number(message.seconds)));
           room.state.playbackState = {
             mediaId: room.state.media.id,
             mediaType: room.state.media.type,
