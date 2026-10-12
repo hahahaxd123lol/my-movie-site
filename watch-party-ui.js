@@ -230,6 +230,9 @@
             return;
           }
           if (remoteSeekRetryCount++ >= 2) {
+            // URL-based recovery reloads autoplaying embeds; reapply the host's
+            // authoritative play/pause state once the reloaded player is ready.
+            pendingRemotePlaybackState = { ...state, __forceSync: false };
             fallbackSeekViaVidFastStartAt(remoteSeconds);
             remoteSeekRetryTimer = null;
             return;
