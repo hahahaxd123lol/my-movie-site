@@ -203,18 +203,7 @@
           flix2watchEmbed = url.hostname === 'player.flix2watch.com' &&
             /^\/embed\/(tv|movie)(\/|$)/.test(url.pathname);
         } catch (_) {}
-        if (flix2watchEmbed && (forceSync || isExplicitSeek)) {
-          // Reload once at the host's authoritative position, then replay its
-          // play/pause state after the embedded player has booted.
-          pendingRemotePlaybackState = { ...state, __forceSync: false };
-          suppressPlaybackBroadcastUntil = now + 1100;
-          fallbackSeekTarget = remoteSeconds;
-          lastRemoteSeekAt = now;
-          if (remoteSeekRetryTimer) clearTimeout(remoteSeekRetryTimer);
-          remoteSeekRetryTimer = null;
-          fallbackSeekViaVidFastStartAt(remoteSeconds);
-          return;
-        }
+        
         suppressPlaybackBroadcastUntil = now + 1100;
         sendPlayerCommand('seek', remoteSeconds);
         lastRemoteSeekAt = now;
@@ -236,10 +225,10 @@
             return;
           }
           if (remoteSeekRetryCount++ >= 2) {
-            // URL-based recovery reloads autoplaying embeds; reapply the host's
-            // authoritative play/pause state once the reloaded player is ready.
-            pendingRemotePlaybackState = { ...state, __forceSync: false };
-            fallbackSeekViaVidFastStartAt(remoteSeconds);
+            // Never reload an embed to recover a seek: that restarts playback
+            // for the participant and can create a command/telemetry feedback loop.
+            // Leave the player in place if its provider ignores remote seeking.
+            fallbackSeekTarget = null;
             remoteSeekRetryTimer = null;
             return;
           }
