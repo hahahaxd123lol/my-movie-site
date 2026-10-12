@@ -1,5 +1,5 @@
-/* Flix2Watch v185 — fresh critical-code service worker */
-const CACHE='f2w-v251-staff-page-cache-reset-20261011';
+/* Flix2Watch v252 — unified sitewide service worker */
+const CACHE='f2w-v252-unified-worker-cleanup-20261012';
 const CORE=[
   '/home/','/profile/index.html','/chat/','/watch/','/leaderboard/',
   '/v159-core.js','/v160-bootstrap.js','/v174-viewport-popups.js','/v176-sitewide.js','/v176-sitewide.css','/final-v35.js',

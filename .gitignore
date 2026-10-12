@@ -1,0 +1,19 @@
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+!.env.example.*
+
+# Supabase CLI-generated project metadata; recreate locally with the CLI
+/supabase/.temp/
+
+# Local dependencies, builds, and test output
+node_modules/
+dist/
+build/
+coverage/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.log

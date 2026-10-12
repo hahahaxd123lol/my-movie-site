@@ -290,12 +290,12 @@
 // f2w-force-save:navigation-warmup-v33:1788217440
  
 
-/* F2W v34 — service worker navigation accelerator */
+/* F2W unified sitewide service worker registration */
 (() => {
   'use strict';
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/sw-v34.js?v=160-20260902',{scope:'/'})
+    navigator.serviceWorker.register('/sw.js',{scope:'/'})
       .catch(error=>console.warn('F2W service worker registration failed:',error));
   },{once:true,passive:true});
 })();
