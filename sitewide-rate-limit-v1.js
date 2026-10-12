@@ -35,12 +35,24 @@
         const {data,error}=await client.auth.getSession();
         const user=data?.session?.user;
         if(error||!user){staffStatus='ready';render();return false;}
-        let isStaff=(String(user.id).toLowerCase()==='f5454804-a2a6-4602-9086-51cf51f11c77');
+        const uid=String(user.id||'').toLowerCase();
+        let isStaff=(uid==='f5454804-a2a6-4602-9086-51cf51f11c77');
+        // Use the actual role assignment as the source of truth for staff accounts.
+        try{
+          const result=await client.from('profile_role_assignments')
+            .select('role_key')
+            .eq('user_id',user.id)
+            .ilike('role_key','staff')
+            .maybeSingle();
+          if(!result.error&&result.data)isStaff=true;
+        }catch{}
+        // Keep the moderator table as a compatibility path for existing staff.
         try{
           const result=await client.from('chat_moderators').select('user_id').eq('user_id',user.id).maybeSingle();
           if(!result.error&&result.data)isStaff=true;
         }catch{}
-        if(!isStaff&&client.rpc){
+        // The security-definer RPC can resolve roles even when table RLS hides rows.
+        if(client.rpc){
           try{
             const {data:access,error:rpcError}=await client.rpc('get_staff_page_access_v123');
             if(!rpcError&&access&&['owner','staff'].includes(String(access.role||'').toLowerCase()))isStaff=true;
