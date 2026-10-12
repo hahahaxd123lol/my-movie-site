@@ -3137,6 +3137,112 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </aside>
   </div>
 
+  <section id="f2w-home-watch-party" aria-labelledby="f2w-home-watch-party-title">
+    <div class="f2w-home-party-copy">
+      <span class="f2w-home-party-kicker"><i class="fa-solid fa-users"></i> WATCH TOGETHER</span>
+      <h2 id="f2w-home-watch-party-title">Join a Watch Party</h2>
+      <p>Got a room code from a friend? Enter it here and jump straight into their movie or episode.</p>
+    </div>
+    <form id="f2w-home-party-form" class="f2w-home-party-form">
+      <label class="f2w-home-party-sr" for="f2w-home-party-code">Six-character room code</label>
+      <input id="f2w-home-party-code" name="roomCode" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" maxlength="6" pattern="[A-HJ-NP-Z2-9]{6}" placeholder="ENTER CODE" aria-describedby="f2w-home-party-status" required>
+      <button id="f2w-home-party-join" type="submit"><i class="fa-solid fa-right-to-bracket"></i> Join Party</button>
+    </form>
+    <p id="f2w-home-party-status" role="status" aria-live="polite"></p>
+  </section>
+  <style id="f2w-home-watch-party-style">
+    #f2w-home-watch-party{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:24px;max-width:1240px;margin:28px auto 34px;padding:24px 28px;border:1px solid rgba(229,9,20,.38);border-radius:18px;background:linear-gradient(115deg,rgba(229,9,20,.13),rgba(20,20,25,.96) 52%,rgba(35,35,42,.88));box-shadow:0 12px 38px rgba(0,0,0,.2)}
+    #f2w-home-watch-party .f2w-home-party-copy{min-width:0}
+    #f2w-home-watch-party .f2w-home-party-kicker{font-size:11px;font-weight:800;letter-spacing:.16em;color:#ff626b}
+    #f2w-home-watch-party h2{margin:7px 0 5px;color:#fff;font-size:clamp(22px,3vw,30px);line-height:1.15}
+    #f2w-home-watch-party p{margin:0;color:#bdbdc5;font-size:14px;line-height:1.5}
+    #f2w-home-watch-party .f2w-home-party-form{display:flex;flex:0 1 410px;gap:9px;min-width:0}
+    #f2w-home-watch-party-code,#f2w-home-watch-party input{box-sizing:border-box;min-width:0;width:100%;height:48px;border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(0,0,0,.35);color:#fff;padding:0 14px;font-size:16px;font-weight:800;letter-spacing:.16em;text-align:center;text-transform:uppercase;outline:none}
+    #f2w-home-watch-party input:focus{border-color:#e50914;box-shadow:0 0 0 3px rgba(229,9,20,.15)}
+    #f2w-home-watch-party input::placeholder{color:#85858d}
+    #f2w-home-watch-party button{flex:0 0 auto;height:48px;border:0;border-radius:10px;padding:0 17px;background:#e50914;color:#fff;font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer}
+    #f2w-home-watch-party button:disabled{opacity:.65;cursor:wait}
+    #f2w-home-watch-party #f2w-home-party-status{flex-basis:100%;margin-top:-14px;font-size:13px}
+    #f2w-home-watch-party #f2w-home-party-status:empty{display:none}
+    #f2w-home-watch-party #f2w-home-party-status[data-error="true"]{color:#ff8b91}
+    #f2w-home-watch-party #f2w-home-party-status[data-error="false"]{color:#8de4b1}
+    .f2w-home-party-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:700px){#f2w-home-watch-party{display:block;margin:20px 14px 28px;padding:20px 17px}#f2w-home-watch-party .f2w-home-party-form{margin-top:16px;display:grid;grid-template-columns:minmax(0,1fr) auto}#f2w-home-watch-party button{padding:0 12px}#f2w-home-watch-party #f2w-home-party-status{margin-top:10px}}
+  </style>
+  <script id="f2w-home-watch-party-join">
+  (() => {
+    'use strict';
+    const form = document.getElementById('f2w-home-party-form');
+    const input = document.getElementById('f2w-home-party-code');
+    const button = document.getElementById('f2w-home-party-join');
+    const status = document.getElementById('f2w-home-party-status');
+    if (!form || !input || !button || !status) return;
+    const api = 'https://flix2watch-watch-party-api.onrender.com';
+    const codePattern = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/;
+    const cleanName = value => String(value || '').replace(/[<>\\u0000-\\u001f]/g, '').trim().slice(0, 28);
+    function showStatus(message, error) {
+      status.textContent = message;
+      status.dataset.error = String(Boolean(error));
+    }
+    input.addEventListener('input', () => {
+      input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      status.textContent = '';
+      delete status.dataset.error;
+    });
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const code = input.value.trim().toUpperCase();
+      if (!codePattern.test(code)) {
+        showStatus('Enter the 6-character room code from your host.', true);
+        input.focus();
+        return;
+      }
+      button.disabled = true;
+      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Joining…';
+      showStatus('Connecting to the Watch Party service… this can take a moment.', false);
+      try {
+        const savedName = cleanName(localStorage.getItem('f2w_party_name'));
+        const accountName = cleanName(localStorage.getItem('f2w_username') || localStorage.getItem('username'));
+        const name = savedName || accountName || ('Guest ' + Math.floor(100 + Math.random() * 900));
+        let response;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 90000);
+            try {
+              response = await fetch(api + '/api/rooms/code/' + encodeURIComponent(code) + '/join', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({name}), cache:'no-store', signal:controller.signal
+              });
+            } finally { clearTimeout(timer); }
+            if (response.ok) break;
+            if (![502,503,504,522,524].includes(response.status) || attempt === 2) {
+              const data = await response.json().catch(() => ({}));
+              throw new Error(data.error || 'Could not join that room. Check the code and try again.');
+            }
+          } catch (error) {
+            if (attempt === 2 || (error.name !== 'AbortError' && !(error instanceof TypeError) && !/502|503|504|522|524/.test(String(error.statusCode || '')))) throw error;
+          }
+          showStatus(attempt === 0 ? 'Waking up the party service… retrying automatically.' : 'Still reconnecting…', false);
+          await new Promise(resolve => setTimeout(resolve, attempt === 0 ? 1800 : 3500));
+        }
+        if (!response?.ok) throw new Error('The Watch Party service is taking too long to wake. Please try again.');
+        const result = await response.json();
+        if (!/^[a-f0-9]{24}$/i.test(String(result.roomId || '')) || !result.token) throw new Error('The party service returned an invalid room response.');
+        sessionStorage.setItem('f2w_party_token_' + result.roomId, result.token);
+        sessionStorage.setItem('f2w_party_code_' + result.roomId, code);
+        sessionStorage.setItem('f2w_party_name', name);
+        showStatus('Joined! Opening the movie your host is watching…', false);
+        location.assign('/watch/?party=' + encodeURIComponent(result.roomId));
+      } catch (error) {
+        showStatus(error.message || 'Could not join that party. Please try again.', true);
+        button.disabled = false;
+        button.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Join Party';
+      }
+    });
+  })();
+  </script>
+
   <div class="staff-curated-top-wrap">
     <section class="staff-curated-section" id="staff-curated-section" hidden>
       <div class="staff-curated-head">
