@@ -224,7 +224,7 @@
       const drift = Number.isFinite(actualSeconds) ? Math.abs(actualSeconds - remoteSeconds) : Infinity;
       const threshold = forceSync || isExplicitSeek ? 0.8 : 2.5;
       const minSeekInterval = forceSync || isExplicitSeek ? 700 : 5000;
-      if (drift > threshold && now - lastRemoteSeekAt > minSeekInterval) {
+      if ((forceSync || isExplicitSeek) && drift > threshold && now - lastRemoteSeekAt > minSeekInterval) {
         // The default Flix2Watch API embed reports PLAYER_EVENT telemetry and
         // accepts startAt on its embed URL, but its inbound seek postMessage
         // contract is not documented. For an explicit seek, use the URL-based
