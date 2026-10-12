@@ -82,20 +82,27 @@
     const active = document.querySelector('.server-btn.active');
     return active?.dataset?.server ? String(active.dataset.server) : '';
   }
+  // Watch Party is deliberately locked to the Flix2Watch API player.
+  // Other site sources remain available outside a party and are never synced.
+  const PARTY_PLAYER_SOURCE = 'flix2watchapi';
+  function partyIsActive() {
+    return Boolean(connection) || new URLSearchParams(location.search).has(PARAM);
+  }
   function applySource(source) {
+    if (partyIsActive()) source = PARTY_PLAYER_SOURCE;
     if (!source || typeof source !== 'string' || source.length > 80) return;
     const button = [...document.querySelectorAll('.server-btn')].find(item => item.dataset.server === source);
     if (!button || button.classList.contains('active')) return;
     applyingRemoteSource = true;
     button.click();
-    setTimeout(() => { applyingRemoteSource = false; }, 800);
+    setTimeout(() => { applyingRemoteSource = false; }, 1200);
   }
   function broadcastSource() {
     if (!connection || applyingRemoteSource) return;
     const source = currentSource();
-    if (!source || source === lastSentSource) return;
+    if (source !== PARTY_PLAYER_SOURCE || source === lastSentSource) return;
     lastSentSource = source;
-    connection.send({ type: 'source-change', source }).catch(error => console.warn('[Watch Party] source sync failed', error));
+    connection.send({ type: 'source-change', source: PARTY_PLAYER_SOURCE }).catch(error => console.warn('[Watch Party] source sync failed', error));
   }
   function currentMedia() {
     const params = new URLSearchParams(location.search);
@@ -533,9 +540,23 @@
       if (!window.F2WWatchPartyRealtime) { setStatus('Party service is unavailable. Refresh and try again.'); return; }
       if (!/^[a-f0-9]{24}$/i.test(String(roomId || ''))) { setStatus('That room could not be found.'); return; }
       if (connection) await connection.close();
+      connection = null;
       hasAnnouncedPlayerReady = false;
       participants.clear(); renderPeople();
-      setStatus('Connecting to your room…', false);
+      setStatus('Preparing the Flix2Watch API player…', false);
+      // Never let a party inherit a different server. Switch once on entry;
+      // playback sync itself must not rebuild the iframe or switch providers.
+      const partyPlayerButton = [...document.querySelectorAll('.server-btn')].find(item => item.dataset.server === PARTY_PLAYER_SOURCE);
+      if (!partyPlayerButton) {
+        setStatus('Watch Party requires the Flix2Watch API player, but that source is unavailable on this page.', false);
+        return;
+      }
+      if (!partyPlayerButton.classList.contains('active')) {
+        applyingRemoteSource = true;
+        partyPlayerButton.click();
+        await new Promise(resolve => setTimeout(resolve, 300));
+        applyingRemoteSource = false;
+      }
       try {
         let token = issuedToken || sessionStorage.getItem('f2w_party_token_' + roomId) || '';
         if (!token) {
@@ -844,8 +865,18 @@
     const sourceObserver = new MutationObserver(broadcastSource);
     sourceObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
     document.addEventListener('click', event => {
-      if (event.target?.closest?.('.server-btn')) setTimeout(broadcastSource, 120);
-    });
+      const sourceButton = event.target?.closest?.('.server-btn');
+      if (!sourceButton) return;
+      if (partyIsActive() && sourceButton.dataset.server !== PARTY_PLAYER_SOURCE) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setStatus('Watch Party is locked to the Flix2Watch API player. Leave the party to use another source.', true);
+        // Restore the required player if another handler changed selection.
+        setTimeout(() => applySource(PARTY_PLAYER_SOURCE), 0);
+        return;
+      }
+      setTimeout(broadcastSource, 120);
+    }, true);
     const startupFrame = document.getElementById('video-frame');
     if (startupFrame) {
       startupFrame.addEventListener('load', startPlayerStartupWindow);
