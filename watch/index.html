@@ -914,12 +914,18 @@ html{overflow-y:scroll}
 
       // Keep Flix2Watch's own episode selectors in sync after VidSrcMe finishes
       // and auto-advances. We do not force any source switch.
-      if (status === 'completed' && eventType === 'tv' && currentServer === 'flix2watchapi') {
-        const episodeSelect = document.getElementById('episode-select');
-        const nextEpisode = e + 1;
-        if (episodeSelect && [...episodeSelect.options].some(opt => Number(opt.value) === nextEpisode)) {
-          episodeSelect.value = String(nextEpisode);
-        }
+      if (status === 'completed' && eventType === 'tv') {
+        // Let the shared next-episode overlay own the countdown; do not
+        // silently change the selector or let the provider skip the countdown.
+        window.dispatchEvent(new CustomEvent('f2w:player-completed', {
+          detail: {
+            mediaType: 'tv',
+            mediaId: Number(mediaId),
+            season: s,
+            episode: e,
+            source: currentServer
+          }
+        }));
       }
     });
 
@@ -7125,7 +7131,7 @@ if(currentUser){
           const idParam = currentImdbId ? `imdb=${encodeURIComponent(currentImdbId)}` : `tmdb=${encodeURIComponent(mediaId)}`;
           const common = `${idParam}&autoplay=1`; // v158: keep provider URL valid; captions are disabled via player messaging below
           embedUrl = mediaType === 'tv'
-            ? `https://player.flix2watch.com/embed/tv?${common}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&autonext=1`
+            ? `https://player.flix2watch.com/embed/tv?${common}&season=${encodeURIComponent(seasonNum)}&episode=${encodeURIComponent(episodeNum)}&autonext=0`
             : `https://player.flix2watch.com/embed/movie?${common}`;
 
           // Restore VidSrcMe position when we have one. The provider accepts
@@ -10901,6 +10907,7 @@ body.f2w-watch-page #account-modal .account-card {
 </script>
 
 <script src="/watched-episodes-v1.js?v=5" defer></script>
+<script src="/next-episode-autoplay-v1.js?v=1" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:watch:1adf5a17e0 -->
