@@ -120,7 +120,7 @@ const server = http.createServer(async (req, res) => {
       const room = {
         id, createdAt: Date.now(), emptySince: Date.now(), state: { media: cleanMedia(body.media), episode: null, source: '', playbackState: null },
         passwordSalt: password ? crypto.randomBytes(16) : null,
-        passwordHash: null, members: new Map(), clients: new Set()
+        passwordHash: null, members: new Map(), clients: new Set(), joinAttempts: new Map()
       };
       if (password) room.passwordHash = passwordDigest(password, room.passwordSalt);
       room.members.set(hostToken, { host: true, name });
@@ -139,7 +139,24 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const name = safeName(body.name);
       const password = String(body.password || '');
-      if (!passwordMatches(room, password)) return json(res, 403, { error: 'That room password is incorrect.' });
+      const forwardedFor = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+      const ip = forwardedFor || req.socket.remoteAddress || 'unknown';
+      const now = Date.now();
+      const attempt = room.joinAttempts.get(ip) || { times: [], cooldownUntil: 0 };
+      if (now < attempt.cooldownUntil) {
+        return json(res, 429, { error: 'Too many password attempts. Try again in ' + Math.ceil((attempt.cooldownUntil - now) / 1000) + ' seconds.' });
+      }
+      attempt.times = attempt.times.filter(at => now - at < 60000);
+      if (!passwordMatches(room, password)) {
+        attempt.times.push(now);
+        if (attempt.times.length >= 8) {
+          attempt.cooldownUntil = now + 30000;
+          attempt.times = [];
+        }
+        room.joinAttempts.set(ip, attempt);
+        return json(res, 403, { error: 'That room password is incorrect.' });
+      }
+      room.joinAttempts.delete(ip);
       if (publicParticipants(room).length >= MAX_ROOM_PEOPLE) return json(res, 409, { error: 'This room is full.' });
       const memberToken = token();
       room.members.set(memberToken, { host: false, name });
