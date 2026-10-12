@@ -129,20 +129,19 @@ function relayCommand(action, seconds) {
     action: String(action),
     seconds: Number.isFinite(Number(seconds)) ? Math.max(0, Number(seconds)) : null
   };
-  // The watch page is the top-level tab, while the video controller is commonly
-  // inside a cross-origin player iframe. Enumerate frames and target only the
-  // Flix2Watch player origin; tabs.sendMessage without frameId reaches only the top frame.
+  // Route commands through the preview watch page. It owns the player iframe
+  // and uses the same postMessage bridge as the site's Watch Party controller.
   chrome.tabs.query({}, tabs => {
-    for (const tab of tabs) {
-      if (tab.id == null) continue;
-      chrome.webNavigation.getAllFrames({ tabId: tab.id }, frames => {
-        if (chrome.runtime.lastError || !Array.isArray(frames)) return;
-        for (const frame of frames) {
-          if (frame.frameId === 0 || !String(frame.url || "").startsWith("https://player.flix2watch.com/")) continue;
-          chrome.tabs.sendMessage(tab.id, payload, { frameId: frame.frameId }).catch(() => {});
-        }
-      });
+    const previewTabs = tabs.filter(tab =>
+      tab.id != null &&
+      String(tab.url || "").startsWith("https://flix2watch-watch-party-preview.onrender.com/watch/")
+    );
+    for (const tab of previewTabs) {
+      chrome.tabs.sendMessage(tab.id, payload).catch(() => {});
     }
+    sendStatus("command-relay", previewTabs.length
+      ? action + " sent to " + previewTabs.length + " preview watch tab(s)"
+      : "No preview watch tab found for " + action + ".");
   });
 }
 
