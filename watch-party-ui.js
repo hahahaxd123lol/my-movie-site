@@ -158,9 +158,9 @@
         #f2w-watch-party input:focus{border-color:var(--wp-accent)}
         #f2w-watch-party .wp-status{font-size:12px;color:#c5c5d0;margin-top:10px;min-height:18px}
         #f2w-watch-party .wp-code-box{padding:14px 20px 18px;border-top:1px solid #ffffff12;border-bottom:1px solid #ffffff12;background:#0003}
-        #f2w-watch-party .wp-password-box label{display:block;font-size:12px;font-weight:700;margin-bottom:8px}
+        #f2w-watch-party .wp-code-box label{display:block;font-size:12px;font-weight:700;margin-bottom:8px}
         #f2w-watch-party  .wp-code-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
-        #f2w-watch-party .wp-password-actions button{flex:0 1 auto}
+        #f2w-watch-party .wp-code-actions button{flex:0 1 auto}
 
         #f2w-watch-party .wp-status:before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#747482;margin-right:8px}
         #f2w-watch-party .wp-status[data-connected="true"]:before{background:#4ade80;box-shadow:0 0 10px #4ade8088}
@@ -221,7 +221,7 @@
         <div><div class="wp-kicker">FLIX2WATCH · WATCH TOGETHER</div><div class="wp-title">Watch Party <span style="font-size:13px;color:#8f8f9d;font-weight:500">/ your room</span></div><div class="wp-sub">Create a room, share its code, and watch together.</div></div>
         <div class="wp-actions"><button type="button" id="f2w-party-copy" hidden>Copy code</button><button type="button" id="f2w-party-create" class="wp-primary">＋ Create party</button><button type="button" id="f2w-party-leave" hidden>Leave room</button></div>
       </div>
-      <div id="f2w-party-join-box" class="wp-password-box">
+      <div id="f2w-party-join-box" class="wp-code-box">
         <label for="f2w-party-code">Have a room code?</label>
         <div class="wp-name-row" style="margin-bottom:0"><input id="f2w-party-code" maxlength="6" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="ENTER CODE" aria-label="Six-character room code"><button type="button" id="f2w-party-join-code" class="wp-primary">Join</button></div>
       </div>
@@ -492,7 +492,7 @@
         roomLabel.textContent = 'ROOM CODE · ' + (activeRoomCode || roomId.slice(0, 6).toUpperCase());
         codeInput.value = '';
         await connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode(), source: currentSource() });
-        setStatus('Connected · invite your friends to join.', true);
+        setStatus('Connected · share the room code with friends.', true);
       } catch (error) {
         console.error('[Watch Party] connection failed', error);
         connection = null;
