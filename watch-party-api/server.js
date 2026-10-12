@@ -178,6 +178,15 @@ server.on('upgrade', (req, socket, head) => {
       if (message.type === 'hello') {
         client.name = safeName(message.participant && message.participant.name || client.name);
         member.name = client.name;
+        const episode = message.episode;
+        if (episode && episode.mediaType === 'tv' && String(episode.mediaId) === room.state.media.id &&
+            Number.isInteger(Number(episode.season)) && Number(episode.season) >= 0 &&
+            Number.isInteger(Number(episode.episode)) && Number(episode.episode) >= 0) {
+          room.state.episode = { mediaType: 'tv', mediaId: room.state.media.id, season: Number(episode.season), episode: Number(episode.episode) };
+          room.state.season = { mediaId: room.state.media.id, season: Number(episode.season) };
+        }
+        const source = String(message.source || '').slice(0, 80);
+        if (/^[a-z0-9_-]+$/i.test(source)) room.state.source = source;
         broadcast(room, { type: 'hello', participant: { id: client.participantId, name: client.name, host: member.host }, episode: room.state.episode, source: room.state.source }, client);
         return;
       }
