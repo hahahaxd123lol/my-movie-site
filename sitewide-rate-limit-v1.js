@@ -13,25 +13,62 @@
   let notice=null, ticker=null;
   let staffStatus='checking';
   let staffBypass=false;
+  let staffCheckPromise=null;
 
-  async function resolveStaffBypass(){
-    try{
-      const client=window.f2wSupabase||window.chatSupabase||window.supabaseClient;
-      if(!client?.auth?.getSession||!client?.rpc){staffStatus='ready';return;}
-      const {data}=await client.auth.getSession();
-      const user=data?.session?.user;
-      if(!user){staffStatus='ready';return;}
-      const {data:access,error}=await client.rpc('get_staff_page_access_v123');
-      if(!error&&access&&['owner','staff'].includes(String(access.role||'').toLowerCase()))staffBypass=true;
-    }catch{}
-    staffStatus='ready';
-    if(staffBypass){
-      writeState({events:[],until:0});
-      if(notice)notice.style.display='none';
-      if(ticker){clearInterval(ticker);ticker=null;}
-    }else render();
+  function getClient(){
+    return window.f2wSupabase||window.chatSupabase||window.supabaseClient||window.__supabaseClient||null;
   }
-  function bypassActive(){return staffStatus!=='ready'||staffBypass;}
+  async function resolveStaffBypass(){
+    if(staffCheckPromise)return staffCheckPromise;
+    staffCheckPromise=(async()=>{
+      let client=null;
+      for(let i=0;i<40;i++){
+        client=getClient();
+        if(client?.auth?.getSession&&client?.from)break;
+        await new Promise(resolve=>setTimeout(resolve,250));
+      }
+      if(!client?.auth?.getSession){staffStatus='ready';render();return false;}
+      try{
+        const {data,error}=await client.auth.getSession();
+        const user=data?.session?.user;
+        if(error||!user){staffStatus='ready';render();return false;}
+        let isStaff=false;
+        try{
+          const result=await client.from('chat_moderators').select('user_id').eq('user_id',user.id).maybeSingle();
+          if(!result.error&&result.data)isStaff=true;
+        }catch{}
+        if(!isStaff&&client.rpc){
+          try{
+            const {data:access,error:rpcError}=await client.rpc('get_staff_page_access_v123');
+            if(!rpcError&&access&&['owner','staff'].includes(String(access.role||'').toLowerCase()))isStaff=true;
+          }catch{}
+        }
+        staffBypass=isStaff;
+      }catch{}
+      staffStatus='ready';
+      if(staffBypass){
+        writeState({events:[],until:0});
+        if(notice)notice.style.display='none';
+        if(ticker){clearInterval(ticker);ticker=null;}
+      }else render();
+      return staffBypass;
+    })();
+    try{return await staffCheckPromise;}finally{staffCheckPromise=null;}
+  }
+  function bindStaffAuth(){
+    const client=getClient();
+    if(client?.auth?.onAuthStateChange&&!client.__f2wRateLimitStaffAuthBound){
+      client.__f2wRateLimitStaffAuthBound=true;
+      client.auth.onAuthStateChange((_event,session)=>{
+        staffStatus='checking';
+        staffBypass=false;
+        staffCheckPromise=null;
+        if(!session?.user){staffStatus='ready';render();return;}
+        void resolveStaffBypass();
+      });
+    }
+  }
+  function bypassActive(){return staffBypass;}
 
   function readState(){
     try{
