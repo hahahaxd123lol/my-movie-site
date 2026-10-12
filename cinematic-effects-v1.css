@@ -1,0 +1,41 @@
+/* Flix2Watch cinematic motion layer — additive and reduced-motion aware */
+#f2w-cinema-atmosphere{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:.4;mix-blend-mode:screen}
+body.f2w-home-page>header{position:relative;z-index:30}
+body.f2w-home-page .f2w-home-stage,body.f2w-home-page main,body.f2w-home-page footer{position:relative;z-index:2}
+body.f2w-home-page .hero-banner{isolation:isolate;overflow:hidden;transform:translateZ(0);transition:background-position .25s ease-out}
+body.f2w-home-page .hero-banner::after{content:"";position:absolute;inset:-30%;z-index:1;pointer-events:none;background:radial-gradient(ellipse at var(--f2w-light-x,50%) var(--f2w-light-y,48%),rgba(255,55,78,.2),transparent 36%),linear-gradient(112deg,transparent 30%,rgba(255,255,255,.08) 48%,transparent 60%);transform:translateX(-55%) rotate(-5deg);animation:f2wLightSweep 12s ease-in-out infinite;mix-blend-mode:screen}
+body.f2w-home-page .hero-banner::before{z-index:0;background:linear-gradient(0deg,var(--bg-main,#08080c),rgba(2,2,4,.48) 55%,rgba(2,2,4,.12)),linear-gradient(90deg,rgba(2,2,4,.42),transparent 75%)}
+body.f2w-home-page .hero-content{z-index:2;filter:drop-shadow(0 8px 32px rgba(0,0,0,.4))}
+body.f2w-home-page .hero-featured-badge{box-shadow:0 0 24px rgba(255,35,61,.25);animation:f2wBadgePulse 3.6s ease-in-out infinite}
+body.f2w-home-page .hero-title{animation:f2wHeroReveal .8s cubic-bezier(.2,.8,.2,1) both;text-wrap:balance}
+body.f2w-home-page .hero-overview{animation:f2wHeroReveal .8s .12s both}
+body.f2w-home-page .hero-actions{animation:f2wHeroReveal .8s .22s both}
+body.f2w-home-page .hero-btn{position:relative;overflow:hidden;box-shadow:0 0 0 1px #ffffff1f inset,0 8px 28px #ff233d28;transition:transform .22s,box-shadow .22s,filter .22s}
+body.f2w-home-page .hero-btn::after{content:"";position:absolute;inset:-40% auto -40% -65%;width:38%;background:linear-gradient(90deg,transparent,#ffffff66,transparent);transform:skewX(-20deg);transition:left .55s;pointer-events:none}
+body.f2w-home-page .hero-btn:hover{transform:translateY(-3px) scale(1.025);box-shadow:0 12px 38px #ff233d48}
+body.f2w-home-page .hero-btn:hover::after{left:135%}
+body.f2w-home-page .movie-grid{perspective:1200px}
+body.f2w-home-page .movie-card{--f2w-card-x:50%;--f2w-card-y:50%;isolation:isolate;transform-style:preserve-3d;will-change:transform,border-color,box-shadow;transition:transform .32s cubic-bezier(.2,.75,.2,1),border-color .32s,box-shadow .32s}
+body.f2w-home-page .movie-card::before{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;background:radial-gradient(320px circle at var(--f2w-card-x) var(--f2w-card-y),rgba(255,65,90,.2),transparent 55%);transition:opacity .25s}
+body.f2w-home-page .movie-card::after{content:"";position:absolute;top:-60%;bottom:-60%;left:-75%;width:42%;z-index:3;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,#ffffff24,transparent);transform:rotate(14deg);transition:transform .75s,left .75s,opacity .25s}
+body.f2w-home-page .movie-card:hover{z-index:5;transform:translateY(-9px) scale(1.025);box-shadow:0 24px 55px #0009,0 0 0 1px #ff465a33,0 0 28px #ff233d28}
+body.f2w-home-page .movie-card:hover::before{opacity:1}
+body.f2w-home-page .movie-card:hover::after{left:135%;opacity:1}
+body.f2w-home-page .movie-card .poster-container{isolation:isolate}
+body.f2w-home-page .movie-card .movie-poster{transition:transform .7s cubic-bezier(.2,.7,.2,1),filter .4s;backface-visibility:hidden}
+body.f2w-home-page .movie-card:hover .movie-poster{transform:scale(1.085);filter:saturate(1.12) contrast(1.04)}
+body.f2w-home-page .movie-card:hover .movie-title{text-shadow:0 0 18px #ff37501f}
+body.f2w-home-page .section-header h2::after,body.f2w-home-page .section-heading-row h2::after{content:"";display:block;width:clamp(34px,5vw,62px);height:3px;margin-top:9px;border-radius:5px;background:linear-gradient(90deg,var(--accent,#ff2438),transparent);box-shadow:0 0 15px #ff233d40;transform-origin:left;animation:f2wUnderline .8s both}
+body.f2w-home-page .f2w-cinema-reveal{opacity:0;transform:translateY(22px);transition:opacity .65s,transform .65s cubic-bezier(.2,.75,.2,1)}
+body.f2w-home-page .f2w-cinema-reveal.f2w-cinema-visible{opacity:1;transform:translateY(0)}
+body.f2w-home-page .movie-card.f2w-cinema-reveal{transition:opacity .55s,transform .55s cubic-bezier(.2,.75,.2,1),border-color .32s,box-shadow .32s}
+body.f2w-home-page .movie-card.f2w-cinema-reveal.f2w-cinema-visible:hover{transform:translateY(-9px) scale(1.025)}
+body.f2w-home-page .f2w-nav-link,body.f2w-home-page .f2w-nav-button{transition:color .2s,background .2s,box-shadow .2s}
+body.f2w-home-page .f2w-nav-link:hover,body.f2w-home-page .f2w-nav-button:hover{box-shadow:0 0 22px #ff284120}
+@keyframes f2wLightSweep{0%,22%{transform:translateX(-58%) rotate(-5deg);opacity:0}36%{opacity:.8}62%{transform:translateX(60%) rotate(-5deg);opacity:.3}100%{transform:translateX(60%) rotate(-5deg);opacity:0}}
+@keyframes f2wBadgePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.22)}}
+@keyframes f2wHeroReveal{from{opacity:0;transform:translateY(16px);filter:blur(4px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes f2wUnderline{from{transform:scaleX(.2);opacity:.25}to{transform:scaleX(1);opacity:1}}
+@media(max-width:760px){#f2w-cinema-atmosphere{opacity:.2}body.f2w-home-page .hero-banner::after{animation-duration:18s}body.f2w-home-page .movie-card:hover{transform:translateY(-4px) scale(1.01)}}
+@media(hover:none){body.f2w-home-page .movie-card::after{display:none}body.f2w-home-page .movie-card:hover{transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){#f2w-cinema-atmosphere{display:none}body.f2w-home-page *,body.f2w-home-page *::before,body.f2w-home-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}.f2w-cinema-reveal{opacity:1!important;transform:none!important}}
