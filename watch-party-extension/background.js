@@ -41,6 +41,30 @@ async function joinRoom(roomCode, name) {
   return { roomCode: code, name: displayName };
 }
 
+// Opens the room's authoritative media on the isolated Render preview.
+let lastOpenedMediaKey = '';
+async function openRoomMedia(media, episode) {
+  const id = String((media && media.id) || '').replace(/[^0-9]/g, '');
+  if (!id) return;
+  const type = media.type === 'tv' ? 'tv' : 'movie';
+  const season = Math.max(1, Number((episode && episode.season) || 1));
+  const ep = Math.max(1, Number((episode && episode.episode) || 1));
+  const key = type + ':' + id + (type === 'tv' ? ':' + season + ':' + ep : '');
+  if (key === lastOpenedMediaKey) return;
+  lastOpenedMediaKey = key;
+  const target = new URL('/watch/', 'https://flix2watch-watch-party-preview.onrender.com');
+  target.searchParams.set('id', id);
+  target.searchParams.set('type', type);
+  target.searchParams.set('partytest', '1');
+  if (type === 'tv') { target.searchParams.set('season', String(season)); target.searchParams.set('episode', String(ep)); }
+  try {
+    const tabs = await chrome.tabs.query({url: 'https://flix2watch-watch-party-preview.onrender.com/watch/*'});
+    const tab = tabs.find(function (item) { return item.id != null; });
+    if (tab && tab.id != null) await chrome.tabs.update(tab.id, {url: target.toString(), active: true});
+    else await chrome.tabs.create({url: target.toString(), active: true});
+    sendStatus('opening-movie', String(media.title || 'the room movie'));
+  } catch (error) { lastOpenedMediaKey = ''; sendStatus('error', 'Could not open room movie: ' + (error.message || 'tab navigation failed')); }
+}
 function disconnectSocket() {
   manuallyClosed = true;
   if (reconnectTimer) clearTimeout(reconnectTimer);
@@ -71,8 +95,13 @@ function connectSocket() {
     let message;
     try { message = JSON.parse(String(event.data)); } catch (_) { return; }
     if (!message || typeof message !== "object") return;
-    if (message.type === "room-state" && message.playbackState) {
-      relayPlaybackState(message.playbackState);
+    if (message.type === "room-state") {
+      await openRoomMedia(message.media, message.episode);
+      if (message.playbackState) relayPlaybackState(message.playbackState);
+    } else if (message.type === "media-change") {
+      await openRoomMedia(message.media, null);
+    } else if (message.type === "episode-change") {
+      if (activeRoom && activeRoom.media) await openRoomMedia(activeRoom.media, message.episode);
     } else if (message.type === "playback-command") {
       relayCommand(message.action, message.seconds);
     } else if (message.type === "playback-state" && message.state) {
