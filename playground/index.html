@@ -72,6 +72,7 @@ body{background-attachment:fixed}
 @media(prefers-reduced-motion:reduce){#lab-atmosphere{display:none}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}.movie.f2w-reveal{opacity:1;transform:none}}
 
 /* NIGHTSHIFT // Movie Lab interface rebuild */
+#lab-atmosphere~.topbar{position:sticky}#lab-atmosphere~.command-rail{position:fixed}
 :root{--bg:#05070b;--panel:#0b1018;--line:#25313d;--muted:#8999aa;--red:#ff365d;--cyan:#a6ff00;--acid:#b8ff35}
 html{background:#05070b;scroll-padding-top:90px}
 body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:#05070b;color:#edf3f8;overflow-x:hidden}
@@ -244,7 +245,7 @@ const start=()=>{
  let observer=null;if('IntersectionObserver'in window)observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('f2w-visible');observer.unobserve(e.target)}}),{threshold:.08});
  const enhance=root=>(root||document).querySelectorAll('.movie').forEach(card=>{if(!card.dataset.labMotion){card.dataset.labMotion='1';card.classList.add('f2w-reveal');if(observer)observer.observe(card);else card.classList.add('f2w-visible');card.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=card.getBoundingClientRect();card.style.setProperty('--lab-x',((e.clientX-r.left)/r.width*100)+'%');card.style.setProperty('--lab-y',((e.clientY-r.top)/r.height*100)+'%')},{passive:true});card.addEventListener('pointerleave',()=>{card.style.setProperty('--lab-x','50%');card.style.setProperty('--lab-y','50%')},{passive:true});}});
  enhance();
- const results=document.querySelectorAll('#universe-grid,#mood-grid-results');
+ const results=document.querySelectorAll('#universe-grid,#mood-grid-results,#saved-grid');
  if('MutationObserver'in window)results.forEach(el=>new MutationObserver(()=>enhance(el)).observe(el,{childList:true,subtree:true}));
  const art=document.querySelector('.hero-art');if(art&&matchMedia('(hover:hover) and (pointer:fine)').matches)art.addEventListener('pointermove',e=>{const r=art.getBoundingClientRect();art.style.transform='translateY(-4px) rotateY('+(((e.clientX-r.left)/r.width)-.5)*-7+'deg) rotateX('+(((e.clientY-r.top)/r.height)-.5)*5+'deg)'},{passive:true});
  document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.remove('tab-flash'));tab.classList.add('tab-flash');setTimeout(()=>tab.classList.remove('tab-flash'),450)}));
