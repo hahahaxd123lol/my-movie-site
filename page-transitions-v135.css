@@ -41,3 +41,35 @@ html.f2w-transition-leaving body{
 }
 
 /* f2w-force-save:v136-no-blank-fast-transition:20261012 */
+
+
+/* v137 — keep long catalog pages cheaper to paint while scrolling */
+html{scrollbar-gutter:stable}
+@supports (content-visibility:auto){
+  .movie-card,
+  .movie-grid>.movie-card,
+  .recent-section .movie-card,
+  .recent-strip>.movie-card,
+  .media-card,
+  .poster-card,
+  .catalog-card,
+  .movie-row>.movie-card,
+  .tv-card{
+    content-visibility:auto;
+    contain-intrinsic-size:auto 360px;
+  }
+}
+.recent-strip,
+.movie-row,
+.movie-carousel,
+.horizontal-scroll,
+[class*="movie-scroll"],
+[class*="carousel-track"]{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+  scrollbar-width:thin;
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important}
+}
+/* f2w-force-save:v137-long-list-scroll-rendering:20261012 */
