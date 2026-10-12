@@ -192,7 +192,7 @@
         pendingRemoteStatusUntil = 0;
         pendingRemoteStatusRetryAt = 0;
       } else {
-        if (pendingRemoteStatus !== desiredStatus || now > pendingRemoteStatusUntil) {
+        if (pendingRemoteStatus !== desiredStatus) {
           pendingRemoteStatus = desiredStatus;
           pendingRemoteStatusUntil = now + 7000;
           pendingRemoteStatusRetryAt = now;
