@@ -45,11 +45,11 @@ export default {
       const html = await response.clone().text();
       if (!html.includes('/sitewide-rate-limit-v1.js')) {
         const tag = '<script defer src="/sitewide-rate-limit-v1.js?v=1"></script>';
-        let updated = html;
-        if (/<\\/head\\s*>/i.test(updated)) updated = updated.replace(/<\\/head\\s*>/i, tag + '\\n</head>');
-        else if (/<\\/body\\s*>/i.test(updated)) updated = updated.replace(/<\\/body\\s*>/i, tag + '\\n</body>');
-        if (updated !== html) {
-          responseBody = updated;
+        const lower = html.toLowerCase();
+        let at = lower.indexOf('</head>');
+        if (at < 0) at = lower.indexOf('</body>');
+        if (at >= 0) {
+          responseBody = html.slice(0, at) + tag + '\n' + html.slice(at);
           htmlModified = true;
         }
       }
