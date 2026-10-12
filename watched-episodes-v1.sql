@@ -360,3 +360,36 @@ $f2w_historical_backfill$;
 
 notify pgrst, 'reload schema';
 commit;
+
+
+-- Return visible diagnostics in Supabase SQL Editor (the DO migration itself returns no rows).
+select
+  (select count(*) from public.user_watched_episodes_v1) as total_watched_records,
+  (select count(*) from public.user_watched_episodes_v1 where media_type = 'movie') as watched_movies,
+  (select count(*) from public.user_watched_episodes_v1 where media_type = 'tv') as watched_tv_episodes,
+  (
+    select coalesce(
+      jsonb_agg(
+        jsonb_build_object(
+          'table', format('%I.%I', n.nspname, c.relname),
+          'columns', (
+            select coalesce(jsonb_agg(a.attname order by a.attname), '[]'::jsonb)
+            from pg_attribute a
+            where a.attrelid = c.oid and a.attnum > 0 and not a.attisdropped
+          )
+        )
+        order by c.relname
+      ),
+      '[]'::jsonb
+    )
+    from pg_class c
+    join pg_namespace n on n.oid = c.relnamespace
+    where n.nspname = 'public'
+      and c.relkind in ('r','p','v','m')
+      and (
+        c.relname ilike '%play%'
+        or c.relname ilike '%watch%'
+        or c.relname ilike '%history%'
+        or c.relname ilike '%progress%'
+      )
+  ) as possible_history_sources;
