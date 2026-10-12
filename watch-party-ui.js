@@ -26,6 +26,24 @@
   let lastRemoteCommandAt = 0;
   let lastRemoteSeekAt = 0;
   let suppressPlaybackBroadcastUntil = 0;
+  // Remote commands and startup telemetry must wait until a freshly loaded
+  // cross-origin player has had time to initialize. Otherwise its initial
+  // zero/stale position can bounce back and make both guests reload.
+  const PLAYER_STARTUP_GRACE_MS = 7000;
+  let playerLoadingUntil = 0;
+  let pendingRemotePlaybackState = null;
+  let playerStartupTimer = null;
+  function startPlayerStartupWindow() {
+    playerLoadingUntil = Date.now() + PLAYER_STARTUP_GRACE_MS;
+    if (playerStartupTimer) clearTimeout(playerStartupTimer);
+    playerStartupTimer = setTimeout(() => {
+      playerStartupTimer = null;
+      playerLoadingUntil = 0;
+      const pending = pendingRemotePlaybackState;
+      pendingRemotePlaybackState = null;
+      if (pending && connection) applyRemotePlayback(pending);
+    }, PLAYER_STARTUP_GRACE_MS);
+  }
   const participants = new Map();
   const seenChat = new Set();
 
@@ -142,6 +160,12 @@
   }
   function applyRemotePlayback(state) {
     if (!state || state.mediaId == null) return;
+    if (Date.now() < playerLoadingUntil) {
+      // Keep only the newest state while the iframe is booting; replaying a
+      // backlog of stale play/pause/seek messages is a common source of loops.
+      pendingRemotePlaybackState = state;
+      return;
+    }
     const media = currentMedia();
     if (String(state.mediaId) !== media.mediaId || String(state.mediaType || 'movie') !== media.mediaType) return;
     const now = Date.now();
@@ -799,6 +823,12 @@
     document.addEventListener('click', event => {
       if (event.target?.closest?.('.server-btn')) setTimeout(broadcastSource, 120);
     });
+    const startupFrame = document.getElementById('video-frame');
+    if (startupFrame) {
+      startupFrame.addEventListener('load', startPlayerStartupWindow);
+      // Watch Party may initialize after the iframe has already fired load.
+      startPlayerStartupWindow();
+    }
     window.addEventListener('message', event => {
       if (!connection) return;
       const frame = document.getElementById('video-frame');
@@ -843,7 +873,7 @@
           return;
         }
       }
-      if (now < suppressPlaybackBroadcastUntil) return;
+      if (now < suppressPlaybackBroadcastUntil || now < playerLoadingUntil) return;
       const media = currentMedia();
       const episode = currentEpisode();
       const seconds = hasProgress ? progress : observedPlaybackSeconds;
@@ -881,6 +911,11 @@
         const position = rawPosition == null ? null : Number(rawPosition);
         const hasPosition = Number.isFinite(position) && position >= 0;
         const now = Date.now();
+        if (now < playerLoadingUntil) {
+          if (hasPosition) lastTelemetryPosition = position;
+          if (status === 'playing' || status === 'paused') lastTelemetryStatus = status;
+          return;
+        }
         const statusChanged = (status === 'playing' || status === 'paused') && status !== lastTelemetryStatus;
         const jumped = hasPosition && lastTelemetryPosition != null && Math.abs(position - lastTelemetryPosition) > 2.25;
         if (now >= suppressPlaybackBroadcastUntil && (statusChanged || jumped) && now - lastTelemetryCommandAt > 800) {
