@@ -16,6 +16,9 @@
   let observedPlaybackSeconds = null;
   let lastPlayerReportedSeconds = null;
   let fallbackSeekTarget = null;
+  let remoteSeekRetryTimer = null;
+  let remoteSeekRetryUntil = 0;
+  let remoteSeekRetryCount = 0;
   let lastPlaybackBroadcastAt = 0;
   let lastRemoteCommandAt = 0;
   let lastRemoteSeekAt = 0;
@@ -85,17 +88,27 @@
     const messages = action === 'seek'
       ? [
           { command: 'seek', time: position },
+          { action: 'seek', time: position },
+          { method: 'seek', time: position },
+          { event: 'command', func: 'seek', args: [position] },
           { type: 'PLAYER_COMMAND', action: 'seek', command: 'seek', value: position, seconds: position, position, time: position },
-          { action: 'seek', time: position }
+          { type: 'PLAYER_COMMAND', data: { action: 'seek', command: 'seek', value: position, seconds: position, position, time: position } },
+          { type: 'PLAYER_COMMAND', action: 'seek', value: position },
+          { type: 'PLAYER_COMMAND', command: 'seek', value: position }
         ]
       : [
           { command: action },
+          { action },
+          { method: action },
+          { event: 'command', func: action, args: [] },
           { type: 'PLAYER_COMMAND', action, command: action },
-          { action }
+          { type: 'PLAYER_COMMAND', data: { action, command: action } }
         ];
     let sent = false;
     for (const payload of messages) {
       try { frame.contentWindow.postMessage(payload, target); sent = true; } catch (_) {}
+      // Some provider builds only parse JSON-encoded message bodies.
+      try { frame.contentWindow.postMessage(JSON.stringify(payload), target); sent = true; } catch (_) {}
     }
     return sent;
   }
@@ -130,22 +143,40 @@
     }
     const remoteSeconds = state.seconds == null ? NaN : Number(state.seconds);
     const isExplicitSeek = /seek/.test(targetStatus);
-    if (Number.isFinite(remoteSeconds) && remoteSeconds >= 0 &&
-        (observedPlaybackSeconds == null || Math.abs(observedPlaybackSeconds - remoteSeconds) > (isExplicitSeek ? 0.65 : 1.25)) &&
-        now - lastRemoteSeekAt > (isExplicitSeek ? 450 : 1200)) {
-      suppressPlaybackBroadcastUntil = now + 900;
-      sendPlayerCommand('seek', remoteSeconds);
-      observedPlaybackSeconds = remoteSeconds;
-      lastRemoteSeekAt = now;
-      if (isExplicitSeek && fallbackSeekTarget !== remoteSeconds) {
+    if (Number.isFinite(remoteSeconds) && remoteSeconds >= 0) {
+      const actualSeconds = Number.isFinite(lastPlayerReportedSeconds) ? lastPlayerReportedSeconds : observedPlaybackSeconds;
+      const drift = Number.isFinite(actualSeconds) ? Math.abs(actualSeconds - remoteSeconds) : Infinity;
+      const threshold = isExplicitSeek ? 0.8 : 1.8;
+      if (drift > threshold && now - lastRemoteSeekAt > (isExplicitSeek ? 700 : 1500)) {
+        suppressPlaybackBroadcastUntil = now + 1100;
+        sendPlayerCommand('seek', remoteSeconds);
+        lastRemoteSeekAt = now;
+        // Do not mark the target as the observed position: the iframe may ignore
+        // postMessage. Retry until its own telemetry confirms the requested time.
         fallbackSeekTarget = remoteSeconds;
-        const expectedTarget = remoteSeconds;
-        setTimeout(() => {
-          if (!connection || fallbackSeekTarget !== expectedTarget) return;
-          const reported = lastPlayerReportedSeconds;
-          if (Number.isFinite(reported) && Math.abs(reported - expectedTarget) <= 2.5) return;
-          fallbackSeekViaVidFastStartAt(expectedTarget);
-        }, 1400);
+        remoteSeekRetryUntil = now + 9000;
+        remoteSeekRetryCount = 0;
+        if (remoteSeekRetryTimer) clearTimeout(remoteSeekRetryTimer);
+        const retry = () => {
+          if (!connection || fallbackSeekTarget !== remoteSeconds || Date.now() > remoteSeekRetryUntil) {
+            remoteSeekRetryTimer = null;
+            return;
+          }
+          const actual = Number.isFinite(lastPlayerReportedSeconds) ? lastPlayerReportedSeconds : observedPlaybackSeconds;
+          if (Number.isFinite(actual) && Math.abs(actual - remoteSeconds) <= 2.5) {
+            fallbackSeekTarget = null;
+            remoteSeekRetryTimer = null;
+            return;
+          }
+          if (remoteSeekRetryCount++ >= 7) {
+            fallbackSeekViaVidFastStartAt(remoteSeconds);
+            remoteSeekRetryTimer = null;
+            return;
+          }
+          sendPlayerCommand('seek', remoteSeconds);
+          remoteSeekRetryTimer = setTimeout(retry, 850);
+        };
+        remoteSeekRetryTimer = setTimeout(retry, 850);
       }
     }
   }
@@ -759,7 +790,11 @@
       if (hasProgress) {
         observedPlaybackSeconds = progress;
         lastPlayerReportedSeconds = progress;
-        if (fallbackSeekTarget != null && Math.abs(progress - fallbackSeekTarget) <= 2.5) fallbackSeekTarget = null;
+        if (fallbackSeekTarget != null && Math.abs(progress - fallbackSeekTarget) <= 2.5) {
+          fallbackSeekTarget = null;
+          if (remoteSeekRetryTimer) clearTimeout(remoteSeekRetryTimer);
+          remoteSeekRetryTimer = null;
+        }
       }
       if (isPlaying) observedPlaybackStatus = 'playing';
       else if (isPaused) observedPlaybackStatus = 'paused';
@@ -816,7 +851,11 @@
         if (hasPosition) {
           lastTelemetryPosition = position;
           lastPlayerReportedSeconds = position;
-          if (fallbackSeekTarget != null && Math.abs(position - fallbackSeekTarget) <= 2.5) fallbackSeekTarget = null;
+          if (fallbackSeekTarget != null && Math.abs(position - fallbackSeekTarget) <= 2.5) {
+            fallbackSeekTarget = null;
+            if (remoteSeekRetryTimer) clearTimeout(remoteSeekRetryTimer);
+            remoteSeekRetryTimer = null;
+          }
         }
         if (now - lastPlaybackBroadcastAt >= 900 && (status === 'playing' || status === 'paused' || hasPosition)) {
           lastPlaybackBroadcastAt = now;
