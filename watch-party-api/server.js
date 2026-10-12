@@ -284,10 +284,17 @@ server.on('upgrade', (req, socket, head) => {
         return;
       }
       if (message.type === 'playback-command') {
-        if (['play', 'pause', 'seek'].includes(message.action)) broadcast(room, {
-          type: 'playback-command', action: message.action,
-          seconds: Math.max(0, Number(message.seconds) || 0)
-        }, client);
+        if (['play', 'pause', 'seek'].includes(message.action)) {
+          const seconds = Math.max(0, Math.min(864000, Number(message.seconds) || 0));
+          room.state.playbackState = {
+            mediaId: room.state.media.id,
+            mediaType: room.state.media.type,
+            status: message.action === 'seek' ? 'seeked' : message.action,
+            seconds,
+            duration: Number(room.state.playbackState?.duration) || 0
+          };
+          broadcast(room, { type: 'playback-command', action: message.action, seconds }, client);
+        }
       }
     });
     ws.on('close', () => {
