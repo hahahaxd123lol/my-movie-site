@@ -82,7 +82,7 @@
       #f2w-next-episode-card .f2w-next-clock {
         flex:0 0 47px; width:47px; height:47px; border-radius:50%; padding:3px;
         display:grid; place-items:center;
-        background:conic-gradient(var(--accent,#e50914) calc(var(--f2w-progress,100) * 1%),rgba(255,255,255,.12) 0);
+        background:conic-gradient(var(--accent,#e50914) var(--f2w-progress,100%),rgba(255,255,255,.12) 0);
         box-shadow:0 0 24px rgba(229,9,20,.12);
       }
       #f2w-next-episode-card .f2w-next-clock-inner { width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:#091321;font-size:17px;font-weight:850;font-variant-numeric:tabular-nums; }
@@ -286,8 +286,8 @@
     previousTick = now;
     const seconds = Math.ceil(remainingMs/1000);
     countdownNode.textContent = String(seconds);
-    card.style.setProperty('--f2w-progress',String(Math.max(0,Math.min(100,remainingMs/10000*100))));
-    card.querySelector('.f2w-next-clock')?.style.setProperty('--f2w-progress',String(Math.max(0,Math.min(100,remainingMs/10000*100))));
+    card.style.setProperty('--f2w-progress',String(Math.max(0,Math.min(100,remainingMs/10000*100)))+'%');
+    card.querySelector('.f2w-next-clock')?.style.setProperty('--f2w-progress',String(Math.max(0,Math.min(100,remainingMs/10000*100)))+'%');
     progressNode.style.width = String(Math.max(0,Math.min(100,remainingMs/10000*100))) + '%';
     if (remainingMs <= 0) {
       clearInterval(interval);
@@ -311,8 +311,8 @@
     seasonNode.textContent = next.subtitle;
     countdownNode.textContent = '10';
     progressNode.style.width = '100%';
-    el.style.setProperty('--f2w-progress','100');
-    el.querySelector('.f2w-next-clock')?.style.setProperty('--f2w-progress','100');
+    el.style.setProperty('--f2w-progress','100%');
+    el.querySelector('.f2w-next-clock')?.style.setProperty('--f2w-progress','100%');
     makeVisible();
     clearInterval(interval);
     interval = setInterval(updateCountdown,100);
