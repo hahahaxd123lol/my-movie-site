@@ -96,9 +96,11 @@ function connectSocket() {
     try { message = JSON.parse(String(event.data)); } catch (_) { return; }
     if (!message || typeof message !== "object") return;
     if (message.type === "room-state") {
+      if (activeRoom) activeRoom.media = message.media || null;
       await openRoomMedia(message.media, message.episode);
       if (message.playbackState) relayPlaybackState(message.playbackState);
     } else if (message.type === "media-change") {
+      if (activeRoom) activeRoom.media = message.media || null;
       await openRoomMedia(message.media, null);
     } else if (message.type === "episode-change") {
       if (activeRoom && activeRoom.media) await openRoomMedia(activeRoom.media, message.episode);
