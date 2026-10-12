@@ -713,9 +713,8 @@
     });
     window.addEventListener('message', event => {
       if (!connection) return;
-      // Trust only the first-party embed origin. Some player builds relay events
-      // through a nested frame, so event.source may not be the outer iframe.
-      if (event.origin !== 'https://player.flix2watch.com') return;
+      const frame = document.getElementById('video-frame');
+      if (!frame?.contentWindow || event.source !== frame.contentWindow) return;
       let payload = event.data;
       if (typeof payload === 'string') {
         try { payload = JSON.parse(payload); } catch (_) { return; }
@@ -756,6 +755,48 @@
       lastPlaybackBroadcastAt = now;
       connection.send({ type: 'playback-state', state }).catch(() => {});
     });
+    // Reuse the watch page's established telemetry bridge. It already normalizes
+    // provider-specific player messages into playback status and timeline updates.
+    let lastTelemetryStatus = '';
+    let lastTelemetryPosition = null;
+    let lastTelemetryCommandAt = 0;
+    let telemetryChannel = null;
+    try {
+      telemetryChannel = new BroadcastChannel('f2w-playback-v182');
+      telemetryChannel.addEventListener('message', event => {
+        if (!connection || !event.data || event.data.type !== 'f2w-playback-v182') return;
+        const data = event.data;
+        const media = currentMedia();
+        if (String(data.media_id || '') !== media.mediaId ||
+            String(data.media_type || 'movie').toLowerCase() !== media.mediaType) return;
+        const status = String(data.playback_status || '').toLowerCase();
+        const rawPosition = data.position_seconds;
+        const position = rawPosition == null ? null : Number(rawPosition);
+        const hasPosition = Number.isFinite(position) && position >= 0;
+        const now = Date.now();
+        const statusChanged = (status === 'playing' || status === 'paused') && status !== lastTelemetryStatus;
+        const jumped = hasPosition && lastTelemetryPosition != null && Math.abs(position - lastTelemetryPosition) > 2.25;
+        if (now >= suppressPlaybackBroadcastUntil && (statusChanged || jumped) && now - lastTelemetryCommandAt > 800) {
+          if (statusChanged) {
+            connection.send({ type: 'playback-command', action: status === 'playing' ? 'play' : 'pause', seconds: hasPosition ? position : null }).catch(() => {});
+          } else if (jumped) {
+            connection.send({ type: 'playback-command', action: 'seek', seconds: position }).catch(() => {});
+          }
+          lastTelemetryCommandAt = now;
+        }
+        if (status === 'playing' || status === 'paused') lastTelemetryStatus = status;
+        if (hasPosition) lastTelemetryPosition = position;
+        if (now - lastPlaybackBroadcastAt >= 900 && (status === 'playing' || status === 'paused' || hasPosition)) {
+          lastPlaybackBroadcastAt = now;
+          connection.send({ type: 'playback-state', state: {
+            mediaId: media.mediaId, mediaType: media.mediaType,
+            status: status || observedPlaybackStatus || 'unknown',
+            seconds: hasPosition ? position : null,
+            duration: Number(data.duration_seconds) || 0
+          }}).catch(() => {});
+        }
+      });
+    } catch (_) {}
     const initialRoom = new URLSearchParams(location.search).get(PARAM);
     if (initialRoom) join(initialRoom);
   }
