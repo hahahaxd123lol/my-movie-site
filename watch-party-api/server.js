@@ -78,7 +78,7 @@ function memberFor(room, key) {
 }
 function publicParticipants(room) {
   return [...room.clients].filter(client => client.ws.readyState === WebSocket.OPEN)
-    .map(client => ({ id: client.participantId, name: client.name, host: client.member.host }));
+    .map(client => ({ id: client.participantId, name: client.name, host: client.member.host, playerReady: Boolean(client.playerReady) }));
 }
 function send(client, payload) {
   if (client.ws.readyState === WebSocket.OPEN) client.ws.send(JSON.stringify(payload));
@@ -181,7 +181,7 @@ server.on('upgrade', (req, socket, head) => {
   wss.handleUpgrade(req, socket, head, ws => {
     const client = {
       ws, room, member, participantId, name: member.name,
-      chatTimes: [], chatCooldownUntil: 0, closed: false
+      playerReady: false, chatTimes: [], chatCooldownUntil: 0, closed: false
     };
     room.clients.add(client);
     room.emptySince = 0;
@@ -264,6 +264,15 @@ server.on('upgrade', (req, socket, head) => {
         if (/^[a-z0-9_-]+$/i.test(source)) {
           room.state.source = source;
           broadcast(room, { type: 'source-change', source }, client);
+        }
+        return;
+      }
+      if (message.type === 'player-ready') {
+        const ready = Boolean(message.ready);
+        if (client.playerReady !== ready) {
+          client.playerReady = ready;
+          broadcast(room, { type: 'player-readiness', participantId: client.participantId, playerReady: ready });
+          syncPresence(room);
         }
         return;
       }
