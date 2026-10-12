@@ -13,6 +13,41 @@
   else requestAnimationFrame(ready);
   addEventListener('pageshow',ready,{passive:true});
 
+  const prefetched=new Set();
+  const isPrefetchable=u=>{
+    if(!u||u.origin!==location.origin)return false;
+    if(/\\.(?:pdf|zip|mp4|webm|png|jpe?g|gif|webp|svg|woff2?|ttf|css|js)$/i.test(u.pathname))return false;
+    if(/^\\/(?:watch|logout|signout|api|auth)(?:\\/|$)/i.test(u.pathname))return false;
+    return true;
+  };
+  function prefetchUrl(u){
+    if(!isPrefetchable(u))return;
+    const key=u.pathname+u.search;
+    if(prefetched.has(key))return;
+    prefetched.add(key);
+    const link=document.createElement('link');
+    link.rel='prefetch';link.as='document';link.href=u.href;
+    link.crossOrigin='anonymous';
+    link.onerror=()=>prefetched.delete(key);
+    (document.head||document.documentElement).appendChild(link);
+  }
+  const idle=window.requestIdleCallback||((fn)=>setTimeout(fn,700));
+  // Warm up only likely navigation destinations, never every link on a large page.
+  idle(()=>{
+    document.querySelectorAll('header a[href], nav a[href], .bottom-nav a[href]').forEach(a=>{
+      try{const u=new URL(a.href,location.href);if(isPrefetchable(u))prefetchUrl(u)}catch{}
+    });
+  });
+  document.addEventListener('pointerover',e=>{
+    const a=e.target.closest?.('a[href]');
+    if(!a)return;
+    try{prefetchUrl(new URL(a.href,location.href))}catch{}
+  },{passive:true});
+  document.addEventListener('focusin',e=>{
+    const a=e.target.closest?.('a[href]');
+    if(!a)return;
+    try{prefetchUrl(new URL(a.href,location.href))}catch{}
+  });
   const isPlainLeftClick=e=>e.button===0&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey;
   const navigableAnchor=a=>{
     if(!a||!a.href||a.hasAttribute('download'))return null;
@@ -38,7 +73,7 @@
     leaving=true;
     root.classList.remove('f2w-transition-ready');
     root.classList.add('f2w-transition-leaving');
-    setTimeout(()=>location.assign(u.href),145);
+    setTimeout(()=>location.assign(u.href),70);
   },true);
 
   // Give regular form navigations the same visual hand-off without changing submit logic.
@@ -54,3 +89,5 @@
   },true);
 })();
 // f2w-force-save:v183-page-transition-runtime:20260902
+
+// f2w-force-save:v136-hover-prefetch-and-short-exit:20261012
