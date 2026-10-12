@@ -180,11 +180,11 @@
     }
     const remoteSeconds = state.seconds == null ? NaN : Number(state.seconds);
     const isExplicitSeek = /seek/.test(targetStatus);
-    if (Number.isFinite(remoteSeconds) && remoteSeconds >= 0) {
+    if (isExplicitSeek && Number.isFinite(remoteSeconds) && remoteSeconds >= 0) {
       const actualSeconds = Number.isFinite(lastPlayerReportedSeconds) ? lastPlayerReportedSeconds : observedPlaybackSeconds;
       const drift = Number.isFinite(actualSeconds) ? Math.abs(actualSeconds - remoteSeconds) : Infinity;
-      const threshold = isExplicitSeek ? 0.8 : 1.8;
-      if (drift > threshold && now - lastRemoteSeekAt > (isExplicitSeek ? 700 : 1500)) {
+      const threshold = 0.8;
+      if (drift > threshold && now - lastRemoteSeekAt > 700) {
         // The default Flix2Watch API embed reports PLAYER_EVENT telemetry and
         // accepts startAt on its embed URL, but its inbound seek postMessage
         // contract is not documented. For an explicit seek, use the URL-based
@@ -848,7 +848,10 @@
       const hasProgress = progressRaw !== undefined && progressRaw !== null && Number.isFinite(progress) && progress >= 0;
       const isPlaying = /(^|[^a-z])(play|playing|resume|resumed|start|started)([^a-z]|$)/.test(status) || /player.?play/.test(type);
       const isPaused = /(^|[^a-z])(pause|paused|stop|stopped)([^a-z]|$)/.test(status) || /player.?pause/.test(type);
-      const isSeek = /seek|time.?update|progress|timeupdate/.test(status + ' ' + type);
+      // Routine progress telemetry is not a user seek. Treating each tick as
+      // a seek made both viewers command each other continuously; URL fallback
+      // then reloaded Flix2Watch and could break playback.
+      const isSeek = /seek/.test(status + ' ' + type);
       if (!isPlaying && !isPaused && !isSeek && !hasProgress) return;
       if (hasProgress) {
         observedPlaybackSeconds = progress;
@@ -896,6 +899,7 @@
     // provider-specific player messages into playback status and timeline updates.
     let lastTelemetryStatus = '';
     let lastTelemetryPosition = null;
+    let lastTelemetryAt = 0;
     let lastTelemetryCommandAt = 0;
     let telemetryChannel = null;
     try {
@@ -917,7 +921,10 @@
           return;
         }
         const statusChanged = (status === 'playing' || status === 'paused') && status !== lastTelemetryStatus;
-        const jumped = hasPosition && lastTelemetryPosition != null && Math.abs(position - lastTelemetryPosition) > 2.25;
+        const elapsed = lastTelemetryAt ? Math.max(0, (now - lastTelemetryAt) / 1000) : 0;
+        const expectedAdvance = (status || lastTelemetryStatus) === 'playing' ? elapsed : 0;
+        const jumped = hasPosition && lastTelemetryPosition != null &&
+          Math.abs((position - lastTelemetryPosition) - expectedAdvance) > 2.5;
         if (now >= suppressPlaybackBroadcastUntil && (statusChanged || jumped) && now - lastTelemetryCommandAt > 800) {
           if (statusChanged) {
             connection.send({ type: 'playback-command', action: status === 'playing' ? 'play' : 'pause', seconds: hasPosition ? position : null }).catch(() => {});
@@ -927,6 +934,7 @@
           lastTelemetryCommandAt = now;
         }
         if (status === 'playing' || status === 'paused') lastTelemetryStatus = status;
+        lastTelemetryAt = now;
         if (hasPosition) {
           lastTelemetryPosition = position;
           lastPlayerReportedSeconds = position;
