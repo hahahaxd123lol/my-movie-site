@@ -15,6 +15,9 @@
   let lastSentEpisode = '';
   let lastSentSource = '';
   let observedPlaybackStatus = '';
+  let pendingRemoteStatus = '';
+  let pendingRemoteStatusUntil = 0;
+  let pendingRemoteStatusRetryAt = 0;
   let observedPlaybackSeconds = null;
   let lastPlayerReportedSeconds = null;
   let fallbackSeekTarget = null;
@@ -182,11 +185,29 @@
     const targetStatus = String(state.status || '').toLowerCase();
     const isPlaying = /play|resume|start/.test(targetStatus);
     const isPaused = /pause|stop/.test(targetStatus);
-    if ((isPlaying || isPaused) && now - lastRemoteCommandAt > 700 && (forceSync || observedPlaybackStatus !== (isPlaying ? 'playing' : 'paused'))) {
-      suppressPlaybackBroadcastUntil = now + 1800;
-      sendPlayerCommand(isPlaying ? 'play' : 'pause');
-      observedPlaybackStatus = isPlaying ? 'playing' : 'paused';
-      lastRemoteCommandAt = now;
+    if (isPlaying || isPaused) {
+      const desiredStatus = isPlaying ? 'playing' : 'paused';
+      if (observedPlaybackStatus === desiredStatus) {
+        pendingRemoteStatus = '';
+        pendingRemoteStatusUntil = 0;
+        pendingRemoteStatusRetryAt = 0;
+      } else {
+        if (pendingRemoteStatus !== desiredStatus || now > pendingRemoteStatusUntil) {
+          pendingRemoteStatus = desiredStatus;
+          pendingRemoteStatusUntil = now + 7000;
+          pendingRemoteStatusRetryAt = now;
+        }
+        // Retry a command a small number of times while waiting for real
+        // player telemetry. Do not optimistically mark it applied: that hid
+        // ignored commands and left guests permanently out of sync.
+        if (now <= pendingRemoteStatusUntil && now >= pendingRemoteStatusRetryAt &&
+            now - lastRemoteCommandAt > 700) {
+          suppressPlaybackBroadcastUntil = now + 1400;
+          sendPlayerCommand(desiredStatus === 'playing' ? 'play' : 'pause');
+          lastRemoteCommandAt = now;
+          pendingRemoteStatusRetryAt = now + 1800;
+        }
+      }
     }
     const remoteSeconds = state.seconds == null ? NaN : Number(state.seconds);
     const isExplicitSeek = /seek/.test(targetStatus);
@@ -924,6 +945,11 @@
       }
       if (isPlaying) observedPlaybackStatus = 'playing';
       else if (isPaused) observedPlaybackStatus = 'paused';
+      if (observedPlaybackStatus && observedPlaybackStatus === pendingRemoteStatus) {
+        pendingRemoteStatus = '';
+        pendingRemoteStatusUntil = 0;
+        pendingRemoteStatusRetryAt = 0;
+      }
       const now = Date.now();
       // A URL-based seek reload causes the embed to report its initial position.
       // Consume that one matching echo so it cannot bounce back and reload the
@@ -989,7 +1015,15 @@
         const now = Date.now();
         if (now < playerLoadingUntil) {
           if (hasPosition) lastTelemetryPosition = position;
-          if (status === 'playing' || status === 'paused') lastTelemetryStatus = status;
+          if (status === 'playing' || status === 'paused') {
+          lastTelemetryStatus = status;
+          observedPlaybackStatus = status;
+          if (status === pendingRemoteStatus) {
+            pendingRemoteStatus = '';
+            pendingRemoteStatusUntil = 0;
+            pendingRemoteStatusRetryAt = 0;
+          }
+        }
           return;
         }
         const statusChanged = (status === 'playing' || status === 'paused') && status !== lastTelemetryStatus;
