@@ -248,33 +248,96 @@
       item.append(author, body); chatEl.append(item); chatEl.scrollTop = chatEl.scrollHeight;
     }
     function myHello() { return { id: participantId, name: displayName }; }
-    async function join(roomId) {
-      if (!window.F2WWatchPartyRealtime || !window.f2wSupabase) { setStatus('Party service is unavailable. Refresh and try again.'); return; }
-      if (!ROOM_PATTERN.test(roomId)) { setStatus('That invite link is invalid.'); return; }
+    async function apiRequest(path, body) {
+      const base = window.F2WWatchPartyRealtime?.API_BASE;
+      if (!base) throw new Error('The Watch Party API is not configured.');
+      const response = await fetch(base + path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body || {})
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'The Watch Party API request failed.');
+      return data;
+    }
+    async function createRoom() {
+      const password = window.prompt('Optional room password (leave blank for an open invite room):', '');
+      if (password === null) return;
+      if (password && (password.length < 4 || password.length > 64)) {
+        setStatus('Room passwords must be 4–64 characters.');
+        return;
+      }
+      try {
+        setStatus('Creating your room…', false);
+        const media = currentMedia();
+        const result = await apiRequest('/api/rooms', {
+          name: displayName, password,
+          media: { id: media.mediaId, type: media.mediaType, title: document.getElementById('detail-title')?.textContent || '' }
+        });
+        await join(result.roomId, result.token, result.passwordProtected);
+      } catch (error) {
+        setStatus(error.message || 'Could not create a party.');
+      }
+    }
+    async function join(roomId, issuedToken, passwordProtected) {
+      if (!window.F2WWatchPartyRealtime) { setStatus('Party service is unavailable. Refresh and try again.'); return; }
+      if (!/^[a-f0-9]{24}$/i.test(String(roomId || ''))) { setStatus('That invite link is invalid.'); return; }
       if (connection) await connection.close();
       participants.clear(); renderPeople();
       setStatus('Connecting to your room…', false);
       try {
+        let token = issuedToken || '';
+        if (!token) {
+          const password = window.prompt('Enter the party password if the host set one. Leave blank for an open room:', '');
+          if (password === null) { setStatus('Join cancelled.'); return; }
+          const result = await apiRequest('/api/rooms/' + encodeURIComponent(roomId) + '/join', { name: displayName, password });
+          token = result.token;
+          passwordProtected = result.passwordProtected;
+        }
         connection = window.F2WWatchPartyRealtime.connect({
-          supabase: window.f2wSupabase, roomId, participantId,
-          onPresence: function (state) {
+          roomId, token, participantId, name: displayName,
+          onDisconnect: function () {
+            participants.clear(); renderPeople();
+            createButton.hidden = false; copyButton.hidden = true; leaveButton.hidden = true;
+            setStatus('Connection lost. Rejoin the room to continue.', false);
+          },
+          onPresence: function (list) {
             participants.clear();
-            Object.values(state || {}).flat().forEach(person => {
+            (Array.isArray(list) ? list : []).forEach(person => {
               if (!person || !person.id) return;
-              participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest' });
+              participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host) });
             });
             renderPeople();
           },
           onMessage: function (message) {
-            if (message.type === 'hello' && message.participant) {
+            if (message.type === 'room-state') {
+              if (Array.isArray(message.participants)) {
+                participants.clear();
+                message.participants.forEach(person => {
+                  if (person?.id) participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host) });
+                });
+                renderPeople();
+              }
+              if (message.source) applySource(message.source);
+              if (message.season) applyRemoteSeason(message.season);
+              if (message.episode) applyEpisode(message.episode);
+              if (message.playbackState) applyRemotePlayback(message.playbackState);
+              passwordProtected = Boolean(message.passwordProtected);
+              setStatus('Connected · invite your friends to join.', true);
+            } else if (message.type === 'hello' && message.participant) {
               const person = message.participant;
               if (!person.id || person.id === participantId) return;
-              const isNew = !participants.has(person.id);
-              participants.set(person.id, { id: String(person.id), name: cleanName(person.name) || 'Guest' });
+              participants.set(person.id, { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host) });
               renderPeople();
-              if (isNew && connection) connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode(), source: currentSource() }).catch(() => {});
               if (message.source) applySource(message.source);
               if (message.episode) applyEpisode(message.episode);
+            } else if (message.type === 'presence-sync') {
+              // The transport normally consumes this event; keep this defensive fallback.
+              if (Array.isArray(message.participants)) {
+                participants.clear();
+                message.participants.forEach(person => { if (person?.id) participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host) }); });
+                renderPeople();
+              }
             } else if (message.type === 'participant-left') {
               participants.delete(String(message.participantId || '')); renderPeople();
             } else if (message.type === 'season-change') {
@@ -289,20 +352,22 @@
               setStatus('Room connected · playback sync active (' + label + ').', true);
             } else if (message.type === 'chat-message' && message.participantId !== participantId) {
               addChatMessage(message.name, message.text, message.messageId);
+            } else if (message.type === 'chat-cooldown') {
+              chatCooldownUntil = Number(message.until) || Date.now() + 30000;
+              setStatus('Spam protection: chat paused for ' + Math.ceil((chatCooldownUntil - Date.now()) / 1000) + ' seconds.', true);
             }
           }
         });
         await connection.ready;
-        await connection.trackPresence(myHello());
         const url = new URL(location.href); url.searchParams.set(PARAM, roomId); history.replaceState(null, '', url);
         createButton.hidden = true; copyButton.hidden = false; leaveButton.hidden = false;
-        roomLabel.textContent = 'ROOM ' + roomId.slice(0, 8).toUpperCase();
-        participants.set(participantId, myHello()); renderPeople();
-        setStatus('Connected · invite your friends to join.', true);
+        roomLabel.textContent = (passwordProtected ? '🔒 ' : '') + 'ROOM ' + roomId.slice(0, 8).toUpperCase();
         await connection.send({ type: 'hello', participant: myHello(), episode: currentEpisode(), source: currentSource() });
+        setStatus('Connected · invite your friends to join.', true);
       } catch (error) {
         console.error('[Watch Party] connection failed', error);
-        setStatus('Could not connect. Check the connection and try again.', false);
+        connection = null;
+        setStatus(error.message || 'Could not connect. Check the connection and try again.', false);
       }
     }
     function applyRemoteSeason(message) {
@@ -374,7 +439,7 @@
         toggleButton.innerHTML = '<span class="wp-tab-dot"></span><span>WATCH PARTY</span>';
       }
     });
-    createButton.addEventListener('click', () => join(makeId()));
+    createButton.addEventListener('click', createRoom);
     $('#f2w-party-save').addEventListener('click', () => {
       const name = cleanName(nameInput.value);
       if (!name) { setStatus('Choose a name first.'); return; }
