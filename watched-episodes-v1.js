@@ -136,9 +136,9 @@
   }
   function thresholdReached(position,duration){
     if(!Number.isFinite(position)||!Number.isFinite(duration)||duration<=0||position<0)return false;
-    // Episodes longer than ten minutes become watched with ten minutes left.
-    // For shorter specials, use halfway so they are not instantly marked at 0.
-    const threshold=duration>600?duration-600:duration*0.5;
+    // Movies and episodes become watched with five minutes remaining.
+    // For shorter titles, use halfway so they are not marked at 0 seconds.
+    const threshold=duration>300?duration-300:duration*0.5;
     return position>=threshold;
   }
   async function markWatched(season,episode,position,duration){
