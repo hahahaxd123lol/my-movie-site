@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Watch Party Player Sync Diagnostics</title>
+<style>
+:root{color-scheme:dark;font:15px system-ui,sans-serif;background:#09090d;color:#f5f5f7}*{box-sizing:border-box}body{margin:0;padding:24px;max-width:1500px;margin-inline:auto}h1{font-size:clamp(24px,4vw,38px);margin:0 0 8px}p{color:#b8b8c4;line-height:1.5}.notice{border:1px solid #4c3b16;background:#211a0b;color:#f6d98d;border-radius:12px;padding:12px 14px;margin:16px 0}.toolbar,.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}.toolbar input,.toolbar select,.toolbar button,.controls button{background:#191922;color:#fff;border:1px solid #414150;border-radius:8px;padding:9px 12px;font:inherit}.toolbar button,.controls button{cursor:pointer}.toolbar button.primary{background:#a81724;border-color:#d33140}.players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.player{border:1px solid #30303a;border-radius:14px;overflow:hidden;background:#111117;min-width:0}.player h2{font-size:17px;padding:12px 14px;margin:0}.player iframe{display:block;width:100%;aspect-ratio:16/9;border:0;background:#000}.controls{padding:0 12px 12px}.log{height:230px;overflow:auto;white-space:pre-wrap;word-break:break-word;background:#050507;border:1px solid #30303a;border-radius:12px;padding:12px;font:12px ui-monospace,monospace}.small{font-size:12px;color:#9999a8}@media(max-width:800px){body{padding:14px}.players{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<h1>Watch Party sync test</h1>
+<p>This diagnostic opens two real Flix2Watch API embeds in one browser and connects them to the Watch Party preview API. It does not require logging into the Flix2Watch watch page or using two accounts. It only uses the Flix2Watch API player source.</p>
+<div class="notice"><strong>What this test proves:</strong> whether the actual embed accepts parent-to-iframe play/pause/seek messages and whether the party API delivers commands to the other player. A command being sent is not proof it was accepted; look for the receiving player's PLAYER_EVENT status/time updates below.</div>
+<div class="toolbar">
+<label>TMDB movie ID <input id="mediaId" value="550" inputmode="numeric" size="9"></label>
+<label>Command format <select id="format"><option value="nested">PLAYER_COMMAND {data:{action,method,value}}</option><option value="flat">PLAYER_COMMAND flat fields</option><option value="playerjs">player.js method envelope</option><option value="vidsrc">VidSrc SET_TIME / action envelope</option></select></label>
+<button id="load" class="primary">Load two players</button>
+<button id="connect">Connect two test clients</button>
+<button id="disconnect">Disconnect</button>
+</div>
+<div class="players">
+<section class="player"><h2>Player A · host</h2><iframe id="playerA" title="Player A" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe><div class="controls"><button data-target="A" data-action="play">Play A</button><button data-target="A" data-action="pause">Pause A</button><button data-target="A" data-action="seek" data-seconds="60">Seek A → 60s</button></div></section>
+<section class="player"><h2>Player B · guest</h2><iframe id="playerB" title="Player B" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe><div class="controls"><button data-target="B" data-action="play">Play B</button><button data-target="B" data-action="pause">Pause B</button><button data-target="B" data-action="seek" data-seconds="60">Seek B → 60s</button></div></section>
+</div>
+<h2>Live test log</h2><div id="log" class="log" role="log" aria-live="polite">Ready. Load the players, then connect the test clients. Use the player controls inside each video or the buttons above.</div>
+<p class="small">The selected command format is used for direct test buttons and commands forwarded between players. The normal Watch Party UI uses the nested PLAYER_COMMAND format. Autoplay can be blocked until you interact with each player once.</p>
+<script>
+(()=>{'use strict';
+const API='https://flix2watch-watch-party-api.onrender.com';
+const PLAYER='https://player.flix2watch.com';
+const $=id=>document.getElementById(id);
+const frames={A:$('playerA'),B:$('playerB')};
+const sockets={A:null,B:null};
+const ids={A:'diag-host-'+crypto.randomUUID(),B:'diag-guest-'+crypto.randomUUID()};
+const suppressUntil={A:0,B:0};
+let roomId='',tokens={A:'',B:''},connected=false;
+function log(message){const line='['+new Date().toLocaleTimeString()+'] '+message;$('log').textContent+= '\n'+line;$('log').scrollTop=$('log').scrollHeight}
+function media(){const id=String($('mediaId').value||'').trim();return {id:/^[0-9]+$/.test(id)?id:'550',type:'movie',title:'Sync diagnostics'}}
+function loadPlayers(){const m=media();const url=PLAYER+'/embed/movie?tmdb='+encodeURIComponent(m.id)+'&autoplay=1';for(const key of ['A','B']){frames[key].src=url;log('Loaded player '+key+': '+url)}}
+function makePayload(action,seconds){const s=Math.max(0,Number(seconds)||0);const seek=action==='seek';const format=$('format').value;if(format==='flat')return {type:'PLAYER_COMMAND',action,command:action,method:action,value:seek?s:undefined,seconds:seek?s:undefined,position:seek?s:undefined,time:seek?s:undefined};if(format==='playerjs')return {context:'player.js',version:'0.0.11',method:seek?'setCurrentTime':action,value:seek?s:undefined};if(format==='vidsrc')return {type:'PLAYER_COMMAND',data:seek?{action:'seek',command:'SET_TIME',position:s,seconds:s,time:s}:{action,command:action.toUpperCase()}};return {type:'PLAYER_COMMAND',data:{action,command:action,method:seek?'seekTo':action,value:seek?s:undefined,seconds:seek?s:undefined,position:seek?s:undefined,time:seek?s:undefined},action,command:action,method:seek?'seekTo':action,value:seek?s:undefined,seconds:seek?s:undefined,position:seek?s:undefined,time:seek?s:undefined}}
+function command(target,action,seconds,source='manual'){const frame=frames[target];if(!frame.contentWindow){log('Player '+target+' iframe is not ready');return}const payload=makePayload(action,seconds);try{frame.contentWindow.postMessage(payload,PLAYER);suppressUntil[target]=Date.now()+1800;log('Sent '+action+(action==='seek'?' '+seconds+'s':'')+' to '+target+' ('+source+', format='+$('format').value+')')}catch(e){log('Command send failed: '+e.message)}}
+function socketUrl(room,token,participantId){return API.replace(/^https:/,'wss:')+'/ws?room='+encodeURIComponent(room)+'&token='+encodeURIComponent(token)+'&participantId='+encodeURIComponent(participantId)}
+async function post(path,body){const r=await fetch(API+path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||('HTTP '+r.status));return data}
+function openSocket(key){return new Promise((resolve,reject)=>{const ws=new WebSocket(socketUrl(roomId,tokens[key],ids[key]));sockets[key]=ws;let opened=false;ws.addEventListener('open',()=>{opened=true;log('API WebSocket '+key+' connected');resolve(ws)});ws.addEventListener('error',()=>{if(!opened)reject(new Error('WebSocket '+key+' failed'))});ws.addEventListener('message',event=>{let msg;try{msg=JSON.parse(event.data)}catch{return}if(msg.type==='room-state'){log(key+' received room-state (host='+msg.isHost+')');if(msg.playbackState)applyCommand(key,msg.playbackState.status,msg.playbackState.seconds)}else if(msg.type==='playback-command'){log(key+' received API playback-command: '+msg.action+' @ '+msg.seconds);applyCommand(key,msg.action,msg.seconds)}else if(msg.type==='playback-state'&&msg.state){log(key+' received shared clock: '+msg.state.status+' @ '+msg.state.seconds)}});ws.addEventListener('close',()=>log('API WebSocket '+key+' closed'))})}
+function sendSocket(key,action,seconds){const ws=sockets[key];if(!ws||ws.readyState!==WebSocket.OPEN){log('Client '+key+' is not connected');return}ws.send(JSON.stringify({type:'playback-command',action,seconds:Number.isFinite(Number(seconds))?Number(seconds):null}));log(key+' sent '+action+' to Watch Party API')}
+function applyCommand(key,action,seconds){if(!['play','pause','seek','seeked'].includes(String(action||'').toLowerCase()))return;const normalized=String(action).toLowerCase()==='seeked'?'seek':String(action).toLowerCase();if(Date.now()<suppressUntil[key])return;command(key,normalized,seconds,'remote API command')}
+$('load').addEventListener('click',loadPlayers);
+$('connect').addEventListener('click',async()=>{if(connected){log('Already connected');return}try{const m=media();const host=await post('/api/rooms',{name:'Diagnostic Host',media:m});roomId=host.roomId;tokens.A=host.token;log('Created anonymous test room '+host.roomCode);const guest=await post('/api/rooms/'+encodeURIComponent(roomId)+'/join',{name:'Diagnostic Guest'});tokens.B=guest.token;await Promise.all([openSocket('A'),openSocket('B')]);connected=true;log('Both test clients connected. Use A/B controls to send commands through the API.')}catch(e){log('Connect failed: '+e.message)}});
+$('disconnect').addEventListener('click',()=>{for(const key of ['A','B']){try{sockets[key]?.close()}catch{}sockets[key]=null}connected=false;roomId='';log('Disconnected test clients')});
+document.querySelectorAll('button[data-action]').forEach(button=>button.addEventListener('click',()=>{const target=button.dataset.target,action=button.dataset.action,seconds=Number(button.dataset.seconds||0);if(connected)sendSocket(target,action,action==='seek'?seconds:null);else command(target,action,seconds,'manual local test')}));
+window.addEventListener('message',event=>{const key=Object.keys(frames).find(k=>event.source===frames[k].contentWindow);if(!key||event.origin!==PLAYER)return;let data=event.data;if(typeof data==='string'){try{data=JSON.parse(data)}catch{return}}if(data?.type!=='PLAYER_EVENT'||!data.data)return;const d=data.data;const status=String(d.player_status||'');const seconds=Number(d.player_progress);log('PLAYER_EVENT '+key+': '+status+(Number.isFinite(seconds)?' @ '+seconds.toFixed(1)+'s':''));if(!connected||Date.now()<suppressUntil[key])return;const action=status==='playing'?'play':status==='paused'?'pause':status==='seeked'?'seek':null;if(action)sendSocket(key,action,Number.isFinite(seconds)?seconds:null)});
+loadPlayers();
+})();
+</script>
+</body>
+</html>
