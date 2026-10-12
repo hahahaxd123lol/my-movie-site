@@ -396,7 +396,7 @@
         await join(result.roomId, result.token, false, undefined, code);
       } catch (error) { setStatus(error.message || 'Could not join that room. Check the code.'); }
     }
-    async function join(roomId, issuedToken, passwordProtected, suppliedPassword, roomCode) {
+    async function join(roomId, issuedToken, _unused, _unusedPassword, roomCode) {
       if (!window.F2WWatchPartyRealtime) { setStatus('Party service is unavailable. Refresh and try again.'); return; }
       if (!/^[a-f0-9]{24}$/i.test(String(roomId || ''))) { setStatus('That room could not be found.'); return; }
       if (connection) await connection.close();
@@ -442,7 +442,6 @@
               if (message.season) applyRemoteSeason(message.season);
               if (message.episode) applyEpisode(message.episode);
               if (message.playbackState) applyRemotePlayback(message.playbackState);
-              passwordProtected = Boolean(message.passwordProtected);
               setStatus('Connected · share the room code with friends.', true);
             } else if (message.type === 'hello' && message.participant) {
               const person = message.participant;
