@@ -1,5 +1,5 @@
 -- Re-published on 2026-10-12 to ensure the updated movie + TV migration is pushed to main.
--- Flix2Watch watched media v1 — UID-linked movies and TV episodes.
+-- Flix2Watch watched media v1 — UID-linked movies and TV episodes; watched threshold is last five minutes.
 -- Run this updated migration in the Supabase SQL Editor. Safe to re-run and upgrades
 -- the earlier TV-only watched-episodes-v1.sql schema if that was already applied.
 
@@ -118,8 +118,8 @@ begin
   if p_position_seconds is null or p_duration_seconds is null or p_duration_seconds <= 0 then
     raise exception 'Valid playback position and duration are required';
   end if;
-  if p_duration_seconds > 600 then
-    v_threshold := p_duration_seconds - 600;
+  if p_duration_seconds > 300 then
+    v_threshold := p_duration_seconds - 300;
   else
     v_threshold := ceil(p_duration_seconds * 0.5)::integer;
   end if;
@@ -294,7 +294,7 @@ begin
     raise notice 'Checking historical playback source %.%', t.schema_name, t.table_name;
 
     progress_expr := format(
-      '(%1$s is not null and %2$s is not null and %2$s > 0 and %1$s >= case when %2$s > 600 then %2$s - 600 else ceil(%2$s * 0.5) end)',
+      '(%1$s is not null and %2$s is not null and %2$s > 0 and %1$s >= case when %2$s > 300 then %2$s - 300 else ceil(%2$s * 0.5) end)',
       position_expr, duration_expr
     );
 
@@ -403,7 +403,7 @@ select
           'rows', count(*),
           'near_end_rows', count(*) filter (
             where duration > 0 and seconds >=
-              case when duration > 600 then duration - 600 else ceil(duration * 0.5) end
+              case when duration > 300 then duration - 300 else ceil(duration * 0.5) end
           )
         ) from public.continue_watching_v260
       ),
@@ -415,7 +415,7 @@ select
           ),
           'near_end_rows', count(*) filter (
             where duration_seconds > 0 and position_seconds >=
-              case when duration_seconds > 600 then duration_seconds - 600 else ceil(duration_seconds * 0.5) end
+              case when duration_seconds > 300 then duration_seconds - 300 else ceil(duration_seconds * 0.5) end
           )
         ) from public.current_watching_v125
       ),
@@ -424,7 +424,7 @@ select
           'rows', count(*),
           'near_end_rows', count(*) filter (
             where duration_seconds > 0 and position_seconds >=
-              case when duration_seconds > 600 then duration_seconds - 600 else ceil(duration_seconds * 0.5) end
+              case when duration_seconds > 300 then duration_seconds - 300 else ceil(duration_seconds * 0.5) end
           )
         ) from public.user_playback_progress_v132
       ),
