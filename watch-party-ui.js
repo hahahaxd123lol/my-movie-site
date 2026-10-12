@@ -158,7 +158,39 @@
         #f2w-watch-party .wp-empty{color:#777785;font-size:12px;padding:8px 0}
         #f2w-watch-party .wp-foot{border-top:1px solid #ffffff12;padding:12px 24px;color:#898997;font-size:11px;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
         #f2w-watch-party [hidden]{display:none!important}
-        @media(max-width:650px){#f2w-watch-party{top:clamp(200px, 24vh, 230px);bottom:8px;width:calc(100vw - 16px)}#f2w-watch-party .wp-grid{grid-template-columns:1fr}#f2w-watch-party .wp-main{border-right:0;border-bottom:1px solid #ffffff12;padding:18px}#f2w-watch-party .wp-side{padding:18px}#f2w-watch-party .wp-top{padding:18px}#f2w-watch-party .wp-title{font-size:21px}}
+        /* Layout polish: keep the narrow drawer readable instead of squeezing two columns together. */
+        #f2w-watch-party{width:min(460px,calc(100vw - 20px))}
+        #f2w-watch-party .wp-drawer-content{min-width:0;margin-left:47px;gap:0}
+        #f2w-watch-party .wp-top{align-items:flex-start;padding:20px 20px 18px;gap:14px}
+        #f2w-watch-party .wp-actions{width:100%;display:flex;align-items:center;gap:8px}
+        #f2w-watch-party .wp-actions button{flex:1 1 auto;min-width:0;padding:10px 11px;font-size:12px}
+        #f2w-watch-party .wp-grid{display:flex;flex-direction:column;min-width:0}
+        #f2w-watch-party .wp-main,#f2w-watch-party .wp-side{width:100%;min-width:0;padding:18px 20px}
+        #f2w-watch-party .wp-main{border-right:0;border-bottom:1px solid #ffffff12}
+        #f2w-watch-party .wp-label{margin-bottom:10px}
+        #f2w-watch-party .wp-name-row{display:flex;gap:8px;margin-bottom:22px}
+        #f2w-watch-party .wp-name-row input{flex:1 1 auto;width:0}
+        #f2w-watch-party .wp-name-row button{flex:0 0 auto;white-space:nowrap;font-size:12px;padding:10px}
+        #f2w-watch-party .wp-chat{height:clamp(150px,24vh,250px);min-height:130px;padding:2px 3px 2px 0;margin-bottom:12px}
+        #f2w-watch-party .wp-chat-row{align-items:stretch;gap:8px}
+        #f2w-watch-party .wp-chat-row input{flex:1 1 auto;width:0}
+        #f2w-watch-party .wp-chat-row button{flex:0 0 auto}
+        #f2w-watch-party .wp-status{line-height:1.5;margin-top:14px}
+        #f2w-watch-party .wp-people{max-height:220px;gap:8px}
+        #f2w-watch-party .wp-foot{padding:14px 20px;line-height:1.5}
+        #f2w-watch-party button{max-width:100%;white-space:normal}
+        @media(max-width:650px){
+          #f2w-watch-party{top:clamp(200px,24vh,230px);bottom:8px;width:calc(100vw - 12px)}
+          #f2w-watch-party .wp-top{padding:18px 16px 16px}
+          #f2w-watch-party .wp-main,#f2w-watch-party .wp-side{padding:16px}
+          #f2w-watch-party .wp-title{font-size:21px}
+          #f2w-watch-party .wp-actions{gap:6px}
+          #f2w-watch-party .wp-actions button{padding:10px 8px;font-size:11px}
+          #f2w-watch-party .wp-name-row{gap:6px}
+          #f2w-watch-party .wp-name-row button{padding:10px 8px}
+          #f2w-watch-party .wp-chat-row button{padding:10px 12px}
+          #f2w-watch-party .wp-foot{padding:12px 16px}
+        }
       </style>
       <button class="wp-drawer-tab" id="f2w-party-toggle" type="button" aria-expanded="false" aria-controls="f2w-watch-party"><span class="wp-tab-dot"></span><span>WATCH PARTY</span></button>
       <div class="wp-drawer-content">
