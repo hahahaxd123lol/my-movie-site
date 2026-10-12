@@ -12,6 +12,7 @@
   const MAX_MESSAGE_BYTES = 4096;
   const ALLOWED_TYPES = new Set([
     'hello',
+    'participant-left',
     'playback-state',
     'episode-change',
     'playback-command',
