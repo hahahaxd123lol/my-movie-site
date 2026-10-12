@@ -211,11 +211,14 @@ begin
       when 'player_position_seconds' = any(cols) then 'player_position_seconds'
       when 'progress_seconds' = any(cols) then 'progress_seconds'
       when 'current_time_seconds' = any(cols) then 'current_time_seconds'
+      when 'seconds' = any(cols) then 'seconds'
+      when 'watched_seconds' = any(cols) then 'watched_seconds'
       else null
     end;
     duration_col := case
       when 'duration_seconds' = any(cols) then 'duration_seconds'
       when 'player_duration_seconds' = any(cols) then 'player_duration_seconds'
+      when 'duration' = any(cols) then 'duration'
       else null
     end;
 
