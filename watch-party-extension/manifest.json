@@ -5,7 +5,8 @@
   "description": "Synchronize play, pause, and seeking for the Flix2Watch API player in a Watch Party room.",
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "webNavigation"
   ],
   "host_permissions": [
     "https://flix2watch-watch-party-api.onrender.com/*",
