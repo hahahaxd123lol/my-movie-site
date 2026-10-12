@@ -100,7 +100,7 @@ function connectSocket() {
     if (message.type === "room-state") {
       if (activeRoom) activeRoom.media = message.media || null;
       await openRoomMedia(message.media, message.episode);
-      if (message.playbackState) relayPlaybackState(message.playbackState);
+      if (message.playbackState) relayPlaybackState(message.playbackState, true);
     } else if (message.type === "media-change") {
       if (activeRoom) activeRoom.media = message.media || null;
       await openRoomMedia(message.media, null);
@@ -145,12 +145,17 @@ function relayCommand(action, seconds) {
   });
 }
 
-function relayPlaybackState(state) {
+function relayPlaybackState(state, forceInitialSeek = false) {
   if (!state || typeof state !== "object") return;
   const status = String(state.status || "").toLowerCase();
   const action = /play|resume|start/.test(status) ? "play" : /pause|stop/.test(status) ? "pause" : "";
   if (action) relayCommand(action, state.seconds);
-  if (Number.isFinite(Number(state.seconds)) && Number(state.seconds) >= 0) {
+  // Playback-state messages are frequent clock heartbeats. Seeking on each one
+  // would continually rewind/reposition the guest. Seek only for explicit seek
+  // states, or once when first joining a room with an existing playback clock.
+  const explicitSeek = /seek/.test(status);
+  if ((explicitSeek || forceInitialSeek) && state.seconds != null &&
+      Number.isFinite(Number(state.seconds)) && Number(state.seconds) >= 0) {
     relayCommand("seek", Number(state.seconds));
   }
 }
@@ -165,7 +170,10 @@ async function restoreRoom() {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   (async () => {
-    if (message?.type === "F2W_EXTENSION_JOIN") {
+    if (message?.type === "F2W_EXTENSION_STATUS" && sender.tab) {
+      sendStatus(message.status || "info", message.detail || "");
+      sendResponse({ ok: true });
+    } else if (message?.type === "F2W_EXTENSION_JOIN") {
       const result = await joinRoom(message.roomCode, message.name);
       sendResponse({ ok: true, ...result });
     } else if (message?.type === "F2W_EXTENSION_LEAVE") {
