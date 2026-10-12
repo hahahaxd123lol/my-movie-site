@@ -7,6 +7,7 @@
   let connection = null;
   let activeRoomCode = '';
   let isPartyHost = false;
+  let hasAnnouncedPlayerReady = false;
   let participantId = '';
   let displayName = '';
   let applyingRemoteEpisode = false;
@@ -429,7 +430,7 @@
         const meta = document.createElement('div'); meta.style.minWidth = '0';
         const name = document.createElement('div'); name.className = 'wp-person-name'; name.textContent = person.name || 'Guest';
         const you = document.createElement('div'); you.className = 'wp-you';
-        you.textContent = (person.host ? '★ Host' : 'In this room') + (person.id === participantId ? ' · You' : '');
+        you.textContent = (person.host ? '★ Host' : 'In this room') + (person.id === participantId ? ' · You' : '') + (person.playerReady ? ' · Player ready' : ' · Awaiting connection');
         meta.append(name, you); item.append(avatar, meta); peopleEl.append(item);
       });
     }
@@ -563,7 +564,7 @@
             participants.clear();
             (Array.isArray(list) ? list : []).forEach(person => {
               if (!person || !person.id) return;
-              participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host) });
+              participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host), playerReady: Boolean(person.playerReady) });
             });
             renderPeople();
           },
@@ -589,7 +590,7 @@
             } else if (message.type === 'hello' && message.participant) {
               const person = message.participant;
               if (!person.id || person.id === participantId) return;
-              participants.set(person.id, { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host) });
+              participants.set(person.id, { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host), playerReady: Boolean(person.playerReady) });
               renderPeople();
               if (message.source) applySource(message.source);
               if (message.episode) applyEpisode(message.episode);
@@ -600,6 +601,9 @@
                 message.participants.forEach(person => { if (person?.id) participants.set(String(person.id), { id: String(person.id), name: cleanName(person.name) || 'Guest', host: Boolean(person.host) }); });
                 renderPeople();
               }
+            } else if (message.type === 'player-readiness') {
+              const person = participants.get(String(message.participantId || ''));
+              if (person) { person.playerReady = Boolean(message.playerReady); renderPeople(); }
             } else if (message.type === 'participant-left') {
               participants.delete(String(message.participantId || '')); renderPeople();
             } else if (message.type === 'media-change' && message.media) {
@@ -871,6 +875,12 @@
       const progressRaw = nested.player_progress ?? nested.currentTime ?? nested.current_time ?? nested.seconds ?? nested.position ?? nested.time ?? payload.player_progress ?? payload.currentTime;
       const progress = Number(progressRaw);
       const hasProgress = progressRaw !== undefined && progressRaw !== null && Number.isFinite(progress) && progress >= 0;
+      if (!hasAnnouncedPlayerReady && (hasProgress || /ready|loaded|playing|paused|play|pause|timeupdate|progress/.test(String(type + ' ' + status)))) {
+        hasAnnouncedPlayerReady = true;
+        connection.send({ type: 'player-ready', ready: true }).catch(() => {});
+        const self = participants.get(participantId);
+        if (self) { self.playerReady = true; renderPeople(); }
+      }
       const isPlaying = /(^|[^a-z])(play|playing|resume|resumed|start|started)([^a-z]|$)/.test(status) || /player.?play/.test(type);
       const isPaused = /(^|[^a-z])(pause|paused|stop|stopped)([^a-z]|$)/.test(status) || /player.?pause/.test(type);
       // Routine progress telemetry is not a user seek. Treating each tick as
