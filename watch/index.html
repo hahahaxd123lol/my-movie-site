@@ -6560,7 +6560,8 @@ if(currentUser){
     const API_KEY = '925c48dd6e24fd5e975fe224238bbb45';
 
   /* ================= WATCH AUTH GATE V8 ================= */
-  let watchPlaybackUnlocked=false;
+  const f2wWatchPartyTestMode = location.hostname === 'flix2watch-watch-party-preview.onrender.com' && new URLSearchParams(location.search).get('partytest') === '1';
+  let watchPlaybackUnlocked=f2wWatchPartyTestMode;
 
   function openPlaybackAccount(mode='login'){
     const target=mode==='signup'?'signup':'login';
@@ -6629,6 +6630,11 @@ if(currentUser){
   }
 
   async function syncWatchPlaybackAccess({reloadPlayer=false}={}){
+    if(f2wWatchPartyTestMode){
+      setWatchPlaybackAccess(true);
+      if(reloadPlayer&&mediaId){try{loadPlayer()}catch(error){console.warn('Watch Party preview test player failed to start:',error)}}
+      return true;
+    }
     let user=null;
 
     try{
@@ -6658,11 +6664,12 @@ if(currentUser){
   window.addEventListener('DOMContentLoaded',()=>{
     // Public visitors may browse the complete title/details page.
     // Playback stays locked quietly until they choose Log In/Create Account.
-    setWatchPlaybackAccess(false);
+    setWatchPlaybackAccess(f2wWatchPartyTestMode);
     setTimeout(()=>syncWatchPlaybackAccess({reloadPlayer:true}),0);
   });
 
   chatSupabase.auth.onAuthStateChange((_event,session)=>{
+    if(f2wWatchPartyTestMode){setWatchPlaybackAccess(true);return;}
     const allowed=Boolean(session?.user);
     setWatchPlaybackAccess(allowed);
 
