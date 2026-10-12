@@ -220,7 +220,7 @@
   }
 
   function isPopoverOpen() {
-    try { return Boolean(card && isPopoverOpen()); } catch (_) { return false; }
+    try { return Boolean(card && card.hasAttribute('popover') && card.matches(':popover-open')); } catch (_) { return false; }
   }
 
   function prepareLayering() {
