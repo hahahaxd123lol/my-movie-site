@@ -114,9 +114,9 @@
     const remoteSeconds = state.seconds == null ? NaN : Number(state.seconds);
     const isExplicitSeek = /seek/.test(targetStatus);
     if (Number.isFinite(remoteSeconds) && remoteSeconds >= 0 &&
-        (observedPlaybackSeconds == null || Math.abs(observedPlaybackSeconds - remoteSeconds) > (isExplicitSeek ? 1.5 : 3)) &&
-        now - lastRemoteSeekAt > (isExplicitSeek ? 900 : 2500)) {
-      suppressPlaybackBroadcastUntil = now + 1200;
+        (observedPlaybackSeconds == null || Math.abs(observedPlaybackSeconds - remoteSeconds) > (isExplicitSeek ? 0.65 : 1.25)) &&
+        now - lastRemoteSeekAt > (isExplicitSeek ? 450 : 1200)) {
+      suppressPlaybackBroadcastUntil = now + 900;
       sendPlayerCommand('seek', remoteSeconds);
       observedPlaybackSeconds = remoteSeconds;
       lastRemoteSeekAt = now;
@@ -500,61 +500,85 @@
         setStatus(error.message || 'Could not connect. Check the connection and try again.', false);
       }
     }
+    let remoteEpisodeApplyId = 0;
     function applyRemoteSeason(message) {
       const media = currentMedia();
       const season = document.getElementById('season-select');
       const episodeSelect = document.getElementById('episode-select');
       const target = String(Number(message?.season));
       if (media.mediaType !== 'tv' || media.mediaId !== String(message?.mediaId || '') ||
-          !Number.isFinite(Number(message?.season)) || !season || season.value === target ||
+          !Number.isInteger(Number(message?.season)) || !season ||
           ![...season.options].some(option => option.value === target)) return;
+      if (message.episode && Number.isInteger(Number(message.episode.episode))) {
+        applyEpisode({ mediaType: 'tv', mediaId: media.mediaId, season: Number(message.season), episode: Number(message.episode.episode) });
+        return;
+      }
+      const applyId = ++remoteEpisodeApplyId;
       applyingRemoteEpisode = true;
-      let finished = false;
-      const finish = () => { if (finished) return; finished = true; observer.disconnect(); applyingRemoteEpisode = false; };
-      const observer = new MutationObserver(() => finish());
+      let quietTimer = 0;
+      const finish = () => {
+        if (applyId !== remoteEpisodeApplyId) return;
+        clearTimeout(quietTimer);
+        observer.disconnect();
+        applyingRemoteEpisode = false;
+      };
+      const observer = new MutationObserver(() => {
+        clearTimeout(quietTimer);
+        quietTimer = setTimeout(finish, 250);
+      });
       if (episodeSelect) observer.observe(episodeSelect, { childList: true, subtree: true });
-      season.value = target;
-      if (typeof window.onSeasonChange === 'function') window.onSeasonChange();
-      setTimeout(finish, 6000);
+      if (season.value !== target) {
+        season.value = target;
+        if (typeof window.onSeasonChange === 'function') window.onSeasonChange();
+      } else {
+        quietTimer = setTimeout(finish, 250);
+      }
+      setTimeout(finish, 8000);
     }
     function applyEpisode(episode) {
       if (!episode || episode.mediaType !== 'tv') return;
-      const current = currentEpisode();
-      if (!current || current.mediaId !== String(episode.mediaId) || !Number.isFinite(Number(episode.season)) || !Number.isFinite(Number(episode.episode))) return;
-      if (current.season === Number(episode.season) && current.episode === Number(episode.episode)) return;
+      const media = currentMedia();
       const season = document.getElementById('season-select');
       const episodeSelect = document.getElementById('episode-select');
-      if (!season || !episodeSelect) return;
-      const targetSeason = String(Number(episode.season));
-      const targetEpisode = String(Number(episode.episode));
+      const seasonNumber = Number(episode.season), episodeNumber = Number(episode.episode);
+      if (media.mediaType !== 'tv' || media.mediaId !== String(episode.mediaId) ||
+          !Number.isInteger(seasonNumber) || seasonNumber < 0 ||
+          !Number.isInteger(episodeNumber) || episodeNumber < 0 || !season || !episodeSelect) return;
+      const targetSeason = String(seasonNumber), targetEpisode = String(episodeNumber);
       if (![...season.options].some(option => option.value === targetSeason)) return;
+      if (season.value === targetSeason && episodeSelect.value === targetEpisode &&
+          [...episodeSelect.options].some(option => option.value === targetEpisode)) return;
+      const applyId = ++remoteEpisodeApplyId;
       applyingRemoteEpisode = true;
-      const finish = () => { applyingRemoteEpisode = false; };
-      const applyTargetEpisode = () => {
-        if (![...episodeSelect.options].some(option => option.value === targetEpisode)) return false;
+      let applied = false, quietTimer = 0;
+      const finish = () => {
+        if (applyId !== remoteEpisodeApplyId) return;
+        clearTimeout(quietTimer);
+        observer.disconnect();
+        applyingRemoteEpisode = false;
+      };
+      const tryApply = () => {
+        if (applyId !== remoteEpisodeApplyId || applied ||
+            season.value !== targetSeason ||
+            ![...episodeSelect.options].some(option => option.value === targetEpisode)) return;
         episodeSelect.value = targetEpisode;
         if (typeof window.onEpisodeChange === 'function') window.onEpisodeChange();
-        finish();
-        return true;
+        applied = true;
+        clearTimeout(quietTimer);
+        quietTimer = setTimeout(finish, 300);
       };
-      if (season.value === targetSeason) {
-        if (!applyTargetEpisode()) finish();
-        return;
-      }
-      let done = false;
-      const observer = new MutationObserver(() => {
-        if (done) return;
-        if (applyTargetEpisode()) { done = true; observer.disconnect(); }
-      });
+      const observer = new MutationObserver(tryApply);
       observer.observe(episodeSelect, { childList: true, subtree: true });
-      season.value = targetSeason;
-      if (typeof window.onSeasonChange === 'function') window.onSeasonChange();
+      if (season.value !== targetSeason) {
+        season.value = targetSeason;
+        if (typeof window.onSeasonChange === 'function') window.onSeasonChange();
+      }
+      tryApply();
       setTimeout(() => {
-        if (done) return;
-        done = true; observer.disconnect();
-        applyTargetEpisode();
-        finish();
-      }, 6000);
+        if (applyId !== remoteEpisodeApplyId) return;
+        tryApply();
+        if (!applied) finish();
+      }, 8000);
     }
     const toggleButton = $('#f2w-party-toggle');
     toggleButton.addEventListener('click', () => {
@@ -626,6 +650,14 @@
         input.value = '';
       } catch (_) { setStatus('Message could not be sent. Try again.'); }
     });
+    async function sendEpisodeSnapshot() {
+      if (!connection || applyingRemoteEpisode) return;
+      const episode = currentEpisode(), key = episodeKey(episode);
+      if (!episode || !key || key === lastSentEpisode) return;
+      lastSentEpisode = key;
+      try { await connection.send({ type: 'episode-change', episode }); }
+      catch (error) { console.warn('[Watch Party] episode sync failed', error); }
+    }
     document.addEventListener('change', async event => {
       if (applyingRemoteEpisode || !connection || !event.target) return;
       const episode = currentEpisode();
@@ -633,13 +665,12 @@
         if (!episode) return;
         try { await connection.send({ type: 'season-change', mediaId: episode.mediaId, season: episode.season }); }
         catch (error) { console.warn('[Watch Party] season sync failed', error); }
+        // The episode list can be populated asynchronously after the season change.
+        // Re-sample it several times so the final selected episode wins the race.
+        [250, 700, 1400, 2400].forEach(delay => setTimeout(sendEpisodeSnapshot, delay));
         return;
       }
-      if (event.target.id !== 'episode-select') return;
-      const key = episodeKey(episode);
-      if (!episode || !key || key === lastSentEpisode) return;
-      lastSentEpisode = key;
-      try { await connection.send({ type: 'episode-change', episode }); } catch (error) { console.warn('[Watch Party] episode sync failed', error); }
+      if (event.target.id === 'episode-select') await sendEpisodeSnapshot();
     });
     const episodeSelect = document.getElementById('episode-select');
     if (episodeSelect) {
