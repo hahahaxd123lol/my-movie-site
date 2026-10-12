@@ -441,3 +441,5 @@ select
       )
     )
   ) as historical_source_counts;
+
+-- f2w-force-save: watched SQL five-minute threshold republish 2026-10-12
