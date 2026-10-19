@@ -7023,10 +7023,36 @@ setTimeout(loadLibraryFavorites,0);
       if(response?.error)throw response.error;
       if(String(viewedProfile?.user_id||'')!==targetUserId)return;
       const row=Array.isArray(response?.data)?response.data[0]:response?.data;
+      let followers=Math.max(0,Number(row?.followers_count)||0);
+      let following=Math.max(0,Number(row?.following_count)||0);
+
+      // Some deployments have a stale/missing social-count RPC while the
+      // underlying follow relationships still exist. If the RPC reports no
+      // relationships, verify against the canonical table before displaying
+      // zero. RLS/RPC permissions remain authoritative; failures are non-fatal.
+      if(followers===0&&following===0){
+        try{
+          const [followersResult,followingResult]=await Promise.all([
+            chatSupabase.from('profile_follows')
+              .select('follower_user_id',{count:'exact',head:true})
+              .eq('followed_user_id',targetUserId),
+            chatSupabase.from('profile_follows')
+              .select('followed_user_id',{count:'exact',head:true})
+              .eq('follower_user_id',targetUserId)
+          ]);
+          if(String(viewedProfile?.user_id||'')===targetUserId){
+            if(!followersResult?.error&&Number(followersResult?.count)>0)followers=Number(followersResult.count);
+            if(!followingResult?.error&&Number(followingResult?.count)>0)following=Number(followingResult.count);
+          }
+        }catch(error){
+          console.warn('Direct profile follow-count fallback unavailable:',error?.message||error);
+        }
+      }
+
       socialFeaturesAvailable=true;
       viewedSocial={
-        followers:Math.max(0,Number(row?.followers_count)||0),
-        following:Math.max(0,Number(row?.following_count)||0),
+        followers,
+        following,
         is_following:Boolean(row?.is_following),
         can_view_social:Boolean(row?.can_view_social)
       };
