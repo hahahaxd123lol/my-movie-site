@@ -2989,6 +2989,14 @@ async function saveManagedProfile(){
   const avatarUrl=String(
     document.getElementById('staff-profile-avatar-url')?.value||''
   ).trim();
+  if(avatarUrl){
+    try{
+      const parsedAvatarUrl=new URL(avatarUrl);
+      if(!['http:','https:'].includes(parsedAvatarUrl.protocol)||!parsedAvatarUrl.hostname){
+        toast('Avatar URL must use HTTP or HTTPS');return;
+      }
+    }catch{toast('Avatar URL must be a valid HTTP or HTTPS URL');return}
+  }
 
   const isPrivate=
     document.getElementById('staff-profile-private')?.value==='true';
