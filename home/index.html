@@ -8313,6 +8313,196 @@ body.f2w-auth-v67-open {
 /* f2w-force-save:v200-home-catalog-rescue:20260902 */
 </script>
 <script src="/f2w-continue-watching-v1.js?v=egress-20261019" defer></script>
+
+<style id="f2w-home-header-fit-v1">
+/* Match the profile's tidy single-row desktop header without fixed-width overflow. */
+@media (min-width:1181px) {
+  body.f2w-main-page > header {
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    padding-left:clamp(8px,.8vw,14px)!important;
+    padding-right:clamp(8px,.8vw,14px)!important;
+    gap:clamp(5px,.55vw,10px)!important;
+    overflow:visible!important;
+  }
+  body.f2w-main-page > header > .logo {
+    flex:0 0 clamp(94px,7.7vw,126px)!important;
+    width:clamp(94px,7.7vw,126px)!important;
+    min-width:clamp(94px,7.7vw,126px)!important;
+    max-width:clamp(94px,7.7vw,126px)!important;
+  }
+  body.f2w-main-page > header > .logo .logo-image {
+    width:100%!important;
+    max-width:100%!important;
+  }
+  body.f2w-main-page > header > .header-tools {
+    display:grid!important;
+    flex:1 1 0!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    grid-template-columns:max-content minmax(160px,1fr) max-content!important;
+    grid-template-rows:40px!important;
+    align-items:center!important;
+    justify-content:stretch!important;
+    column-gap:clamp(4px,.5vw,9px)!important;
+    overflow:visible!important;
+  }
+  body.f2w-main-page > header .f2w-primary-nav {
+    grid-column:1!important;
+    grid-row:1!important;
+    display:flex!important;
+    flex:0 1 auto!important;
+    width:max-content!important;
+    min-width:0!important;
+    max-width:100%!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    gap:0!important;
+    overflow:visible!important;
+  }
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button {
+    flex:0 0 auto!important;
+    min-width:0!important;
+    padding-left:clamp(3px,.42vw,7px)!important;
+    padding-right:clamp(3px,.42vw,7px)!important;
+    font-size:clamp(9px,.66vw,11px)!important;
+    white-space:nowrap!important;
+  }
+  body.f2w-main-page > header .f2w-search-pair {
+    grid-column:2!important;
+    grid-row:1!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    flex:1 1 auto!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    gap:clamp(4px,.45vw,8px)!important;
+  }
+  body.f2w-main-page > header .search-container,
+  body.f2w-main-page > header .user-search-container {
+    flex:1 1 0!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+  body.f2w-main-page > header .search-bar,
+  body.f2w-main-page > header .user-search-bar {
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    padding-left:30px!important;
+    padding-right:8px!important;
+    box-sizing:border-box!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster {
+    grid-column:3!important;
+    grid-row:1!important;
+    display:flex!important;
+    flex:0 1 auto!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    width:max-content!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0!important;
+    gap:clamp(3px,.34vw,6px)!important;
+    overflow:visible!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster > *,
+  body.f2w-main-page > header .f2w-action-cluster .tool-btn,
+  body.f2w-main-page > header .f2w-action-cluster .f2w-auth-top-btn,
+  body.f2w-main-page > header .f2w-action-cluster #staff-control-nav {
+    grid-column:auto!important;
+    grid-row:auto!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+    margin:0!important;
+    padding:0 clamp(5px,.42vw,8px)!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    font-size:clamp(9px,.64vw,11px)!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster #notification-wrap {
+    grid-column:auto!important;
+    grid-row:auto!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster #notification-btn {
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    padding-left:clamp(5px,.42vw,8px)!important;
+    padding-right:clamp(5px,.42vw,8px)!important;
+  }
+  body.f2w-main-page > header #staff-control-nav {
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:max-content!important;
+    max-width:none!important;
+    padding-left:clamp(6px,.5vw,9px)!important;
+    padding-right:clamp(6px,.5vw,9px)!important;
+    overflow:visible!important;
+  }
+}
+@media (min-width:1181px) and (max-width:1350px) {
+  body.f2w-main-page > header > .logo {
+    flex-basis:94px!important;
+    width:94px!important;
+    min-width:94px!important;
+    max-width:94px!important;
+  }
+  body.f2w-main-page > header > .header-tools {
+    grid-template-columns:max-content minmax(120px,1fr) max-content!important;
+    column-gap:4px!important;
+  }
+  body.f2w-main-page > header .f2w-nav-link,
+  body.f2w-main-page > header .f2w-nav-button {
+    padding-left:3px!important;
+    padding-right:3px!important;
+    font-size:9px!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster {
+    gap:3px!important;
+  }
+  body.f2w-main-page > header .f2w-action-cluster > *,
+  body.f2w-main-page > header .f2w-action-cluster .tool-btn,
+  body.f2w-main-page > header .f2w-action-cluster .f2w-auth-top-btn,
+  body.f2w-main-page > header .f2w-action-cluster #staff-control-nav {
+    padding-left:5px!important;
+    padding-right:5px!important;
+    font-size:9px!important;
+  }
+}
+</style>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:home:19860bcde4 -->
