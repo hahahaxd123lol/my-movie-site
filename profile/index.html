@@ -6107,7 +6107,7 @@ if(currentUser){
       if(roleRefreshTimer)clearInterval(roleRefreshTimer);
       roleRefreshTimer=setInterval(()=>{
         if(currentUser&&chatToken)refreshChatRole();
-      },30000);
+      },300000);
     }
 
     refreshAccountUI();
