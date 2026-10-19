@@ -3,7 +3,7 @@ const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 const LOGO='/flix2watch-logo-red-v34.png';
 const db=window.f2wSupabase||window.sb||window.supabase.createClient(URL,KEY);
-const PAGE_SIZE=25, REFRESH_MS=30000, CACHE_TTL=35000;
+const PAGE_SIZE=25, REFRESH_MS=300000, CACHE_TTL=300000;
 let page=1,busy=false,view='xp',filter='',lastRefresh=0,nextRefreshAt=Date.now()+REFRESH_MS,myUserId='',rowsNow=[],totalNow=0;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -30,8 +30,8 @@ async function initAuth(){try{const {data}=await db.auth.getUser();myUserId=data
 window.openMyProfile=()=>{const u=window.f2wLbMyUsername||'';if(u)location.href='/profile/@'+encodeURIComponent(u);else window.openHeaderAuth?.('login')};
 let presenceSession='';async function heartbeat(){try{const {data:{session}}=await db.auth.getSession();if(!session?.user||document.visibilityState==='hidden')return;if(!presenceSession){presenceSession=sessionStorage.getItem('f2w_presence_session_v17')||crypto.randomUUID();sessionStorage.setItem('f2w_presence_session_v17',presenceSession)}const {error}=await db.rpc('touch_presence_v17',{p_session_id:presenceSession});if(error)await db.rpc('touch_presence')}catch{}}
 try{const raw=new URL(location.href).searchParams.get('view');if(metricMap[raw])view=raw}catch{}
-const cached=readCache();if(cached){render(cached.rows||[],Number(cached.total||0));renderStats(cached.stats);const u=$('#updated');if(u)u.textContent='Showing cached rankings · checking for updates…'}
-bind();initAuth();refreshAll(false);setInterval(tick,1000);
+const cached=readCache();if(cached){render(cached.rows||[],Number(cached.total||0));renderStats(cached.stats);lastRefresh=Number(cached.ts)||Date.now();nextRefreshAt=lastRefresh+REFRESH_MS;const u=$('#updated');if(u)u.textContent='Showing cached rankings · refreshes every 5 minutes'}
+bind();initAuth();if(!cached||Date.now()-Number(cached.ts||0)>=REFRESH_MS)refreshAll(false);setInterval(tick,1000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastRefresh>=REFRESH_MS)refreshAll(false)});
 document.getElementById('user-search')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&typeof window.submitUserDirectorySearch==='function')window.submitUserDirectorySearch()});
 })();
