@@ -1,39 +1,33 @@
+/* F2W chat removal v1 — remove public chat UI without touching presence/watch features. */
 (()=>{
   'use strict';
-  // v131: Chat is a real route again. Every site-wide Chat/DM trigger navigates
-  // to /chat/ instead of opening a second copy of Chat in an iframe overlay.
-  const CHAT_ROUTE='/chat/';
-  function goChat(){
-    if(location.pathname==='/chat/'||location.pathname==='/chat') return true;
-    location.assign(CHAT_ROUTE);
-    return true;
+  const selectors=[
+    '.chat-button','[data-open-chat]','a[href="/chat/"]','a[href="/chat"]',
+    '#chat-modal','.chat-modal','.global-chat','.global-chat-box','#global-chat',
+    '#global-chat-box','[data-public-chat]','.public-chat','.public-chat-box',
+    '.chat-widget','.chat-launcher','.v17-chat-hub','[data-chat-panel]',
+    '#dm-modal','.dm-modal','.direct-message-modal'
+  ];
+  const style=document.createElement('style');
+  style.id='f2w-chat-removed-v1';
+  style.textContent=selectors.join(',')+'{display:none!important;visibility:hidden!important;pointer-events:none!important}';
+  (document.head||document.documentElement).appendChild(style);
+  function removeChatUI(){
+    try{document.querySelectorAll(selectors.join(',')).forEach(el=>el.remove())}catch{}
+    try{
+      document.querySelectorAll('a[href]').forEach(a=>{
+        if(/^\/chat\/?(?:[?#].*)?$/.test(a.getAttribute('href')||''))a.remove();
+      });
+    }catch{}
   }
-  function bind(root=document){
-    root.querySelectorAll('.chat-button,[data-open-chat],a[href="/chat/"],a[href="/chat"]').forEach(el=>{
-      if(el.dataset.f2wChatRouteBound==='1')return;
-      el.dataset.f2wChatRouteBound='1';
-      el.addEventListener('click',e=>{
-        // Preserve browser modifier-click behavior for actual links.
-        if(e.button&&e.button!==0)return;
-        if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        goChat();
-      },true);
-    });
-  }
-  function boot(){
-    try{window.openChat=goChat;}catch{}
-    try{window.openGlobalChat=goChat;}catch{}
-    bind();
-    const mo=new MutationObserver(()=>bind());
-    mo.observe(document.documentElement,{subtree:true,childList:true});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  window.addEventListener('load',boot,{once:true});
+  try{window.openChat=()=>false}catch{}
+  try{window.openGlobalChat=()=>false}catch{}
+  try{window.goChat=()=>false}catch{}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',removeChatUI,{once:true});
+  else removeChatUI();
+  try{new MutationObserver(removeChatUI).observe(document.documentElement,{subtree:true,childList:true})}catch{}
 })();
-// f2w-update-marker: global-chat-v131-route-only
-// f2w-force-save:1788208311
+// f2w-update-marker: global-chat-removed-v1// f2w-force-save:1788208311
 
 /* F2W responsive navigation stability v9 */
 (()=>{
