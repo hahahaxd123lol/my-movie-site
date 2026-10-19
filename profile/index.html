@@ -230,7 +230,7 @@ html{overflow-y:scroll}
 <script id="f2w-profile-discord-order-v251-boot">
 window.__f2wDiscordEveryPageV250=true;
 </script>
-<script src="/v160-bootstrap.js?v=egress-20261019"></script>
+<script src="/v160-bootstrap.js?v=205-live-sports-sitewide"></script>
 <script src="/silent-account-v16.js"></script>
   <script src="/account-guard-v16.js" defer></script>
 
@@ -4068,66 +4068,6 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 </script>
 
 <script defer src="/sitewide-rate-limit-v1.js?v=1"></script>
-<style id="f2w-profile-favorites-pagination-v229">
-  .f2w-favorites-pagination{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:14px 0 6px;color:var(--text-muted);font-size:.72rem}
-  .f2w-favorites-pagination button{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(255,255,255,.04);color:var(--text);font:inherit;cursor:pointer}
-  .f2w-favorites-pagination button:disabled{opacity:.38;cursor:not-allowed}
-  .f2w-favorites-pagination button:not(:disabled):hover{border-color:var(--accent);color:#fff}
-</style>
-
-<style id="f2w-profile-visible-redesign-v260">
-/* Visible profile refresh: deliberate layout and surface changes, not cache-only edits. */
-body.f2w-profile-page{--profile-panel:#0d1725;--profile-panel-soft:#111e2e;--profile-line:rgba(148,163,184,.19)}
-body.f2w-profile-page #profile-root{width:min(1180px,calc(100% - 32px))!important;margin:34px auto 70px!important}
-body.f2w-profile-page #profile-hero{position:relative!important;display:grid!important;grid-template-columns:150px minmax(0,1fr)!important;align-items:start!important;gap:28px!important;padding:34px!important;border:1px solid var(--profile-line)!important;border-radius:24px!important;background:radial-gradient(ellipse at 8% 0%,rgba(229,9,20,.19),transparent 42%),linear-gradient(135deg,#111d2c 0%,#0b1421 65%,#101a29 100%)!important;box-shadow:0 20px 55px rgba(0,0,0,.25)!important;overflow:hidden!important}
-body.f2w-profile-page #profile-hero:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#e50914,#ff5360 45%,transparent 100%);pointer-events:none}
-body.f2w-profile-page #profile-avatar-shell{width:138px!important;height:138px!important;min-width:138px!important;border:3px solid rgba(255,255,255,.16)!important;border-radius:26px!important;box-shadow:0 12px 34px rgba(0,0,0,.35)!important;overflow:hidden!important;background:#172538!important}
-body.f2w-profile-page #profile-avatar{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:22px!important}
-body.f2w-profile-page .profile-eyebrow{font-size:10px!important;font-weight:850!important;letter-spacing:.17em!important;color:#fb7185!important}
-body.f2w-profile-page .profile-name-row{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:12px!important;margin:5px 0 4px!important}
-body.f2w-profile-page .profile-name{font-size:clamp(27px,4vw,42px)!important;line-height:1.08!important;letter-spacing:-.035em!important;font-weight:900!important}
-body.f2w-profile-page .profile-username-line{color:#9aabc0!important;font-size:13px!important;margin-top:5px!important}
-body.f2w-profile-page .profile-bio{max-width:760px!important;font-size:15px!important;line-height:1.75!important;color:#d4deea!important;margin:18px 0!important}
-body.f2w-profile-page .profile-social-counts{display:flex!important;flex-wrap:wrap!important;gap:10px!important;margin:18px 0!important}
-body.f2w-profile-page .profile-social-count{padding:10px 14px!important;border:1px solid var(--profile-line)!important;border-radius:12px!important;background:rgba(255,255,255,.045)!important;color:#b8c6d8!important;transition:background .18s,border-color .18s,transform .18s!important}
-body.f2w-profile-page .profile-social-count:hover{background:rgba(229,9,20,.1)!important;border-color:rgba(229,9,20,.45)!important;transform:translateY(-1px)}
-body.f2w-profile-page .profile-social-count strong{color:#fff!important;font-size:17px!important;font-weight:850!important;margin-right:4px!important}
-body.f2w-profile-page .profile-action-btn,body.f2w-profile-page .profile-follow-btn{min-height:42px!important;padding:0 16px!important;border-radius:12px!important;font-weight:800!important;transition:transform .18s,filter .18s,background .18s!important}
-body.f2w-profile-page .profile-action-btn:hover,body.f2w-profile-page .profile-follow-btn:hover{transform:translateY(-2px)!important;filter:brightness(1.12)}
-body.f2w-profile-page #v199-edit-profile-btn{background:#e50914!important;color:#fff!important;border:1px solid #ff4650!important;box-shadow:0 6px 18px rgba(229,9,20,.2)!important}
-body.f2w-profile-page .profile-stats-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;margin-top:24px!important}
-body.f2w-profile-page .profile-stat-card{padding:18px!important;min-height:90px!important;border:1px solid var(--profile-line)!important;border-radius:16px!important;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018))!important}
-body.f2w-profile-page .profile-stat-card strong{display:block!important;font-size:27px!important;line-height:1.1!important;font-weight:900!important;color:#fff!important}
-body.f2w-profile-page .profile-stat-card span{display:block!important;margin-top:8px!important;color:#94a8bf!important;font-size:11px!important;font-weight:800!important;letter-spacing:.09em!important;text-transform:uppercase!important}
-body.f2w-profile-page .profile-v16-overview{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;margin:18px 0!important}
-body.f2w-profile-page .profile-v16-tile,body.f2w-profile-page .profile-v16-panel{border:1px solid var(--profile-line)!important;border-radius:18px!important;background:linear-gradient(145deg,#101d2c,#0c1522)!important;box-shadow:0 10px 28px rgba(0,0,0,.12)!important}
-body.f2w-profile-page .profile-v16-tile{padding:18px!important;min-width:0!important}
-body.f2w-profile-page .profile-v16-tile>i{color:#fb7185!important;font-size:17px!important;margin-bottom:12px!important}
-body.f2w-profile-page .profile-v16-tile strong{display:block!important;font-size:22px!important;font-weight:900!important}
-body.f2w-profile-page .profile-v16-tile span{display:block!important;margin-top:6px!important;color:#91a4ba!important;font-size:11px!important}
-body.f2w-profile-page .profile-v16-panel{padding:22px!important;margin:18px 0!important}
-body.f2w-profile-page .profile-v16-panel-head,body.f2w-profile-page .profile-section-head{display:flex!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap!important;gap:12px!important;margin-bottom:16px!important}
-body.f2w-profile-page .profile-v16-panel-head h2,body.f2w-profile-page .profile-section-head h2{font-size:19px!important;font-weight:850!important;letter-spacing:-.02em!important}
-body.f2w-profile-page #profile-favorites-section{padding:22px!important;margin:18px 0!important;border:1px solid var(--profile-line)!important;border-radius:18px!important;background:linear-gradient(145deg,#101d2c,#0c1522)!important}
-body.f2w-profile-page .profile-role-badge{font-weight:850!important}
-body.f2w-profile-page .profile-private-control{margin:14px 0!important;padding:14px 16px!important;border:1px solid var(--profile-line)!important;border-radius:14px!important;background:rgba(255,255,255,.025)!important}
-body.f2w-profile-page .profile-public-note{margin-top:16px!important;color:#8da1b8!important;font-size:11px!important}
-@media(max-width:680px){
- body.f2w-profile-page #profile-root{width:calc(100% - 20px)!important;margin:18px auto 42px!important}
- body.f2w-profile-page #profile-hero{grid-template-columns:1fr!important;gap:18px!important;padding:20px!important;border-radius:19px!important}
- body.f2w-profile-page #profile-avatar-shell{width:104px!important;height:104px!important;min-width:104px!important;border-radius:22px!important}
- body.f2w-profile-page .profile-name{font-size:29px!important}
- body.f2w-profile-page .profile-stats-grid{gap:8px!important}
- body.f2w-profile-page .profile-stat-card{padding:12px 10px!important;min-height:78px!important}
- body.f2w-profile-page .profile-stat-card strong{font-size:22px!important}
- body.f2w-profile-page .profile-stat-card span{font-size:9px!important;letter-spacing:.04em!important}
- body.f2w-profile-page .profile-v16-overview{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
- body.f2w-profile-page .profile-v16-tile{padding:14px!important}
- body.f2w-profile-page .profile-v16-panel,body.f2w-profile-page #profile-favorites-section{padding:15px!important;border-radius:15px!important}
- body.f2w-profile-page .profile-action-btn,body.f2w-profile-page .profile-follow-btn{padding:0 12px!important;font-size:12px!important}
-}
-</style>
-
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -4241,7 +4181,9 @@ body.f2w-profile-page .profile-public-note{margin-top:16px!important;color:#8da1
       </div>
 
       <div class="f2w-action-cluster">
-        <!-- Chat navigation removed. -->
+        <button class="tool-btn chat-button" onclick="openGlobalChat(); return false;">
+          <i class="fa-regular fa-message"></i> Chat 
+        </button>
 
         
 
@@ -4280,7 +4222,85 @@ body.f2w-profile-page .profile-public-note{margin-top:16px!important;color:#8da1
   
 
 
-  <!-- Public chat and direct-message interface removed. -->
+  <div class="chat-modal" id="chat-modal">
+    <div class="chat-card v17-chat-hub">
+      <div class="chat-header v17-chat-hub-header">
+        <div>
+          <div class="chat-title"><i class="fa-solid fa-comments"></i> Chat</div>
+          <div class="chat-subtitle">PUBLIC CHAT + PRIVATE DIRECT MESSAGES</div>
+        </div>
+        <div class="v17-chat-mode-tabs">
+          <button class="v17-chat-mode active" id="v17-chat-public-tab" type="button" onclick="switchChatMode('public')">
+            <i class="fa-solid fa-earth-europe"></i> Public
+          </button>
+          <button class="v17-chat-mode" id="v17-chat-dm-tab" type="button" onclick="switchChatMode('dm')">
+            <i class="fa-regular fa-paper-plane"></i> Direct Messages
+            <span class="v17-dm-unread" id="v17-dm-unread" hidden>0</span>
+          </button>
+        </div>
+        <button class="chat-close" onclick="closeChat()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <section class="v17-chat-mode-panel" id="v17-public-chat-panel">
+        <div class="chat-status" id="chat-status"><span id="chat-status-text">Connecting to chat...</span></div>
+        
+        <div class="chat-messages" id="chat-messages"><div class="chat-empty">Connecting to the public chat...</div></div>
+        <div class="chat-warning">Public messages expire after 24 hours.</div>
+
+        <div class="chat-attachment-preview" id="chat-attachment-preview">
+          <img id="chat-attachment-thumb" alt="Selected image">
+          <div class="chat-attachment-copy" id="chat-attachment-name">Image ready</div>
+          <button class="chat-attachment-remove" type="button" onclick="clearChatAttachment()" title="Remove attachment"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="chat-input-area">
+          <input id="chat-media-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onchange="selectChatAttachment(this.files?.[0])">
+          <button class="chat-media-btn" id="chat-media-btn" type="button" onclick="document.getElementById('chat-media-input').click()" title="Upload image"><i class="fa-solid fa-image"></i></button>
+          <input type="text" id="chat-message-input" class="chat-input" maxlength="500" placeholder="Sign in to send a message..." autocomplete="off" disabled>
+          <button class="chat-send" id="chat-send" onclick="sendChatMessage()" disabled><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+      </section>
+
+      <section class="v17-chat-mode-panel v17-dm-panel" id="v17-dm-panel" hidden>
+        <aside class="v17-dm-sidebar">
+          <div class="v17-dm-security">
+            <i class="fa-solid fa-lock"></i>
+            <div>
+              <strong>Private messages</strong>
+              <span>Participant-only access, TLS in transit and AES-256 encrypted message bodies at rest. This is not end-to-end encryption.</span>
+            </div>
+          </div>
+
+          <div class="v17-dm-list-head">
+            <strong>Messages</strong>
+            <button type="button" onclick="refreshDirectMessages()" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
+          </div>
+
+          <div class="v17-dm-conversations" id="v17-dm-conversations">
+            <div class="v17-dm-empty">Sign in to use direct messages.</div>
+          </div>
+        </aside>
+
+        <div class="v17-dm-thread">
+          <div class="v17-dm-thread-head" id="v17-dm-thread-head">
+            <div>
+              <strong>Select a conversation</strong>
+              <span>Direct messages automatically delete after 24 hours.</span>
+            </div>
+          </div>
+
+          <div class="v17-dm-messages" id="v17-dm-messages">
+            <div class="v17-dm-empty">Choose a person from the left, or press Message on their profile.</div>
+          </div>
+
+          <div class="v17-dm-compose">
+            <input id="v17-dm-input" type="text" maxlength="2000" placeholder="Write a private message..." autocomplete="off" disabled>
+            <button id="v17-dm-send" type="button" onclick="sendDirectMessage()" disabled><i class="fa-solid fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <div class="account-modal" id="account-modal">
     <div class="account-card">
@@ -6167,7 +6187,7 @@ if(currentUser){
       if(roleRefreshTimer)clearInterval(roleRefreshTimer);
       roleRefreshTimer=setInterval(()=>{
         if(currentUser&&chatToken)refreshChatRole();
-      },300000);
+      },30000);
     }
 
     refreshAccountUI();
@@ -6469,8 +6489,6 @@ setTimeout(loadLibraryFavorites,0);
   }
 
   function renderViewedProfile(){
-    // Keep the separately bootstrapped editor in sync when cached/network profile data arrives.
-    window.dispatchEvent(new Event('f2w-profile-rendered'));
     const root=document.getElementById('profile-hero');
     const name=document.getElementById('profile-name');
     const displayName=null;
@@ -6606,11 +6624,6 @@ setTimeout(loadLibraryFavorites,0);
     }
   }
 
-  let viewedFavoritesPage=1;
-  let viewedFavoritesPageUsername='';
-  const viewedFavoritesPageSize=24;
-  let profileFollowActionBusy=false;
-
   function renderViewedFavorites(){
     const grid=document.getElementById('profile-favorites-grid');
     const count=document.getElementById('profile-favorite-count');
@@ -6634,15 +6647,7 @@ setTimeout(loadLibraryFavorites,0);
       return;
     }
 
-    const pageUsername=String(viewedProfile?.username||'').toLowerCase();
-    if(pageUsername!==viewedFavoritesPageUsername){
-      viewedFavoritesPageUsername=pageUsername;
-      viewedFavoritesPage=1;
-    }
-    const totalFavorites=viewedProfileFavorites.length;
-    const totalPages=Math.max(1,Math.ceil(totalFavorites/viewedFavoritesPageSize));
-    viewedFavoritesPage=Math.min(totalPages,Math.max(1,viewedFavoritesPage));
-    count.textContent=`${totalFavorites} favorites`;
+    count.textContent=`${viewedProfileFavorites.length} favorites`;
 
     updateViewedProfileStats();
 
@@ -6651,9 +6656,7 @@ setTimeout(loadLibraryFavorites,0);
       return;
     }
 
-    const pageStart=(viewedFavoritesPage-1)*viewedFavoritesPageSize;
-    const visibleFavorites=viewedProfileFavorites.slice(pageStart,pageStart+viewedFavoritesPageSize);
-    const cards=visibleFavorites.map(item=>{
+    grid.innerHTML=viewedProfileFavorites.map(item=>{
       const title=escapeProfileHTML(item.title||'Untitled');
       const poster=item.poster_path
         ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
@@ -6670,21 +6673,6 @@ setTimeout(loadLibraryFavorites,0);
           <div class="profile-fav-type">${item.media_type==='tv'?'TV SERIES':'MOVIE'}</div>
         </article>`;
     }).join('');
-    const pagination=totalPages>1?`
-      <nav class="f2w-favorites-pagination" aria-label="Favorite pages">
-        <button type="button" data-f2w-fav-page="${viewedFavoritesPage-1}" ${viewedFavoritesPage<=1?'disabled':''} aria-label="Previous favorites page"><i class="fa-solid fa-chevron-left"></i> Previous</button>
-        <span>Page ${viewedFavoritesPage} of ${totalPages}</span>
-        <button type="button" data-f2w-fav-page="${viewedFavoritesPage+1}" ${viewedFavoritesPage>=totalPages?'disabled':''} aria-label="Next favorites page">Next <i class="fa-solid fa-chevron-right"></i></button>
-      </nav>`:'';
-    grid.innerHTML=cards+pagination;
-    grid.querySelectorAll('[data-f2w-fav-page]').forEach(button=>{
-      button.addEventListener('click',()=>{
-        const nextPage=Number(button.getAttribute('data-f2w-fav-page'));
-        if(!Number.isInteger(nextPage)||nextPage<1||nextPage>totalPages||nextPage===viewedFavoritesPage)return;
-        viewedFavoritesPage=nextPage;
-        renderViewedFavorites();
-      });
-    });
   }
 
   async function loadViewedProfile(){
@@ -6719,12 +6707,6 @@ setTimeout(loadLibraryFavorites,0);
           if(parsed&&parsed.profile){
             viewedProfile=parsed.profile;
             viewedProfileFavorites=Array.isArray(parsed.favorites)?parsed.favorites:[];
-            try{
-              const socialCache=JSON.parse(localStorage.getItem('f2w_profile_social_v1:'+String(parsed.profile.user_id||''))||'null');
-              if(socialCache){
-                viewedSocial={...viewedSocial,followers:Math.max(0,Number(socialCache.followers)||0),following:Math.max(0,Number(socialCache.following)||0)};
-              }
-            }catch{}
             f2wProfileResolvedUsername=String(parsed.profile.username||username).toLowerCase();
             renderViewedProfile();
             renderViewedFavorites();
@@ -6765,19 +6747,15 @@ setTimeout(loadLibraryFavorites,0);
        * WHOLE request and the catch block incorrectly changed a valid profile into
        * "Profile Not Found".
        */
-      // Profile loading hotfix replay: always settle stalled Supabase requests.
-      let profileRequestTimeout=0;
+      const controller=new AbortController();
+      const timeout=setTimeout(()=>controller.abort(),6000);
+
       let result;
       try{
-        const rpcResult=await Promise.race([
-          chatSupabase.rpc('get_public_profile_v160',{p_username:username}),
-          new Promise((_,reject)=>{
-            profileRequestTimeout=setTimeout(()=>reject(new Error('Profile request timed out')),6000);
-          })
-        ]);
+        const rpcResult=await chatSupabase.rpc('get_public_profile_v160',{p_username:username});
         result={data:rpcResult?.data||null,error:rpcResult?.error||null};
       }finally{
-        clearTimeout(profileRequestTimeout);
+        clearTimeout(timeout);
       }
 
       if(requestGeneration!==f2wProfileLoadGeneration)return;
@@ -6806,37 +6784,29 @@ setTimeout(loadLibraryFavorites,0);
 
       // Normalize optional fields so the renderer never depends on a migration
       // having already added them.
-      const previousProfile=(
-        viewedProfile&&String(viewedProfile.username||'').toLowerCase()===wantedUsername
-      )?viewedProfile:{};
-      const hasProfileField=key=>Object.prototype.hasOwnProperty.call(profileData,key);
-      const profileField=(key,fallback='')=>hasProfileField(key)
-        ? (profileData[key]??fallback)
-        : (previousProfile[key]??fallback);
       viewedProfile={
-        ...previousProfile,
         ...profileData,
-        display_name:profileData.display_name??previousProfile.display_name??null,
-        bio:profileData.bio??previousProfile.bio??'',
-        avatar_url:profileData.avatar_url??previousProfile.avatar_url??null,
-        is_private:Boolean(profileData.is_private??previousProfile.is_private),
-        location:profileField('location',''),
-        favorite_genres:profileField('favorite_genres',[]),
-        website_url:profileField('website_url',''),
-        instagram_username:profileField('instagram_username',''),
-        discord_username:profileField('discord_username',''),
-        snapchat_username:profileField('snapchat_username',''),
-        reddit_username:profileField('reddit_username',''),
-        steam_profile:profileField('steam_profile',''),
-        tiktok_username:profileField('tiktok_username',''),
-        letterboxd_username:profileField('letterboxd_username',''),
-        status_text:profileField('status_text',''),
-        pronouns:profileField('pronouns',''),
-        favorite_movie_text:profileField('favorite_movie_text',''),
-        favorite_movie_tmdb_id:profileField('favorite_movie_tmdb_id',null),
-        favorite_movie_poster_path:profileField('favorite_movie_poster_path',''),
-        favorite_tv_text:profileField('favorite_tv_text',''),
-        profile_quote:profileField('profile_quote','')
+        display_name:profileData.display_name??null,
+        bio:profileData.bio??'',
+        avatar_url:profileData.avatar_url??null,
+        is_private:Boolean(profileData.is_private),
+        location:profileData.location??'',
+        favorite_genres:profileData.favorite_genres??[],
+        website_url:profileData.website_url??'',
+        instagram_username:profileData.instagram_username??'',
+        discord_username:profileData.discord_username??'',
+        snapchat_username:profileData.snapchat_username??'',
+        reddit_username:profileData.reddit_username??'',
+        steam_profile:profileData.steam_profile??'',
+        tiktok_username:profileData.tiktok_username??'',
+        letterboxd_username:profileData.letterboxd_username??'',
+        status_text:profileData.status_text??'',
+        pronouns:profileData.pronouns??'',
+        favorite_movie_text:profileData.favorite_movie_text??'',
+        favorite_movie_tmdb_id:profileData.favorite_movie_tmdb_id??null,
+        favorite_movie_poster_path:profileData.favorite_movie_poster_path??'',
+        favorite_tv_text:profileData.favorite_tv_text??'',
+        profile_quote:profileData.profile_quote??''
       };
 
       f2wProfileResolvedUsername=String(viewedProfile.username||'').toLowerCase();
@@ -6915,14 +6885,13 @@ setTimeout(loadLibraryFavorites,0);
         bio.classList.add('empty');
       }
       if(grid){
-        grid.innerHTML='<div class="profile-state">Profile data is temporarily unavailable. <button type="button" id="f2w-profile-retry" style="margin:10px auto 0;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:8px;background:#18181b;color:#fff;cursor:pointer">Try again</button></div>';
-        document.getElementById('f2w-profile-retry')?.addEventListener('click',()=>{void loadViewedProfile()},{once:true});
+        grid.innerHTML='<div class="profile-state">Profile data is temporarily unavailable.</div>';
       }
       return;
     }
 
-    // Followers are refreshed independently; their network latency must not block favorites.
-    void loadProfileSocial();
+    // Followers/private features are optional and cannot hide the main profile.
+    await loadProfileSocial();
 
     if(!canViewPrivateContent()){
       viewedProfileFavorites=[];
@@ -7050,131 +7019,49 @@ setTimeout(loadLibraryFavorites,0);
     if(followingBtn)followingBtn.disabled=!canOpenLists;
   }
 
-  let profileSocialChannel=null;
-  let profileSocialChannelUid='';
-  let profileSocialPollTimer=0;
-  let profileSocialRefreshTimer=0;
-  let profileSocialLoadBusy=false;
-  let profileSocialRefreshPending=false;
-  let profileSocialLoadedOnce=false;
-  let profileSocialLifecycleBound=false;
-
-  function scheduleProfileSocialRefresh(delay=180){
-    clearTimeout(profileSocialRefreshTimer);
-    profileSocialRefreshTimer=setTimeout(()=>{void loadProfileSocial()},delay);
-  }
-
-  function bindProfileSocialLive(){
-    const uid=String(viewedProfile?.user_id||'');
-    if(!uid||!chatSupabase?.channel)return;
-    if(profileSocialChannelUid!==uid){
-      if(profileSocialChannel){try{chatSupabase.removeChannel(profileSocialChannel)}catch{}}
-      profileSocialChannel=null;
-      profileSocialChannelUid=uid;
-      try{
-        profileSocialChannel=chatSupabase.channel('f2w-profile-social-live-'+uid)
-          .on('postgres_changes',{event:'*',schema:'public',table:'profile_follows',filter:`followed_user_id=eq.${uid}`},()=>scheduleProfileSocialRefresh())
-          .on('postgres_changes',{event:'*',schema:'public',table:'profile_follows',filter:`follower_user_id=eq.${uid}`},()=>scheduleProfileSocialRefresh())
-          .subscribe();
-      }catch(error){console.warn('Profile social realtime unavailable:',error?.message||error)}
-    }
-    if(!profileSocialPollTimer){
-      profileSocialPollTimer=setInterval(()=>{
-        if(document.visibilityState==='visible'&&viewedProfile?.user_id)void loadProfileSocial();
-      },30000);
-    }
-    if(!profileSocialLifecycleBound){
-      profileSocialLifecycleBound=true;
-      document.addEventListener('visibilitychange',()=>{
-        if(document.visibilityState==='visible')scheduleProfileSocialRefresh(0);
-      });
-      window.addEventListener('focus',()=>scheduleProfileSocialRefresh(0),{passive:true});
-      window.addEventListener('pageshow',()=>scheduleProfileSocialRefresh(0),{passive:true});
-    }
-  }
-
   async function loadProfileSocial(){
     if(!viewedProfile){
       socialFeaturesAvailable=false;
-      viewedSocial={followers:0,following:0,is_following:false,can_view_social:false};
+      viewedSocial={
+        followers:0,
+        following:0,
+        is_following:false,
+        can_view_social:false
+      };
       renderProfilePrivacy();
       return;
     }
-    bindProfileSocialLive();
-    if(profileSocialLoadBusy){profileSocialRefreshPending=true;return}
-    const targetUserId=String(viewedProfile.user_id||'');
-    if(!targetUserId)return;
-    profileSocialLoadBusy=true;
-    let timeoutId=0;
-    try{
-      const response=await Promise.race([
-        chatSupabase.rpc('get_profile_social',{target_user_id:targetUserId}),
-        new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error('Profile social refresh timed out')),4500)})
-      ]);
-      clearTimeout(timeoutId);
-      if(response?.error)throw response.error;
-      if(String(viewedProfile?.user_id||'')!==targetUserId)return;
-      const row=Array.isArray(response?.data)?response.data[0]:response?.data;
-      let followers=Math.max(0,Number(row?.followers_count)||0);
-      let following=Math.max(0,Number(row?.following_count)||0);
 
-      // Some deployments have a stale/missing social-count RPC while the
-      // underlying follow relationships still exist. If the RPC reports no
-      // relationships, verify against the canonical table before displaying
-      // zero. RLS/RPC permissions remain authoritative; failures are non-fatal.
-      if(followers===0&&following===0){
-        try{
-          const [followersResult,followingResult]=await Promise.all([
-            chatSupabase.from('profile_follows')
-              .select('follower_user_id',{count:'exact',head:true})
-              .eq('followed_user_id',targetUserId),
-            chatSupabase.from('profile_follows')
-              .select('followed_user_id',{count:'exact',head:true})
-              .eq('follower_user_id',targetUserId)
-          ]);
-          if(String(viewedProfile?.user_id||'')===targetUserId){
-            if(!followersResult?.error&&Number(followersResult?.count)>0)followers=Number(followersResult.count);
-            if(!followingResult?.error&&Number(followingResult?.count)>0)following=Number(followingResult.count);
-          }
-        }catch(error){
-          console.warn('Direct profile follow-count fallback unavailable:',error?.message||error);
-        }
-      }
+    try{
+      const {data,error}=await chatSupabase.rpc(
+        'get_profile_social',
+        {target_user_id:viewedProfile.user_id}
+      );
+
+      if(error)throw error;
+
+      const row=Array.isArray(data)?data[0]:data;
 
       socialFeaturesAvailable=true;
       viewedSocial={
-        followers,
-        following,
+        followers:Number(row?.followers_count||0),
+        following:Number(row?.following_count||0),
         is_following:Boolean(row?.is_following),
         can_view_social:Boolean(row?.can_view_social)
       };
-      profileSocialLoadedOnce=true;
-      try{
-        localStorage.setItem('f2w_profile_social_v1:'+targetUserId,JSON.stringify({
-          followers:viewedSocial.followers,following:viewedSocial.following,savedAt:Date.now()
-        }));
-      }catch{}
     }catch(error){
-      console.warn('Social features unavailable:',error?.message||error);
-      // A failed refresh must not replace already-correct counts with zero.
-      if(!profileSocialLoadedOnce){
-        socialFeaturesAvailable=false;
-        viewedSocial={
-          ...viewedSocial,
-          followers:Math.max(0,Number(viewedSocial.followers)||0),
-          following:Math.max(0,Number(viewedSocial.following)||0),
-          can_view_social:!Boolean(viewedProfile?.is_private)||isOwnViewedProfile()
-        };
-      }
-    }finally{
-      clearTimeout(timeoutId);
-      profileSocialLoadBusy=false;
-      renderProfilePrivacy();
-      if(profileSocialRefreshPending){
-        profileSocialRefreshPending=false;
-        scheduleProfileSocialRefresh(160);
-      }
+      console.warn('Social features unavailable:',error);
+
+      socialFeaturesAvailable=false;
+      viewedSocial={
+        followers:0,
+        following:0,
+        is_following:false,
+        can_view_social:!Boolean(viewedProfile.is_private)||isOwnViewedProfile()
+      };
     }
+
+    renderProfilePrivacy();
   }
 
 
@@ -7196,7 +7083,6 @@ setTimeout(loadLibraryFavorites,0);
   }
 
   async function toggleProfileFollow(){
-    if(profileFollowActionBusy)return;
     if(!currentUser){
       openAccountModal();
       setAccountMessage('Log in to follow users.',false);
@@ -7206,7 +7092,6 @@ setTimeout(loadLibraryFavorites,0);
     if(!viewedProfile || isOwnViewedProfile() || !socialFeaturesAvailable)return;
 
     const button=document.getElementById('profile-follow-btn');
-    profileFollowActionBusy=true;
     if(button)button.disabled=true;
 
     try{
@@ -7234,7 +7119,6 @@ setTimeout(loadLibraryFavorites,0);
       console.error('Follow action failed:',error);
       setProfileStatus('Could not update follow status.',true);
     }finally{
-      profileFollowActionBusy=false;
       if(button)button.disabled=false;
     }
   }
@@ -7472,7 +7356,7 @@ renderViewedProfile();
   },{once:true});
 
   let f2wProfileAuthRefreshTimer=null;
-  chatSupabase.auth.onAuthStateChange((event)=>{
+  chatSupabase.auth.onAuthStateChange(()=>{
     clearTimeout(f2wProfileAuthRefreshTimer);
     f2wProfileAuthRefreshTimer=setTimeout(()=>{
       // An explicit /profile/?user=... page is public data. Login/session
@@ -7481,7 +7365,6 @@ renderViewedProfile();
       if(explicit){
         try{syncAuthenticatedOwnerUI?.();}catch{}
         try{renderProfilePrivacy?.();}catch{}
-        if(['INITIAL_SESSION','SIGNED_IN','SIGNED_OUT','USER_UPDATED'].includes(event))scheduleProfileSocialRefresh(0);
         return;
       }
 
@@ -10868,9 +10751,9 @@ body.f2w-auth-v67-open {
 <!-- F2W v159 core recovery -->
 <link rel="stylesheet" href="/v159-core.css?v=159">
 <script src="/v159-core.js?v=159" defer></script>
-<script src="/v165-enforcement.js?v=egress-20261019"></script>
-  <script src="/v166-notifications.js?v=egress-20261019"></script>
-<script src="/v168-notifications.js?v=egress-20261019" defer></script>
+<script src="/v165-enforcement.js?v=165"></script>
+  <script src="/v166-notifications.js?v=166"></script>
+<script src="/v168-notifications.js?v=168" defer></script>
 
 
 <!-- F2W v200 profile controls: isolated from the known-good profile loader. -->
@@ -10960,7 +10843,7 @@ function joinedText(ts){return `Joined ${new Date(ts).toLocaleDateString(undefin
 function paintAge(){if(!memberSince)return;const a=document.getElementById('v16-profile-age'),j=document.getElementById('profile-joined');const at=ageText(memberSince),jt=joinedText(memberSince);if(ageObserver)ageObserver.disconnect();if(a&&a.textContent!==at)a.textContent=at;if(j&&j.textContent!==jt)j.textContent=jt;document.documentElement.classList.add('v200-age-ready');try{if(typeof viewedProfile!=='undefined'&&viewedProfile)viewedProfile.created_at=memberSince}catch{};if(ageObserver){if(a)ageObserver.observe(a,{childList:true,characterData:true,subtree:true});if(j)ageObserver.observe(j,{childList:true,characterData:true,subtree:true})}}
 async function loadAge(){const u=username();if(!u)return;try{const {data,error}=await db().rpc('get_profile_member_since_v200',{p_username:u});if(error)throw error;if(data){memberSince=data;ageObserver=new MutationObserver(()=>requestAnimationFrame(paintAge));paintAge()}}catch(e){const p=profileObj();if(p?.created_at){memberSince=p.created_at;paintAge()}}}
 function rel(ts){const t=new Date(ts).getTime();if(!Number.isFinite(t))return 'not recorded yet';const s=Math.max(0,Math.floor((Date.now()-t)/1000));if(s<15)return 'just now';if(s<60)return `${s} seconds ago`;const m=Math.floor(s/60);if(m<60)return `${m} minute${m===1?'':'s'} ago`;const h=Math.floor(m/60);if(h<24)return `${h} hour${h===1?'':'s'} ago`;const d=Math.floor(h/24);return `${d} day${d===1?'':'s'} ago`}
-async function touchMe(){try{const c=db();const {data}=await c.auth.getSession();me=data?.session?.user||null;if(me&&document.visibilityState==='visible'){try{Promise.resolve(window.__f2wTouchPresenceV203?.()).catch(()=>{})}catch{}}}catch{}}
+async function touchMe(){try{const c=db();const {data}=await c.auth.getSession();me=data?.session?.user||null;if(me&&document.visibilityState==='visible')await window.__f2wTouchPresenceV203?.()}catch{}}
 async function renderPresence(){if(window.__f2wV205ProfileLiveAuthority)return;if(presenceBusy)return;const u=username(),badge=document.getElementById('v17-profile-presence');if(!u||!badge)return;presenceBusy=true;try{let res=await db().rpc('get_public_profile_presence_v203',{p_username:u});if(res.error)res=await db().rpc('get_public_profile_presence_v200',{p_username:u});if(res.error)throw res.error;const row=Array.isArray(res.data)?res.data[0]:res.data,online=Boolean(row?.online),label=badge.querySelector('span');badge.classList.toggle('online',online);badge.classList.toggle('offline',!online);if(label)label.textContent=online?'Online':row?.last_seen_at?`Last online ${rel(row.last_seen_at)}`:'Last online not recorded yet'}catch{}finally{presenceBusy=false}}
 function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function normalizeUrl(v){v=String(v||'').trim();if(!v)return '';return /^https?:\/\//i.test(v)?v:`https://${v}`}
@@ -11006,49 +10889,32 @@ async function ensureEditorDataV225(){
   if(f2wEditorDataReadyV225)return profileObj()||{};
   if(f2wEditorLoadPromiseV225)return f2wEditorLoadPromiseV225;
 
-  const existing=profileObj()||{};
-  if(existing.user_id&&existing.username&&existing.__f2wProfileExtrasReadyV225){
-    f2wEditorDataReadyV225=true;
-    return existing;
-  }
-
   f2wEditorLoadPromiseV225=(async()=>{
     const c=db();
     const p=profileObj()||{};
     const u=currentEditorUsername()||username();
+
     if(!c?.rpc||!u)throw new Error('Could not load your profile before editing.');
 
-    async function rpcWithTimeout(name,args,ms=4000){
-      let timer=0;
-      try{
-        return await Promise.race([
-          c.rpc(name,args),
-          new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(name+' timed out')),ms)})
-        ]);
-      }finally{clearTimeout(timer)}
-    }
-
-    const [coreOutcome,extrasOutcome]=await Promise.allSettled([
-      rpcWithTimeout('get_public_profile_v160',{p_username:u}),
-      rpcWithTimeout('get_public_profile_extras_v219',{p_username:u})
+    const [coreRes,extrasRes]=await Promise.all([
+      c.rpc('get_public_profile_v160',{p_username:u}),
+      c.rpc('get_public_profile_extras_v219',{p_username:u})
     ]);
 
-    let coreRes=coreOutcome.status==='fulfilled'?coreOutcome.value:null;
-    let extrasRes=extrasOutcome.status==='fulfilled'?extrasOutcome.value:null;
-    if(coreRes?.error)coreRes=null;
-    if(extrasRes?.error)extrasRes=null;
+    if(coreRes?.error)throw coreRes.error;
+    if(extrasRes?.error)throw extrasRes.error;
 
     const core=Array.isArray(coreRes?.data)?coreRes.data[0]:coreRes?.data;
     const extras=Array.isArray(extrasRes?.data)?extrasRes.data[0]:extrasRes?.data;
 
-    // We already have a public profile row on screen; fall back to it if the refresh
-    // is slow so the editor can still open. Preserve social fields unless extras arrives.
-    const effectiveCore=core||(p?.user_id&&p?.username?p:null);
-    if(!effectiveCore)throw new Error('Could not load your current profile.');
+    if(!core)throw new Error('Could not load your current profile.');
 
     if(typeof viewedProfile!=='undefined'){
-      viewedProfile={...(viewedProfile||{}),...effectiveCore,...(extras||{})};
-      if(extras)viewedProfile.__f2wProfileExtrasReadyV225=true;
+      viewedProfile={
+        ...(viewedProfile||{}),
+        ...core,
+        ...(extras||{})
+      };
     }
 
     f2wEditorDataReadyV225=true;
@@ -11104,7 +10970,6 @@ window.__f2wOpenProfileEditorV227=openEditor;
 
 function closeEditor(){const m=document.getElementById('v199-profile-editor');m.hidden=true;m.setAttribute('aria-hidden','true');document.documentElement.style.removeProperty('overflow');document.body.style.removeProperty('overflow')}
 function validWebsiteValue(raw){raw=String(raw||'').trim();if(!raw)return '';const u=normalizeUrl(raw);try{const parsed=new URL(u);const h=parsed.hostname;return (parsed.protocol==='http:'||parsed.protocol==='https:')&&Boolean(h)&&(h==='localhost'||h.includes('.')||/^\d{1,3}(?:\.\d{1,3}){3}$/.test(h))?u:''}catch{return ''}}
-function cleanProfileHandleV228(id){return String(document.getElementById(id)?.value||'').trim().replace(/^@/,'').slice(0,80)}
 async function saveEditor(){
   let canSave=false;
   try{canSave=Boolean(isOwner())}catch{}
@@ -11128,14 +10993,10 @@ async function saveEditor(){
       fillEditor();
       throw new Error('Your saved profile was still loading. It has now been restored — make your change again, then press Save.');
     }
-    const savedProfile=profileObj()||{};
-    if(!savedProfile.__f2wProfileExtrasReadyV225){
-      throw new Error('Your saved social links are still syncing. Close Edit Profile, wait a moment, then reopen it before saving so existing links are not overwritten.');
-    }
-    status.textContent='Saving…';const c=db(),p=profileObj()||{},currentUser=currentEditorUsername();let nextUser=String(document.getElementById('v199-username')?.value||'').trim().replace(/^@/,'').replace(/[^A-Za-z0-9]/g,'');if(!nextUser){nextUser=currentUser;const input=document.getElementById('v199-username');if(input)input.value=nextUser}let changed=false;if(nextUser.toLowerCase()!==String(currentUser||'').toLowerCase()){if(!/^[A-Za-z0-9]{2,30}$/.test(nextUser))throw new Error('New usernames must be 2–30 letters or numbers.');const {data,error}=await c.rpc('change_my_username_v200',{p_username:nextUser});if(error)throw error;if(!data)throw new Error('Could not change username.');changed=true}else if(!nextUser){throw new Error('Your current username could not be loaded. Close Edit Profile and reopen it.')}const display=document.getElementById('v199-display-name').value.replace(/@/g,'').trim().slice(0,50);document.getElementById('v199-display-name').value=display;const genres=[...document.querySelectorAll('#v199-genre-grid input:checked')].map(x=>x.value);const websiteRaw=document.getElementById('v199-website').value.trim();const website=validWebsiteValue(websiteRaw);if(websiteRaw&&!website)throw new Error('Website must be a valid domain or http/https URL.');if(websiteRaw&&website!==websiteRaw)document.getElementById('v199-website').value=website;const payload={p_display_name:display,p_bio:document.getElementById('v199-bio').value.trim().slice(0,500),p_favorite_genres:genres,p_website_url:website,p_instagram_username:cleanProfileHandleV228('v199-instagram')||null,p_discord_username:cleanProfileHandleV228('v199-discord')||null,p_snapchat_username:cleanProfileHandleV228('v199-snapchat')||null,p_steam_profile:String(document.getElementById('v199-steam')?.value||'').trim().slice(0,2048)||null,p_tiktok_username:cleanProfileHandleV228('v199-tiktok')||null,p_is_private:document.getElementById('v200-private').checked};payload.p_letterboxd_username=cleanProfileHandleV228('v219-letterboxd')||null;const {data,error}=await c.rpc('update_my_profile_v219',payload);if(error)throw error;if(data&&typeof viewedProfile!=='undefined')viewedProfile={...viewedProfile,...data};f2wEditorDataReadyV225=true;if(typeof viewedProfile!=='undefined'&&viewedProfile){viewedProfile.username=nextUser;viewedProfile.website_url=website}sanitizeDisplayNamePaint();renderSocials();try{renderViewedProfile?.()}catch{};status.textContent='Profile saved.';if(changed)history.replaceState({},'',`/profile/@${encodeURIComponent(nextUser)}`);setTimeout(closeEditor,550)}catch(e){status.className='v200-editor-status error';status.textContent=e?.message||'Could not save profile.'}finally{save.disabled=false}}
+    status.textContent='Saving…';const c=db(),p=profileObj()||{},currentUser=currentEditorUsername();let nextUser=String(document.getElementById('v199-username')?.value||'').trim().replace(/^@/,'').replace(/[^A-Za-z0-9]/g,'');if(!nextUser){nextUser=currentUser;const input=document.getElementById('v199-username');if(input)input.value=nextUser}let changed=false;if(nextUser.toLowerCase()!==String(currentUser||'').toLowerCase()){if(!/^[A-Za-z0-9]{2,30}$/.test(nextUser))throw new Error('New usernames must be 2–30 letters or numbers.');const {data,error}=await c.rpc('change_my_username_v200',{p_username:nextUser});if(error)throw error;if(!data)throw new Error('Could not change username.');changed=true}else if(!nextUser){throw new Error('Your current username could not be loaded. Close Edit Profile and reopen it.')}const display=document.getElementById('v199-display-name').value.replace(/@/g,'').trim();document.getElementById('v199-display-name').value=display;const genres=[...document.querySelectorAll('#v199-genre-grid input:checked')].map(x=>x.value);const websiteRaw=document.getElementById('v199-website').value.trim();const website=validWebsiteValue(websiteRaw);if(websiteRaw&&!website)throw new Error('Website must be a valid domain or http/https URL.');if(websiteRaw&&website!==websiteRaw)document.getElementById('v199-website').value=website;const payload={p_display_name:display,p_bio:document.getElementById('v199-bio').value.trim(),p_favorite_genres:genres,p_website_url:website,p_instagram_username:document.getElementById('v199-instagram').value.trim(),p_discord_username:document.getElementById('v199-discord').value.trim(),p_snapchat_username:document.getElementById('v199-snapchat').value.trim(),p_steam_profile:document.getElementById('v199-steam').value.trim(),p_tiktok_username:document.getElementById('v199-tiktok').value.trim(),p_is_private:document.getElementById('v200-private').checked};payload.p_letterboxd_username=document.getElementById('v219-letterboxd')?.value.trim()||null;const {data,error}=await c.rpc('update_my_profile_v219',payload);if(error)throw error;if(data&&typeof viewedProfile!=='undefined')viewedProfile={...viewedProfile,...data};f2wEditorDataReadyV225=true;if(typeof viewedProfile!=='undefined'&&viewedProfile){viewedProfile.username=nextUser;viewedProfile.website_url=website}sanitizeDisplayNamePaint();renderSocials();try{renderViewedProfile?.()}catch{};status.textContent='Profile saved.';if(changed)history.replaceState({},'',`/profile/@${encodeURIComponent(nextUser)}`);setTimeout(closeEditor,550)}catch(e){status.className='v200-editor-status error';status.textContent=e?.message||'Could not save profile.'}finally{save.disabled=false}}
 function syncOwnerUi(){const btn=document.getElementById('v199-edit-profile-btn');if(btn)btn.hidden=!isOwner();sanitizeDisplayNamePaint();renderSocials()}
-function bootEditor(){window.addEventListener('f2w-profile-rendered',syncOwnerUi);document.getElementById('v199-genre-grid').innerHTML=GENRES.map(g=>`<label class="v200-genre-option"><input type="checkbox" value="${g}"><span class="v200-genre-check"><i class="fa-solid fa-check"></i></span><span>${g}</span></label>`).join('');document.querySelectorAll('.v200-nav-item').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.v200Tab)));document.getElementById('v199-edit-profile-btn')?.addEventListener('click',openEditor);document.getElementById('v199-editor-close')?.addEventListener('click',closeEditor);document.getElementById('v199-profile-editor')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditor()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('v199-profile-editor').hidden)closeEditor()});document.getElementById('v199-editor-save')?.addEventListener('click',saveEditor);document.getElementById('v199-display-name')?.addEventListener('input',e=>{const p=e.target.selectionStart;e.target.value=e.target.value.replace(/@/g,'');try{e.target.setSelectionRange(p,p)}catch{}});document.getElementById('v200-photo-change')?.addEventListener('click',()=>document.getElementById('profile-avatar-input')?.click());document.getElementById('v200-photo-remove')?.addEventListener('click',()=>document.getElementById('profile-avatar-remove')?.click())}
-async function boot(){bootEditor();window.renderProfilePresence=renderPresence;try{await Promise.race([touchMe(),new Promise(resolve=>setTimeout(resolve,1200))])}catch{};syncOwnerUi();try{Promise.resolve(loadAge()).catch(()=>{});}catch{};try{Promise.resolve(renderPresence()).catch(()=>{});}catch{};let tries=0;const waiter=setInterval(()=>{syncOwnerUi();if(++tries>50||profileObj())clearInterval(waiter)},150);presenceTimer=setInterval(()=>{try{Promise.resolve(renderPresence()).catch(()=>{});}catch{};try{paintAge()}catch{}},10000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){try{Promise.resolve(touchMe()).then(()=>renderPresence()).catch(()=>{});}catch{};try{paintAge()}catch{}}});try{db().auth.onAuthStateChange((_e,session)=>{me=session?.user||null;if(me){try{Promise.resolve(touchMe()).then(()=>renderPresence()).catch(()=>{});}catch{}}syncOwnerUi()})}catch(e){console.warn('Profile auth listener unavailable:',e?.message||e)}}
+function bootEditor(){document.getElementById('v199-genre-grid').innerHTML=GENRES.map(g=>`<label class="v200-genre-option"><input type="checkbox" value="${g}"><span class="v200-genre-check"><i class="fa-solid fa-check"></i></span><span>${g}</span></label>`).join('');document.querySelectorAll('.v200-nav-item').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.v200Tab)));document.getElementById('v199-edit-profile-btn')?.addEventListener('click',openEditor);document.getElementById('v199-editor-close')?.addEventListener('click',closeEditor);document.getElementById('v199-profile-editor')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditor()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('v199-profile-editor').hidden)closeEditor()});document.getElementById('v199-editor-save')?.addEventListener('click',saveEditor);document.getElementById('v199-display-name')?.addEventListener('input',e=>{const p=e.target.selectionStart;e.target.value=e.target.value.replace(/@/g,'');try{e.target.setSelectionRange(p,p)}catch{}});document.getElementById('v200-photo-change')?.addEventListener('click',()=>document.getElementById('profile-avatar-input')?.click());document.getElementById('v200-photo-remove')?.addEventListener('click',()=>document.getElementById('profile-avatar-remove')?.click())}
+async function boot(){bootEditor();await touchMe();await Promise.allSettled([loadAge(),renderPresence()]);window.renderProfilePresence=renderPresence;syncOwnerUi();let tries=0;const waiter=setInterval(()=>{syncOwnerUi();if(++tries>50||profileObj())clearInterval(waiter)},150);presenceTimer=setInterval(async()=>{await renderPresence();paintAge()},10000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchMe().then(renderPresence);paintAge()}});db().auth.onAuthStateChange((_e,session)=>{me=session?.user||null;if(me)touchMe().then(renderPresence);syncOwnerUi()})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 /* f2w-force-save:v200-profile-editor-presence-age:20260902 */
@@ -11207,7 +11068,7 @@ function bindRealtime(){const c=db(),uid=String(row?.user_id||'');if(!c?.channel
 function bindObserver(){const host=document.getElementById('f2w-current-watching-card');if(!host||observer)return;observer=new MutationObserver(()=>{if(!rendering&&row&&fresh()&&host.dataset.v201Playback!=='1')queueMicrotask(render)});observer.observe(host,{childList:true,subtree:true,attributes:true,attributeFilter:['class','data-v201-playback']})}
 async function resolveOwn(){try{const {data}=await db()?.auth?.getSession?.();ownUserId=String(data?.session?.user?.id||'')}catch{}}
 if(bc)bc.onmessage=e=>{const d=e.data||{};if(d.type!=='f2w-playback-v182'||!row||!ownUserId||String(row.user_id)!==ownUserId)return;if(Number(d.media_id)!==Number(row.media_id)||String(d.media_type)!==String(row.media_type))return;apply({...row,...d,last_seen_at:d.last_seen_at||new Date().toISOString(),progress_updated_at:d.progress_updated_at||new Date().toISOString()})};
-function start(){if(window.__f2wV205ProfileLiveAuthority)return;bindObserver();resolveOwn();fetchRow();clearInterval(tickTimer);tickTimer=setInterval(updateClock,1000);clearInterval(pollTimer);pollTimer=setInterval(fetchRow,10000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')fetchRow()});window.addEventListener('focus',fetchRow,{passive:true})}
+function start(){bindObserver();resolveOwn();fetchRow();clearInterval(tickTimer);tickTimer=setInterval(updateClock,1000);clearInterval(pollTimer);pollTimer=setInterval(fetchRow,10000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')fetchRow()});window.addEventListener('focus',fetchRow,{passive:true})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>
@@ -11297,10 +11158,7 @@ async function loadExtras(){
   try{
     const {data,error}=await c.rpc('get_public_profile_extras_v219',{p_username:u}); if(error)throw error;
     const x=Array.isArray(data)?data[0]:data; if(!x)return;
-    if(prof()){
-      Object.assign(prof(),x);
-      prof().__f2wProfileExtrasReadyV225=true;
-    }
+    if(prof())Object.assign(prof(),x);f2wEditorDataReadyV225=true;
     try{renderGenres();renderSocials?.();applyPrivacy();}catch{}
     const toggle=document.getElementById('profile-private-toggle'); if(toggle)toggle.classList.toggle('active',Boolean(x.is_private));
   }catch(e){console.warn('Profile extras unavailable:',e?.message||e)}
@@ -11385,7 +11243,7 @@ window.togglePrivateProfile=async function(){
 
 <!-- f2w-force-save:v202-profile-socials-genres-editor-private:20260902 -->
 
-<script src="/v205-profile-live.js?v=egress-20261019i" defer></script>
+<script src="/v205-profile-live.js?v=205-20260902" defer></script>
 
 <script id="f2w-profile-ratings-v218-rail-js">
 (() => {
@@ -11408,7 +11266,7 @@ window.togglePrivateProfile=async function(){
 })();
 </script>
 
-<script src="/f2w-continue-watching-v1.js?v=egress-20261019" defer></script>
+<script src="/f2w-continue-watching-v1.js?v=20261012c" defer></script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
