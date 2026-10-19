@@ -978,3 +978,24 @@ if(document.readyState==='loading'){
     window.location.assign('/staff/index.html');
   },true);
 })();
+
+
+/* F2W public chat UI removal. Does not affect profile watching or online status. */
+(()=>{
+  'use strict';
+  const selectors='.chat-button,[data-open-chat],a[href="/chat/"],a[href="/chat"],#chat-modal,.chat-modal,.global-chat,.global-chat-box,#global-chat,#global-chat-box,[data-public-chat],.public-chat,.public-chat-box,.chat-widget,.chat-launcher';
+  function removePublicChat(){
+    try{
+      if(!document.getElementById('f2w-public-chat-removed')){
+        const style=document.createElement('style');
+        style.id='f2w-public-chat-removed';
+        style.textContent=selectors+'{display:none!important;visibility:hidden!important;pointer-events:none!important}';
+        (document.head||document.documentElement).appendChild(style);
+      }
+      document.querySelectorAll(selectors).forEach(el=>el.remove());
+      window.openGlobalChat=()=>false;
+    }catch{}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',removePublicChat,{once:true});else removePublicChat();
+  new MutationObserver(removePublicChat).observe(document.documentElement,{subtree:true,childList:true});
+})();

@@ -1,36 +1,36 @@
+/* F2W public chat removal: hide every public-chat entry point site-wide.
+   Profile presence and current-watching components are intentionally untouched. */
 (()=>{
   'use strict';
-  // v131: Chat is a real route again. Every site-wide Chat/DM trigger navigates
-  // to /chat/ instead of opening a second copy of Chat in an iframe overlay.
-  const CHAT_ROUTE='/chat/';
-  function goChat(){
-    if(location.pathname==='/chat/'||location.pathname==='/chat') return true;
-    location.assign(CHAT_ROUTE);
-    return true;
+  const css = `
+    .chat-button,[data-open-chat],a[href="/chat/"],a[href="/chat"],
+    #chat-modal,.chat-modal,.global-chat,.global-chat-box,
+    #global-chat,#global-chat-box,[data-public-chat],
+    .public-chat,.public-chat-box,.chat-widget,.chat-launcher {
+      display:none!important; visibility:hidden!important; pointer-events:none!important;
+    }
+  `;
+  function disable(){
+    if(!document.getElementById('f2w-public-chat-removed')){
+      const style=document.createElement('style');
+      style.id='f2w-public-chat-removed';style.textContent=css;
+      (document.head||document.documentElement).appendChild(style);
+    }
+    document.querySelectorAll('.chat-button,[data-open-chat],a[href="/chat/"],a[href="/chat"],#chat-modal,.chat-modal,.global-chat,.global-chat-box,#global-chat,#global-chat-box,[data-public-chat],.public-chat,.public-chat-box,.chat-widget,.chat-launcher').forEach(el=>el.remove());
+    try{window.openGlobalChat=()=>false;window.openChat=()=>false;}catch{}
   }
-  function bind(root=document){
-    root.querySelectorAll('.chat-button,[data-open-chat],a[href="/chat/"],a[href="/chat"]').forEach(el=>{
-      if(el.dataset.f2wChatRouteBound==='1')return;
-      el.dataset.f2wChatRouteBound='1';
-      el.addEventListener('click',e=>{
-        // Preserve browser modifier-click behavior for actual links.
-        if(e.button&&e.button!==0)return;
-        if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        goChat();
-      },true);
-    });
-  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',disable,{once:true});else disable();
+  new MutationObserver(disable).observe(document.documentElement,{subtree:true,childList:true});
+})();
+(()=>{
+  'use strict';
+  // Public chat has been retired. Keep legacy callers harmless.
+  function goChat(){ return false; }
+  function bind(){ return; }
   function boot(){
-    try{window.openChat=goChat;}catch{}
-    try{window.openGlobalChat=goChat;}catch{}
-    bind();
-    const mo=new MutationObserver(()=>bind());
-    mo.observe(document.documentElement,{subtree:true,childList:true});
+    try{window.openChat=goChat;window.openGlobalChat=goChat;}catch{}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  window.addEventListener('load',boot,{once:true});
 })();
 // f2w-update-marker: global-chat-v131-route-only
 // f2w-force-save:1788208311
