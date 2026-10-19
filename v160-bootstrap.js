@@ -176,18 +176,18 @@ function bindPresenceAuth(client){
 
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='visible'){
-      if(claimPresenceLeadership())void touchSitePresence({force:true});
+      if(claimPresenceLeadership())void touchSitePresence();
     }else if(isPresenceLeader()){
       releasePresenceLeadership();
     }
   },{passive:true});
 
   window.addEventListener('focus',()=>{
-    if(claimPresenceLeadership())void touchSitePresence({force:true});
+    if(claimPresenceLeadership())void touchSitePresence();
   },{passive:true});
 
   window.addEventListener('pageshow',()=>{
-    if(claimPresenceLeadership())void touchSitePresence({force:true});
+    if(claimPresenceLeadership())void touchSitePresence();
   },{passive:true});
 
   window.addEventListener('pagehide',()=>{
