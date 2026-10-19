@@ -2682,6 +2682,280 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 <script defer src="/sitewide-rate-limit-v1.js?v=1"></script>
 </head>
 
+
+<style id="f2w-home-cinematic-refresh-v1">
+/* Flix2Watch /home visual refresh v1 — presentation-only overrides; existing functionality stays intact. */
+body.f2w-main-page{
+  --bg-main:#07070a;
+  --bg-card:rgba(17,17,23,.88);
+  --accent:#ef233c;
+  --accent-glow:rgba(239,35,60,.24);
+  --text-muted:#9294a3;
+  background-color:#07070a!important;
+  background-image:radial-gradient(ellipse at 50% -18%,rgba(239,35,60,.13),transparent 48%),linear-gradient(180deg,#09090d 0%,#07070a 42%,#09090d 100%)!important;
+}
+body.f2w-main-page .f2w-home-stage{
+  width:100%!important;
+  max-width:1660px!important;
+  margin:0 auto!important;
+  padding:22px clamp(16px,3.2vw,52px) 0!important;
+}
+body.f2w-main-page #hero-banner{
+  position:relative!important;
+  isolation:isolate!important;
+  width:100%!important;
+  max-width:1556px!important;
+  height:clamp(440px,46vw,610px)!important;
+  min-height:440px!important;
+  margin:0 auto 46px!important;
+  padding:clamp(28px,5.3vw,78px)!important;
+  overflow:hidden!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:24px!important;
+  background-color:#111116!important;
+  background-position:center 30%!important;
+  box-shadow:0 30px 90px rgba(0,0,0,.42),0 0 0 1px rgba(239,35,60,.035) inset!important;
+}
+body.f2w-main-page #hero-banner::before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:0!important;
+  background:
+    linear-gradient(90deg,rgba(5,5,8,.96) 0%,rgba(5,5,8,.84) 30%,rgba(5,5,8,.48) 57%,rgba(5,5,8,.12) 100%),
+    linear-gradient(0deg,rgba(5,5,8,.78) 0%,transparent 54%)!important;
+}
+body.f2w-main-page #hero-banner::after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:1!important;
+  pointer-events:none!important;
+  background:radial-gradient(ellipse at 78% 35%,rgba(239,35,60,.12),transparent 34%)!important;
+  border-radius:inherit!important;
+}
+body.f2w-main-page #hero-banner .hero-content{
+  width:min(100%,720px)!important;
+  max-width:720px!important;
+  gap:15px!important;
+  z-index:3!important;
+}
+body.f2w-main-page #hero-banner .hero-featured-badge{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:max-content!important;
+  padding:7px 11px!important;
+  border:1px solid rgba(239,35,60,.42)!important;
+  border-radius:5px!important;
+  background:rgba(239,35,60,.12)!important;
+  color:#ff6677!important;
+  font:700 .68rem var(--font-mono)!important;
+  letter-spacing:.16em!important;
+}
+body.f2w-main-page #hero-banner .hero-title{
+  max-width:800px!important;
+  margin:0!important;
+  font-size:clamp(3.2rem,7.2vw,6.9rem)!important;
+  letter-spacing:.015em!important;
+  line-height:.88!important;
+  text-wrap:balance!important;
+  text-shadow:0 4px 35px rgba(0,0,0,.55)!important;
+}
+body.f2w-main-page #hero-banner .hero-meta{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+}
+body.f2w-main-page #hero-banner .hero-meta span{
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:27px!important;
+  padding:4px 9px!important;
+  border:1px solid rgba(255,255,255,.15)!important;
+  border-radius:5px!important;
+  background:rgba(10,10,14,.58)!important;
+  color:#e4e4eb!important;
+  font-size:.72rem!important;
+  font-weight:600!important;
+  backdrop-filter:blur(10px)!important;
+}
+body.f2w-main-page #hero-banner .hero-overview{
+  max-width:570px!important;
+  color:rgba(245,245,250,.78)!important;
+  font-size:clamp(.9rem,1.2vw,1.04rem)!important;
+  line-height:1.75!important;
+  text-shadow:0 2px 12px rgba(0,0,0,.5)!important;
+}
+body.f2w-main-page #hero-banner .hero-actions{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:11px!important;margin-top:7px!important}
+body.f2w-main-page #hero-banner .hero-btn{
+  min-height:47px!important;
+  padding:12px 20px!important;
+  border:1px solid var(--accent)!important;
+  border-radius:8px!important;
+  background:var(--accent)!important;
+  box-shadow:0 8px 28px rgba(239,35,60,.2)!important;
+  font-size:.86rem!important;
+  font-weight:700!important;
+  transition:transform .22s ease,filter .22s ease,background .22s ease!important;
+}
+body.f2w-main-page #hero-banner .hero-btn.secondary{
+  border-color:rgba(255,255,255,.22)!important;
+  background:rgba(12,12,17,.56)!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(12px)!important;
+}
+body.f2w-main-page #hero-banner .hero-btn:hover{transform:translateY(-2px)!important;filter:brightness(1.09)!important}
+body.f2w-main-page #hero-banner .v19-hero-arrow{
+  width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+  border:1px solid rgba(255,255,255,.2)!important;border-radius:12px!important;
+  background:rgba(8,8,12,.55)!important;color:#fff!important;backdrop-filter:blur(12px)!important;
+  box-shadow:0 8px 25px rgba(0,0,0,.24)!important;z-index:4!important;
+}
+body.f2w-main-page #hero-banner .v19-hero-arrow:hover{background:var(--accent)!important;border-color:var(--accent)!important}
+body.f2w-main-page #hero-banner .hero-carousel-dots{z-index:4!important}
+body.f2w-main-page main{
+  max-width:1660px!important;
+  margin:0 auto 64px!important;
+  padding:0 clamp(16px,3.2vw,52px)!important;
+}
+body.f2w-main-page main .section-header,
+body.f2w-main-page main .extra-section-head{
+  margin-bottom:21px!important;
+  align-items:flex-end!important;
+  gap:16px!important;
+}
+body.f2w-main-page main .section-header h2,
+body.f2w-main-page main .extra-section-head h2,
+body.f2w-main-page main .section-heading-copy h2{
+  font-family:var(--font-heading)!important;
+  font-size:clamp(2rem,3.2vw,3rem)!important;
+  letter-spacing:.025em!important;
+  line-height:.98!important;
+}
+body.f2w-main-page main .section-header h2::before{
+  content:""!important;
+  display:inline-block!important;
+  width:4px!important;
+  height:.78em!important;
+  margin:0 12px 0 0!important;
+  border-radius:4px!important;
+  background:var(--accent)!important;
+  vertical-align:-.02em!important;
+  box-shadow:0 0 18px var(--accent-glow)!important;
+}
+body.f2w-main-page main .filter-tabs{
+  gap:9px!important;
+  padding-bottom:17px!important;
+  margin-bottom:26px!important;
+  border-bottom-color:rgba(255,255,255,.09)!important;
+}
+body.f2w-main-page main .tab-btn{
+  padding:9px 15px!important;
+  border-radius:7px!important;
+  border-color:rgba(255,255,255,.1)!important;
+  background:rgba(255,255,255,.035)!important;
+  color:#b6b7c2!important;
+}
+body.f2w-main-page main .tab-btn.active{
+  background:rgba(239,35,60,.14)!important;
+  border-color:rgba(239,35,60,.65)!important;
+  color:#fff!important;
+  box-shadow:0 0 0 1px rgba(239,35,60,.08) inset!important;
+}
+body.f2w-main-page #movie-grid{
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,176px),1fr))!important;
+  gap:clamp(13px,1.55vw,23px)!important;
+}
+body.f2w-main-page #movie-grid .movie-card{
+  border:1px solid rgba(255,255,255,.085)!important;
+  border-radius:13px!important;
+  background:linear-gradient(180deg,rgba(22,22,29,.96),rgba(12,12,17,.98))!important;
+  box-shadow:0 9px 26px rgba(0,0,0,.18)!important;
+  transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease!important;
+}
+body.f2w-main-page #movie-grid .movie-card:hover{
+  transform:translateY(-5px)!important;
+  border-color:rgba(239,35,60,.68)!important;
+  box-shadow:0 18px 36px rgba(0,0,0,.35),0 0 22px rgba(239,35,60,.09)!important;
+}
+body.f2w-main-page #movie-grid .poster-container{background:#111116!important}
+body.f2w-main-page #movie-grid .movie-poster{transition:transform .45s cubic-bezier(.2,.7,.2,1)!important}
+body.f2w-main-page #movie-grid .movie-card:hover .movie-poster{transform:scale(1.045)!important}
+body.f2w-main-page .home-extra{margin-top:62px!important;gap:58px!important}
+body.f2w-main-page .extra-section{gap:20px!important}
+body.f2w-main-page .extra-eyebrow,
+body.f2w-main-page .section-kicker{color:#ff5368!important;letter-spacing:.16em!important}
+body.f2w-main-page .media-strip{gap:17px!important}
+body.f2w-main-page .mini-media-card{
+  border-color:rgba(255,255,255,.085)!important;
+  border-radius:13px!important;
+  background:linear-gradient(180deg,rgba(21,21,28,.96),rgba(12,12,17,.98))!important;
+}
+body.f2w-main-page .mini-media-card:hover{border-color:rgba(239,35,60,.65)!important;box-shadow:0 16px 32px rgba(0,0,0,.35),0 0 18px rgba(239,35,60,.08)!important}
+body.f2w-main-page .genre-tile,
+body.f2w-main-page .feature-card,
+body.f2w-main-page .faq-item,
+body.f2w-main-page .surprise-panel{
+  border-color:rgba(255,255,255,.09)!important;
+  border-radius:13px!important;
+  background-color:rgba(17,17,23,.68)!important;
+}
+body.f2w-main-page .genre-tile:hover{border-color:rgba(239,35,60,.65)!important}
+body.f2w-main-page .surprise-panel{
+  background:radial-gradient(circle at 92% 15%,rgba(239,35,60,.15),transparent 32%),linear-gradient(135deg,rgba(24,24,31,.95),rgba(12,12,17,.94))!important;
+  padding:clamp(22px,3vw,36px)!important;
+}
+body.f2w-main-page .recent-section{
+  max-width:1660px!important;
+  padding:0 clamp(16px,3.2vw,52px)!important;
+}
+body.f2w-main-page .recent-poster-shell{border-radius:12px!important;border-color:rgba(255,255,255,.09)!important}
+body.f2w-main-page .site-footer{
+  border-top-color:rgba(255,255,255,.1)!important;
+  max-width:1556px!important;
+  margin-right:auto!important;margin-left:auto!important;
+}
+body.f2w-main-page .f2w-guest-card{
+  border:1px solid rgba(255,255,255,.1)!important;
+  border-radius:14px!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.22)!important;
+}
+@media(max-width:900px){
+  body.f2w-main-page .f2w-home-stage{padding:14px 14px 0!important}
+  body.f2w-main-page #hero-banner{height:500px!important;min-height:420px!important;margin-bottom:32px!important;padding:28px 24px 76px!important;border-radius:17px!important;background-position:center!important}
+  body.f2w-main-page #hero-banner::before{background:linear-gradient(90deg,rgba(5,5,8,.9),rgba(5,5,8,.48)),linear-gradient(0deg,rgba(5,5,8,.85),transparent 75%)!important}
+  body.f2w-main-page #hero-banner .hero-title{font-size:clamp(3rem,10vw,5.2rem)!important}
+  body.f2w-main-page main{padding:0 16px!important}
+  body.f2w-main-page #movie-grid{grid-template-columns:repeat(auto-fill,minmax(min(42vw,165px),1fr))!important;gap:13px!important}
+  body.f2w-main-page .recent-section{padding:0 16px!important}
+  body.f2w-main-page .home-extra{gap:43px!important}
+}
+@media(max-width:520px){
+  body.f2w-main-page .f2w-home-stage{padding:10px 10px 0!important}
+  body.f2w-main-page #hero-banner{height:470px!important;min-height:420px!important;padding:22px 18px 78px!important;border-radius:14px!important}
+  body.f2w-main-page #hero-banner .hero-content{gap:12px!important}
+  body.f2w-main-page #hero-banner .hero-title{font-size:clamp(2.8rem,13vw,4.2rem)!important}
+  body.f2w-main-page #hero-banner .hero-overview{font-size:.86rem!important;line-height:1.6!important}
+  body.f2w-main-page #hero-banner .hero-actions{gap:8px!important}
+  body.f2w-main-page #hero-banner .hero-btn{min-height:43px!important;padding:10px 13px!important;font-size:.78rem!important}
+  body.f2w-main-page #hero-banner .v19-hero-arrow{bottom:14px!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important}
+  body.f2w-main-page #hero-banner .hero-carousel-dots{bottom:26px!important}
+  body.f2w-main-page main{padding:0 12px!important}
+  body.f2w-main-page main .section-header h2,
+  body.f2w-main-page main .extra-section-head h2,
+  body.f2w-main-page main .section-heading-copy h2{font-size:2rem!important}
+  body.f2w-main-page #movie-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:11px!important}
+  body.f2w-main-page .recent-section{padding:0 12px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  body.f2w-main-page #movie-grid .movie-card,
+  body.f2w-main-page #movie-grid .movie-poster,
+  body.f2w-main-page #hero-banner .hero-btn{transition:none!important}
+}
+</style>
+
 <body class="theme-red f2w-main-page f2w-home-page">
 <header>
     <a href="/home/" class="logo" aria-label="Flix2Watch home">
