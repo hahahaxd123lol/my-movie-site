@@ -4074,6 +4074,60 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
   .f2w-favorites-pagination button:disabled{opacity:.38;cursor:not-allowed}
   .f2w-favorites-pagination button:not(:disabled):hover{border-color:var(--accent);color:#fff}
 </style>
+
+<style id="f2w-profile-visible-redesign-v260">
+/* Visible profile refresh: deliberate layout and surface changes, not cache-only edits. */
+body.f2w-profile-page{--profile-panel:#0d1725;--profile-panel-soft:#111e2e;--profile-line:rgba(148,163,184,.19)}
+body.f2w-profile-page #profile-root{width:min(1180px,calc(100% - 32px))!important;margin:34px auto 70px!important}
+body.f2w-profile-page #profile-hero{position:relative!important;display:grid!important;grid-template-columns:150px minmax(0,1fr)!important;align-items:start!important;gap:28px!important;padding:34px!important;border:1px solid var(--profile-line)!important;border-radius:24px!important;background:radial-gradient(ellipse at 8% 0%,rgba(229,9,20,.19),transparent 42%),linear-gradient(135deg,#111d2c 0%,#0b1421 65%,#101a29 100%)!important;box-shadow:0 20px 55px rgba(0,0,0,.25)!important;overflow:hidden!important}
+body.f2w-profile-page #profile-hero:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#e50914,#ff5360 45%,transparent 100%);pointer-events:none}
+body.f2w-profile-page #profile-avatar-shell{width:138px!important;height:138px!important;min-width:138px!important;border:3px solid rgba(255,255,255,.16)!important;border-radius:26px!important;box-shadow:0 12px 34px rgba(0,0,0,.35)!important;overflow:hidden!important;background:#172538!important}
+body.f2w-profile-page #profile-avatar{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:22px!important}
+body.f2w-profile-page .profile-eyebrow{font-size:10px!important;font-weight:850!important;letter-spacing:.17em!important;color:#fb7185!important}
+body.f2w-profile-page .profile-name-row{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:12px!important;margin:5px 0 4px!important}
+body.f2w-profile-page .profile-name{font-size:clamp(27px,4vw,42px)!important;line-height:1.08!important;letter-spacing:-.035em!important;font-weight:900!important}
+body.f2w-profile-page .profile-username-line{color:#9aabc0!important;font-size:13px!important;margin-top:5px!important}
+body.f2w-profile-page .profile-bio{max-width:760px!important;font-size:15px!important;line-height:1.75!important;color:#d4deea!important;margin:18px 0!important}
+body.f2w-profile-page .profile-social-counts{display:flex!important;flex-wrap:wrap!important;gap:10px!important;margin:18px 0!important}
+body.f2w-profile-page .profile-social-count{padding:10px 14px!important;border:1px solid var(--profile-line)!important;border-radius:12px!important;background:rgba(255,255,255,.045)!important;color:#b8c6d8!important;transition:background .18s,border-color .18s,transform .18s!important}
+body.f2w-profile-page .profile-social-count:hover{background:rgba(229,9,20,.1)!important;border-color:rgba(229,9,20,.45)!important;transform:translateY(-1px)}
+body.f2w-profile-page .profile-social-count strong{color:#fff!important;font-size:17px!important;font-weight:850!important;margin-right:4px!important}
+body.f2w-profile-page .profile-action-btn,body.f2w-profile-page .profile-follow-btn{min-height:42px!important;padding:0 16px!important;border-radius:12px!important;font-weight:800!important;transition:transform .18s,filter .18s,background .18s!important}
+body.f2w-profile-page .profile-action-btn:hover,body.f2w-profile-page .profile-follow-btn:hover{transform:translateY(-2px)!important;filter:brightness(1.12)}
+body.f2w-profile-page #v199-edit-profile-btn{background:#e50914!important;color:#fff!important;border:1px solid #ff4650!important;box-shadow:0 6px 18px rgba(229,9,20,.2)!important}
+body.f2w-profile-page .profile-stats-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;margin-top:24px!important}
+body.f2w-profile-page .profile-stat-card{padding:18px!important;min-height:90px!important;border:1px solid var(--profile-line)!important;border-radius:16px!important;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018))!important}
+body.f2w-profile-page .profile-stat-card strong{display:block!important;font-size:27px!important;line-height:1.1!important;font-weight:900!important;color:#fff!important}
+body.f2w-profile-page .profile-stat-card span{display:block!important;margin-top:8px!important;color:#94a8bf!important;font-size:11px!important;font-weight:800!important;letter-spacing:.09em!important;text-transform:uppercase!important}
+body.f2w-profile-page .profile-v16-overview{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;margin:18px 0!important}
+body.f2w-profile-page .profile-v16-tile,body.f2w-profile-page .profile-v16-panel{border:1px solid var(--profile-line)!important;border-radius:18px!important;background:linear-gradient(145deg,#101d2c,#0c1522)!important;box-shadow:0 10px 28px rgba(0,0,0,.12)!important}
+body.f2w-profile-page .profile-v16-tile{padding:18px!important;min-width:0!important}
+body.f2w-profile-page .profile-v16-tile>i{color:#fb7185!important;font-size:17px!important;margin-bottom:12px!important}
+body.f2w-profile-page .profile-v16-tile strong{display:block!important;font-size:22px!important;font-weight:900!important}
+body.f2w-profile-page .profile-v16-tile span{display:block!important;margin-top:6px!important;color:#91a4ba!important;font-size:11px!important}
+body.f2w-profile-page .profile-v16-panel{padding:22px!important;margin:18px 0!important}
+body.f2w-profile-page .profile-v16-panel-head,body.f2w-profile-page .profile-section-head{display:flex!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap!important;gap:12px!important;margin-bottom:16px!important}
+body.f2w-profile-page .profile-v16-panel-head h2,body.f2w-profile-page .profile-section-head h2{font-size:19px!important;font-weight:850!important;letter-spacing:-.02em!important}
+body.f2w-profile-page #profile-favorites-section{padding:22px!important;margin:18px 0!important;border:1px solid var(--profile-line)!important;border-radius:18px!important;background:linear-gradient(145deg,#101d2c,#0c1522)!important}
+body.f2w-profile-page .profile-role-badge{font-weight:850!important}
+body.f2w-profile-page .profile-private-control{margin:14px 0!important;padding:14px 16px!important;border:1px solid var(--profile-line)!important;border-radius:14px!important;background:rgba(255,255,255,.025)!important}
+body.f2w-profile-page .profile-public-note{margin-top:16px!important;color:#8da1b8!important;font-size:11px!important}
+@media(max-width:680px){
+ body.f2w-profile-page #profile-root{width:calc(100% - 20px)!important;margin:18px auto 42px!important}
+ body.f2w-profile-page #profile-hero{grid-template-columns:1fr!important;gap:18px!important;padding:20px!important;border-radius:19px!important}
+ body.f2w-profile-page #profile-avatar-shell{width:104px!important;height:104px!important;min-width:104px!important;border-radius:22px!important}
+ body.f2w-profile-page .profile-name{font-size:29px!important}
+ body.f2w-profile-page .profile-stats-grid{gap:8px!important}
+ body.f2w-profile-page .profile-stat-card{padding:12px 10px!important;min-height:78px!important}
+ body.f2w-profile-page .profile-stat-card strong{font-size:22px!important}
+ body.f2w-profile-page .profile-stat-card span{font-size:9px!important;letter-spacing:.04em!important}
+ body.f2w-profile-page .profile-v16-overview{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ body.f2w-profile-page .profile-v16-tile{padding:14px!important}
+ body.f2w-profile-page .profile-v16-panel,body.f2w-profile-page #profile-favorites-section{padding:15px!important;border-radius:15px!important}
+ body.f2w-profile-page .profile-action-btn,body.f2w-profile-page .profile-follow-btn{padding:0 12px!important;font-size:12px!important}
+}
+</style>
+
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
