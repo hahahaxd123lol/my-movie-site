@@ -6714,29 +6714,37 @@ setTimeout(loadLibraryFavorites,0);
 
       // Normalize optional fields so the renderer never depends on a migration
       // having already added them.
+      const previousProfile=(
+        viewedProfile&&String(viewedProfile.username||'').toLowerCase()===wantedUsername
+      )?viewedProfile:{};
+      const hasProfileField=key=>Object.prototype.hasOwnProperty.call(profileData,key);
+      const profileField=(key,fallback='')=>hasProfileField(key)
+        ? (profileData[key]??fallback)
+        : (previousProfile[key]??fallback);
       viewedProfile={
+        ...previousProfile,
         ...profileData,
-        display_name:profileData.display_name??null,
-        bio:profileData.bio??'',
-        avatar_url:profileData.avatar_url??null,
-        is_private:Boolean(profileData.is_private),
-        location:profileData.location??'',
-        favorite_genres:profileData.favorite_genres??[],
-        website_url:profileData.website_url??'',
-        instagram_username:profileData.instagram_username??'',
-        discord_username:profileData.discord_username??'',
-        snapchat_username:profileData.snapchat_username??'',
-        reddit_username:profileData.reddit_username??'',
-        steam_profile:profileData.steam_profile??'',
-        tiktok_username:profileData.tiktok_username??'',
-        letterboxd_username:profileData.letterboxd_username??'',
-        status_text:profileData.status_text??'',
-        pronouns:profileData.pronouns??'',
-        favorite_movie_text:profileData.favorite_movie_text??'',
-        favorite_movie_tmdb_id:profileData.favorite_movie_tmdb_id??null,
-        favorite_movie_poster_path:profileData.favorite_movie_poster_path??'',
-        favorite_tv_text:profileData.favorite_tv_text??'',
-        profile_quote:profileData.profile_quote??''
+        display_name:profileData.display_name??previousProfile.display_name??null,
+        bio:profileData.bio??previousProfile.bio??'',
+        avatar_url:profileData.avatar_url??previousProfile.avatar_url??null,
+        is_private:Boolean(profileData.is_private??previousProfile.is_private),
+        location:profileField('location',''),
+        favorite_genres:profileField('favorite_genres',[]),
+        website_url:profileField('website_url',''),
+        instagram_username:profileField('instagram_username',''),
+        discord_username:profileField('discord_username',''),
+        snapchat_username:profileField('snapchat_username',''),
+        reddit_username:profileField('reddit_username',''),
+        steam_profile:profileField('steam_profile',''),
+        tiktok_username:profileField('tiktok_username',''),
+        letterboxd_username:profileField('letterboxd_username',''),
+        status_text:profileField('status_text',''),
+        pronouns:profileField('pronouns',''),
+        favorite_movie_text:profileField('favorite_movie_text',''),
+        favorite_movie_tmdb_id:profileField('favorite_movie_tmdb_id',null),
+        favorite_movie_poster_path:profileField('favorite_movie_poster_path',''),
+        favorite_tv_text:profileField('favorite_tv_text',''),
+        profile_quote:profileField('profile_quote','')
       };
 
       f2wProfileResolvedUsername=String(viewedProfile.username||'').toLowerCase();
@@ -10877,32 +10885,49 @@ async function ensureEditorDataV225(){
   if(f2wEditorDataReadyV225)return profileObj()||{};
   if(f2wEditorLoadPromiseV225)return f2wEditorLoadPromiseV225;
 
+  const existing=profileObj()||{};
+  if(existing.user_id&&existing.username&&existing.__f2wProfileExtrasReadyV225){
+    f2wEditorDataReadyV225=true;
+    return existing;
+  }
+
   f2wEditorLoadPromiseV225=(async()=>{
     const c=db();
     const p=profileObj()||{};
     const u=currentEditorUsername()||username();
-
     if(!c?.rpc||!u)throw new Error('Could not load your profile before editing.');
 
-    const [coreRes,extrasRes]=await Promise.all([
-      c.rpc('get_public_profile_v160',{p_username:u}),
-      c.rpc('get_public_profile_extras_v219',{p_username:u})
+    async function rpcWithTimeout(name,args,ms=4000){
+      let timer=0;
+      try{
+        return await Promise.race([
+          c.rpc(name,args),
+          new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(name+' timed out')),ms)})
+        ]);
+      }finally{clearTimeout(timer)}
+    }
+
+    const [coreOutcome,extrasOutcome]=await Promise.allSettled([
+      rpcWithTimeout('get_public_profile_v160',{p_username:u}),
+      rpcWithTimeout('get_public_profile_extras_v219',{p_username:u})
     ]);
 
-    if(coreRes?.error)throw coreRes.error;
-    if(extrasRes?.error)throw extrasRes.error;
+    let coreRes=coreOutcome.status==='fulfilled'?coreOutcome.value:null;
+    let extrasRes=extrasOutcome.status==='fulfilled'?extrasOutcome.value:null;
+    if(coreRes?.error)coreRes=null;
+    if(extrasRes?.error)extrasRes=null;
 
     const core=Array.isArray(coreRes?.data)?coreRes.data[0]:coreRes?.data;
     const extras=Array.isArray(extrasRes?.data)?extrasRes.data[0]:extrasRes?.data;
 
-    if(!core)throw new Error('Could not load your current profile.');
+    // We already have a public profile row on screen; fall back to it if the refresh
+    // is slow so the editor can still open. Preserve social fields unless extras arrives.
+    const effectiveCore=core||(p?.user_id&&p?.username?p:null);
+    if(!effectiveCore)throw new Error('Could not load your current profile.');
 
     if(typeof viewedProfile!=='undefined'){
-      viewedProfile={
-        ...(viewedProfile||{}),
-        ...core,
-        ...(extras||{})
-      };
+      viewedProfile={...(viewedProfile||{}),...effectiveCore,...(extras||{})};
+      if(extras)viewedProfile.__f2wProfileExtrasReadyV225=true;
     }
 
     f2wEditorDataReadyV225=true;
@@ -10980,6 +11005,10 @@ async function saveEditor(){
       await ensureEditorDataV225();
       fillEditor();
       throw new Error('Your saved profile was still loading. It has now been restored — make your change again, then press Save.');
+    }
+    const savedProfile=profileObj()||{};
+    if(!savedProfile.__f2wProfileExtrasReadyV225){
+      throw new Error('Your saved social links are still syncing. Close Edit Profile, wait a moment, then reopen it before saving so existing links are not overwritten.');
     }
     status.textContent='Saving…';const c=db(),p=profileObj()||{},currentUser=currentEditorUsername();let nextUser=String(document.getElementById('v199-username')?.value||'').trim().replace(/^@/,'').replace(/[^A-Za-z0-9]/g,'');if(!nextUser){nextUser=currentUser;const input=document.getElementById('v199-username');if(input)input.value=nextUser}let changed=false;if(nextUser.toLowerCase()!==String(currentUser||'').toLowerCase()){if(!/^[A-Za-z0-9]{2,30}$/.test(nextUser))throw new Error('New usernames must be 2–30 letters or numbers.');const {data,error}=await c.rpc('change_my_username_v200',{p_username:nextUser});if(error)throw error;if(!data)throw new Error('Could not change username.');changed=true}else if(!nextUser){throw new Error('Your current username could not be loaded. Close Edit Profile and reopen it.')}const display=document.getElementById('v199-display-name').value.replace(/@/g,'').trim();document.getElementById('v199-display-name').value=display;const genres=[...document.querySelectorAll('#v199-genre-grid input:checked')].map(x=>x.value);const websiteRaw=document.getElementById('v199-website').value.trim();const website=validWebsiteValue(websiteRaw);if(websiteRaw&&!website)throw new Error('Website must be a valid domain or http/https URL.');if(websiteRaw&&website!==websiteRaw)document.getElementById('v199-website').value=website;const payload={p_display_name:display,p_bio:document.getElementById('v199-bio').value.trim(),p_favorite_genres:genres,p_website_url:website,p_instagram_username:document.getElementById('v199-instagram').value.trim(),p_discord_username:document.getElementById('v199-discord').value.trim(),p_snapchat_username:document.getElementById('v199-snapchat').value.trim(),p_steam_profile:document.getElementById('v199-steam').value.trim(),p_tiktok_username:document.getElementById('v199-tiktok').value.trim(),p_is_private:document.getElementById('v200-private').checked};payload.p_letterboxd_username=document.getElementById('v219-letterboxd')?.value.trim()||null;const {data,error}=await c.rpc('update_my_profile_v219',payload);if(error)throw error;if(data&&typeof viewedProfile!=='undefined')viewedProfile={...viewedProfile,...data};f2wEditorDataReadyV225=true;if(typeof viewedProfile!=='undefined'&&viewedProfile){viewedProfile.username=nextUser;viewedProfile.website_url=website}sanitizeDisplayNamePaint();renderSocials();try{renderViewedProfile?.()}catch{};status.textContent='Profile saved.';if(changed)history.replaceState({},'',`/profile/@${encodeURIComponent(nextUser)}`);setTimeout(closeEditor,550)}catch(e){status.className='v200-editor-status error';status.textContent=e?.message||'Could not save profile.'}finally{save.disabled=false}}
 function syncOwnerUi(){const btn=document.getElementById('v199-edit-profile-btn');if(btn)btn.hidden=!isOwner();sanitizeDisplayNamePaint();renderSocials()}
@@ -11146,7 +11175,10 @@ async function loadExtras(){
   try{
     const {data,error}=await c.rpc('get_public_profile_extras_v219',{p_username:u}); if(error)throw error;
     const x=Array.isArray(data)?data[0]:data; if(!x)return;
-    if(prof())Object.assign(prof(),x);f2wEditorDataReadyV225=true;
+    if(prof()){
+      Object.assign(prof(),x);
+      prof().__f2wProfileExtrasReadyV225=true;
+    }
     try{renderGenres();renderSocials?.();applyPrivacy();}catch{}
     const toggle=document.getElementById('profile-private-toggle'); if(toggle)toggle.classList.toggle('active',Boolean(x.is_private));
   }catch(e){console.warn('Profile extras unavailable:',e?.message||e)}
@@ -11231,7 +11263,7 @@ window.togglePrivateProfile=async function(){
 
 <!-- f2w-force-save:v202-profile-socials-genres-editor-private:20260902 -->
 
-<script src="/v205-profile-live.js?v=egress-20261019h" defer></script>
+<script src="/v205-profile-live.js?v=egress-20261019i" defer></script>
 
 <script id="f2w-profile-ratings-v218-rail-js">
 (() => {

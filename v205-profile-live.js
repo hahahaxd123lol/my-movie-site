@@ -147,32 +147,39 @@ async function recoverStuckProfile(){
   }
   clearTimeout(unavailableTimer);
   if(!profileStillLoading())return;
-  // Invalidate the slower request so its eventual response cannot repeat the
-  // profile, social and favorites work already being completed by this fallback.
-  try{if(typeof f2wProfileLoadGeneration!=='undefined')f2wProfileLoadGeneration++}catch{}
+  // Do not invalidate the normal profile RPC. It may contain richer profile,
+  // role and social metadata than the direct-table fallback; let it reconcile
+  // this first paint when its response arrives.
+  let cachedProfile={};
+  try{
+    const cached=JSON.parse(localStorage.getItem('f2w_profile_cache_v24:'+key)||'null');
+    if(cached?.profile)cachedProfile=cached.profile;
+  }catch{}
   const normalized={
+    ...cachedProfile,
     ...profile,
-    username:String(profile.username||u).replace(/^@/,''),
-    display_name:profile.display_name??null,
-    bio:profile.bio??'',
-    avatar_url:profile.avatar_url??null,
-    is_private:Boolean(profile.is_private),
-    favorite_genres:profile.favorite_genres??[],
-    website_url:profile.website_url??'',
-    instagram_username:profile.instagram_username??'',
-    discord_username:profile.discord_username??'',
-    snapchat_username:profile.snapchat_username??'',
-    reddit_username:profile.reddit_username??'',
-    steam_profile:profile.steam_profile??'',
-    tiktok_username:profile.tiktok_username??'',
-    letterboxd_username:profile.letterboxd_username??'',
-    status_text:profile.status_text??'',
-    pronouns:profile.pronouns??'',
-    favorite_movie_text:profile.favorite_movie_text??'',
-    favorite_movie_tmdb_id:profile.favorite_movie_tmdb_id??null,
-    favorite_movie_poster_path:profile.favorite_movie_poster_path??'',
-    favorite_tv_text:profile.favorite_tv_text??'',
-    profile_quote:profile.profile_quote??''
+    username:String(profile.username||cachedProfile.username||u).replace(/^@/,''),
+    display_name:profile.display_name??cachedProfile.display_name??null,
+    bio:profile.bio??cachedProfile.bio??'',
+    avatar_url:profile.avatar_url??cachedProfile.avatar_url??null,
+    is_private:Boolean(profile.is_private??cachedProfile.is_private),
+    location:profile.location??cachedProfile.location??'',
+    favorite_genres:profile.favorite_genres??cachedProfile.favorite_genres??[],
+    website_url:profile.website_url??cachedProfile.website_url??'',
+    instagram_username:profile.instagram_username??cachedProfile.instagram_username??'',
+    discord_username:profile.discord_username??cachedProfile.discord_username??'',
+    snapchat_username:profile.snapchat_username??cachedProfile.snapchat_username??'',
+    reddit_username:profile.reddit_username??cachedProfile.reddit_username??'',
+    steam_profile:profile.steam_profile??cachedProfile.steam_profile??'',
+    tiktok_username:profile.tiktok_username??cachedProfile.tiktok_username??'',
+    letterboxd_username:profile.letterboxd_username??cachedProfile.letterboxd_username??'',
+    status_text:profile.status_text??cachedProfile.status_text??'',
+    pronouns:profile.pronouns??cachedProfile.pronouns??'',
+    favorite_movie_text:profile.favorite_movie_text??cachedProfile.favorite_movie_text??'',
+    favorite_movie_tmdb_id:profile.favorite_movie_tmdb_id??cachedProfile.favorite_movie_tmdb_id??null,
+    favorite_movie_poster_path:profile.favorite_movie_poster_path??cachedProfile.favorite_movie_poster_path??'',
+    favorite_tv_text:profile.favorite_tv_text??cachedProfile.favorite_tv_text??'',
+    profile_quote:profile.profile_quote??cachedProfile.profile_quote??''
   };
   try{if(typeof viewedProfile!=='undefined')viewedProfile=normalized}catch{}
   try{if(typeof f2wProfileResolvedUsername!=='undefined')f2wProfileResolvedUsername=key}catch{}
@@ -204,6 +211,9 @@ async function recoverStuckProfile(){
   try{if(typeof loadViewedProfileRoleBadge==='function')void loadViewedProfileRoleBadge()}catch{}
   try{if(typeof loadProfileSocial==='function')void loadProfileSocial()}catch{}
   try{if(typeof loadAge==='function')void loadAge()}catch{}
+  // This loader is defined by the profile's extras/editor layer and restores
+  // social links and favorite genres that are not present on every base profile row.
+  try{void window.__f2wProfileV202ReloadExtras?.()}catch{}
   const grid=document.getElementById('profile-favorites-grid');
   if(normalized.is_private){
     try{if(typeof renderViewedFavorites==='function')renderViewedFavorites()}catch{}
