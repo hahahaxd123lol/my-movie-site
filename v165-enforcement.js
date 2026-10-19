@@ -146,7 +146,7 @@ async function bindEnforcement(session){
   if(uid==='f5454804-a2a6-4602-9086-51cf51f11c77'){clearEnforcement(uid);return}
   const cached=readCachedEnforcement(uid);if(cached?.site_suspended||cached?.account_banned)applyEnforcement(uid,cached,{cached:true});else clearEnforcement(uid);
   await refreshEnforcement(session);
-  enforcementTimer=setInterval(()=>{if(document.visibilityState==='visible')c.auth.getSession().then(({data})=>refreshEnforcement(data?.session||null)).catch(()=>{})},120000);
+  enforcementTimer=setInterval(()=>{if(document.visibilityState==='visible')c.auth.getSession().then(({data})=>refreshEnforcement(data?.session||null)).catch(()=>{})},300000);
   try{enforcementChannel=c.channel('f2w-v165-enforce-'+uid).on('postgres_changes',{event:'*',schema:'public',table:'account_enforcement_v146',filter:`user_id=eq.${uid}`},payload=>{
     const evt=String(payload?.eventType||'').toUpperCase();
     const row=payload?.new||payload?.old||null;
