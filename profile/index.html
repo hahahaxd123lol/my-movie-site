@@ -6627,6 +6627,12 @@ setTimeout(loadLibraryFavorites,0);
           if(parsed&&parsed.profile){
             viewedProfile=parsed.profile;
             viewedProfileFavorites=Array.isArray(parsed.favorites)?parsed.favorites:[];
+            try{
+              const socialCache=JSON.parse(localStorage.getItem('f2w_profile_social_v1:'+String(parsed.profile.user_id||''))||'null');
+              if(socialCache){
+                viewedSocial={...viewedSocial,followers:Math.max(0,Number(socialCache.followers)||0),following:Math.max(0,Number(socialCache.following)||0)};
+              }
+            }catch{}
             f2wProfileResolvedUsername=String(parsed.profile.username||username).toLowerCase();
             renderViewedProfile();
             renderViewedFavorites();
@@ -6815,8 +6821,8 @@ setTimeout(loadLibraryFavorites,0);
       return;
     }
 
-    // Followers/private features are optional and cannot hide the main profile.
-    await loadProfileSocial();
+    // Followers are refreshed independently; their network latency must not block favorites.
+    void loadProfileSocial();
 
     if(!canViewPrivateContent()){
       viewedProfileFavorites=[];
@@ -6944,49 +6950,105 @@ setTimeout(loadLibraryFavorites,0);
     if(followingBtn)followingBtn.disabled=!canOpenLists;
   }
 
+  let profileSocialChannel=null;
+  let profileSocialChannelUid='';
+  let profileSocialPollTimer=0;
+  let profileSocialRefreshTimer=0;
+  let profileSocialLoadBusy=false;
+  let profileSocialRefreshPending=false;
+  let profileSocialLoadedOnce=false;
+  let profileSocialLifecycleBound=false;
+
+  function scheduleProfileSocialRefresh(delay=180){
+    clearTimeout(profileSocialRefreshTimer);
+    profileSocialRefreshTimer=setTimeout(()=>{void loadProfileSocial()},delay);
+  }
+
+  function bindProfileSocialLive(){
+    const uid=String(viewedProfile?.user_id||'');
+    if(!uid||!chatSupabase?.channel)return;
+    if(profileSocialChannelUid!==uid){
+      if(profileSocialChannel){try{chatSupabase.removeChannel(profileSocialChannel)}catch{}}
+      profileSocialChannel=null;
+      profileSocialChannelUid=uid;
+      try{
+        profileSocialChannel=chatSupabase.channel('f2w-profile-social-live-'+uid)
+          .on('postgres_changes',{event:'*',schema:'public',table:'profile_follows',filter:`followed_user_id=eq.${uid}`},()=>scheduleProfileSocialRefresh())
+          .on('postgres_changes',{event:'*',schema:'public',table:'profile_follows',filter:`follower_user_id=eq.${uid}`},()=>scheduleProfileSocialRefresh())
+          .subscribe();
+      }catch(error){console.warn('Profile social realtime unavailable:',error?.message||error)}
+    }
+    if(!profileSocialPollTimer){
+      profileSocialPollTimer=setInterval(()=>{
+        if(document.visibilityState==='visible'&&viewedProfile?.user_id)void loadProfileSocial();
+      },30000);
+    }
+    if(!profileSocialLifecycleBound){
+      profileSocialLifecycleBound=true;
+      document.addEventListener('visibilitychange',()=>{
+        if(document.visibilityState==='visible')scheduleProfileSocialRefresh(0);
+      });
+      window.addEventListener('focus',()=>scheduleProfileSocialRefresh(0),{passive:true});
+      window.addEventListener('pageshow',()=>scheduleProfileSocialRefresh(0),{passive:true});
+    }
+  }
+
   async function loadProfileSocial(){
     if(!viewedProfile){
       socialFeaturesAvailable=false;
-      viewedSocial={
-        followers:0,
-        following:0,
-        is_following:false,
-        can_view_social:false
-      };
+      viewedSocial={followers:0,following:0,is_following:false,can_view_social:false};
       renderProfilePrivacy();
       return;
     }
-
+    bindProfileSocialLive();
+    if(profileSocialLoadBusy){profileSocialRefreshPending=true;return}
+    const targetUserId=String(viewedProfile.user_id||'');
+    if(!targetUserId)return;
+    profileSocialLoadBusy=true;
+    let timeoutId=0;
     try{
-      const {data,error}=await chatSupabase.rpc(
-        'get_profile_social',
-        {target_user_id:viewedProfile.user_id}
-      );
-
-      if(error)throw error;
-
-      const row=Array.isArray(data)?data[0]:data;
-
+      const response=await Promise.race([
+        chatSupabase.rpc('get_profile_social',{target_user_id:targetUserId}),
+        new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error('Profile social refresh timed out')),4500)})
+      ]);
+      clearTimeout(timeoutId);
+      if(response?.error)throw response.error;
+      if(String(viewedProfile?.user_id||'')!==targetUserId)return;
+      const row=Array.isArray(response?.data)?response.data[0]:response?.data;
       socialFeaturesAvailable=true;
       viewedSocial={
-        followers:Number(row?.followers_count||0),
-        following:Number(row?.following_count||0),
+        followers:Math.max(0,Number(row?.followers_count)||0),
+        following:Math.max(0,Number(row?.following_count)||0),
         is_following:Boolean(row?.is_following),
         can_view_social:Boolean(row?.can_view_social)
       };
+      profileSocialLoadedOnce=true;
+      try{
+        localStorage.setItem('f2w_profile_social_v1:'+targetUserId,JSON.stringify({
+          followers:viewedSocial.followers,following:viewedSocial.following,savedAt:Date.now()
+        }));
+      }catch{}
     }catch(error){
-      console.warn('Social features unavailable:',error);
-
-      socialFeaturesAvailable=false;
-      viewedSocial={
-        followers:0,
-        following:0,
-        is_following:false,
-        can_view_social:!Boolean(viewedProfile.is_private)||isOwnViewedProfile()
-      };
+      console.warn('Social features unavailable:',error?.message||error);
+      // A failed refresh must not replace already-correct counts with zero.
+      if(!profileSocialLoadedOnce){
+        socialFeaturesAvailable=false;
+        viewedSocial={
+          ...viewedSocial,
+          followers:Math.max(0,Number(viewedSocial.followers)||0),
+          following:Math.max(0,Number(viewedSocial.following)||0),
+          can_view_social:!Boolean(viewedProfile?.is_private)||isOwnViewedProfile()
+        };
+      }
+    }finally{
+      clearTimeout(timeoutId);
+      profileSocialLoadBusy=false;
+      renderProfilePrivacy();
+      if(profileSocialRefreshPending){
+        profileSocialRefreshPending=false;
+        scheduleProfileSocialRefresh(160);
+      }
     }
-
-    renderProfilePrivacy();
   }
 
 
@@ -7281,7 +7343,7 @@ renderViewedProfile();
   },{once:true});
 
   let f2wProfileAuthRefreshTimer=null;
-  chatSupabase.auth.onAuthStateChange(()=>{
+  chatSupabase.auth.onAuthStateChange((event)=>{
     clearTimeout(f2wProfileAuthRefreshTimer);
     f2wProfileAuthRefreshTimer=setTimeout(()=>{
       // An explicit /profile/?user=... page is public data. Login/session
@@ -7290,6 +7352,7 @@ renderViewedProfile();
       if(explicit){
         try{syncAuthenticatedOwnerUI?.();}catch{}
         try{renderProfilePrivacy?.();}catch{}
+        if(['INITIAL_SESSION','SIGNED_IN','SIGNED_OUT','USER_UPDATED'].includes(event))scheduleProfileSocialRefresh(0);
         return;
       }
 
@@ -11168,7 +11231,7 @@ window.togglePrivateProfile=async function(){
 
 <!-- f2w-force-save:v202-profile-socials-genres-editor-private:20260902 -->
 
-<script src="/v205-profile-live.js?v=egress-20261019g" defer></script>
+<script src="/v205-profile-live.js?v=egress-20261019h" defer></script>
 
 <script id="f2w-profile-ratings-v218-rail-js">
 (() => {

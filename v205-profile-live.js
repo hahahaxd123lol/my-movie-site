@@ -7,7 +7,7 @@ if(!location.pathname.startsWith('/profile'))return;
 
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
-let supa=null,snapshot=null,receivedAt=0,poll=0,tick=0,channel=null,busy=false,currentUid='';
+let supa=null,snapshot=null,receivedAt=0,poll=0,tick=0,channel=null,busy=false,currentUid='',liveRefreshTimer=0,liveRefreshPending=false;
 function db(){return supa||(supa=window.f2wSupabase||window.chatSupabase||window.supabaseClient||(window.supabase?.createClient?window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null))}
 function username(){const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);return (m?.[1]||new URLSearchParams(location.search).get('user')||'').replace(/[^A-Za-z0-9]/g,'')}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -16,7 +16,16 @@ function fmt(v){let n=Math.max(0,Math.floor(Number(v)||0));const h=Math.floor(n/
 function status(v){v=String(v||'unknown').toLowerCase();if(v==='seeked')return 'playing';return ['playing','paused','buffering','completed','stopped'].includes(v)?v:'unknown'}
 function stateLabel(v){return v==='playing'?'Playing':v==='paused'?'Paused':v==='buffering'?'Buffering':v==='completed'?'Finished':v==='stopped'?'Stopped':'Live'}
 function stateIcon(v){return v==='paused'?'fa-pause':v==='buffering'?'fa-spinner fa-spin':v==='completed'?'fa-check':'fa-play'}
-function paintPresence(){const badge=document.getElementById('v17-profile-presence');if(!badge||!snapshot)return;const label=badge.querySelector('span');const on=Boolean(snapshot.online);badge.classList.toggle('online',on);badge.classList.toggle('offline',!on);if(label)label.textContent=on?'Online':`Last online ${rel(snapshot.last_seen_at)}`}
+function paintPresence(){
+ const badge=document.getElementById('v17-profile-presence');if(!badge||!snapshot)return;
+ const label=badge.querySelector('span');
+ const seenAt=snapshot.last_seen_at?new Date(snapshot.last_seen_at).getTime():0;
+ // Presence has a 75-second server lease. Never leave an old "Online" badge on screen.
+ const fresh=!seenAt||Date.now()-seenAt<=80000;
+ const on=Boolean(snapshot.online)&&fresh;
+ badge.classList.toggle('online',on);badge.classList.toggle('offline',!on);
+ if(label)label.textContent=on?'Online':(snapshot.last_seen_at?('Last online '+rel(snapshot.last_seen_at)):'Offline');
+}
 function position(){if(!snapshot||snapshot.watching_position_seconds==null)return null;let p=Math.max(0,Number(snapshot.watching_position_seconds)||0);const st=status(snapshot.watching_playback_status);if(st==='playing'){
   const base=snapshot.watching_progress_updated_at?new Date(snapshot.watching_progress_updated_at).getTime():receivedAt;
   if(Number.isFinite(base)&&base>0)p+=Math.max(0,(Date.now()-base)/1000);
@@ -38,12 +47,48 @@ if(clock)clock.textContent=pos==null?(dur?`— / ${fmt(dur)}`:'Timestamp unavail
 if(badge){badge.className=`f2w-v201-state ${st}`;badge.innerHTML=`<i class="fa-solid ${stateIcon(st)}"></i> ${stateLabel(st)}`}
 }
 function paint(full=false){paintPresence();paintWatch(full)}
+function scheduleLiveRefresh(){
+ clearTimeout(liveRefreshTimer);
+ liveRefreshTimer=setTimeout(()=>{void fetchLive()},120);
+}
 function bindRealtime(){const c=db(),uid=String(snapshot?.user_id||'');if(!c?.channel||!uid||uid===currentUid)return;currentUid=uid;if(channel){try{c.removeChannel(channel)}catch{}channel=null}
 try{channel=c.channel('f2w-v205-profile-live-'+uid)
-.on('postgres_changes',{event:'*',schema:'public',table:'user_presence',filter:`user_id=eq.${uid}`},()=>setTimeout(fetchLive,30))
-.on('postgres_changes',{event:'*',schema:'public',table:'current_watching_v125',filter:`user_id=eq.${uid}`},()=>setTimeout(fetchLive,30))
+.on('postgres_changes',{event:'*',schema:'public',table:'user_presence',filter:`user_id=eq.${uid}`},scheduleLiveRefresh)
+.on('postgres_changes',{event:'*',schema:'public',table:'current_watching_v125',filter:`user_id=eq.${uid}`},scheduleLiveRefresh)
 .subscribe()}catch{}}
-async function fetchLive(){if(busy)return;const c=db(),u=username();if(!c?.rpc||!u)return;busy=true;try{const {data,error}=await c.rpc('get_public_profile_live_v205',{p_username:u});if(error)throw error;const row=Array.isArray(data)?data[0]:data;snapshot=row||{user_id:null,last_seen_at:null,online:false};receivedAt=Date.now();paint(true);bindRealtime()}catch(e){console.warn('v205 live profile unavailable:',e?.message||e)}finally{busy=false}}
+async function fetchLive(){
+ if(busy){liveRefreshPending=true;return}
+ const c=db(),u=username();if(!c?.rpc||!u)return;
+ busy=true;
+ try{
+  let result,primaryError=null;
+  try{
+   result=await c.rpc('get_public_profile_live_v205',{p_username:u});
+   if(result?.error)throw result.error;
+   if(!(Array.isArray(result?.data)?result.data[0]:result?.data))throw new Error('Live profile returned no row');
+  }catch(error){
+   primaryError=error;
+   result=await c.rpc('get_public_profile_presence_v203',{p_username:u});
+   if(result?.error)result=await c.rpc('get_public_profile_presence_v200',{p_username:u});
+   if(result?.error)throw primaryError;
+  }
+  const row=Array.isArray(result?.data)?result.data[0]:result?.data;
+  if(!row)throw primaryError||new Error('Profile presence unavailable');
+  const previous=snapshot||{};
+  const identityChanged=String(previous.watching_media_id||'')!==String(row.watching_media_id||'')
+   ||String(previous.watching_media_type||'')!==String(row.watching_media_type||'')
+   ||String(previous.watching_title||'')!==String(row.watching_title||'')
+   ||Boolean(previous.watching_media_id)!==Boolean(row.watching_media_id);
+  snapshot={...previous,...row,online:Boolean(row.online)};
+  receivedAt=Date.now();
+  paint(identityChanged);
+  bindRealtime();
+ }catch(e){console.warn('v205 live profile unavailable:',e?.message||e)}
+ finally{
+  busy=false;
+  if(liveRefreshPending){liveRefreshPending=false;scheduleLiveRefresh()}
+ }
+}
 
 async function bounded(run,ms,label){
   let timer=0;
@@ -198,15 +243,15 @@ async function recoverStuckProfile(){
 }
 
 function start(){
-  fetchLive();
-  setTimeout(()=>{if(profileStillLoading())void recoverStuckProfile()},1200);
+  void fetchLive();
+  setTimeout(()=>{if(profileStillLoading())void recoverStuckProfile()},250);
   clearInterval(poll);
-  poll=setInterval(()=>{if(document.visibilityState==='visible')fetchLive()},30000);
+  poll=setInterval(()=>{if(document.visibilityState==='visible')void fetchLive()},15000);
   clearInterval(tick);
   tick=setInterval(()=>paint(false),1000);
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')fetchLive()});
-  window.addEventListener('focus',()=>{if(!snapshot||Date.now()-receivedAt>120000)fetchLive()},{passive:true});
-  window.addEventListener('pagehide',()=>{clearInterval(poll);clearInterval(tick);try{if(channel)db()?.removeChannel?.(channel)}catch{}},{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void fetchLive()});
+  window.addEventListener('focus',()=>{void fetchLive()},{passive:true});
+  window.addEventListener('pagehide',()=>{clearInterval(poll);clearInterval(tick);clearTimeout(liveRefreshTimer);try{if(channel)db()?.removeChannel?.(channel)}catch{}},{passive:true});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
