@@ -7,7 +7,7 @@ if(!location.pathname.startsWith('/profile'))return;
 
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
-let supa=null,snapshot=null,receivedAt=0,tick=0,channel=null,busy=false,currentUid='';
+let supa=null,snapshot=null,receivedAt=0,poll=0,tick=0,channel=null,busy=false,currentUid='';
 function db(){return supa||(supa=window.f2wSupabase||window.chatSupabase||window.supabaseClient||(window.supabase?.createClient?window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null))}
 function username(){const m=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);return (m?.[1]||new URLSearchParams(location.search).get('user')||'').replace(/[^A-Za-z0-9]/g,'')}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -46,11 +46,13 @@ try{channel=c.channel('f2w-v205-profile-live-'+uid)
 async function fetchLive(){if(busy)return;const c=db(),u=username();if(!c?.rpc||!u)return;busy=true;try{const {data,error}=await c.rpc('get_public_profile_live_v205',{p_username:u});if(error)throw error;const row=Array.isArray(data)?data[0]:data;snapshot=row||{user_id:null,last_seen_at:null,online:false};receivedAt=Date.now();paint(true);bindRealtime()}catch(e){console.warn('v205 live profile unavailable:',e?.message||e)}finally{busy=false}}
 function start(){
   fetchLive();
+  clearInterval(poll);
+  poll=setInterval(()=>{if(document.visibilityState==='visible')fetchLive()},30000);
   clearInterval(tick);
   tick=setInterval(()=>paint(false),1000);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')fetchLive()});
   window.addEventListener('focus',()=>{if(!snapshot||Date.now()-receivedAt>120000)fetchLive()},{passive:true});
-  window.addEventListener('pagehide',()=>{clearInterval(tick);try{if(channel)db()?.removeChannel?.(channel)}catch{}},{passive:true});
+  window.addEventListener('pagehide',()=>{clearInterval(poll);clearInterval(tick);try{if(channel)db()?.removeChannel?.(channel)}catch{}},{passive:true});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
