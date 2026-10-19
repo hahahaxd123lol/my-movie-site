@@ -8,11 +8,11 @@ const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
    - General Online presence stays completely separate from playback.
    - Only one visible Flix2Watch tab per browser sends Supabase heartbeats.
    - Hidden/background tabs send no periodic database traffic.
-   - 30-second heartbeat; SQL keeps a 75-second online lease. */
+   - 45-second heartbeat; SQL keeps a 75-second online lease. */
 window.__f2wGlobalPresenceAuthorityV210=true;
 window.__f2wGlobalPresenceAuthorityV224=true;
 
-const PRESENCE_HEARTBEAT_MS=30000;
+const PRESENCE_HEARTBEAT_MS=45000;
 const PRESENCE_LEADER_RENEW_MS=10000;
 const PRESENCE_LEADER_LEASE_MS=45000;
 const PRESENCE_LEADER_KEY='f2w_presence_leader_v224';
