@@ -254,7 +254,7 @@ function start(){
   setInterval(publishPreMiDState,1000);clearInterval(heartbeatTimer);heartbeatTimer=setInterval(()=>heartbeat(),10000);
   window.__f2wV205WatchPresenceAuthority=true;
   if(!(window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210)){
-    touchWatchPresence();clearInterval(presenceTimer);presenceTimer=setInterval(touchWatchPresence,10000);
+    clearInterval(presenceTimer);presenceTimer=0;
   }else{
     clearInterval(presenceTimer);presenceTimer=0;
   }
@@ -268,9 +268,9 @@ function start(){
   const mo=new MutationObserver(()=>{bindAuthRepair();bindNativeVideos()});mo.observe(document.body,{subtree:true,childList:true});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-window.addEventListener('pageshow',()=>{bindAuthRepair();lastCreditSampleAt=Date.now();if(!(window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210))touchWatchPresence();heartbeat()});
+window.addEventListener('pageshow',()=>{bindAuthRepair();lastCreditSampleAt=Date.now();/* Presence pings disabled; playback tracking remains enabled. */heartbeat()});
 document.addEventListener('visibilitychange',()=>{accrue();lastCreditSampleAt=Date.now();if(document.visibilityState==='visible')heartbeat()});
-window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog);clearInterval(statePollTimer);clearInterval(presenceTimer);void heartbeat(true);if(!(window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210))void leaveWatchPresence()});
+window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog);clearInterval(statePollTimer);clearInterval(presenceTimer);void heartbeat(true);/* Presence pings disabled. */});
 })();
 // f2w-force-save:v182-watch-telemetry-pause-poster:20260902
 
