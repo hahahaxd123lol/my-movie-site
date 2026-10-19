@@ -292,7 +292,7 @@ async function fetchRows(targetPage=page){
     pager.hidden=true;
   }finally{loading=false}
 }
-function scheduleRefresh(){clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>fetchRows(page),180)}
+function scheduleRefresh(){clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>fetchRows(page),600)}
 async function subscribe(){
   for(const ch of channels){try{c.removeChannel(ch)}catch{}}
   channels=[];
@@ -311,7 +311,7 @@ async function boot(){
   uid=s.user.id;
   await fetchRows(1);
   await subscribe();
-  timer=setInterval(()=>{if(document.visibilityState==='visible')fetchRows(page)},60000);
+  timer=setInterval(()=>{if(document.visibilityState==='visible')fetchRows(page)},300000);
   c.auth.onAuthStateChange?.((_event,next)=>{const nextUid=next?.user?.id||'';if(!nextUid){location.replace('/home/');return}if(nextUid!==uid){uid=nextUid;fetchRows(1);subscribe()}});
 }
 list.addEventListener('click',async e=>{
