@@ -1107,6 +1107,26 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </style>
 
 <script defer src="/sitewide-rate-limit-v1.js?v=1"></script>
+<style id="f2w-staff-profile-studio-v260">
+/* Staff profile studio v260 — same polished editing experience; existing permissions/RPCs remain authoritative. */
+#staff-app-shell .staff-profile-v212-section{padding:18px!important;border-radius:15px!important;border-color:rgba(148,163,184,.17)!important;background:linear-gradient(135deg,rgba(255,255,255,.035),rgba(255,255,255,.012))!important;box-shadow:inset 0 1px rgba(255,255,255,.025)!important}
+#staff-app-shell .staff-profile-v212-head{gap:12px!important;margin-bottom:15px!important}
+#staff-app-shell .staff-profile-v212-head>i{display:grid!important;place-items:center!important;width:38px!important;height:38px!important;border-radius:11px!important;background:color-mix(in srgb,var(--accent,#e50914) 12%,transparent)!important}
+#staff-app-shell .staff-profile-v212-head strong{font-size:.9rem!important;letter-spacing:-.015em!important}
+#staff-app-shell .staff-profile-v212-head span{font-size:.71rem!important;line-height:1.5!important}
+#staff-app-shell .staff-profile-social-grid-v212{gap:13px!important}
+#staff-app-shell .staff-profile-social-grid-v212 label{padding:12px!important;border:1px solid rgba(148,163,184,.12)!important;border-radius:11px!important;background:rgba(3,10,19,.36)!important}
+#staff-app-shell .staff-profile-social-grid-v212 label>span{font-size:.67rem!important;letter-spacing:.055em!important}
+#staff-app-shell .staff-profile-social-grid-v212 input{margin-top:3px!important;border-radius:9px!important}
+#staff-app-shell .staff-profile-genre-v212{min-height:43px!important;border-radius:11px!important;transition:transform .15s,border-color .15s,background .15s!important}
+#staff-app-shell .staff-profile-genre-v212:hover{transform:translateY(-1px)!important;border-color:rgba(255,255,255,.24)!important}
+#staff-app-shell #staff-profile-username,#staff-app-shell #staff-profile-display-name,#staff-app-shell #staff-profile-bio,#staff-app-shell #staff-profile-avatar-url,#staff-app-shell #staff-profile-private{border-radius:10px!important}
+#staff-app-shell .staff-profile-edit-grid{gap:14px!important}
+#staff-app-shell .staff-profile-help{line-height:1.55!important}
+.f2w-v260-staff-counter{display:flex;justify-content:flex-end;color:#71849b;font:600 .62rem var(--font-mono);margin-top:4px}
+.f2w-v260-staff-counter strong{color:#b9c7d8}
+@media(max-width:700px){#staff-app-shell .staff-profile-v212-section{padding:13px!important}#staff-app-shell .staff-profile-social-grid-v212 label{padding:10px!important}}
+</style>
 </head>
 <body class="f2w-main-page f2w-staff-page">
 <header>
@@ -4894,6 +4914,13 @@ window.f2wStaffRateLimitState=()=>({remaining:remaining(),count:attempts.length,
 })();
 </script>
     <script src="/f2w-continue-watching-v1.js?v=egress-20261019" defer></script>
+<script id="f2w-staff-profile-studio-v260-js">
+(()=>{'use strict';
+function counter(el,label,max){if(!el||el.dataset.v260Counter)return;el.dataset.v260Counter='1';const w=document.createElement('div');w.className='f2w-v260-staff-counter';w.setAttribute('aria-live','polite');const p=document.createElement('span');p.textContent=label+' · ';const v=document.createElement('strong');w.append(p,v);el.insertAdjacentElement('afterend',w);const paint=()=>{const n=String(el.value||'').length;v.textContent=n+' / '+max;w.style.color=n>=max*.85?'#fbbf24':''};el.addEventListener('input',paint);paint()}
+function boot(){counter(document.getElementById('staff-profile-display-name'),'Display name',50);counter(document.getElementById('staff-profile-bio'),'Bio',500);const g=document.getElementById('staff-profile-genres-v212');if(g&&!g.dataset.v260Counter){g.dataset.v260Counter='1';const w=document.createElement('div');w.className='f2w-v260-staff-counter';w.style.justifyContent='flex-start';g.insertAdjacentElement('beforebegin',w);const paint=()=>{w.textContent=g.querySelectorAll('input:checked').length+' genres selected'};g.addEventListener('change',paint);paint()}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();new MutationObserver(boot).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:staff:fd82938d8a -->
