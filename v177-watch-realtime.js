@@ -122,7 +122,7 @@ function estimatedPosition(at=Date.now()){
   return p;
 }
 function accrue(at=Date.now()){
-  const elapsed=Math.max(0,Math.min(45,(at-lastCreditSampleAt)/1000));
+  const elapsed=Math.max(0,Math.min(60,(at-lastCreditSampleAt)/1000));
   if(visiblePlayback()){
     const count=telemetry.statusKnown?telemetry.status==='playing':true;
     if(count)creditBucket=Math.min(90,creditBucket+elapsed);
@@ -219,7 +219,7 @@ async function heartbeat(force=false){
   const c=client();if(!c?.rpc||!c?.auth)return;const {id,type}=identity();if(!id)return;busy=true;
   try{
     accrue();const {data}=await c.auth.getSession();if(!data?.session?.user)return;
-    const info=titleInfo(),now=Date.now();const credit=Math.max(0,Math.min(45,Math.floor(creditBucket)));creditBucket=Math.max(0,creditBucket-credit);
+    const info=titleInfo(),now=Date.now();const credit=Math.max(0,Math.min(60,Math.floor(creditBucket)));creditBucket=Math.max(0,creditBucket-credit);
     const pos=telemetry.positionKnown?Math.max(0,Math.floor(estimatedPosition(now))):null;
     const dur=telemetry.duration>0?Math.floor(telemetry.duration):null;
     const status=telemetry.statusKnown?telemetry.status:'unknown';
@@ -251,7 +251,7 @@ function requestPlayerTelemetry(){
 function start(){
   bindAuthRepair();lastCreditSampleAt=Date.now();heartbeat();
   publishPreMiDState();
-  setInterval(publishPreMiDState,1000);clearInterval(heartbeatTimer);heartbeatTimer=setInterval(()=>heartbeat(),10000);
+  setInterval(publishPreMiDState,1000);clearInterval(heartbeatTimer);heartbeatTimer=setInterval(()=>heartbeat(),60000);
   window.__f2wV205WatchPresenceAuthority=true;
   if(!(window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210)){
     touchWatchPresence();clearInterval(presenceTimer);presenceTimer=setInterval(touchWatchPresence,10000);
@@ -283,3 +283,4 @@ window.addEventListener('pagehide',()=>{accrue();clearInterval(telemetryWatchdog
 // f2w-force-save:v224-watch-presence-dedup-only:20260903
 
 // f2w-force-save:v229-premid-playback-bridge:20260903
+// f2w-playback-heartbeat-interval:60s
