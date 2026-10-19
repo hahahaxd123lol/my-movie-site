@@ -57,7 +57,7 @@ async function bounded(run,ms,label){
 function profileStillLoading(){
   const n=document.getElementById('profile-name')?.textContent?.trim()||'';
   const b=document.getElementById('profile-bio')?.textContent?.trim()||'';
-  return /^(loading\.{0,3})$/i.test(n)||/^loading profile\.{0,3}$/i.test(b);
+  return /^(loading\.{0,3}|profile unavailable)$/i.test(n)||/^loading profile\.{0,3}$/i.test(b);
 }
 function markProfileUnavailable(){
   if(!profileStillLoading())return;
