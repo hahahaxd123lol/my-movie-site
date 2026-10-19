@@ -71,8 +71,8 @@ function markProfileUnavailable(){
     document.getElementById('f2w-profile-recovery-retry')?.addEventListener('click',()=>location.reload(),{once:true});
   }
 }
-async function queryProfile(run,label){
-  const result=await bounded(run,6000,label);
+async function queryProfile(run,label,timeoutMs=4000){
+  const result=await bounded(run,timeoutMs,label);
   if(result?.error)throw result.error;
   const row=Array.isArray(result?.data)?result.data[0]:result?.data;
   if(!row)throw new Error(label+' returned no profile');
@@ -85,19 +85,26 @@ async function recoverStuckProfile(){
   if(window.__f2wProfileRecoveryAttempted===key)return;
   window.__f2wProfileRecoveryAttempted=key;
   let profile=null;
+  // The main profile RPC is already running. Do not issue it again: if that
+  // request is still slow, use one bounded direct lookup as a fallback instead.
+  // Keep the error UI timer at ~6 seconds overall, aligned with the main request.
+  const unavailableTimer=setTimeout(()=>markProfileUnavailable(),4800);
   try{
-    // Race the public RPC against the legacy public-table path. This runs only
-    // when the normal profile renderer has left its initial placeholders on screen.
-    profile=await Promise.any([
-      queryProfile(()=>c.rpc('get_public_profile_v160',{p_username:u}),'Public profile RPC'),
-      queryProfile(()=>c.from('profiles').select('*').ilike('username',u).maybeSingle(),'Public profile fallback')
-    ]);
+    profile=await queryProfile(
+      ()=>c.from('profiles').select('*').ilike('username',u).maybeSingle(),
+      'Public profile fallback',
+      4000
+    );
   }catch(error){
-    console.warn('Profile recovery failed:',error?.message||error);
-    markProfileUnavailable();
+    console.warn('Profile recovery lookup failed:',error?.message||error);
+    // Let the primary RPC finish if it can; otherwise the bounded timer displays retry UI.
     return;
   }
+  clearTimeout(unavailableTimer);
   if(!profileStillLoading())return;
+  // Invalidate the slower request so its eventual response cannot repeat the
+  // profile, social and favorites work already being completed by this fallback.
+  try{if(typeof f2wProfileLoadGeneration!=='undefined')f2wProfileLoadGeneration++}catch{}
   const normalized={
     ...profile,
     username:String(profile.username||u).replace(/^@/,''),
@@ -192,7 +199,7 @@ async function recoverStuckProfile(){
 
 function start(){
   fetchLive();
-  setTimeout(()=>{if(profileStillLoading())void recoverStuckProfile()},8500);
+  setTimeout(()=>{if(profileStillLoading())void recoverStuckProfile()},1200);
   clearInterval(poll);
   poll=setInterval(()=>{if(document.visibilityState==='visible')fetchLive()},30000);
   clearInterval(tick);
