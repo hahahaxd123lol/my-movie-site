@@ -2830,85 +2830,8 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   
 
 
-  <div class="chat-modal" id="chat-modal">
-    <div class="chat-card v17-chat-hub">
-      <div class="chat-header v17-chat-hub-header">
-        <div>
-          <div class="chat-title"><i class="fa-solid fa-comments"></i> Chat</div>
-          <div class="chat-subtitle">PUBLIC CHAT + PRIVATE DIRECT MESSAGES</div>
-        </div>
-        <div class="v17-chat-mode-tabs">
-          <button class="v17-chat-mode active" id="v17-chat-public-tab" type="button" onclick="switchChatMode('public')">
-            <i class="fa-solid fa-earth-europe"></i> Public
-          </button>
-          <button class="v17-chat-mode" id="v17-chat-dm-tab" type="button" onclick="switchChatMode('dm')">
-            <i class="fa-regular fa-paper-plane"></i> Direct Messages
-            <span class="v17-dm-unread" id="v17-dm-unread" hidden>0</span>
-          </button>
-        </div>
-        <button class="chat-close" onclick="closeChat()"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <section class="v17-chat-mode-panel" id="v17-public-chat-panel">
-        <div class="chat-status" id="chat-status"><span id="chat-status-text">Connecting to chat...</span></div>
-        
-        <div class="chat-messages" id="chat-messages"><div class="chat-empty">Connecting to the public chat...</div></div>
-        <div class="chat-warning">Public messages expire after 24 hours.</div>
-
-        <div class="chat-attachment-preview" id="chat-attachment-preview">
-          <img id="chat-attachment-thumb" alt="Selected image">
-          <div class="chat-attachment-copy" id="chat-attachment-name">Image ready</div>
-          <button class="chat-attachment-remove" type="button" onclick="clearChatAttachment()" title="Remove attachment"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <div class="chat-input-area">
-          <input id="chat-media-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onchange="selectChatAttachment(this.files?.[0])">
-          <button class="chat-media-btn" id="chat-media-btn" type="button" onclick="document.getElementById('chat-media-input').click()" title="Upload image"><i class="fa-solid fa-image"></i></button>
-          <input type="text" id="chat-message-input" class="chat-input" maxlength="500" placeholder="Sign in to send a message..." autocomplete="off" disabled>
-          <button class="chat-send" id="chat-send" onclick="sendChatMessage()" disabled><i class="fa-solid fa-paper-plane"></i></button>
-        </div>
-      </section>
-
-      <section class="v17-chat-mode-panel v17-dm-panel" id="v17-dm-panel" hidden>
-        <aside class="v17-dm-sidebar">
-          <div class="v17-dm-security">
-            <i class="fa-solid fa-lock"></i>
-            <div>
-              <strong>Private messages</strong>
-              <span>Participant-only access, TLS in transit and AES-256 encrypted message bodies at rest. This is not end-to-end encryption.</span>
-            </div>
-          </div>
-
-          <div class="v17-dm-list-head">
-            <strong>Messages</strong>
-            <button type="button" onclick="refreshDirectMessages()" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
-          </div>
-
-          <div class="v17-dm-conversations" id="v17-dm-conversations">
-            <div class="v17-dm-empty">Sign in to use direct messages.</div>
-          </div>
-        </aside>
-
-        <div class="v17-dm-thread">
-          <div class="v17-dm-thread-head" id="v17-dm-thread-head">
-            <div>
-              <strong>Select a conversation</strong>
-              <span>Direct messages automatically delete after 24 hours.</span>
-            </div>
-          </div>
-
-          <div class="v17-dm-messages" id="v17-dm-messages">
-            <div class="v17-dm-empty">Choose a person from the left, or press Message on their profile.</div>
-          </div>
-
-          <div class="v17-dm-compose">
-            <input id="v17-dm-input" type="text" maxlength="2000" placeholder="Write a private message..." autocomplete="off" disabled>
-            <button id="v17-dm-send" type="button" onclick="sendDirectMessage()" disabled><i class="fa-solid fa-paper-plane"></i></button>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
+  <!-- Public chat and direct-message interface removed. Empty hook remains for legacy account script compatibility. -->
+  <div id="chat-modal" hidden aria-hidden="true"></div>
 
   <div class="account-modal" id="account-modal">
     <div class="account-card">
