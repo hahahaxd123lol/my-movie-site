@@ -4110,6 +4110,43 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 #v199-profile-editor :is(button, input, textarea, select) { transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease; }
 #v199-profile-editor :is(input, textarea, select):focus-visible, #v199-profile-editor button:focus-visible { outline: 2px solid var(--accent, #8b5cf6); outline-offset: 3px; }
 </style>
+
+<style id="f2w-profile-studio-v260-repush">
+/* Reapplied full Profile Studio v260 refresh: editor layout, responsive navigation, controls, genres, footer and focus feedback. */
+.f2w-profile-page{--profile-line:rgba(148,163,184,.17)}
+#v199-profile-editor .v200-editor-card{width:min(1040px,calc(100vw - 28px))!important;height:min(790px,calc(100dvh - 28px))!important;border-radius:22px!important;background:radial-gradient(ellipse at 95% 0%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 38%),#071321!important;box-shadow:0 34px 100px rgba(0,0,0,.78),0 0 0 1px rgba(255,255,255,.025),0 0 40px var(--accent-glow)!important}
+#v199-profile-editor .v200-editor-head{padding:22px 24px!important;background:linear-gradient(120deg,rgba(255,255,255,.035),transparent),#07111d!important}
+#v199-profile-editor .v200-editor-head h2{font-size:1.65rem!important;letter-spacing:-.035em!important}
+#v199-profile-editor .v200-editor-kicker{display:inline-flex!important;padding:5px 8px!important;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)!important;border-radius:999px!important;background:color-mix(in srgb,var(--accent) 10%,transparent)!important;letter-spacing:.14em!important}
+#v199-profile-editor .v200-editor-layout{grid-template-columns:208px minmax(0,1fr)!important}
+#v199-profile-editor .v200-editor-nav{padding:18px 12px!important;background:rgba(3,10,19,.78)!important}
+#v199-profile-editor .v200-nav-item{min-height:44px!important;border-radius:12px!important;font-size:.8rem!important;transition:background .16s,border-color .16s,transform .16s!important}
+#v199-profile-editor .v200-nav-item:hover{transform:translateX(2px)!important}
+#v199-profile-editor .v200-editor-content{padding:24px!important}
+#v199-profile-editor .v200-section-heading{gap:14px!important;padding:0 0 17px!important;margin-bottom:2px!important}
+#v199-profile-editor .v200-section-heading>i{width:44px!important;height:44px!important;border-radius:13px!important;box-shadow:inset 0 1px rgba(255,255,255,.08)!important}
+#v199-profile-editor .v200-section-heading strong{font-size:1rem!important;letter-spacing:-.02em!important}
+#v199-profile-editor .v200-section-heading span{font-size:.72rem!important;line-height:1.5!important}
+#v199-profile-editor .v200-tab label{gap:8px!important;font-size:.78rem!important}
+#v199-profile-editor .v200-tab label small{font-size:.66rem!important;line-height:1.5!important}
+#v199-profile-editor .v200-tab input:not([type=checkbox]),#v199-profile-editor .v200-tab textarea{min-height:43px!important;border-radius:11px!important;background:rgba(3,11,20,.78)!important;transition:border-color .15s,box-shadow .15s!important}
+#v199-profile-editor .v200-tab textarea{min-height:124px!important}
+#v199-profile-editor .v200-genre-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+#v199-profile-editor .v200-genre-option{min-height:48px!important;border-radius:12px!important;transition:transform .15s,border-color .15s,background .15s!important}
+#v199-profile-editor .v200-genre-option:hover{transform:translateY(-1px)!important}
+#v199-profile-editor .v200-social-fields{gap:14px!important}
+#v199-profile-editor .v200-social-fields label{padding:12px!important;border:1px solid rgba(148,163,184,.12)!important;border-radius:12px!important;background:rgba(255,255,255,.018)!important}
+#v199-profile-editor .v200-editor-footer{padding:15px 22px!important;background:rgba(3,10,19,.92)!important}
+#v199-profile-editor .v200-editor-save{min-height:43px!important;padding:12px 18px!important;border-radius:12px!important;transition:filter .15s,transform .15s!important}
+#v199-profile-editor .v200-editor-save:hover{filter:brightness(1.08)!important;transform:translateY(-1px)!important}
+#v199-profile-editor .v200-editor-save:disabled{filter:grayscale(.35)!important;transform:none!important}
+.f2w-v260-counter{display:flex;justify-content:flex-end;gap:5px;color:#71849b;font:600 .62rem var(--font-mono);margin-top:-4px}
+.f2w-v260-counter strong{color:#b9c7d8;font-weight:700}
+.f2w-v260-counter.is-near strong{color:#fbbf24}
+@media(max-width:720px){#v199-profile-editor.v200-editor-overlay{padding:8px!important}#v199-profile-editor .v200-editor-card{width:calc(100vw - 16px)!important;height:calc(100dvh - 16px)!important;border-radius:16px!important}#v199-profile-editor .v200-editor-layout{grid-template-columns:1fr!important;grid-template-rows:auto minmax(0,1fr)!important}#v199-profile-editor .v200-editor-nav{flex-direction:row!important;overflow-x:auto!important;padding:9px!important;border-right:0!important;border-bottom:1px solid rgba(255,255,255,.08)!important}#v199-profile-editor .v200-nav-item{flex:0 0 auto!important;width:auto!important;min-height:38px!important;padding:8px 10px!important}#v199-profile-editor .v200-editor-content{padding:16px!important}#v199-profile-editor .v200-genre-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}#v199-profile-editor .v200-social-fields{grid-template-columns:1fr!important}#v199-profile-editor .v200-editor-head{padding:14px 16px!important}#v199-profile-editor .v200-editor-head h2{font-size:1.3rem!important}#v199-profile-editor .v200-editor-footer{padding:11px 14px!important;gap:9px!important}}
+@media(prefers-reduced-motion:reduce){#v199-profile-editor *{transition:none!important;animation:none!important}}
+:is(#v199-display-name, #v199-bio, #v199-genre-grid button, .v199-profile-editor button, .v199-profile-editor input, .v199-profile-editor textarea, .v199-profile-editor select):focus-visible{outline:2px solid var(--accent,#8b5cf6);outline-offset:3px}
+</style>
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -11460,6 +11497,14 @@ window.togglePrivateProfile=async function(){
 </script>
 
 <script id="f2w-profile-studio-v260-js">
+(()=>{'use strict';
+function counter(el,label,max){if(!el||el.dataset.v260Counter)return;el.dataset.v260Counter='1';const w=document.createElement('div');w.className='f2w-v260-counter';w.setAttribute('aria-live','polite');const p=document.createElement('span');p.textContent=label+' · ';const v=document.createElement('strong');w.append(p,v);el.insertAdjacentElement('afterend',w);const paint=()=>{const n=String(el.value||'').length;v.textContent=n+' / '+max;w.classList.toggle('is-near',n>=max*.85)};el.addEventListener('input',paint);paint()}
+function boot(){counter(document.getElementById('v199-display-name'),'Display name',50);counter(document.getElementById('v199-bio'),'Bio',500);const g=document.getElementById('v199-genre-grid');if(g&&!g.dataset.v260Counter){g.dataset.v260Counter='1';const c=document.createElement('div');c.className='f2w-v260-counter';c.style.justifyContent='flex-start';c.style.margin='0 0 4px';c.setAttribute('aria-live','polite');g.insertAdjacentElement('beforebegin',c);const paint=()=>{c.textContent=g.querySelectorAll('input:checked').length+' genres selected'};g.addEventListener('change',paint);paint()}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();new MutationObserver(boot).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<script id="f2w-profile-studio-v260-repush">
 (()=>{'use strict';
 function counter(el,label,max){if(!el||el.dataset.v260Counter)return;el.dataset.v260Counter='1';const w=document.createElement('div');w.className='f2w-v260-counter';w.setAttribute('aria-live','polite');const p=document.createElement('span');p.textContent=label+' · ';const v=document.createElement('strong');w.append(p,v);el.insertAdjacentElement('afterend',w);const paint=()=>{const n=String(el.value||'').length;v.textContent=n+' / '+max;w.classList.toggle('is-near',n>=max*.85)};el.addEventListener('input',paint);paint()}
 function boot(){counter(document.getElementById('v199-display-name'),'Display name',50);counter(document.getElementById('v199-bio'),'Bio',500);const g=document.getElementById('v199-genre-grid');if(g&&!g.dataset.v260Counter){g.dataset.v260Counter='1';const c=document.createElement('div');c.className='f2w-v260-counter';c.style.justifyContent='flex-start';c.style.margin='0 0 4px';c.setAttribute('aria-live','polite');g.insertAdjacentElement('beforebegin',c);const paint=()=>{c.textContent=g.querySelectorAll('input:checked').length+' genres selected'};g.addEventListener('change',paint);paint()}}
