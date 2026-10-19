@@ -1,3 +1,27 @@
+/* F2W public chat removal: hide every public-chat entry point site-wide.
+   Profile presence and current-watching components are intentionally untouched. */
+(()=>{
+  'use strict';
+  const css = `
+    .chat-button,[data-open-chat],a[href="/chat/"],a[href="/chat"],
+    #chat-modal,.chat-modal,.global-chat,.global-chat-box,
+    #global-chat,#global-chat-box,[data-public-chat],
+    .public-chat,.public-chat-box,.chat-widget,.chat-launcher {
+      display:none!important; visibility:hidden!important; pointer-events:none!important;
+    }
+  `;
+  function disable(){
+    if(!document.getElementById('f2w-public-chat-removed')){
+      const style=document.createElement('style');
+      style.id='f2w-public-chat-removed';style.textContent=css;
+      (document.head||document.documentElement).appendChild(style);
+    }
+    document.querySelectorAll('.chat-button,[data-open-chat],a[href="/chat/"],a[href="/chat"],#chat-modal,.chat-modal,.global-chat,.global-chat-box,#global-chat,#global-chat-box,[data-public-chat],.public-chat,.public-chat-box,.chat-widget,.chat-launcher').forEach(el=>el.remove());
+    try{window.openGlobalChat=()=>false;window.openChat=()=>false;}catch{}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',disable,{once:true});else disable();
+  new MutationObserver(disable).observe(document.documentElement,{subtree:true,childList:true});
+})();
 (()=>{
   'use strict';
   // v131: Chat is a real route again. Every site-wide Chat/DM trigger navigates
