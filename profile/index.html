@@ -6667,6 +6667,7 @@ setTimeout(loadLibraryFavorites,0);
        * WHOLE request and the catch block incorrectly changed a valid profile into
        * "Profile Not Found".
        */
+      // Profile loading hotfix replay: always settle stalled Supabase requests.
       let profileRequestTimeout=0;
       let result;
       try{
@@ -11167,7 +11168,7 @@ window.togglePrivateProfile=async function(){
 
 <!-- f2w-force-save:v202-profile-socials-genres-editor-private:20260902 -->
 
-<script src="/v205-profile-live.js?v=egress-20261019b" defer></script>
+<script src="/v205-profile-live.js?v=egress-20261019c" defer></script>
 
 <script id="f2w-profile-ratings-v218-rail-js">
 (() => {
