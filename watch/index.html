@@ -817,7 +817,7 @@ html{overflow-y:scroll}
     // this browser instant; Supabase keeps the same position across devices.
     let f2wCloudResumeLoaded=false;
     let f2wCloudResumeSaveTimer=0;
-    let f2wLastCloudResumeSave=0;
+    let f2wLastCloudResumeSave=0,f2wLastCloudResumeSaveKey='',f2wLastCloudResumeSaveStatus='';
     function f2wResumeSuffix(type=mediaType,s=1,e=1){return type==='tv'?`_s${Number(s||1)}e${Number(e||1)}`:'';}
     function f2wResumeKey(type=mediaType,s=1,e=1){return `f2w_resume_${type}_${mediaId}${f2wResumeSuffix(type,s,e)}`;}
     function f2wFmtResume(sec){sec=Math.max(0,Number(sec||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60);return h?`${h}h ${m}m`:`${m}m`;}
@@ -862,11 +862,13 @@ html{overflow-y:scroll}
       }catch(err){console.warn('Cloud resume unavailable:',err?.message||err);}
     }
     function f2wQueueCloudResumeSave(seconds,duration,status,s=1,e=1){
-      const now=Date.now();const immediate=status==='paused'||status==='seeked'||status==='completed';
-      if(!immediate&&now-f2wLastCloudResumeSave<15000)return;
+      const now=Date.now();const saveKey=`${mediaType}:${mediaId}:${Number(s||1)}:${Number(e||1)}`;
+      const statusChanged=saveKey!==f2wLastCloudResumeSaveKey||status!==f2wLastCloudResumeSaveStatus;
+      const immediate=statusChanged&&['paused','seeked','completed'].includes(status);
+      if(!immediate&&now-f2wLastCloudResumeSave<60000)return;
       clearTimeout(f2wCloudResumeSaveTimer);
       f2wCloudResumeSaveTimer=setTimeout(async()=>{
-        f2wLastCloudResumeSave=Date.now();
+        f2wLastCloudResumeSave=Date.now();f2wLastCloudResumeSaveKey=saveKey;f2wLastCloudResumeSaveStatus=status;
         try{await chatSupabase.rpc('save_my_playback_progress_v132',{p_media_type:mediaType,p_media_id:Number(mediaId),p_season:Number(s||1),p_episode:Number(e||1),p_position_seconds:Math.max(0,Math.floor(Number(seconds||0))),p_duration_seconds:Math.max(0,Math.floor(Number(duration||0))),p_completed:status==='completed'});}catch(err){console.warn('Cloud progress save unavailable:',err?.message||err);}
       },immediate?0:250);
     }
@@ -6325,7 +6327,7 @@ if(currentUser){
       if(roleRefreshTimer)clearInterval(roleRefreshTimer);
       roleRefreshTimer=setInterval(()=>{
         if(currentUser&&chatToken)refreshChatRole();
-      },30000);
+      },300000);
     }
 
     refreshAccountUI();
