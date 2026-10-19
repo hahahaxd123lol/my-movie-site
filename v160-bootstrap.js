@@ -146,7 +146,7 @@ function schedulePresenceHeartbeat(){
 function startSitePresence(client){
   if(client)presenceClient=client;
   schedulePresenceHeartbeat();
-  if(claimPresenceLeadership())void touchSitePresence({force:true});
+  if(claimPresenceLeadership())void touchSitePresence();
   window.__f2wTouchSitePresenceV210=()=>touchSitePresence({force:true});
   window.__f2wTouchSitePresenceV224=()=>touchSitePresence({force:true});
 }
