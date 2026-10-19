@@ -4105,6 +4105,10 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 
 /* f2w-republish-focus-20261019: keyboard focus visibility */
 :is(#v199-display-name, #v199-bio, #v199-genre-grid button, .v199-profile-editor button, .v199-profile-editor input, .v199-profile-editor textarea, .v199-profile-editor select):focus-visible { outline: 2px solid var(--accent, #8b5cf6); outline-offset: 3px; }
+
+/* Profile editor repush: clearer interaction feedback */
+#v199-profile-editor :is(button, input, textarea, select) { transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease; }
+#v199-profile-editor :is(input, textarea, select):focus-visible, #v199-profile-editor button:focus-visible { outline: 2px solid var(--accent, #8b5cf6); outline-offset: 3px; }
 </style>
 </head>
 
