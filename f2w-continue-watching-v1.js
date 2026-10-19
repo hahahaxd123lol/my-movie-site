@@ -95,11 +95,8 @@
         .sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0))
         .slice(0, MAX_ITEMS);
       writeIndex(items);
-      const rows = items.map(item => toRemoteRow(item, userId)).filter(Boolean);
-      if (rows.length) {
-        const saved = await client.from(ACCOUNT_TABLE).upsert(rows, { onConflict: 'user_id,media_type,media_id' });
-        if (saved.error) console.warn('Continue Watching upload failed:', saved.error.message || saved.error);
-      }
+      // Reading the account rows is enough here. Re-upserting unchanged rows
+      // on every page visit only creates needless writes and database log traffic.
       if ((await activeAccountId()) !== userId) return false;
       accountSyncUserId = userId;
       return true;
@@ -119,6 +116,14 @@
     const client = supabaseClient();
     const userId = await activeAccountId();
     if (!userId || !client?.from || window.__f2wCwManager?.isItemDismissed?.(item)) return;
+    // Player telemetry may arrive every second. Keep local progress responsive,
+    // but write the account copy at most once per item/episode per minute.
+    const saveKey = `${userId}:${itemKey(item)}:${Number(item.season || 1)}:${Number(item.episode || 1)}`;
+    const lastAt = Number(window.__f2wCwAccountSaveTimes?.get(saveKey) || 0);
+    const now = Date.now();
+    if (now - lastAt < 60000) return;
+    if (!window.__f2wCwAccountSaveTimes) window.__f2wCwAccountSaveTimes = new Map();
+    window.__f2wCwAccountSaveTimes.set(saveKey, now);
     const row = toRemoteRow(item, userId);
     if (!row) return;
     const { error } = await client.from(ACCOUNT_TABLE).upsert(row, { onConflict: 'user_id,media_type,media_id' });
