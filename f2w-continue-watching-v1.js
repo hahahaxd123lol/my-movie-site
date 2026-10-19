@@ -78,7 +78,7 @@
       if (!force && accountSyncUserId === userId) return true;
     }
     const currentPromise = (async () => {
-      const { data, error } = await client.from(ACCOUNT_TABLE).select('*').eq('user_id', userId).order('updated_at', { ascending: false }).limit(MAX_ITEMS);
+      const { data, error } = await client.from(ACCOUNT_TABLE).select('media_id,media_type,season,episode,seconds,duration,title,poster_path,updated_at').eq('user_id', userId).order('updated_at', { ascending: false }).limit(MAX_ITEMS);
       if (error) {
         console.warn('Continue Watching account sync unavailable:', error.message || error);
         return false;
