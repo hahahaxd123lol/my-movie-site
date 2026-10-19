@@ -11267,6 +11267,156 @@ window.togglePrivateProfile=async function(){
 </script>
 
 <script src="/f2w-continue-watching-v1.js?v=20261012c" defer></script>
+
+<style id="f2w-profile-refresh-v260-css">
+/* Profile refresh: cinematic identity, clear section navigation, and touch-friendly surfaces. */
+#profile-root #profile-hero{
+  isolation:isolate;padding:clamp(22px,3vw,38px);
+  border:1px solid color-mix(in srgb,var(--accent) 27%,rgba(255,255,255,.12));border-radius:24px;
+  background:radial-gradient(ellipse at 12% 7%,color-mix(in srgb,var(--accent) 22%,transparent),transparent 38%),radial-gradient(ellipse at 92% 90%,rgba(67,97,238,.13),transparent 38%),linear-gradient(145deg,rgba(19,24,37,.96),rgba(7,9,15,.97) 72%);
+  box-shadow:0 26px 72px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.065);
+}
+#profile-root #profile-hero::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.34;
+  background:repeating-linear-gradient(135deg,transparent 0 27px,rgba(255,255,255,.028) 28px 29px),linear-gradient(110deg,transparent 35%,rgba(255,255,255,.035) 55%,transparent 76%);
+}
+#profile-root #profile-hero::after{
+  content:"";position:absolute;z-index:0;pointer-events:none;right:-18%;bottom:-68%;width:72%;height:110%;border-radius:50%;
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--accent) 19%,transparent),transparent 68%);filter:blur(8px);
+}
+#profile-root #profile-hero>*{position:relative;z-index:1}
+#profile-root #profile-avatar-shell{isolation:isolate}
+#profile-root #profile-avatar-shell::before{
+  content:"";position:absolute;z-index:0;inset:-8px;border-radius:50%;
+  background:conic-gradient(from 25deg,var(--accent),rgba(255,255,255,.06) 22%,rgba(255,255,255,.02) 55%,var(--accent) 78%,rgba(255,255,255,.06));
+  opacity:.85;animation:f2w-profile-refresh-ring 18s linear infinite;
+}
+@keyframes f2w-profile-refresh-ring{to{transform:rotate(360deg)}}
+#profile-root #profile-avatar,#profile-root #profile-avatar-fallback{position:relative;z-index:1;transition:transform .24s ease,box-shadow .24s ease}
+#profile-root #profile-avatar-menu-btn{z-index:3}
+#profile-root #profile-avatar-shell:hover #profile-avatar,#profile-root #profile-avatar-shell:hover #profile-avatar-fallback{transform:scale(1.025)}
+#profile-root .profile-eyebrow{letter-spacing:1.8px}
+#profile-root .profile-stat-card{
+  border-color:rgba(255,255,255,.085);background:linear-gradient(145deg,rgba(255,255,255,.052),rgba(255,255,255,.018));
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+#profile-root .profile-stat-card:hover{
+  transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,rgba(255,255,255,.12));
+  box-shadow:0 14px 30px rgba(0,0,0,.22),0 0 18px color-mix(in srgb,var(--accent) 13%,transparent);
+}
+#profile-root .profile-action-btn,#profile-root .profile-follow-btn{transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
+#profile-root .profile-action-btn:hover,#profile-root .profile-follow-btn:hover{transform:translateY(-1px)}
+.f2w-profile-quicknav{
+  position:relative;z-index:10;display:flex;align-items:center;gap:7px;width:100%;margin:15px 0 0;padding:8px;overflow-x:auto;
+  overscroll-behavior-inline:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;
+  border:1px solid rgba(255,255,255,.09);border-radius:16px;
+  background:linear-gradient(120deg,rgba(19,24,37,.94),rgba(9,12,20,.92));
+  box-shadow:0 12px 32px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.04);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+}
+.f2w-profile-quicknav-label{display:inline-flex;flex:0 0 auto;align-items:center;gap:7px;padding:0 10px 0 7px;color:#8492a7;font:800 .56rem var(--font-mono,monospace);letter-spacing:1.05px;white-space:nowrap}
+.f2w-profile-quicknav-label i{color:var(--accent)}
+.f2w-profile-quicknav a{
+  display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:0 13px;
+  border:1px solid transparent;border-radius:10px;color:#b9c4d4;background:transparent;font-size:.7rem;font-weight:750;text-decoration:none;white-space:nowrap;
+  transition:color .16s ease,border-color .16s ease,background .16s ease,transform .16s ease;scroll-snap-align:start;
+}
+.f2w-profile-quicknav a i{color:#8492a7;font-size:.72rem;transition:color .16s ease}
+.f2w-profile-quicknav a:hover{color:#fff;border-color:rgba(255,255,255,.11);background:rgba(255,255,255,.045);transform:translateY(-1px)}
+.f2w-profile-quicknav a[aria-current="location"]{
+  color:#fff;border-color:color-mix(in srgb,var(--accent) 45%,rgba(255,255,255,.12));
+  background:color-mix(in srgb,var(--accent) 13%,rgba(255,255,255,.035));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 4px 18px color-mix(in srgb,var(--accent) 10%,transparent);
+}
+.f2w-profile-quicknav a[aria-current="location"] i{color:var(--accent)}
+.f2w-profile-quicknav a[hidden],.f2w-profile-quicknav[hidden]{display:none!important}
+#profile-root .profile-v16-overview,#profile-root .profile-v16-panel,#profile-root #profile-favorites-section,#profile-root #f2w-profile-lab{scroll-margin-top:22px}
+#profile-root .profile-v16-panel{
+  border-radius:18px;border-color:rgba(255,255,255,.085);
+  background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.012));box-shadow:0 18px 45px rgba(0,0,0,.17);
+}
+#profile-root #profile-favorites-section .profile-fav-poster-shell{transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+#profile-root #profile-favorites-section .profile-fav-card:focus-visible,#profile-root .profile-action-btn:focus-visible,#profile-root .profile-follow-btn:focus-visible,.f2w-profile-quicknav a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:760px){
+  #profile-root #profile-hero{padding:23px 17px;border-radius:20px}
+  .f2w-profile-quicknav{margin-top:12px;padding:6px;gap:5px;border-radius:13px}
+  .f2w-profile-quicknav-label{padding:0 6px;font-size:.52rem}
+  .f2w-profile-quicknav a{min-height:36px;padding:0 11px;font-size:.67rem}
+}
+@media(prefers-reduced-motion:reduce){
+  #profile-root #profile-avatar-shell::before{animation:none}
+  #profile-root #profile-avatar,#profile-root #profile-avatar-fallback,#profile-root .profile-stat-card,#profile-root .profile-action-btn,#profile-root .profile-follow-btn,.f2w-profile-quicknav a{transition:none!important}
+}
+</style>
+<script id="f2w-profile-refresh-v260-js">
+(()=> {
+  'use strict';
+  if(window.__f2wProfileRefreshV260)return;
+  window.__f2wProfileRefreshV260=true;
+  const root=document.getElementById('profile-root');
+  const hero=document.getElementById('profile-hero');
+  if(!root||!hero)return;
+  const items=[
+    {target:'profile-hero',label:'Overview',icon:'fa-house'},
+    {target:'f2w-current-watching-panel',label:'Watching',icon:'fa-circle-play'},
+    {target:'v16-profile-badges-panel',label:'Roles & Badges',icon:'fa-id-badge'},
+    {target:'f2w-v217-ratings-panel',label:'Reviews',icon:'fa-star'},
+    {target:'profile-favorites-section',label:'Favorites',icon:'fa-heart'},
+    {target:'f2w-profile-lab',label:'Taste Lab',icon:'fa-chart-line'}
+  ];
+  const nav=document.createElement('nav');
+  nav.className='f2w-profile-quicknav';nav.id='f2w-profile-quicknav';nav.setAttribute('aria-label','Jump to profile sections');
+  const navLabel=document.createElement('span');navLabel.className='f2w-profile-quicknav-label';
+  navLabel.innerHTML='<i class="fa-solid fa-compass" aria-hidden="true"></i><span>EXPLORE</span>';nav.appendChild(navLabel);
+  const links=items.map(item=>{
+    const link=document.createElement('a');link.href='#'+item.target;link.dataset.target=item.target;
+    const icon=document.createElement('i');icon.className='fa-solid '+item.icon;icon.setAttribute('aria-hidden','true');
+    const label=document.createElement('span');label.textContent=item.label;link.append(icon,label);nav.appendChild(link);return link;
+  });
+  hero.insertAdjacentElement('afterend',nav);
+  const reducedMotion=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targetFor=link=>document.getElementById(link.dataset.target);
+  function visible(element){
+    if(!element||element.hidden)return false;
+    for(let node=element;node&&node!==document.documentElement;node=node.parentElement){
+      if(node.hidden)return false;
+      const style=window.getComputedStyle(node);
+      if(style.display==='none'||style.visibility==='hidden')return false;
+    }
+    return true;
+  }
+  function activate(targetId){
+    links.forEach(link=>{if(link.dataset.target===targetId)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')});
+  }
+  function refreshVisibility(){
+    let count=0;
+    links.forEach(link=>{const shown=visible(targetFor(link));link.hidden=!shown;if(shown)count++});
+    nav.hidden=count<2;
+    const current=links.find(link=>link.getAttribute('aria-current')==='location');
+    if(!current||current.hidden){const first=links.find(link=>!link.hidden);if(first)activate(first.dataset.target)}
+  }
+  links.forEach(link=>link.addEventListener('click',event=>{
+    const target=targetFor(link);if(!visible(target))return;
+    event.preventDefault();activate(link.dataset.target);
+    target.scrollIntoView({behavior:reducedMotion()?'auto':'smooth',block:'start'});
+    if(!target.hasAttribute('tabindex'))target.setAttribute('tabindex','-1');
+    try{target.focus({preventScroll:true})}catch{}
+  }));
+  if('IntersectionObserver' in window){
+    const observer=new IntersectionObserver(entries=>{
+      const candidates=entries.filter(entry=>entry.isIntersecting&&links.some(link=>!link.hidden&&link.dataset.target===entry.target.id)).sort((a,b)=>b.intersectionRatio-a.intersectionRatio);
+      if(candidates[0])activate(candidates[0].target.id);
+    },{rootMargin:'-14% 0px -64% 0px',threshold:[0,.12,.3,.55]});
+    links.forEach(link=>{const target=targetFor(link);if(target)observer.observe(target)});
+  }
+  refreshVisibility();
+  const bodyObserver=new MutationObserver(refreshVisibility);
+  bodyObserver.observe(document.body,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('pageshow',refreshVisibility);
+  window.addEventListener('resize',refreshVisibility,{passive:true});
+})();
+</script>
+
 </body>
 </html>
 <!-- f2w-force-push-20260831-batch2:profile:5d50be77aa -->
