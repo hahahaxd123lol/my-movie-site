@@ -5,7 +5,7 @@ window.__f2wV177ProfilePlayback=true;
 if(!location.pathname.startsWith('/profile'))return;
 
 const $=s=>document.querySelector(s);
-let row=null,clockTimer=0,pollTimer=0,busy=false,channel=null,subscribedUser='',posterHydratingKey='';
+let row=null,clockTimer=0,busy=false,channel=null,subscribedUser='',posterHydratingKey='';
 let bc=null;
 try{bc=new BroadcastChannel('f2w-playback-v182')}catch{}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -95,7 +95,6 @@ async function refresh(){
 function start(){
   refresh();
   clearInterval(clockTimer);clockTimer=setInterval(paintClock,1000);
-  clearInterval(pollTimer);pollTimer=setInterval(()=>{if(document.visibilityState==='visible')refresh()},30000);
   if(bc){bc.onmessage=e=>{
     const data=e.data;if(!data||data.type!=='f2w-playback-v182')return;
     const c=db();
