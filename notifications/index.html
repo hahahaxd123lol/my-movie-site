@@ -338,7 +338,7 @@ mark.addEventListener('click',async()=>{
       if(fallbacks.some(r=>r.status==='fulfilled'&&!r.value?.error))success=true;
     }
     if(!success)throw new Error('Could not mark notifications as read');
-    const now=new Date().toISOString();rows=rows.map(x=>({...x,read_at:x.read_at||now}));badge.textContent='0';badge.hidden=true;paint();showToast('Successfully read all messages');setTimeout(()=>fetchRows(page),150);
+    const now=new Date().toISOString();rows=rows.map(x=>({...x,read_at:x.read_at||now}));badge.textContent='0';badge.hidden=true;paint();showToast('Successfully read all messages');
   }catch(e){showToast(e?.message||'Could not mark notifications as read')}
   finally{mark.disabled=false;mark.textContent=old}
 });
