@@ -6667,15 +6667,18 @@ setTimeout(loadLibraryFavorites,0);
        * WHOLE request and the catch block incorrectly changed a valid profile into
        * "Profile Not Found".
        */
-      const controller=new AbortController();
-      const timeout=setTimeout(()=>controller.abort(),6000);
-
+      let profileRequestTimeout=0;
       let result;
       try{
-        const rpcResult=await chatSupabase.rpc('get_public_profile_v160',{p_username:username});
+        const rpcResult=await Promise.race([
+          chatSupabase.rpc('get_public_profile_v160',{p_username:username}),
+          new Promise((_,reject)=>{
+            profileRequestTimeout=setTimeout(()=>reject(new Error('Profile request timed out')),6000);
+          })
+        ]);
         result={data:rpcResult?.data||null,error:rpcResult?.error||null};
       }finally{
-        clearTimeout(timeout);
+        clearTimeout(profileRequestTimeout);
       }
 
       if(requestGeneration!==f2wProfileLoadGeneration)return;
@@ -6805,7 +6808,8 @@ setTimeout(loadLibraryFavorites,0);
         bio.classList.add('empty');
       }
       if(grid){
-        grid.innerHTML='<div class="profile-state">Profile data is temporarily unavailable.</div>';
+        grid.innerHTML='<div class="profile-state">Profile data is temporarily unavailable. <button type="button" id="f2w-profile-retry" style="margin:10px auto 0;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:8px;background:#18181b;color:#fff;cursor:pointer">Try again</button></div>';
+        document.getElementById('f2w-profile-retry')?.addEventListener('click',()=>{void loadViewedProfile()},{once:true});
       }
       return;
     }
@@ -11163,7 +11167,7 @@ window.togglePrivateProfile=async function(){
 
 <!-- f2w-force-save:v202-profile-socials-genres-editor-private:20260902 -->
 
-<script src="/v205-profile-live.js?v=egress-20261019" defer></script>
+<script src="/v205-profile-live.js?v=egress-20261019b" defer></script>
 
 <script id="f2w-profile-ratings-v218-rail-js">
 (() => {
