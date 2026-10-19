@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__f2wV168Notifications)return;window.__f2wV168Notifications=true;
+if(window.__f2wV168Notifications||window.__f2wV166Notifications)return;window.__f2wV168Notifications=true;
 const URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
 const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge';
 let client=null,channel=null,timer=0,uid='',open=false,loading=false,rowsCache=[];
