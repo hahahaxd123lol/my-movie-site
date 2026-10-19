@@ -978,3 +978,30 @@ if(document.readyState==='loading'){
     window.location.assign('/staff/index.html');
   },true);
 })();
+
+
+/* v201 shared desktop header fit: apply on every page loading the sitewide bundle. */
+(()=>{
+  'use strict';
+  if(window.__f2wV201SharedHeaderFit)return;
+  window.__f2wV201SharedHeaderFit=true;
+  const css=`
+@media (min-width:1181px){
+ body:not(.f2w-main-page)>header{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;gap:clamp(4px,.45vw,9px)!important;padding-left:clamp(8px,.8vw,14px)!important;padding-right:clamp(8px,.8vw,14px)!important;flex-wrap:nowrap!important}
+ body:not(.f2w-main-page)>header>.logo{flex:0 1 clamp(94px,8vw,145px)!important;width:clamp(94px,8vw,145px)!important;min-width:0!important;max-width:145px!important}
+ body:not(.f2w-main-page)>header>.logo img,body:not(.f2w-main-page)>header>.logo .logo-image{width:100%!important;max-width:100%!important;height:auto!important}
+ body:not(.f2w-main-page)>header>.header-tools{display:flex!important;flex:1 1 0!important;min-width:0!important;width:auto!important;max-width:none!important;flex-wrap:nowrap!important;gap:clamp(4px,.45vw,9px)!important}
+ body:not(.f2w-main-page)>header .f2w-primary-nav{display:flex!important;flex:0 1 auto!important;min-width:0!important;max-width:100%!important;flex-flow:row nowrap!important;gap:0!important}
+ body:not(.f2w-main-page)>header .f2w-nav-link,body:not(.f2w-main-page)>header .f2w-nav-button{flex:0 1 auto!important;min-width:0!important;padding-left:clamp(3px,.35vw,7px)!important;padding-right:clamp(3px,.35vw,7px)!important;font-size:clamp(9px,.66vw,11px)!important;white-space:nowrap!important}
+ body:not(.f2w-main-page)>header .f2w-search-pair{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;flex:1 1 120px!important;width:auto!important;min-width:0!important;max-width:none!important;margin:0!important;gap:clamp(4px,.4vw,8px)!important}
+ body:not(.f2w-main-page)>header .search-container,body:not(.f2w-main-page)>header .user-search-container{flex:1 1 0!important;width:100%!important;min-width:0!important;max-width:none!important}
+ body:not(.f2w-main-page)>header .search-bar,body:not(.f2w-main-page)>header .user-search-bar{width:100%!important;min-width:0!important;max-width:100%!important;padding-left:28px!important;padding-right:7px!important;box-sizing:border-box!important}
+ body:not(.f2w-main-page)>header .f2w-action-cluster{display:flex!important;flex:0 1 auto!important;flex-flow:row nowrap!important;align-items:center!important;justify-content:flex-end!important;width:max-content!important;min-width:0!important;max-width:100%!important;gap:clamp(3px,.3vw,6px)!important;margin:0 0 0 auto!important;overflow:visible!important}
+ body:not(.f2w-main-page)>header .f2w-action-cluster>*,body:not(.f2w-main-page)>header .f2w-action-cluster .tool-btn,body:not(.f2w-main-page)>header .f2w-action-cluster #staff-control-nav{flex:0 1 auto!important;width:auto!important;min-width:0!important;max-width:100%!important;height:40px!important;min-height:40px!important;margin:0!important;padding:0 clamp(4px,.38vw,8px)!important;font-size:clamp(9px,.62vw,11px)!important;line-height:1!important;white-space:nowrap!important;box-sizing:border-box!important}
+ body:not(.f2w-main-page)>header .f2w-action-cluster #notification-wrap{flex:0 1 auto!important;width:auto!important;min-width:0!important;max-width:100%!important;margin:0!important;padding:0!important}
+}
+@media (min-width:1181px) and (max-width:1350px){body:not(.f2w-main-page)>header .f2w-nav-link,body:not(.f2w-main-page)>header .f2w-nav-button{font-size:9px!important;padding-left:3px!important;padding-right:3px!important}body:not(.f2w-main-page)>header .f2w-action-cluster{gap:3px!important}body:not(.f2w-main-page)>header .f2w-action-cluster>*,body:not(.f2w-main-page)>header .f2w-action-cluster .tool-btn,body:not(.f2w-main-page)>header .f2w-action-cluster #staff-control-nav{padding-left:4px!important;padding-right:4px!important;font-size:9px!important}}
+`;
+  const install=()=>{if(document.getElementById('f2w-v201-shared-header-fit'))return;const style=document.createElement('style');style.id='f2w-v201-shared-header-fit';style.textContent=css;(document.head||document.documentElement).appendChild(style)};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
