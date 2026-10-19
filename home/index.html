@@ -80,6 +80,7 @@ html{overflow-y:scroll}
     flex:0 0 644px!important;width:644px!important;min-width:644px!important;max-width:644px!important;
     height:40px!important;gap:6px!important;margin-left:auto!important;overflow:visible!important
   }
+  body.f2w-main-page>header .chat-button{display:none!important;}
   body.f2w-main-page>header .chat-button{grid-column:1!important;grid-row:1!important}
   body.f2w-main-page>header #header-login-btn,body.f2w-main-page>header #favorites-nav-btn{grid-column:2!important;grid-row:1!important}
   body.f2w-main-page>header #header-signup-btn,body.f2w-main-page>header #profile-nav-btn{grid-column:3!important;grid-row:1!important}
@@ -4567,6 +4568,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   }
 
   async function openChat(){
+    return; // Chat disabled to reduce Supabase usage; other account features remain active.
     document.getElementById('chat-modal').classList.add('open');
 
     if(currentUser){
@@ -4774,6 +4776,7 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
   }
 
   async function loadChatMessages(){
+    return; // Chat disabled to stop chat API requests and realtime subscriptions.
     const container=document.getElementById('chat-messages');
     if(!container)return;
 
