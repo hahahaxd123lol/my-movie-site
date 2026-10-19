@@ -4068,6 +4068,12 @@ body.profile-authenticated-owner .avatar-edit-label:not([hidden]) {
 </script>
 
 <script defer src="/sitewide-rate-limit-v1.js?v=1"></script>
+<style id="f2w-profile-favorites-pagination-v229">
+  .f2w-favorites-pagination{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:14px 0 6px;color:var(--text-muted);font-size:.72rem}
+  .f2w-favorites-pagination button{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(255,255,255,.04);color:var(--text);font:inherit;cursor:pointer}
+  .f2w-favorites-pagination button:disabled{opacity:.38;cursor:not-allowed}
+  .f2w-favorites-pagination button:not(:disabled):hover{border-color:var(--accent);color:#fff}
+</style>
 </head>
 
 <body class="theme-red f2w-main-page f2w-profile-page">
@@ -6544,6 +6550,11 @@ setTimeout(loadLibraryFavorites,0);
     }
   }
 
+  let viewedFavoritesPage=1;
+  let viewedFavoritesPageUsername='';
+  const viewedFavoritesPageSize=24;
+  let profileFollowActionBusy=false;
+
   function renderViewedFavorites(){
     const grid=document.getElementById('profile-favorites-grid');
     const count=document.getElementById('profile-favorite-count');
@@ -6567,7 +6578,15 @@ setTimeout(loadLibraryFavorites,0);
       return;
     }
 
-    count.textContent=`${viewedProfileFavorites.length} favorites`;
+    const pageUsername=String(viewedProfile?.username||'').toLowerCase();
+    if(pageUsername!==viewedFavoritesPageUsername){
+      viewedFavoritesPageUsername=pageUsername;
+      viewedFavoritesPage=1;
+    }
+    const totalFavorites=viewedProfileFavorites.length;
+    const totalPages=Math.max(1,Math.ceil(totalFavorites/viewedFavoritesPageSize));
+    viewedFavoritesPage=Math.min(totalPages,Math.max(1,viewedFavoritesPage));
+    count.textContent=`${totalFavorites} favorites`;
 
     updateViewedProfileStats();
 
@@ -6576,7 +6595,9 @@ setTimeout(loadLibraryFavorites,0);
       return;
     }
 
-    grid.innerHTML=viewedProfileFavorites.map(item=>{
+    const pageStart=(viewedFavoritesPage-1)*viewedFavoritesPageSize;
+    const visibleFavorites=viewedProfileFavorites.slice(pageStart,pageStart+viewedFavoritesPageSize);
+    const cards=visibleFavorites.map(item=>{
       const title=escapeProfileHTML(item.title||'Untitled');
       const poster=item.poster_path
         ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
@@ -6593,6 +6614,21 @@ setTimeout(loadLibraryFavorites,0);
           <div class="profile-fav-type">${item.media_type==='tv'?'TV SERIES':'MOVIE'}</div>
         </article>`;
     }).join('');
+    const pagination=totalPages>1?`
+      <nav class="f2w-favorites-pagination" aria-label="Favorite pages">
+        <button type="button" data-f2w-fav-page="${viewedFavoritesPage-1}" ${viewedFavoritesPage<=1?'disabled':''} aria-label="Previous favorites page"><i class="fa-solid fa-chevron-left"></i> Previous</button>
+        <span>Page ${viewedFavoritesPage} of ${totalPages}</span>
+        <button type="button" data-f2w-fav-page="${viewedFavoritesPage+1}" ${viewedFavoritesPage>=totalPages?'disabled':''} aria-label="Next favorites page">Next <i class="fa-solid fa-chevron-right"></i></button>
+      </nav>`:'';
+    grid.innerHTML=cards+pagination;
+    grid.querySelectorAll('[data-f2w-fav-page]').forEach(button=>{
+      button.addEventListener('click',()=>{
+        const nextPage=Number(button.getAttribute('data-f2w-fav-page'));
+        if(!Number.isInteger(nextPage)||nextPage<1||nextPage>totalPages||nextPage===viewedFavoritesPage)return;
+        viewedFavoritesPage=nextPage;
+        renderViewedFavorites();
+      });
+    });
   }
 
   async function loadViewedProfile(){
@@ -7104,6 +7140,7 @@ setTimeout(loadLibraryFavorites,0);
   }
 
   async function toggleProfileFollow(){
+    if(profileFollowActionBusy)return;
     if(!currentUser){
       openAccountModal();
       setAccountMessage('Log in to follow users.',false);
@@ -7113,6 +7150,7 @@ setTimeout(loadLibraryFavorites,0);
     if(!viewedProfile || isOwnViewedProfile() || !socialFeaturesAvailable)return;
 
     const button=document.getElementById('profile-follow-btn');
+    profileFollowActionBusy=true;
     if(button)button.disabled=true;
 
     try{
@@ -7140,6 +7178,7 @@ setTimeout(loadLibraryFavorites,0);
       console.error('Follow action failed:',error);
       setProfileStatus('Could not update follow status.',true);
     }finally{
+      profileFollowActionBusy=false;
       if(button)button.disabled=false;
     }
   }
