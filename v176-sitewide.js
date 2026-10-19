@@ -784,8 +784,23 @@ if(document.readyState==='loading'){
 // f2w-force-save:v196-stop-auth-mutationobserver-freeze:20260902
 
 
-/* Site-wide Supabase presence heartbeat disabled to reduce background RPC usage. */
-
+/* v200 site-wide presence heartbeat: low-cost, visible-tab only. */
+(()=>{
+  if(window.__f2wPresenceV200||window.__f2wGlobalPresenceAuthorityV224||window.__f2wGlobalPresenceAuthorityV210)return;window.__f2wPresenceV200=true;
+  const KEY='sb_publishable_zdfvnwwgL9LI3yTK0-1Sbg_RsYRvNge',URL='https://viqufxlcxwgboyxbdhjb.supabase.co';
+  let c=null,busy=false,timer=null;
+  const db=()=>c||(c=window.chatSupabase||window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
+  async function ping(){
+    if(busy||document.visibilityState!=='visible')return;
+    busy=true;
+    try{const x=db();if(!x)return;const {data}=await x.auth.getSession();if(data?.session?.user)await x.rpc('touch_presence_v200')}catch{}finally{busy=false}
+  }
+  function start(){clearInterval(timer);ping();timer=setInterval(ping,30000)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')ping()});
+  window.addEventListener('focus',ping,{passive:true});
+})();
+/* f2w-force-save:v200-presence-and-dm:20260902 */
 
 // f2w-force-save:v208-post-login-close-shield:20260902
 
