@@ -381,7 +381,7 @@ if(!install()){
 // f2w-force-save:v250-discord-every-page:20260904
 
 
-/* F2W v261 — restore the existing auth recovery, Halloween, and UUID-based continue-watching add-ons. */
+/* F2W v261 — restore auth recovery and UUID-based continue-watching add-ons. */
 (() => {
   'use strict';
   if (!document.getElementById('f2w-v261-restored-features-css')) {
@@ -409,4 +409,15 @@ if(!install()){
     script.dataset.f2wV261RestoredFeatures = '1';
     (document.head || document.documentElement).appendChild(script);
   }
+})();
+
+/* F2W Christmas preview theme — loaded by the shared site bootstrap. */
+(() => {
+  'use strict';
+  if (document.querySelector('script[data-f2w-christmas-theme]')) return;
+  const script = document.createElement('script');
+  script.src = '/f2w-christmas-v1.js?v=20261031-preview';
+  script.defer = true;
+  script.dataset.f2wChristmasTheme = '1';
+  (document.head || document.documentElement).appendChild(script);
 })();
