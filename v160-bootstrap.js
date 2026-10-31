@@ -416,7 +416,7 @@ if(!install()){
   'use strict';
   if (document.querySelector('script[data-f2w-christmas-theme]')) return;
   const script = document.createElement('script');
-  script.src = '/f2w-christmas-v1.js?v=20261031-preview';
+  script.src = '/f2w-christmas-v2.js?v=20261031-ultimate';
   script.defer = true;
   script.dataset.f2wChristmasTheme = '1';
   (document.head || document.documentElement).appendChild(script);
