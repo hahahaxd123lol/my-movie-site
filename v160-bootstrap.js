@@ -404,7 +404,7 @@ if(!install()){
   }
   if (!document.querySelector('script[data-f2w-v261-restored-features]')) {
     const script = document.createElement('script');
-    script.src = '/v260-password-reset.js?v=261';
+    script.src = '/v260-password-reset.js?v=262';
     script.defer = true;
     script.dataset.f2wV261RestoredFeatures = '1';
     (document.head || document.documentElement).appendChild(script);
