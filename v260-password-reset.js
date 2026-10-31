@@ -94,6 +94,5 @@
     (document.head||document.documentElement).appendChild(s);
   }
   load('/f2w-oauth-fix-v1.js?v=1', '__f2wOauthFixV1');
-  load('/f2w-halloween-v3.js?v=3', '__f2wHalloweenV3');
   load('/f2w-continue-watching-v1.js?v=2', '__f2wContinueWatchingV2');
 })();
