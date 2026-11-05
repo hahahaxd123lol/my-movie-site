@@ -8523,7 +8523,10 @@ body.f2w-auth-v67-open {
  window.__f2wSmartTVHomeV2=true;
  const ua=String(navigator.userAgent||'');
  const tvUA=/(smart[- ]?tv|tizen|web0s|webos|netcast|hbbtv|bravia|android\s?tv|google\s?tv|aft[a-z0-9]*|appletv|roku|viera|vidaa|hisense|philips tv)/i.test(ua);
- if(!tvUA)return;
+ // Many TV browsers report a generic Chromium UA. Their remote-control
+ // environment is typically coarse/no-hover on a wide landscape viewport.
+ const tvInput=window.matchMedia&&window.matchMedia('(hover: none) and (pointer: coarse) and (min-width: 1000px)').matches;
+ if(!tvUA&&!tvInput)return;
  document.documentElement.classList.add('f2w-smart-tv');
  document.body?.classList.add('f2w-smart-tv-home');
  const inputId='movie-search';
@@ -8556,7 +8559,7 @@ body.f2w-auth-v67-open {
  }
  window.v18HeaderMovieSearch=handle;
  window.protectMovieSearchField=function(input){
-   if(!input)return;
+   if(!input){return;}
    input.readOnly=false;
    input.removeAttribute('readonly');
  };
@@ -8582,81 +8585,76 @@ body.f2w-auth-v67-open {
 
 
 <style id="f2w-smart-tv-final-desktop-authority">
-/* Apply the same final desktop header geometry on TV browsers AFTER all
-   late-loaded desktop/tablet breakpoint styles have been parsed. */
-@media (min-width:1181px){
- body.f2w-main-page.f2w-smart-tv-home>header{
-  position:sticky!important;top:0!important;z-index:2147482000!important;
-  width:100%!important;min-height:74px!important;height:74px!important;
-  padding:0 12px!important;margin:0!important;display:flex!important;
-  flex-flow:row nowrap!important;align-items:center!important;gap:10px!important;
-  overflow:visible!important;box-sizing:border-box!important;transform:none!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header>.logo{
-  position:static!important;flex:0 0 126px!important;width:126px!important;
-  min-width:126px!important;max-width:126px!important;height:52px!important;
-  margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header>.logo .logo-image{
-  display:block!important;width:126px!important;max-width:126px!important;max-height:48px!important;object-fit:contain!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header>.f2w-mobile-nav-toggle{display:none!important}
- body.f2w-main-page.f2w-smart-tv-home>header>.header-tools{
-  position:static!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;
-  height:44px!important;margin:0!important;padding:0!important;display:grid!important;
-  grid-template-columns:max-content minmax(340px,460px) 782px!important;
-  grid-template-rows:44px!important;align-items:center!important;justify-content:space-between!important;
-  column-gap:10px!important;overflow:visible!important;transform:none!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header .f2w-primary-nav{
-  grid-column:1!important;grid-row:1!important;position:static!important;width:max-content!important;
-  min-width:0!important;height:44px!important;margin:0!important;padding:0!important;
-  display:flex!important;flex-flow:row nowrap!important;align-items:center!important;justify-content:flex-start!important;
-  gap:2px!important;overflow:visible!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header .f2w-primary-nav>*{flex:0 0 auto!important}
- body.f2w-main-page.f2w-smart-tv-home>header .f2w-nav-link,
- body.f2w-main-page.f2w-smart-tv-home>header .f2w-nav-button{
-  min-height:38px!important;height:38px!important;padding:0 7px!important;margin:0!important;
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  gap:5px!important;white-space:nowrap!important;font-size:10px!important;box-sizing:border-box!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header .f2w-search-pair{
-  grid-column:2!important;grid-row:1!important;position:static!important;width:100%!important;
-  min-width:340px!important;max-width:460px!important;height:40px!important;margin:0!important;padding:0!important;
-  display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header .search-container,
- body.f2w-main-page.f2w-smart-tv-home>header .user-search-container{
-  position:relative!important;width:100%!important;min-width:0!important;max-width:none!important;
-  height:40px!important;margin:0!important;padding:0!important;display:flex!important;align-items:center!important;overflow:visible!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header .search-container>i,
- body.f2w-main-page.f2w-smart-tv-home>header .user-search-container>i{
-  position:absolute!important;left:11px!important;top:50%!important;transform:translateY(-50%)!important;
-  width:13px!important;min-width:13px!important;z-index:3!important;pointer-events:none!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header #movie-search,
- body.f2w-main-page.f2w-smart-tv-home>header #user-search{
-  position:static!important;width:100%!important;min-width:0!important;max-width:none!important;
-  height:40px!important;margin:0!important;padding:0 38px 0 34px!important;
-  box-sizing:border-box!important;font-size:10px!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header .user-search-submit{
-  position:absolute!important;right:7px!important;top:50%!important;transform:translateY(-50%)!important;
-  width:28px!important;min-width:28px!important;max-width:28px!important;height:28px!important;
-  min-height:28px!important;max-height:28px!important;margin:0!important;padding:0!important;display:grid!important;place-items:center!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header .f2w-action-cluster{
-  grid-column:3!important;grid-row:1!important;position:relative!important;width:782px!important;
-  min-width:782px!important;max-width:782px!important;height:40px!important;margin:0!important;padding:0!important;
-  display:grid!important;grid-template-columns:112px 84px 84px 84px 84px 126px 156px!important;
-  grid-template-rows:40px!important;align-items:stretch!important;justify-content:start!important;gap:6px!important;overflow:visible!important
- }
- body.f2w-main-page.f2w-smart-tv-home>header .f2w-action-cluster>*{
-  min-width:0!important;max-width:100%!important;height:40px!important;min-height:40px!important;
-  margin:0!important;box-sizing:border-box!important;white-space:nowrap!important
- }
+/* Mirror the site's normal desktop header rules for TV remote browsers,
+   regardless of whether the TV reports a desktop-sized CSS viewport. */
+body.f2w-main-page.f2w-smart-tv-home>header{
+ box-sizing:border-box!important;width:100%!important;max-width:100%!important;
+ min-height:82px!important;height:82px!important;max-height:82px!important;
+ padding:10px 12px!important;display:flex!important;flex-flow:row nowrap!important;
+ align-items:center!important;gap:10px!important;overflow:visible!important;transform:none!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header>.logo{
+ position:static!important;flex:0 0 clamp(94px,7.7vw,145px)!important;
+ width:clamp(94px,7.7vw,145px)!important;min-width:clamp(94px,7.7vw,145px)!important;
+ max-width:clamp(94px,7.7vw,145px)!important;margin:0!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header>.logo .logo-image{
+ display:block!important;width:100%!important;max-width:100%!important;height:auto!important;object-fit:contain!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header>.f2w-mobile-nav-toggle{display:none!important}
+body.f2w-main-page.f2w-smart-tv-home>header>.header-tools{
+ position:static!important;display:grid!important;flex:1 1 0!important;
+ width:auto!important;min-width:0!important;max-width:none!important;height:42px!important;
+ grid-template-columns:max-content minmax(180px,1fr) max-content!important;
+ grid-template-rows:42px!important;align-items:center!important;justify-content:stretch!important;
+ gap:clamp(4px,.5vw,9px)!important;overflow:visible!important;transform:none!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header .f2w-primary-nav{
+ grid-column:1!important;grid-row:1!important;display:flex!important;flex:0 1 auto!important;
+ width:max-content!important;min-width:0!important;max-width:100%!important;height:42px!important;
+ flex-flow:row nowrap!important;align-items:center!important;gap:0!important;overflow:visible!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header .f2w-nav-link,
+body.f2w-main-page.f2w-smart-tv-home>header .f2w-nav-button{
+ flex:0 0 auto!important;min-width:0!important;padding:0 clamp(3px,.42vw,7px)!important;
+ height:38px!important;min-height:38px!important;font-size:clamp(9px,.66vw,11px)!important;
+ white-space:nowrap!important;box-sizing:border-box!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header .f2w-search-pair{
+ grid-column:2!important;grid-row:1!important;display:grid!important;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;flex:1 1 auto!important;
+ width:100%!important;min-width:180px!important;max-width:none!important;
+ height:40px!important;margin:0!important;padding:0!important;gap:clamp(4px,.45vw,8px)!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header .search-container,
+body.f2w-main-page.f2w-smart-tv-home>header .user-search-container{
+ position:relative!important;display:flex!important;flex:1 1 0!important;
+ width:100%!important;min-width:0!important;max-width:none!important;height:40px!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header .search-bar,
+body.f2w-main-page.f2w-smart-tv-home>header .user-search-bar{
+ width:100%!important;min-width:0!important;max-width:100%!important;height:40px!important;
+ padding:0 8px 0 30px!important;box-sizing:border-box!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header .f2w-action-cluster{
+ grid-column:3!important;grid-row:1!important;display:flex!important;flex:0 1 auto!important;
+ flex-flow:row nowrap!important;align-items:center!important;justify-content:flex-end!important;
+ width:max-content!important;min-width:0!important;max-width:100%!important;height:40px!important;
+ margin:0!important;padding:0!important;gap:clamp(3px,.34vw,6px)!important;overflow:visible!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header .f2w-action-cluster>*,
+body.f2w-main-page.f2w-smart-tv-home>header .f2w-action-cluster .tool-btn,
+body.f2w-main-page.f2w-smart-tv-home>header .f2w-action-cluster .f2w-auth-top-btn,
+body.f2w-main-page.f2w-smart-tv-home>header .f2w-action-cluster #staff-control-nav{
+ flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:none!important;
+ height:40px!important;min-height:40px!important;max-height:40px!important;
+ margin:0!important;padding:0 clamp(5px,.42vw,8px)!important;display:inline-flex!important;
+ align-items:center!important;justify-content:center!important;gap:5px!important;
+ font-size:clamp(9px,.64vw,11px)!important;line-height:1!important;white-space:nowrap!important;
+ box-sizing:border-box!important;overflow:visible!important;text-overflow:clip!important
+}
+body.f2w-main-page.f2w-smart-tv-home>header :is(input,button,a,[tabindex]):focus-visible{
+ outline:3px solid var(--accent,#e50914)!important;outline-offset:3px!important
 }
 </style>
 </body>
