@@ -2683,75 +2683,11 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 
 
 <style id="f2w-smart-tv-home-v2">
-/* Smart TV browsers only: keep the desktop/mobile layouts untouched. */
-body.f2w-smart-tv-home>header{
-  height:auto!important;min-height:0!important;max-height:none!important;
-  flex-wrap:wrap!important;align-items:center!important;gap:14px!important;
-  padding:18px 3vw!important;overflow:visible!important;
-}
-body.f2w-smart-tv-home>header>.logo{flex:0 0 190px!important;width:190px!important;min-width:190px!important;max-width:190px!important}
-body.f2w-smart-tv-home>header>.logo .logo-image{width:190px!important;max-width:190px!important;max-height:66px!important}
-body.f2w-smart-tv-home>header>.header-tools{
-  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
-  grid-template-areas:"nav" "search" "actions"!important;
-  flex:1 1 680px!important;width:auto!important;min-width:0!important;
-  height:auto!important;min-height:0!important;max-height:none!important;
-  gap:14px!important;overflow:visible!important;
-}
-body.f2w-smart-tv-home>header .f2w-primary-nav{grid-area:nav!important;display:flex!important;flex-wrap:wrap!important;gap:8px!important;width:100%!important;height:auto!important}
-body.f2w-smart-tv-home>header .f2w-nav-link,
-body.f2w-smart-tv-home>header .f2w-nav-button{
-  min-height:46px!important;height:46px!important;padding:0 15px!important;
-  font-size:16px!important;border-radius:9px!important
-}
-body.f2w-smart-tv-home>header .f2w-search-pair{
-  grid-area:search!important;display:grid!important;
-  grid-template-columns:minmax(420px,1.6fr) minmax(320px,1fr)!important;
-  width:100%!important;min-width:0!important;max-width:none!important;
-  height:auto!important;gap:20px!important;margin:4px 0!important
-}
-body.f2w-smart-tv-home>header .search-container,
-body.f2w-smart-tv-home>header .user-search-container{
-  position:relative!important;display:flex!important;width:100%!important;
-  min-width:0!important;height:76px!important
-}
-body.f2w-smart-tv-home>header .search-bar,
-body.f2w-smart-tv-home>header .user-search-bar{
-  width:100%!important;min-width:0!important;height:76px!important;
-  min-height:76px!important;max-height:76px!important;box-sizing:border-box!important;
-  padding:0 60px!important;font-size:23px!important;line-height:1.25!important;
-  border-radius:15px!important
-}
-body.f2w-smart-tv-home>header .search-container>i,
-body.f2w-smart-tv-home>header .user-search-container>i{
-  left:22px!important;font-size:22px!important
-}
-body.f2w-smart-tv-home>header .user-search-submit{
-  right:12px!important;width:50px!important;height:50px!important;
-  min-width:50px!important;min-height:50px!important
-}
-body.f2w-smart-tv-home>header .f2w-action-cluster{
-  grid-area:actions!important;display:flex!important;flex-wrap:wrap!important;
-  width:100%!important;height:auto!important;min-height:0!important;
-  gap:8px!important;justify-content:flex-start!important
-}
-body.f2w-smart-tv-home>header .f2w-action-cluster>*{
-  min-height:42px!important;height:42px!important;font-size:14px!important
-}
+/* Keep the exact standard desktop header styling on television browsers.
+   Only add a visible focus indicator for remote-control navigation. */
 body.f2w-smart-tv-home :is(input,button,a,[tabindex]):focus-visible{
-  outline:3px solid var(--accent,#e50914)!important;outline-offset:3px!important
-}
-body.f2w-smart-tv-home #movie-grid{gap:22px!important}
-body.f2w-smart-tv-home .movie-card{min-width:0!important}
-@media(max-width:1100px){
- body.f2w-smart-tv-home>header{padding:14px 2vw!important}
- body.f2w-smart-tv-home>header>.logo{flex-basis:150px!important;width:150px!important;min-width:150px!important;max-width:150px!important}
- body.f2w-smart-tv-home>header>.logo .logo-image{width:150px!important;max-width:150px!important}
- body.f2w-smart-tv-home>header .f2w-nav-link,body.f2w-smart-tv-home>header .f2w-nav-button{font-size:14px!important;padding:0 10px!important}
- body.f2w-smart-tv-home>header .search-bar,body.f2w-smart-tv-home>header .user-search-bar{font-size:17px!important}
-}
-@media(max-width:700px){
- body.f2w-smart-tv-home>header .f2w-search-pair{grid-template-columns:1fr!important}
+  outline:3px solid var(--accent,#e50914)!important;
+  outline-offset:3px!important;
 }
 </style>
 
