@@ -2681,18 +2681,78 @@ body.f2w-main-page>header #staff-control-nav{font-size:9.5px!important;letter-sp
 </style>
 <script defer src="/sitewide-rate-limit-v1.js?v=1"></script>
 
-<style id="f2w-tv-home-search-v1">
-/* Dedicated, roomy search dock for the TV home view. */
-.f2w-tv-search-dock{width:min(1320px,calc(100% - 48px));margin:18px auto 22px;padding:16px 18px;border:1px solid rgba(255,255,255,.10);border-radius:14px;background:linear-gradient(120deg,rgba(18,20,29,.96),rgba(8,9,14,.96));box-shadow:0 12px 34px rgba(0,0,0,.24)}
-.f2w-tv-search-dock[hidden]{display:none!important}
-.f2w-tv-search-copy{margin:0 0 11px;color:#aab3c2;font-size:.76rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
-.f2w-tv-search-dock .f2w-search-pair{display:grid!important;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)!important;gap:12px!important;width:100%!important;max-width:none!important;min-width:0!important;height:auto!important;margin:0!important}
-.f2w-tv-search-dock .search-container,.f2w-tv-search-dock .user-search-container{position:relative!important;display:flex!important;width:100%!important;min-width:0!important;height:48px!important}
-.f2w-tv-search-dock #movie-search,.f2w-tv-search-dock #user-search{width:100%!important;min-width:0!important;max-width:none!important;height:48px!important;padding:0 16px 0 43px!important;border:1px solid rgba(255,255,255,.15)!important;border-radius:9px!important;background:rgba(255,255,255,.055)!important;color:#fff!important;font-size:.88rem!important;box-sizing:border-box!important}
-.f2w-tv-search-dock #movie-search:focus,.f2w-tv-search-dock #user-search:focus{border-color:var(--accent,#e50914)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,#e50914) 18%,transparent)!important;outline:none!important}
-.f2w-tv-search-dock .search-container>i,.f2w-tv-search-dock .user-search-container>i{position:absolute!important;left:15px!important;top:50%!important;transform:translateY(-50%)!important;z-index:2!important;pointer-events:none!important}
-.f2w-tv-search-dock .user-search-submit{position:absolute!important;right:8px!important;top:50%!important;transform:translateY(-50%)!important}
-@media(max-width:680px){.f2w-tv-search-dock{width:calc(100% - 24px);margin:12px auto 16px;padding:13px}.f2w-tv-search-dock .f2w-search-pair{grid-template-columns:1fr!important;gap:9px!important}.f2w-tv-search-dock #movie-search,.f2w-tv-search-dock #user-search{height:46px!important}}
+
+<style id="f2w-smart-tv-home-v2">
+/* Smart TV browsers only: keep the desktop/mobile layouts untouched. */
+body.f2w-smart-tv-home>header{
+  height:auto!important;min-height:0!important;max-height:none!important;
+  flex-wrap:wrap!important;align-items:center!important;gap:14px!important;
+  padding:18px 3vw!important;overflow:visible!important;
+}
+body.f2w-smart-tv-home>header>.logo{flex:0 0 190px!important;width:190px!important;min-width:190px!important;max-width:190px!important}
+body.f2w-smart-tv-home>header>.logo .logo-image{width:190px!important;max-width:190px!important;max-height:66px!important}
+body.f2w-smart-tv-home>header>.header-tools{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  grid-template-areas:"nav" "search" "actions"!important;
+  flex:1 1 680px!important;width:auto!important;min-width:0!important;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  gap:14px!important;overflow:visible!important;
+}
+body.f2w-smart-tv-home>header .f2w-primary-nav{grid-area:nav!important;display:flex!important;flex-wrap:wrap!important;gap:8px!important;width:100%!important;height:auto!important}
+body.f2w-smart-tv-home>header .f2w-nav-link,
+body.f2w-smart-tv-home>header .f2w-nav-button{
+  min-height:46px!important;height:46px!important;padding:0 15px!important;
+  font-size:16px!important;border-radius:9px!important
+}
+body.f2w-smart-tv-home>header .f2w-search-pair{
+  grid-area:search!important;display:grid!important;
+  grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)!important;
+  width:100%!important;min-width:0!important;max-width:none!important;
+  height:auto!important;gap:12px!important;margin:0!important
+}
+body.f2w-smart-tv-home>header .search-container,
+body.f2w-smart-tv-home>header .user-search-container{
+  position:relative!important;display:flex!important;width:100%!important;
+  min-width:0!important;height:58px!important
+}
+body.f2w-smart-tv-home>header .search-bar,
+body.f2w-smart-tv-home>header .user-search-bar{
+  width:100%!important;min-width:0!important;height:58px!important;
+  min-height:58px!important;max-height:58px!important;box-sizing:border-box!important;
+  padding:0 48px!important;font-size:19px!important;line-height:1.2!important;
+  border-radius:11px!important
+}
+body.f2w-smart-tv-home>header .search-container>i,
+body.f2w-smart-tv-home>header .user-search-container>i{
+  left:17px!important;font-size:18px!important
+}
+body.f2w-smart-tv-home>header .user-search-submit{
+  right:9px!important;width:40px!important;height:40px!important;
+  min-width:40px!important;min-height:40px!important
+}
+body.f2w-smart-tv-home>header .f2w-action-cluster{
+  grid-area:actions!important;display:flex!important;flex-wrap:wrap!important;
+  width:100%!important;height:auto!important;min-height:0!important;
+  gap:8px!important;justify-content:flex-start!important
+}
+body.f2w-smart-tv-home>header .f2w-action-cluster>*{
+  min-height:42px!important;height:42px!important;font-size:14px!important
+}
+body.f2w-smart-tv-home :is(input,button,a,[tabindex]):focus-visible{
+  outline:3px solid var(--accent,#e50914)!important;outline-offset:3px!important
+}
+body.f2w-smart-tv-home #movie-grid{gap:22px!important}
+body.f2w-smart-tv-home .movie-card{min-width:0!important}
+@media(max-width:1100px){
+ body.f2w-smart-tv-home>header{padding:14px 2vw!important}
+ body.f2w-smart-tv-home>header>.logo{flex-basis:150px!important;width:150px!important;min-width:150px!important;max-width:150px!important}
+ body.f2w-smart-tv-home>header>.logo .logo-image{width:150px!important;max-width:150px!important}
+ body.f2w-smart-tv-home>header .f2w-nav-link,body.f2w-smart-tv-home>header .f2w-nav-button{font-size:14px!important;padding:0 10px!important}
+ body.f2w-smart-tv-home>header .search-bar,body.f2w-smart-tv-home>header .user-search-bar{font-size:17px!important}
+}
+@media(max-width:700px){
+ body.f2w-smart-tv-home>header .f2w-search-pair{grid-template-columns:1fr!important}
+}
 </style>
 
 </head>
@@ -8519,92 +8579,68 @@ body.f2w-auth-v67-open {
 </style>
 
 
-<script id="f2w-tv-home-search-v1">
-(()=> {
-  'use strict';
-  if(window.__f2wTVHomeSearchV1)return;
-  window.__f2wTVHomeSearchV1=true;
-  const inputId='movie-search';
-  let searchTimer=null,lastSubmitted='';
-  let originalParent=null,originalNext=null,dock=null;
-  function setMovieSearchReady(){
-    const input=document.getElementById(inputId);
-    if(input){input.readOnly=false;input.removeAttribute('readonly');input.setAttribute('autocomplete','off');}
-    const users=document.getElementById('user-search');
-    if(users){users.readOnly=false;users.removeAttribute('readonly');}
-  }
-  function enableTVDock(enabled){
-    const header=document.querySelector('body.f2w-main-page>header');
-    const pair=document.querySelector('body.f2w-main-page .f2w-search-pair');
-    if(!header||!pair)return;
-    if(!originalParent){originalParent=pair.parentNode;originalNext=pair.nextSibling;}
-    if(enabled){
-      if(!dock){
-        dock=document.createElement('section');
-        dock.className='f2w-tv-search-dock';
-        dock.id='f2w-tv-search-dock';
-        dock.setAttribute('aria-label','TV and user search');
-        const copy=document.createElement('div');
-        copy.className='f2w-tv-search-copy';
-        copy.textContent='Find a movie, TV series or Flix2Watch member';
-        dock.appendChild(copy);
-      }
-      if(pair.parentNode!==dock)dock.appendChild(pair);
-      if(dock.parentNode!==header.parentNode)header.insertAdjacentElement('afterend',dock);
-      document.body.classList.add('f2w-tv-home-active');
-    }else{
-      if(originalParent&&pair.parentNode!==originalParent){
-        originalParent.insertBefore(pair,originalNext&&originalNext.parentNode===originalParent?originalNext:null);
-      }
-      dock?.remove();
-      document.body.classList.remove('f2w-tv-home-active');
-    }
-    setMovieSearchReady();
-  }
-  window.v18HeaderMovieSearch=function(value){
-    const input=document.getElementById(inputId);
-    const query=String(value??input?.value??'');
-    if(input&&input.value!==query)input.value=query;
-    clearTimeout(searchTimer);
-    const clean=query.trim();
-    if(!clean){
-      lastSubmitted='';
-      searchTimer=setTimeout(()=>{if(typeof window.searchMedia==='function')window.searchMedia('');},250);
-      return;
-    }
-    searchTimer=setTimeout(()=>{
-      if(clean===lastSubmitted)return;
-      lastSubmitted=clean;
-      if(typeof window.searchMedia==='function')window.searchMedia(clean);
-    },320);
-  };
-  window.protectMovieSearchField=function(input){
-    if(!input)return;
-    input.readOnly=false;
-    input.removeAttribute('readonly');
-  };
-  function init(){
-    setMovieSearchReady();
-    const tab=new URLSearchParams(location.search).get('tab');
-    enableTVDock(tab==='tv');
-    document.addEventListener('click',event=>{
-      const button=event.target.closest('.tab-btn');
-      if(!button)return;
-      const action=button.getAttribute('onclick')||'';
-      if(action.includes("switchCategory('tv'"))setTimeout(()=>enableTVDock(true),0);
-      else if(action.includes("switchCategory('movie'")||action.includes("switchCategory('trending'"))setTimeout(()=>enableTVDock(false),0);
-    },true);
-    const input=document.getElementById(inputId);
-    input?.addEventListener('keydown',event=>{
-      if(event.key==='Enter'&&!event.isComposing){
-        event.preventDefault();
-        clearTimeout(searchTimer);
-        const query=String(input.value||'').trim();
-        if(query){lastSubmitted=query;if(typeof window.searchMedia==='function')window.searchMedia(query);}
-      }
-    });
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+
+<script id="f2w-smart-tv-home-v2">
+(()=>{
+ 'use strict';
+ if(window.__f2wSmartTVHomeV2)return;
+ window.__f2wSmartTVHomeV2=true;
+ const ua=String(navigator.userAgent||'');
+ const tvUA=/(smart[- ]?tv|tizen|web0s|webos|netcast|hbbtv|bravia|android\s?tv|google\s?tv|aft[a-z0-9]*|appletv|roku|viera|vidaa|hisense|philips tv)/i.test(ua);
+ if(!tvUA)return;
+ document.documentElement.classList.add('f2w-smart-tv');
+ document.body?.classList.add('f2w-smart-tv-home');
+ const inputId='movie-search';
+ let timer=0,lastSearch='';
+ function collapseRepeatedWholeQuery(value){
+   const raw=String(value||'');
+   const lower=raw.toLocaleLowerCase();
+   for(let size=6;size<=Math.floor(raw.length/2);size++){
+     if(raw.length%size!==0)continue;
+     const count=raw.length/size;
+     if(count<2)continue;
+     const unit=lower.slice(0,size);
+     if(unit.repeat(count)===lower)return raw.slice(0,size);
+   }
+   return raw;
+ }
+ function submit(value){
+   const query=String(value||'').trim();
+   if(!query||query===lastSearch)return;
+   lastSearch=query;
+   if(typeof window.searchMedia==='function')window.searchMedia(query);
+ }
+ function handle(value){
+   const input=document.getElementById(inputId);
+   const clean=collapseRepeatedWholeQuery(value);
+   if(input&&input.value!==clean)input.value=clean;
+   clearTimeout(timer);
+   if(!clean.trim()){lastSearch='';return;}
+   timer=setTimeout(()=>submit(clean),650);
+ }
+ window.v18HeaderMovieSearch=handle;
+ window.protectMovieSearchField=function(input){
+   if(!input)return;
+   input.readOnly=false;
+   input.removeAttribute('readonly');
+ };
+ function init(){
+   const input=document.getElementById(inputId);
+   if(input){
+     input.readOnly=false;input.removeAttribute('readonly');
+     input.setAttribute('autocomplete','off');
+     input.addEventListener('keydown',event=>{
+       if(event.key==='Enter'&&!event.isComposing){
+         event.preventDefault();clearTimeout(timer);
+         submit(collapseRepeatedWholeQuery(input.value));
+       }
+     },true);
+     input.addEventListener('search',()=>handle(input.value));
+   }
+   const userInput=document.getElementById('user-search');
+   if(userInput){userInput.readOnly=false;userInput.removeAttribute('readonly');}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
 
