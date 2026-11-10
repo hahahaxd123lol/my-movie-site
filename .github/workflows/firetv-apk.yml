@@ -59,7 +59,7 @@ jobs:
 
           # A TV launcher tile needs a legible square mark, not a tiny wide wordmark.
           # Crop the popcorn / film / play emblem from the left side of the official logo.
-          mark_width = min(artwork.width, max(1, int(artwork.width * 0.24)))
+          mark_width = min(artwork.width, max(1, int(artwork.width * 0.20)))
           mark = artwork.crop((0, 0, mark_width, artwork.height))
 
           legacy = Image.new("RGBA", (512, 512), "#0b0b0f")
