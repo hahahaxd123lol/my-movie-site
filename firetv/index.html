@@ -1,14 +1,115 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="refresh" content="0;url=https://github.com/hahahaxd123lol/my-movie-site/releases/latest/download/Flix2Watch-FireTV.apk">
-<title>Downloading Flix2Watch</title>
-<script>location.replace("https://github.com/hahahaxd123lol/my-movie-site/releases/latest/download/Flix2Watch-FireTV.apk");</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080b12">
+  <meta name="description" content="Get the Flix2Watch app for Amazon Fire TV. Download the APK and install it on your Fire TV Stick.">
+  <title>Flix2Watch for Fire TV</title>
+  <style>
+    :root{color-scheme:dark;--bg:#080b12;--panel:#101722;--panel2:#0c131e;--muted:#aab4c3;--red:#e50914;--red2:#ff3945;--line:#253143;--white:#f7f9fc}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,rgba(229,9,20,.24),transparent 48%),linear-gradient(180deg,#090d15 0%,var(--bg) 65%);color:var(--white);font:16px/1.65 Inter,Arial,Helvetica,sans-serif}
+    a{color:inherit}
+    .shell{width:min(980px,calc(100% - 36px));margin:auto}
+    header{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07)}
+    .brand{display:inline-flex;align-items:center;text-decoration:none}
+    .brand img{display:block;width:164px;height:auto;max-height:52px;object-fit:contain}
+    .top-link{font-size:13px;color:#c4ccd8;text-decoration:none;padding:9px 13px;border:1px solid var(--line);border-radius:9px}
+    .top-link:hover{border-color:#65738a;color:#fff}
+    .hero{text-align:center;padding:76px 0 48px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 11px;border:1px solid rgba(229,9,20,.35);border-radius:999px;background:rgba(229,9,20,.09);color:#ff858c;font-size:11px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase}
+    .eyebrow:before{content:"";width:7px;height:7px;border-radius:50%;background:#ff3945;box-shadow:0 0 12px #e50914}
+    h1{max-width:760px;margin:20px auto 14px;font-size:clamp(38px,7vw,66px);line-height:1.02;letter-spacing:-2.8px;font-weight:950}
+    h1 span{color:var(--red2)}
+    .intro{max-width:650px;margin:0 auto;color:var(--muted);font-size:18px;line-height:1.7}
+    .download-wrap{margin:30px auto 0;display:flex;flex-direction:column;align-items:center;gap:10px}
+    .download{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:60px;padding:0 28px;border-radius:12px;background:linear-gradient(135deg,#f01824,#c9000b);box-shadow:0 10px 35px rgba(229,9,20,.25),inset 0 1px rgba(255,255,255,.2);color:#fff;text-decoration:none;font-size:17px;font-weight:900;transition:transform .18s,filter .18s}
+    .download:hover{transform:translateY(-2px);filter:brightness(1.12)}
+    .download:focus-visible,.top-link:focus-visible,a:focus-visible{outline:3px solid #ff858c;outline-offset:4px}
+    .download svg{width:21px;height:21px}
+    .download-note{margin:0;color:#8995a6;font-size:12px}
+    .hero-meta{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:27px}
+    .meta-chip{padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.025);color:#c0cad7;font-size:12px}
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 62px}
+    .feature{padding:20px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,rgba(20,29,43,.96),rgba(12,18,28,.96))}
+    .feature-icon{width:38px;height:38px;display:grid;place-items:center;margin-bottom:12px;border-radius:10px;background:rgba(229,9,20,.13);color:#ff737c;font-size:19px}
+    .feature h2{margin:0 0 5px;font-size:15px}
+    .feature p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+    .install{padding:30px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(17,25,38,.98),rgba(10,15,24,.98));margin-bottom:30px}
+    .section-label{margin:0 0 7px;color:#ff737c;font-size:11px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase}
+    .install h2{margin:0 0 7px;font-size:26px;letter-spacing:-.7px}
+    .section-intro{margin:0 0 22px;color:var(--muted);font-size:14px}
+    .steps{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .step{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:16px;border:1px solid rgba(255,255,255,.07);border-radius:12px;background:rgba(255,255,255,.025)}
+    .num{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:rgba(229,9,20,.15);color:#ff858c;font-size:13px;font-weight:900}
+    .step h3{margin:0 0 4px;font-size:14px}
+    .step p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+    code{padding:2px 6px;border-radius:5px;background:#222d3d;color:#fff;font-size:12px;overflow-wrap:anywhere}
+    .bottom-download{text-align:center;padding:22px 0 56px}
+    .bottom-download p{margin:0 0 14px;color:var(--muted);font-size:14px}
+    footer{padding:20px 0 28px;border-top:1px solid rgba(255,255,255,.07);color:#758194;text-align:center;font-size:12px}
+    footer a{color:#aeb8c7;text-decoration:none}
+    @media(max-width:680px){header{height:70px}.brand img{width:142px}.hero{padding:56px 0 36px}h1{letter-spacing:-1.8px}.intro{font-size:16px}.features{grid-template-columns:1fr;margin-bottom:38px}.feature{padding:17px}.install{padding:21px 17px}.steps{grid-template-columns:1fr}.download{width:100%;max-width:360px}.top-link{font-size:12px;padding:8px 10px}}
+  </style>
 </head>
-<body style="background:#08090d;color:#fff;font:16px Arial,sans-serif;padding:24px">
-<p>Opening the Flix2Watch Fire TV download…</p>
-<p>If it does not start, <a style="color:#ff6670" href="https://github.com/hahahaxd123lol/my-movie-site/releases/latest/download/Flix2Watch-FireTV.apk">tap here to download the APK</a>.</p>
+<body>
+  <div class="shell">
+    <header>
+      <a class="brand" href="https://flix2watch.com/" aria-label="Flix2Watch home">
+        <img src="https://flix2watch.com/flix2watch-logo-red-v34.png" alt="Flix2Watch">
+      </a>
+      <a class="top-link" href="https://flix2watch.com/home/">Visit website ↗</a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow">Official Fire TV app</div>
+        <h1>Your Flix2Watch.<br><span>On the big screen.</span></h1>
+        <p class="intro">Bring Flix2Watch to your Amazon Fire TV Stick. Open the app from your TV, use your remote, and enjoy the Flix2Watch website in a full-screen TV experience.</p>
+        <div class="download-wrap">
+          <a class="download" href="https://github.com/hahahaxd123lol/my-movie-site/releases/latest/download/Flix2Watch-FireTV.apk" download>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 19v2h16v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download for Fire TV
+          </a>
+          <p class="download-note">APK installer · Free · Download starts only when you press the button</p>
+        </div>
+        <div class="hero-meta">
+          <span class="meta-chip">Amazon Fire TV Stick</span>
+          <span class="meta-chip">Full-screen experience</span>
+          <span class="meta-chip">Uses your existing Flix2Watch site</span>
+        </div>
+      </section>
+
+      <section class="features" aria-label="App features">
+        <article class="feature"><div class="feature-icon">▣</div><h2>Made for your TV</h2><p>Opens Flix2Watch in a dedicated, landscape full-screen app instead of a normal browser tab.</p></article>
+        <article class="feature"><div class="feature-icon">⌁</div><h2>Use your Fire TV remote</h2><p>Navigate the site from your sofa with your Fire TV remote, without needing a keyboard or mouse.</p></article>
+        <article class="feature"><div class="feature-icon">▶</div><h2>Your Flix2Watch</h2><p>The app connects to the existing Flix2Watch website. Your website and its features remain where they are.</p></article>
+      </section>
+
+      <section class="install" id="install">
+        <p class="section-label">Quick setup</p>
+        <h2>How to install it</h2>
+        <p class="section-intro">You can do the whole installation on your Fire TV Stick. No computer or USB cable needed.</p>
+        <div class="steps">
+          <article class="step"><div class="num">1</div><div><h3>Get Downloader</h3><p>Open the Amazon Appstore on your Fire TV, search for <strong>Downloader</strong>, then install it.</p></div></article>
+          <article class="step"><div class="num">2</div><div><h3>Allow app installs</h3><p>Go to <strong>Settings → My Fire TV → Developer Options → Install unknown apps</strong> and enable Downloader. If Developer Options is missing, open About and select your device name 7 times.</p></div></article>
+          <article class="step"><div class="num">3</div><div><h3>Open this page in Downloader</h3><p>Enter <code>flix2watch.com/firetv</code> in Downloader's address box and press Go.</p></div></article>
+          <article class="step"><div class="num">4</div><div><h3>Press Download, then Install</h3><p>On this page, press <strong>Download for Fire TV</strong>. When the APK finishes downloading, choose <strong>Install</strong>, then <strong>Open</strong>.</p></div></article>
+        </div>
+      </section>
+
+      <section class="bottom-download">
+        <p>Ready to put Flix2Watch on your TV?</p>
+        <a class="download" href="https://github.com/hahahaxd123lol/my-movie-site/releases/latest/download/Flix2Watch-FireTV.apk" download>Download for Fire TV</a>
+      </section>
+    </main>
+
+    <footer>
+      <p>Only install the app from this page or the <a href="https://github.com/hahahaxd123lol/my-movie-site/releases">official Flix2Watch release page</a>.</p>
+      <p>© Flix2Watch</p>
+    </footer>
+  </div>
 </body>
 </html>
