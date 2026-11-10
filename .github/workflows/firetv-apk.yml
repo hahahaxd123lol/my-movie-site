@@ -8,6 +8,7 @@ on:
     paths:
       - "firetv-app/**"
       - ".github/workflows/firetv-apk.yml"
+      - "flix2watch-logo-red-v34.png"
   push:
     branches:
       - "firetv-app"
@@ -24,6 +25,33 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+
+      - name: Create launcher assets from the official Flix2Watch logo
+        run: |
+          python -m pip install --quiet Pillow
+          mkdir -p firetv-app/app/src/main/res/drawable-nodpi
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+
+          source = Image.open("flix2watch-logo-red-v34.png").convert("RGBA")
+
+          def contain(image, size):
+              image.thumbnail(size, Image.Resampling.LANCZOS)
+              return image
+
+          # Square launcher icon using the real red Flix2Watch logo.
+          icon = Image.new("RGBA", (512, 512), "#0b0b0f")
+          logo = contain(source.copy(), (440, 440))
+          icon.alpha_composite(logo, ((512 - logo.width) // 2, (512 - logo.height) // 2))
+          icon.save("firetv-app/app/src/main/res/drawable-nodpi/flix2watch_logo.png")
+
+          # Wide Android TV banner in the same dark/red Flix2Watch branding.
+          banner = Image.new("RGBA", (320, 180), "#0b0b0f")
+          logo = contain(source.copy(), (288, 148))
+          banner.alpha_composite(logo, ((320 - logo.width) // 2, (180 - logo.height) // 2))
+          banner.save("firetv-app/app/src/main/res/drawable-nodpi/flix2watch_tv_banner.png")
+          PY
 
       - name: Set up Java
         uses: actions/setup-java@v4
