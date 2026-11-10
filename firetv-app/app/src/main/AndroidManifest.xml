@@ -4,6 +4,7 @@
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
+    <!-- Official Flix2Watch branding for Android TV and Fire TV launchers. -->
     <application
         android:allowBackup="false"
         android:icon="@drawable/flix2watch_logo"
