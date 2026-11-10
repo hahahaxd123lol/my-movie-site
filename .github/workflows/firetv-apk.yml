@@ -148,10 +148,13 @@ jobs:
           grep -q "targetSdkVersion:'36'" /tmp/flix2watch-badging.txt
           grep -q "application-label:'Flix2Watch'" /tmp/flix2watch-badging.txt
           grep -q "application-icon" /tmp/flix2watch-badging.txt
+          grep -q "application:.*banner='res/" /tmp/flix2watch-badging.txt
+          grep -q "leanback-launchable-activity:.*banner='res/" /tmp/flix2watch-badging.txt
+          "$AAPT" dump resources "$APK" | tee /tmp/flix2watch-resources.txt
+          grep -q "flix2watch_logo" /tmp/flix2watch-resources.txt
+          grep -q "flix2watch_icon_foreground" /tmp/flix2watch-resources.txt
+          grep -q "flix2watch_tv_banner" /tmp/flix2watch-resources.txt
           "$APKSIGNER" verify --verbose "$APK"
-          unzip -l "$APK" | grep -q "res/drawable-xhdpi-v4/flix2watch_tv_banner.png"
-          unzip -l "$APK" | grep -q "res/mipmap-anydpi-v26/flix2watch_logo.xml"
-          unzip -l "$APK" | grep -q "res/drawable-nodpi-v4/flix2watch_icon_foreground.png"
           echo "APK verified: release package, target API 36, TV banner, adaptive icon, and APK signature."
 
       - name: Rename APK
