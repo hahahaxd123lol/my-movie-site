@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "com.flix2watch.tv"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.flix2watch.tv"
-        minSdk = 23
-        targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        minSdk = 22
+        targetSdk = 36
+        versionCode = 3
+        versionName = "1.0.2"
     }
 
     buildTypes {
@@ -22,6 +22,8 @@ android {
         }
         release {
             isMinifyEnabled = false
+            // Sideloadable build; replace with a private, persistent release key before public distribution.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
