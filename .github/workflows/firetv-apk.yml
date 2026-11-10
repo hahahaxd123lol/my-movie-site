@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - "firetv-app"
+      - "firetv-release-v1.0.0"
     tags:
       - "firetv-v*"
 
@@ -50,9 +51,11 @@ jobs:
           if-no-files-found: error
 
       - name: Publish GitHub release
-        if: startsWith(github.ref, 'refs/tags/firetv-v')
+        if: startsWith(github.ref, 'refs/tags/firetv-v') || github.ref == 'refs/heads/firetv-release-v1.0.0'
         uses: softprops/action-gh-release@v2
         with:
-          name: Flix2Watch Fire TV ${{ github.ref_name }}
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'firetv-v1.0.0' }}
+          target_commitish: main
+          name: Flix2Watch Fire TV v1.0.0
           files: firetv-app/Flix2Watch-FireTV.apk
           generate_release_notes: true
