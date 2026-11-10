@@ -13,10 +13,9 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
+import android.app.Activity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : Activity() {
     private lateinit var webView: WebView
     private lateinit var root: FrameLayout
     private var customView: View? = null
@@ -94,17 +93,17 @@ class MainActivity : ComponentActivity() {
             webView.restoreState(savedInstanceState)
         }
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (customView != null) {
-                    exitCustomView()
-                } else if (::webView.isInitialized && webView.canGoBack()) {
-                    webView.goBack()
-                } else {
-                    finish()
-                }
-            }
-        })
+    }
+
+    @Deprecated("Use the system back dispatcher on newer Android versions")
+    override fun onBackPressed() {
+        if (customView != null) {
+            exitCustomView()
+        } else if (::webView.isInitialized && webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     private fun exitCustomView() {
