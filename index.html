@@ -188,10 +188,14 @@ html{overflow-y:scroll}
         });
         return;
       }
-      // Keep the Fire TV installer landing page out of the homepage fallback.
-      // Some static hosts serve this root shell for extensionless directory URLs.
-      if (location.pathname === '/firetv' || location.pathname === '/firetv/') {
-        location.replace('/firetv/index.html' + (location.search || '') + (location.hash || ''));
+      // Keep the Firestick installer page out of the homepage fallback.
+      // Preserve the old /firetv URL as an alias while the canonical URL is /firestick.
+      if (location.pathname === '/firetv' || location.pathname === '/firetv/' || location.pathname === '/firetv/index.html') {
+        location.replace('/firestick/' + (location.search || '') + (location.hash || ''));
+        return;
+      }
+      if (location.pathname === '/firestick' || location.pathname === '/firestick/') {
+        location.replace('/firestick/index.html' + (location.search || '') + (location.hash || ''));
         return;
       }
       const profileMatch=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
