@@ -7,7 +7,9 @@
     <!-- Official Flix2Watch branding for Android TV and Fire TV launchers. -->
     <application
         android:allowBackup="false"
+        android:enableOnBackInvokedCallback="false"
         android:icon="@mipmap/flix2watch_logo"
+        android:logo="@mipmap/flix2watch_logo"
         android:roundIcon="@mipmap/flix2watch_logo"
         android:banner="@drawable/flix2watch_tv_banner"
         android:label="Flix2Watch"
@@ -15,6 +17,7 @@
         android:usesCleartextTraffic="false">
         <activity
             android:name=".MainActivity"
+            android:label="Flix2Watch"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:screenOrientation="landscape"
