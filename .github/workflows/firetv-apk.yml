@@ -33,7 +33,6 @@ jobs:
           mkdir -p firetv-app/app/src/main/res/drawable-nodpi
           python - <<'PY'
           from PIL import Image
-          from pathlib import Path
 
           source = Image.open("flix2watch-logo-red-v34.png").convert("RGBA")
 
@@ -52,6 +51,19 @@ jobs:
           logo = contain(source.copy(), (288, 148))
           banner.alpha_composite(logo, ((320 - logo.width) // 2, (180 - logo.height) // 2))
           banner.save("firetv-app/app/src/main/res/drawable-nodpi/flix2watch_tv_banner.png")
+          PY
+
+      - name: Verify branded launcher assets
+        run: |
+          test -s firetv-app/app/src/main/res/drawable-nodpi/flix2watch_logo.png
+          test -s firetv-app/app/src/main/res/drawable-nodpi/flix2watch_tv_banner.png
+          python - <<'PY'
+          from PIL import Image
+          icon = Image.open("firetv-app/app/src/main/res/drawable-nodpi/flix2watch_logo.png")
+          banner = Image.open("firetv-app/app/src/main/res/drawable-nodpi/flix2watch_tv_banner.png")
+          assert icon.size == (512, 512), icon.size
+          assert banner.size == (320, 180), banner.size
+          print("Verified Flix2Watch icon (512x512) and TV banner (320x180).")
           PY
 
       - name: Set up Java
