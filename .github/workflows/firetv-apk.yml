@@ -1,0 +1,58 @@
+name: Build Flix2Watch Fire TV APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "firetv-app"
+    tags:
+      - "firetv-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build APK
+        run: gradle --no-daemon :app:assembleDebug
+        working-directory: firetv-app
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk Flix2Watch-FireTV.apk
+        working-directory: firetv-app
+
+      - name: Upload APK build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Flix2Watch-FireTV
+          path: firetv-app/Flix2Watch-FireTV.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/firetv-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Flix2Watch Fire TV ${{ github.ref_name }}
+          files: firetv-app/Flix2Watch-FireTV.apk
+          generate_release_notes: true
