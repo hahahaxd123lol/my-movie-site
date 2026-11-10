@@ -36,7 +36,7 @@ class MainActivity : Activity() {
             settings.domStorageEnabled = true
             settings.databaseEnabled = true
             settings.mediaPlaybackRequiresUserGesture = false
-            settings.javaScriptCanOpenWindowsAutomatically = true
+            settings.javaScriptCanOpenWindowsAutomatically = false
             settings.setSupportMultipleWindows(false)
             settings.cacheMode = WebSettings.LOAD_DEFAULT
             settings.userAgentString = settings.userAgentString + " Flix2WatchFireTV"
@@ -48,6 +48,15 @@ class MainActivity : Activity() {
                     request: WebResourceRequest?
                 ): Boolean {
                     val url = request?.url ?: return true
+
+                    // Streaming providers load inside cross-origin iframes. Allow those
+                    // frame navigations, but never let a provider/ad redirect replace
+                    // the app's top-level Flix2Watch page.
+                    if (!request.isForMainFrame) return false
+
+                    val scheme = url.scheme?.lowercase()
+                    if (scheme != "https" && scheme != "http") return true
+
                     val host = url.host?.lowercase() ?: return true
                     return !(host == "flix2watch.com" ||
                         host.endsWith(".flix2watch.com"))
