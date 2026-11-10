@@ -6,8 +6,10 @@
 
     <application
         android:allowBackup="false"
+        android:icon="@drawable/flix2watch_logo"
+        android:banner="@drawable/flix2watch_tv_banner"
         android:label="Flix2Watch"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:theme="@android:style/Theme.Material.NoActionBar"
         android:usesCleartextTraffic="false">
         <activity
             android:name=".MainActivity"
