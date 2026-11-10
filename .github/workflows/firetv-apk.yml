@@ -11,6 +11,7 @@ on:
       - "flix2watch-logo-red-v34.png"
   push:
     branches:
+      - "main"
       - "firetv-app"
       - "firetv-release-v1.0.0"
     tags:
