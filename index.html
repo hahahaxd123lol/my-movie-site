@@ -188,6 +188,12 @@ html{overflow-y:scroll}
         });
         return;
       }
+      // Keep the Fire TV installer landing page out of the homepage fallback.
+      // Some static hosts serve this root shell for extensionless directory URLs.
+      if (location.pathname === '/firetv' || location.pathname === '/firetv/') {
+        location.replace('/firetv/index.html' + (location.search || '') + (location.hash || ''));
+        return;
+      }
       const profileMatch=location.pathname.match(/^\/profile\/@([A-Za-z0-9]+)\/?$/);
       if(profileMatch){
         // Some static hosts send unknown pretty URLs to /index.html. Load the
